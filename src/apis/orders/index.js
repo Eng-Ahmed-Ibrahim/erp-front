@@ -15,27 +15,23 @@ export async function getOrders(filteredValues, id, setIsLoading) {
         "date[from]": from_date,
         "date[to]": to_date,
         to_department_id: department_id,
-        user_id,
+        user_id: user_id,
         status,
         page,
         code,
-        department_id: id,
+        department_id
       },
       headers: {
         Authorization: `Bearer ${Token}`,
       },
     });
     setIsLoading(false);
-    // console.log("res from orders", res);
     return res.data;
   } catch (error) {
-    // // console.log("Error fetching data:", error);
-    setIsLoading(false);
+   setIsLoading(false);
     message.error("حدث خطأ الرجاء إعادة المحاولة ");
   }
 }
-
-
 export async function getOrdersReportes(filteredValues, id, setIsLoading) {
   try {
     setIsLoading(true);
@@ -47,31 +43,24 @@ export async function getOrdersReportes(filteredValues, id, setIsLoading) {
       params: {
         "from": from_date,
         "to": to_date,
-    
         user_id,
         status,
-      
+
       },
       headers: {
         Authorization: `Bearer ${Token}`,
       },
     });
-    console.log("res from REportsssssss", res);
-    setIsLoading(false);
      
+    setIsLoading(false);
+
     return res.data;
   } catch (error) {
-   console.log("Error fetching data:", error);
+     
     setIsLoading(false);
     message.error("حدث خطأ الرجاء إعادة المحاولة ");
   }
 }
-
-
-
-
-
-
 export async function getOrderById(id) {
   try {
     const res = await axios.get(`${API_ENDPOINT}/api/v1/orders/${id}`, {
@@ -81,9 +70,9 @@ export async function getOrderById(id) {
     });
     return res.data;
   } catch (error) {
-    message.error(error.response.data.error.message);
+    //message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+     
   }
 }
 export async function deleteOrder(id) {
@@ -100,7 +89,6 @@ export async function deleteOrder(id) {
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
   }
 }
 export async function checkTableNumber(tableNumber) {
@@ -117,7 +105,7 @@ export async function checkTableNumber(tableNumber) {
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 export async function updateProductQuantityInOrder(editedData, id) {
@@ -134,7 +122,7 @@ export async function updateProductQuantityInOrder(editedData, id) {
     return res.data;
   } catch (error) {
     message.error(error.response.data.error.message);
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 export async function deleteProductQuantityInOrder(id) {
@@ -152,7 +140,7 @@ export async function deleteProductQuantityInOrder(id) {
     return res.data;
   } catch (error) {
     message.error(error.response.data.error.message);
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 export async function changeOrderStatus(id, status) {
@@ -166,10 +154,12 @@ export async function changeOrderStatus(id, status) {
         },
       }
     );
-    // console.log('d;s;dls', res)
+     
+
     return res.data;
+    
   } catch (error) {
-    message.error(error.response.data.error.message);
-    // // console.log("Error fetching data:", error);
+    message.error(`حدث خطأ في الانهاء`);
+     
   }
 }

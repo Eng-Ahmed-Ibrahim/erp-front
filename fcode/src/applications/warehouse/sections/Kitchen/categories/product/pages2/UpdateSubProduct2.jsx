@@ -9,7 +9,6 @@ const UpdateSubProduct2 = () => {
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const [isPending, setIsPending] = useState(false);
   const item = useLocation()?.state?.item;
-  // console.log('item', item);
   const [name, setName] = useState(item?.name);
   const [description, setDescription] = useState(item?.description);
   const [image, setImage] = useState("");
@@ -41,13 +40,11 @@ const UpdateSubProduct2 = () => {
           }
         )
         .then((response) => {
-          // console.log("created success", response);
           message.success('تم التعديل بنجاح')
           setIsPending(false);
         });
     } catch (err) {
       setIsPending(false);
-      // console.log("response" + err);
     }
   };
   const handelDelete = (id) => {
@@ -57,11 +54,9 @@ const UpdateSubProduct2 = () => {
       }
 
     }).then(res => {
-      // console.log(res.data)
       message.success('تم الحذف بنجاح')
     }).catch(
       err => {
-        // console.log(err)
         message.error('حدث خطا ما')
       }
     )
@@ -71,7 +66,6 @@ const UpdateSubProduct2 = () => {
     acc[index] = current;
     return acc;
   }, {});
-  console.log('item?.prices?.id', pricesObject);
   return (
     <div>
       <div className="my-5">

@@ -9,7 +9,6 @@ const ShowRecipesForSupplier = () => {
         { key: "total_quantity", value: "الكميه الوارده" },
         // { key: "minimum_limt", value: "حد الامان" },
 
-        { key: "image", value: "الصوره", type: "image" },
     ];
     const filters = [
         { key: "from_date", type: "date", id: "من تاريخ" },

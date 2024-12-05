@@ -7,7 +7,7 @@ const AddPaymentMethod = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (formData) => {
-    // console.log(formData);
+    //  
     await addPaymentMethod(formData);
     navigate(`/warehouse/clients/payment-method`);
   };

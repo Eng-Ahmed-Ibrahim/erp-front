@@ -110,7 +110,10 @@
         box-shadow: 0 0 0 2px rgb(255 155 5 / 10%);
     }
 }
-
+.select-text{
+    font-size: larger;
+    font-weight: 300;
+}
 .form-cashier-txt-area {
     width: 350px;
     height: 60px;
@@ -142,8 +145,10 @@
     border-color: #d9d9d9;
     outline: 0;
     border-radius: 5px;
-    max-height: none !important; /* Remove any max-height restrictions */
-    overflow: visible !important; /* Ensure overflow is visible */
+    max-height: none !important;
+    /* Remove any max-height restrictions */
+    overflow: visible !important;
+    /* Ensure overflow is visible */
     padding: 10px 15px;
     // margin-bottom: 20px;
     box-sizing: border-box;
@@ -171,6 +176,34 @@
         color: var(--brown-color);
         box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
     }
+}
+
+.finish-cashier {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 15px 0 20px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    justify-content: center;
+    color: white;
+
+    background-color: #CC3232;
+}
+
+.btns {
+
+    display: flex;
+    flex-direction: row;
+    padding: 5px 10px;
+    gap: 10px;
+    /* Adds space between buttons */
+
 }
 
 .item-cashier-list {

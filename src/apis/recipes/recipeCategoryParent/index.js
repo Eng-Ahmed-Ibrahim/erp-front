@@ -6,7 +6,7 @@ const Token = localStorage.getItem('token') || sessionStorage.getItem('token')
 export async function getRecipeCategoryParent(
   filteredValues,
   id,
-  setIsLoading
+  setIsLoading = () => {}
 ) {
   try {
     setIsLoading(true);
@@ -24,11 +24,11 @@ export async function getRecipeCategoryParent(
       }
     );
     setIsLoading(false);
-    // console.log(res.data);
+    console.log(`succes ==>`, res.data);
     return res.data;
   } catch (error) {
     setIsLoading(false);
-    // console.log("Error fetching data:", error);
+    console.log("Error fetching data:", error);
     message.error("حدث خطأ الرجاء إعادة المحاولة");
     message.error(error.response.data.error.message);
 

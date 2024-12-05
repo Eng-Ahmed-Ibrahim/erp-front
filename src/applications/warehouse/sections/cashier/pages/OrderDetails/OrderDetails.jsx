@@ -26,8 +26,8 @@ const OrderDetails = () => {
     const getOrderByID = async () => {
       try {
         const res = await getTableOrderById(id);
-        // console.log(res.data);
         setOrder(res.data);
+
       } catch (error) {
         console.error("Error fetching order details:", error);
       }
@@ -56,13 +56,13 @@ const OrderDetails = () => {
 
 
   useEffect(() => {
+     
     const fetchData = async () => {
       await fetchPaymentMethods();
       // await fetchDiscountReasons();
 
     };
     fetchData();
-    console.log("idddddOrder",order.id)
   }, []);
 
   const fetchPaymentMethods = async () => {
@@ -99,7 +99,7 @@ const OrderDetails = () => {
         }
       );
       setClientTypes(response.data.data);
-      // console.log("Client dataaaaaa ========>", response.data.data)
+      //  
     } catch (error) {
       console.error("Error fetching client types for payment method:", error);
     }
@@ -123,7 +123,6 @@ const OrderDetails = () => {
         }
       );
       setClients(response.data.data);
-      console.log("Client Data ========>", response.data.data)
       fetchClientType(newUserValues["client_type_id"])
     } catch (error) {
       console.error("Error fetching clients for client type:", error);
@@ -144,13 +143,16 @@ const OrderDetails = () => {
         },
       })
       .then((response) => {
-        message.success('Deleted Success');
+        message.success('تم الإنهاء بنجاح');
         setFlag(true)
-       //  navigate('/warehouse/cashier/create-order')
-       // console.log('d;s;dls', response)
+        // setTimeout(() => {
+        //   navigate('/warehouse/cashier/create-order');
+        // }, 4000);
+         // navigate('/warehouse/cashier/create-order')
+        //  
       })
       .catch((error) => {
-        // console.log(error);
+        //  
         message.error('حدث خطأ')
       });
   };
@@ -188,7 +190,7 @@ const OrderDetails = () => {
           <ul className="order-details-container">
             {order.products &&
               order.products.map((product, index) => {
-                // console.log(product);
+                //  
                 return (
                   <li key={index} className="order">
                     <div className="img-container">
@@ -233,7 +235,7 @@ const OrderDetails = () => {
               })}
           </ul>
           <button className="btn btn-danger" onClick={() => handelDelete(id)}>انهاء الاوردر</button>
-          {flag && <PrintAfterSubmit id={id} />}
+          {flag && <PrintAfterSubmit id={id} table_no ={order?.table_number} />}
         </div>
       )}
     </div>

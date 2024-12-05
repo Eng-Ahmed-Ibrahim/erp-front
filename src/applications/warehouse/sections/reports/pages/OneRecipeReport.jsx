@@ -37,7 +37,7 @@ const OneRecipeReport = () => {
                 setReportData({ quintity: data.data[0].totalQuantity, totalPrice: data.data[0].total });
 
             } catch (error) {
-                // console.log("Error fetching data:", error);
+                //  
             }
         };
 

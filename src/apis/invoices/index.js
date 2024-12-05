@@ -18,12 +18,12 @@ export async function getRecipes(filteredValues = { name: "", page: "" }) {
         Authorization: `Bearer ${Token}`,
       },
     });
-    // // console.log(res.data);
+    // //  
     return res.data;
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 
@@ -34,12 +34,12 @@ export async function getUnits() {
         Authorization: `Bearer ${Token}`,
       },
     });
-    // // console.log(res.data);
+    // //  
     return res.data;
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 
@@ -81,7 +81,7 @@ export async function addRecipes(
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
     throw error;
   }
 }
@@ -123,7 +123,7 @@ export async function eidtRecipes(
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
     throw error; // Rethrow the error to handle it in the calling code if necessary
   }
 }
@@ -137,12 +137,12 @@ export async function getRecipesById(id, departmentId) {
         Authorization: `Bearer ${Token}`,
       },
     });
-    // // console.log(res.data);
+    // //  
     return res.data.data;
   } catch (error) {
     // message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 
@@ -157,12 +157,12 @@ export async function getRecipesInRetuendById(id, departmentId) {
         Authorization: `Bearer ${Token}`,
       },
     });
-    // // console.log(res.data);
+    // //  
     return res.data.data;
   } catch (error) {
     // message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 
@@ -203,15 +203,17 @@ export async function getIncomingInvoiceByType(
         },
       }
     )
+    
     setIsLoading(false);
-    console.log(res);
-    return res.data;
+
+    return res.data.data
+    
   } catch (error) {
     setIsLoading(false);
-    // // console.log("Error fetching data:", error);
+    // //  
     message.error("حدث خطأ الرجاء إعادة المحاولة");
   }
-  // // console.log('getStatus', getStatus);
+  // //  
 
 }
 
@@ -252,12 +254,13 @@ export async function getOutgoingInvoiceByType(
         },
       }
     );
+
     setIsLoading(false);
-    // // console.log(res);
-    return res.data;
+    // //  
+    return res.data.data;
   } catch (error) {
     setIsLoading(false);
-    // // console.log("Error fetching data:", error);
+    // //  
     message.error("حدث خطأ الرجاء إعادة المحاولة");
   }
 }
@@ -299,11 +302,10 @@ export async function getReturndInvoiceByType(
       }
     );
     setIsLoading(false);
-    // // console.log(res);
-    return res.data;
+    return res.data.data;
   } catch (error) {
     setIsLoading(false);
-    // // console.log("Error fetching data:", error);
+    // //  
     message.error("حدث خطأ الرجاء إعادة المحاولة");
   }
 }
@@ -329,11 +331,11 @@ export async function getTaintedInvoices(filteredValues, id, setIsLoading) {
       },
     });
     setIsLoading(false);
-    // // console.log(res);
+    // //  
     return res.data;
   } catch (error) {
     setIsLoading(false);
-    // // console.log("Error fetching data:", error);
+    // //  
     message.error("حدث خطأ الرجاء إعادة المحاولة");
   }
 }
@@ -350,7 +352,7 @@ export async function getInvoiceById(id) {
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 
@@ -368,11 +370,11 @@ export async function getTaintedInvoiceById(id) {
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 export async function updateInvoice(filteredValues, id) {
-  // // console.log(typeof filteredValues.recipes);
+  // //  
   const formData = new FormData();
   Object.keys(filteredValues.recipes).map((key, index) => {
     formData.append(
@@ -403,17 +405,19 @@ export async function updateInvoice(filteredValues, id) {
       }
     );
     message.success("تم التعديل بنجاح");
-    // // console.log(res);
+    // //  
     return res.data;
   } catch (error) {
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 
 export async function updateInvoiceQuintity(filteredValues, id) {
-  // // console.log(filteredValues);
+  // //  
+  console.log(`idshshssss`,id)
   const formData = new FormData();
   Object.keys(filteredValues.recipes).map((key, index) => {
+    
     formData.append(
       `recipes[${index}][recipe_id]`,
       filteredValues.recipes[key].id
@@ -422,7 +426,6 @@ export async function updateInvoiceQuintity(filteredValues, id) {
       `recipes[${index}][price]`,
       filteredValues.recipes[key].price
     );
-    // Add other fields as needed, for example quantity, expire_date, etc.
     formData.append(
       `recipes[${index}][quantity]`,
       filteredValues.recipes[key].quantity
@@ -444,17 +447,17 @@ export async function updateInvoiceQuintity(filteredValues, id) {
       }
     );
     message.success("تم التعديل بنجاح");
-    // // console.log(res);
+    // //  
     return res.data;
   } catch (error) {
-    // // console.log("Error fetching data:", error);
+    // //  
     message.error(error.response.data.error.message);
   }
 }
 
 
 export async function updateInvoicePrice(filteredValues, id) {
-  // // console.log(filteredValues);
+  // //  
   const formData = new FormData();
   Object.keys(filteredValues.recipes).map((key, index) => {
     formData.append(
@@ -487,10 +490,10 @@ export async function updateInvoicePrice(filteredValues, id) {
       }
     );
     message.success("تم التعديل بنجاح");
-    // // console.log(res);
+    // //  
     return res.data;
   } catch (error) {
-    // // console.log("Error fetching data:", error);
+    // //  
     message.error(error.response.data.error.message);
   }
 }
@@ -525,10 +528,10 @@ export async function updateTaintedInvoice(filteredValues, id) {
         },
       }
     );
-    // // console.log(res);
+    // //  
     return res.data;
   } catch (error) {
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }
 export async function changeInvoiceStatus(id, status) {
@@ -545,6 +548,6 @@ export async function changeInvoiceStatus(id, status) {
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // // console.log("Error fetching data:", error);
+    // //  
   }
 }

@@ -1,0 +1,368 @@
+[
+    {
+        "id": 73,
+        "value": "view recipe_category_parents",
+        "label": "عرض الاقسام الرئيسية للمكونات"
+    },
+    {
+        "id": 74,
+        "value": "create recipe_category_parent",
+        "label": "انشاء قسم رئيسي للمكونات"
+    },
+    {
+        "id": 75,
+        "value": "edit recipe_category_parent",
+        "label": "تعديل قسم رئيسي للمكونات"
+    },
+    {
+        "id": 76,
+        "value": "delete recipe_category_parent",
+        "label": "حذف قسم رئيسي للمكونات"
+    },
+    {
+        "id": 77,
+        "value": "view recipe_categories",
+        "label": "عرض اقسام المكونات"
+    },
+    {
+        "id": 78,
+        "value": "add recipe_category",
+        "label": "إضافة قسم للمكون"
+    },
+    {
+        "id": 79,
+        "value": "edit recipe_category",
+        "label": "تحرير قسم للمكون"
+    },
+    {
+        "id": 80,
+        "value": "delete recipe_category",
+        "label": "حذف قسم للمكون"
+    },
+    {
+        "id": 81,
+        "value": "view recipes",
+        "label": "عرض المكونات"
+    },
+    {
+        "id": 82,
+        "value": "add recipe",
+        "label": "إضافة مكون"
+    },
+    {
+        "id": 83,
+        "value": "edit recipe",
+        "label": "تحرير مكون"
+    },
+    {
+        "id": 84,
+        "value": "delete recipe",
+        "label": "حذف مكون"
+    },
+    {
+        "id": 85,
+        "value": "safe limit",
+        "label": "الحد الآمن"
+    },
+    {
+        "id": 86,
+        "value": "expire_date limit",
+        "label": "حد انتهاء الصلاحية"
+    },
+    {
+        "id": 87,
+        "value": "total stores",
+        "label": "جرد المنافذ جميعا"
+    },
+    {
+        "id": 88,
+        "value": "view suppliers",
+        "label": "عرض الموردين"
+    },
+    {
+        "id": 89,
+        "value": "add supplier",
+        "label": "إضافة مورد"
+    },
+    {
+        "id": 90,
+        "value": "edit supplier",
+        "label": "تحرير مورد"
+    },
+    {
+        "id": 91,
+        "value": "delete supplier",
+        "label": "حذف مورد"
+    },
+    {
+        "id": 92,
+        "value": "show supplier invoices",
+        "label": "عرض فواتير المورد"
+    },
+    {
+        "id": 93,
+        "value": "view categories",
+        "label": "عرض تصنيفات المنتجات"
+    },
+    {
+        "id": 94,
+        "value": "add category",
+        "label": "إضافة تصنيف منتج"
+    },
+    {
+        "id": 95,
+        "value": "edit category",
+        "label": "تحرير تصنيف منتج"
+    },
+    {
+        "id": 96,
+        "value": "delete category",
+        "label": "حذف تصنيف منتج"
+    },
+    {
+        "id": 97,
+        "value": "view sub_categories",
+        "label": " عرض الاقسام الفرعية للمنتحات"
+    },
+    {
+        "id": 98,
+        "value": "add sub_category",
+        "label": "إضافة قسم فرعي للمنتجات"
+    },
+    {
+        "id": 99,
+        "value": "edit sub_category",
+        "label": "تحرير قسم فرعي للمنتجات"
+    },
+    {
+        "id": 100,
+        "value": "delete sub_category",
+        "label": "حذف قسم فرعي للمنتجات"
+    },
+    {
+        "id": 101,
+        "value": "view products",
+        "label": "عرض المنتجات"
+    },
+    {
+        "id": 102,
+        "value": "add product",
+        "label": "إضافة منتج"
+    },
+    {
+        "id": 103,
+        "value": "edit product",
+        "label": "تحرير منتج"
+    },
+    {
+        "id": 104,
+        "value": "delete product",
+        "label": "حذف منتج"
+    },
+    {
+        "id": 105,
+        "value": "add products to department",
+        "label": "إضافة منتجات إلى القسم"
+    },
+    {
+        "id": 106,
+        "value": "get products in department",
+        "label": "الحصول على المنتجات في القسم"
+    },
+    {
+        "id": 107,
+        "value": "delete product from department",
+        "label": "حذف المنتج من القسم"
+    },
+    {
+        "id": 108,
+        "value": "add recipes to product",
+        "label": "إضافة وصفات إلى المنتج"
+    },
+    {
+        "id": 109,
+        "value": "remove recipe from product",
+        "label": "إزالة الوصفة من المنتج"
+    },
+    {
+        "id": 110,
+        "value": "add role",
+        "label": "إضافة دور"
+    },
+    {
+        "id": 111,
+        "value": "edit role",
+        "label": "تحرير دور"
+    },
+    {
+        "id": 112,
+        "value": "delete role",
+        "label": "حذف دور"
+    },
+    {
+        "id": 113,
+        "value": "view users",
+        "label": "عرض المستخدمين"
+    },
+    {
+        "id": 114,
+        "value": "add user",
+        "label": "إضافة مستخدم"
+    },
+    {
+        "id": 115,
+        "value": "edit user",
+        "label": "تحرير مستخدم"
+    },
+    {
+        "id": 116,
+        "value": "delete user",
+        "label": "حذف مستخدم"
+    },
+    {
+        "id": 117,
+        "value": "edit user role",
+        "label": "تحرير دور المستخدم"
+    },
+    {
+        "id": 118,
+        "value": "add other role",
+        "label": "إضافة دور آخر"
+    },
+    {
+        "id": 119,
+        "value": "view units",
+        "label": "عرض الوحدات"
+    },
+    {
+        "id": 120,
+        "value": "add unit",
+        "label": "إضافة وحدة"
+    },
+    {
+        "id": 121,
+        "value": "edit unit",
+        "label": "تحرير وحدة"
+    },
+    {
+        "id": 122,
+        "value": "delete unit",
+        "label": "حذف وحدة"
+    },
+    {
+        "id": 123,
+        "value": "view orders",
+        "label": "عرض الاوردرات"
+    },
+    {
+        "id": 124,
+        "value": "add order",
+        "label": "إضافة اوردر"
+    },
+    {
+        "id": 125,
+        "value": "edit order",
+        "label": "تحرير الاوردر"
+    },
+    {
+        "id": 126,
+        "value": "delete order",
+        "label": "حذف الاوردر"
+    },
+    {
+        "id": 127,
+        "value": "change order status",
+        "label": "تغيير حالة الاوردر"
+    },
+    {
+        "id": 128,
+        "value": "get orders in department",
+        "label": "الحصول على الاوردر في القسم"
+    },
+    {
+        "id": 129,
+        "value": "get orders of target department",
+        "label": "الحصول على طلبات القسم المستهدف"
+    },
+    {
+        "id": 130,
+        "value": "view requests",
+        "label": "عرض الطلبات"
+    },
+    {
+        "id": 131,
+        "value": "add request",
+        "label": "إضافة طلب"
+    },
+    {
+        "id": 132,
+        "value": "edit request",
+        "label": "تحرير طلب"
+    },
+    {
+        "id": 133,
+        "value": "delete request",
+        "label": "حذف طلب"
+    },
+    {
+        "id": 134,
+        "value": "change request status",
+        "label": "تغيير حالة الطلب"
+    },
+    {
+        "id": 135,
+        "value": "view departments",
+        "label": "عرض المنافذ"
+    },
+    {
+        "id": 136,
+        "value": "create department",
+        "label": "إنشاء منفذ"
+    },
+    {
+        "id": 137,
+        "value": "edit department",
+        "label": "تحرير منفذ"
+    },
+    {
+        "id": 138,
+        "value": "delete department",
+        "label": "حذف منفذ"
+    },
+    {
+        "id": 139,
+        "value": "department users",
+        "label": "مستخدمي منفذ"
+    },
+    {
+        "id": 140,
+        "value": "view invoices",
+        "label": "عرض الفواتير"
+    },
+    {
+        "id": 141,
+        "value": "create invoice",
+        "label": "إنشاء فاتورة"
+    },
+    {
+        "id": 142,
+        "value": "edit invoice",
+        "label": "تحرير الفاتورة"
+    },
+    {
+        "id": 143,
+        "value": "delete invoice",
+        "label": "حذف الفاتورة"
+    },
+    {
+        "id": 144,
+        "value": "change invoice status",
+        "label": "تغيير حالة الفاتورة"
+    },
+
+    {
+        "id": 145,
+        "value": "add payable",
+        "label": "اضافة مدفوع"
+    }
+]

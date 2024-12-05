@@ -7,10 +7,9 @@ const ShowAllDepartments = () => {
     const tableHeaders = [
         { key: "code", value: "الكود" },
         {
-            key: "name", value: " الاسم ", clickable: true,
-            route: "/warehouse/reports/show-reports/department/recipe/:id",
+        key: "name", value: " الاسم ", clickable: true,
+        route: "/warehouse/reports/show-reports/department/recipe/:id",
         },
-        { key: "image", value: "الصوره", type: "image" },
 
     ];
     const filters = [
@@ -46,10 +45,6 @@ const ShowAllDepartments = () => {
                 fetchData={(filterValues, currentPage, setIsLoading) =>
                     getDeaprtments(filterValues, currentPage, setIsLoading)
                 }
-            // actions={actions}
-            // deleteFn={deleteDeaprtment}
-
-
             />
         </div>
     );

@@ -33,13 +33,9 @@ const ShowSubCategory2 = () => {
       })
       .catch((err) => {
         setIsPending(false);
-        // console.log("error", err);
       });
   }, [currentPage]);
 
-  // console.log(currentPage);
-
-  // console.log("data from endpoint", data);
   const handelDelete = async (id) => {
     setIsPending(true);
     await axios
@@ -67,7 +63,6 @@ const ShowSubCategory2 = () => {
       })
       .catch((error) => {
         setIsPending(false);
-        // console.log(error);
       });
   };
   const handlePageChange = (page) => {

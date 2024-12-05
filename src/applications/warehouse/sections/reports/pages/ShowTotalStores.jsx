@@ -10,17 +10,15 @@ const ShowTotalStores = () => {
         { key: "quantity", value: "الكميه الموجوده" },
         { key: "price", value: "السعر" },
         { key: "unit", value: "الوحده", nestedKey: "name" },
-        { key: "image", value: "الصوره", type: "image" },
     ];
 
     return (
         <div>
             <Table
                 headers={tableHeaders}
-
                 title="جرد  المكونات فى الدار "
                 fetchData={(filters, id, setIsLoading) =>
-                    getTotalStores(filters, id, setIsLoading)
+                 getTotalStores(filters, id, setIsLoading)
                 }
             />
         </div>

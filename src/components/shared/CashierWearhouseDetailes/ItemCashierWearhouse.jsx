@@ -1,6 +1,7 @@
 import { API_ENDPOINT } from "../../../../config";
 
 const ItemCashierWearhouse = ({ items, onDeleteItem }) => {
+    console.log(`inside`,items)
     return (
         <div className="item-list">
             <h2>قائمة العناصر</h2>

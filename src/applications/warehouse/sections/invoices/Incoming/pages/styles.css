@@ -141,25 +141,28 @@ main {
 
 .invoice-items {
     margin-bottom: 10px;
-    border: 1px solid #ddd;
+    border: 4px solid black;
     padding: 20px;
 }
 
 .invoice-items table {
     width: 100%;
     border-collapse: collapse;
+
 }
 
 .invoice-items table th,
 .invoice-items table td {
     padding: 5px;
-    font-size: 16px;
+    font-size: 26px;
     border: 1px solid #ddd;
     text-align: center;
+
 }
 
 .invoice-items table thead th {
     background-color: #eee;
+
 }
 
 .invoice-total {

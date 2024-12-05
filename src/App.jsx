@@ -84,6 +84,7 @@ import ShowDepartment from "./applications/warehouse/sections/department/pages/S
 import {
   AddDepartments,
   EditDepartment,
+  ShowDepartments,
   ShowProductDepartment,
 } from "./applications/warehouse/sections/department/pages";
 import Unit from "./applications/warehouse/sections/unit/Unit";
@@ -166,7 +167,15 @@ import ShowProductDepartment2 from "./pages/ShowProductDepartment2";
 import ShoowShifts from "./pages/ShoowShifts";
 import ShowInventoryDepartmentOrdersReport from "./pages/ShowInventoryDepartmentOrdersReport";
 import OrdersReports from "./applications/warehouse/sections/cashier/pages/KitchenRequests/OrdersReports";
-
+import ShowCardTypeReport from "./pages/showCardType";
+import { RelatedProducts } from "./applications/warehouse/sections/recipes/recipe/pages/RelatedProducts";
+import ShowRecipesFromAllDepartments from './pages/ShowRecipesFromAllDepartments'
+import ShowAllOrdersReports from "./pages/showAllOrdersReports";
+import ShowAllSalesDetails from "./pages/ShowAllSalesDetails";
+import ShowDepartmentsForBalance from "./applications/warehouse/sections/reports/pages/ShowDepartmentsForBalance"
+import ShowInventives from "./applications/warehouse/sections/incentives/pages/showIncentives"
+import ShowAllStaff from "./applications/warehouse/sections/incentives/pages/showAllStaff"
+import ShowAllJobs from "./applications/warehouse/sections/incentives/pages/showAllJobs"
 
 function App() {
   return (
@@ -608,7 +617,7 @@ function App() {
               element={
                 <ProtectedRoute
                   requiredPermission={{
-                    id: 83,
+                    id: 81,
                     name: "edit recipe",
                   }}
                 >
@@ -616,6 +625,22 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+
+            <Route
+              path="/warehouse/recipes/recipe/:id/get-products"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 834,
+                    name: "view recipes",
+                  }}
+                >
+                  <RelatedProducts />
+                </ProtectedRoute>
+              }
+            ></Route>
+
+
           </Route>
         </Route>
 
@@ -1108,7 +1133,7 @@ function App() {
                     name: "view recipes",
                   }}
 
-                  
+
                 >
                   <ShowProductDepartment />
                 </ProtectedRoute>
@@ -1119,10 +1144,10 @@ function App() {
               element={
                 <ProtectedRoute
                   requiredPermission={{
-                   id: 81,
+                    id: 81,
                     name: "view recipes",
                   }}
-                  
+
                 >
                   <ShowProductDepartment2 />
                 </ProtectedRoute>
@@ -1409,6 +1434,45 @@ function App() {
         </Route>
 
         <Route path="/warehouse" element={<Warehouse />}>
+        <Route
+              path="/warehouse/Incentives/show-Incentives"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 148,
+                    name: "view incentives",
+                  }}
+                >
+                  <ShowInventives />
+                </ProtectedRoute>
+              }
+            ></Route>
+             <Route
+              path="/warehouse/staff/show-staff"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 148,
+                    name: "view employees_and_jobs",
+                  }}
+                >
+                  <ShowAllStaff />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/jobs/show-jobs"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 148,
+                    name: "view employees_and_jobs",
+                  }}
+                >
+                  <ShowAllJobs />
+                </ProtectedRoute>
+              }
+            ></Route>
           <Route path="/warehouse/reports" element={<Reports />}>
             <Route
               path="/warehouse/reports/show-reports"
@@ -1433,6 +1497,19 @@ function App() {
                   }}
                 >
                   <ShowAllDepartment />
+                </ProtectedRoute>
+              }
+            ></Route>
+              <Route
+              path="/warehouse/reports/show-reports/departmentbalance"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: "view reports",
+                  }}
+                >
+                  <ShowDepartmentsForBalance/>
                 </ProtectedRoute>
               }
             ></Route>
@@ -1489,7 +1566,33 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-
+             <Route
+              path="/warehouse/reports/ShowAllOrdersReport/Reports"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: "view reports",
+                  }}
+                >
+                  <ShowAllOrdersReports />
+                </ProtectedRoute>
+              }
+            ></Route>
+            
+            <Route
+              path="/warehouse/reports/ShowAllSalesDetails/Reports"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: "view reports",
+                  }}
+                >
+                  <ShowAllSalesDetails />
+                </ProtectedRoute>
+              }
+            ></Route>
             <Route
               path="/warehouse/reports/show-reports/get-allsupllier"
               element={
@@ -1532,7 +1635,7 @@ function App() {
               }
             ></Route>
             <Route
-              path="/warehouse/reports/show-reports/inventory-balance"
+              path="/warehouse/reports/show-reports/inventory-balance/:id"
               element={
                 <ProtectedRoute
                   requiredPermission={{
@@ -1544,6 +1647,7 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+            
             <Route
               path="/warehouse/reports/show-reports/department-orders"
               element={
@@ -1554,6 +1658,32 @@ function App() {
                   }}
                 >
                   <ShowInventoryDepartmentOrdersReport />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/reports/show-reports/type-card"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: "view reports",
+                  }}
+                >
+                  <ShowCardTypeReport />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/reports/show-reports/alldepartments"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: "view reports",
+                  }}
+                >
+                  <ShowRecipesFromAllDepartments />
                 </ProtectedRoute>
               }
             ></Route>

@@ -23,10 +23,9 @@ const ClintType = () => {
         setPaymentMethods(res?.data?.data);
       })
       .catch((err) => {
-        // console.log(err);
+        //  
       });
   }, [token]);
-  console.log(paymentMethods);
   
   useEffect(()=>{
     axios.get(`${API_ENDPOINT}/api/v1/store/client_type`, {
@@ -39,11 +38,10 @@ const ClintType = () => {
         setClientTypes2(res?.data?.data);
       })
       .catch((err) => {
-        // console.log(err);
+        //  
       });
   },[])
 
-console.log('clientTypes2',clientTypes2);
 
 
   const handleDestinationChange = (e) => {
@@ -63,10 +61,9 @@ console.log('clientTypes2',clientTypes2);
         setAbouts([]);
       })
       .catch((err) => {
-        // console.log(err);
+        //  
       });
   };
-  console.log();
 
   const handleSubjectChange = (e) => {
     const subjectId = e.target.value;
@@ -83,10 +80,10 @@ console.log('clientTypes2',clientTypes2);
         setAbouts(res?.data.data);
       })
       .catch((err) => {
-        // console.log(err);
+        //  
       });
   };
-  // console.log('productType', productType);
+  //  
 
   return (
     <div className="dashboard d-flex flex-row">

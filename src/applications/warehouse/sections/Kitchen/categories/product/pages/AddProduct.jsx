@@ -269,7 +269,7 @@ const AddProduct = () => {
         }
       );
       // console.log(response.data);
-      await navigate(`/warehouse/departments/show-departments/product/${id}`);
+       navigate(`/warehouse/departments/show-departments/product/${id}`);
       // // console.log("Invoice created successfully!");
       message.success("تم اضافة المنتج الى القسم بنجاح");
       // Optionally, you can redirect or show a success message here

@@ -1,0 +1,203 @@
+.form-container {
+    max-width: 700px;
+    margin: 30px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    color: var(--brown-color);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--brown-color);
+    font-weight: 700;
+
+}
+
+.form-input {
+    background: #ffffff;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #d9d9d9;
+    width: 100%;
+    margin-bottom: 20px;
+    color: var(--brown-color);
+    outline: 0;
+    font-weight: 700;
+    font-family: "Cairo";
+    padding: 10px 5px;
+    border-radius: 5px;
+
+    &:hover,
+    &:focus {
+        color: var(--brown-color);
+        border-color: var(--brown-color);
+        box-shadow: 0 0 0 2px rgb(255 155 5 / 10%);
+    }
+}
+
+.form-select {
+    width: 100%;
+    background: #ffffff;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #d9d9d9;
+    outline: 0;
+    border-radius: 5px;
+
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+
+    &:hover,
+    &:focus {
+
+        border-color: var(--brown-color) !important;
+        box-shadow: inset 0px 0px 0 2px rgb(255 132 5 / 10%) !important;
+    }
+}
+
+.form-btn {
+    background-color: var(--beige-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 15px 0 20px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+
+    &:hover {
+        background-color: var(--light-beige-color);
+        color: var(--brown-color);
+        box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    }
+}
+
+.item-list {
+    margin-top: 20px;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--brown-color);
+
+    .item-btn {
+        background-color: var(--brown-color);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 700;
+        margin: 15px 0 20px;
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px;
+
+
+
+        &:hover {
+
+            background-color: var(--light-beige-color);
+            color: var(--brown-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            margin: 15px 0 20px;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px;
+
+        }
+    }
+
+    // .item-btn:hover {
+    //     background-color: var(--beige-color);
+    //     color: white;
+    //     padding: 8px 16px;
+    //     border-radius: 6px;
+    //     font-size: 16px;
+    //     font-weight: 700;
+    //     margin: 15px 0 20px;
+    //     box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px;
+    // }
+
+    div:not(:last-of-type) {
+        padding-left: 10px;
+        border-left: 1px solid var(--brown-color);
+    }
+}
+
+.total {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+/* 
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #803D3B;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.item-list {
+    margin-top: 20px;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.total {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.download-btn {
+    background-color: #008CBA;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 15px;
+}
+
+.download-btn:hover {
+    background-color: #005684;
+} */

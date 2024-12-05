@@ -11,7 +11,7 @@ import { Link, useLocation } from "react-router-dom";
 import { API_ENDPOINT } from "../../../../../../../config";
 const SellsPoints = () => {
     const item = useLocation()?.state?.item
-    // console.log('item in menu', item);
+    //  
     const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
     const { user } = useAuth()
     const tableHeaders = [
@@ -74,7 +74,7 @@ const SellsPoints = () => {
 
 
     }, [])
-    // console.log('userrrrrrrrrrrrrrrrr', user?.department?.id, 'department id', data[5]?.id);
+    //  
     return (
         <div>
             <Table

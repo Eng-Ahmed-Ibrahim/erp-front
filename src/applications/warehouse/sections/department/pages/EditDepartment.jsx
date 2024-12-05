@@ -15,7 +15,7 @@ const EditDepartment = () => {
                 const recipeData = await getDeaprtmentsById(id);
                 setData(recipeData.data);
             } catch (error) {
-                // console.log("Error fetching data:", error);
+                //  
             }
         };
 
@@ -23,7 +23,7 @@ const EditDepartment = () => {
     }, [id]); // useEffect dependency on id
 
     const handleSubmit = async (formData) => {
-        // console.log(formData);
+        //  
         await eidtDeaprtments(formData.name, formData.image, formData.code, formData.phone, id);
         await navigate('/warehouse/departments/show-departments');
     };

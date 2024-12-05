@@ -17,7 +17,6 @@ const ShowDepartment = () => {
   const [currentPage, setCurrentPage] = useState(1)
   useEffect(() => {
     axios.get(`${API_ENDPOINT}/api/v1/store/department?page=${currentPage}`, {
-
       headers: {
         Authorization: `Bearer ${Token}`,
       },
@@ -30,9 +29,12 @@ const ShowDepartment = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+   
+
   return (
     <div>
       <h2 className="heading text-center">المخازن الفرعية</h2>
+      
       <table
         // className="table table  table-bordered table-hover mt-5"
         className="table table table-hover mt-5"
@@ -53,9 +55,7 @@ const ShowDepartment = () => {
             <th scope="col" style={{ background: "#edede9" }}>
               الاسم
             </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              الصوره
-            </th>
+  
           </tr>
         </thead>
         <tbody style={{ borderColor: "#af8260" }}>
@@ -88,7 +88,7 @@ const ShowDepartment = () => {
               <th
                 className="clickable-cell"
                 style={{
-                  padding: " 14px 12px",
+                  
                   border: "1px solid #E4C59E",
                   color: "#803D3B",
                   fontSize: "18px",
@@ -99,21 +99,15 @@ const ShowDepartment = () => {
                   to={`/warehouse/departments/show-departments/product2/${item?.id}`}
                   state={{ item }}
                   className="text-decoration-none text-dark"
+                  style={{
+                    padding: " 14px 12px",
+                    width:"100%",
+                    height:"100%",
+                    display:"block"
+                  }}
                 >
                   {item?.name}
                 </Link>
-              </th>
-              <th
-                className="clickable-cell"
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                <img src={item?.image} alt={item?.name} width={"50px"} />
               </th>
             </tr>
           ))}
@@ -133,49 +127,3 @@ const ShowDepartment = () => {
 };
 
 export default ShowDepartment;
-
-//   <div>
-//     <table>
-//       <thead>
-//         <tr>
-//           <th>الرقم</th>
-//           <th>الكود</th>
-//           <th>الاسم</th>
-//           <th>الصوره</th>
-//           <th>الإجراءات</th>
-//         </tr>
-//       </thead>
-//       <tbody>
-//         {data?.map((item, index) => (
-//           <tr key={index}>
-//             <th>{index + 1}</th>
-//             <th>{item?.code}</th>
-//             <th>
-//               <Link
-//                 to={`/warehouse/departments/show-departments/product/${item?.id}`}
-//                 state={{ item }}
-//               >
-//                 {item?.name}
-//               </Link>
-//             </th>
-//             <th><img src={item?.image} alt={item?.name} width={'50px'} /></th>
-//             <th>
-//               <button className="btn btn-outline-primary">تعديل</button>
-//               <button className="btn btn-outline-danger">حذف</button>
-//             </th>
-//           </tr>
-//         ))}
-//       </tbody>
-//     </table>
-//     <Table
-//       headers={tableHeaders}
-//       title=" المنافذ"
-//       filters={filters}
-//       fetchData={(filterValues, currentPage, setIsLoading) =>
-//         getDeaprtments(filterValues, currentPage, setIsLoading)
-//       }
-//       actions={actions}
-//       deleteFn={deleteDeaprtment}
-//     />
-//   </div>
-// );

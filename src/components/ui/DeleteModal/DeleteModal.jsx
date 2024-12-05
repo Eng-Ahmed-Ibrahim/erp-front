@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import "./DeleteModal.scss";
 
-const DeleteModal = ({ item, onDelete, handleModalVisible }) => {
+const DeleteModal = ({ item, onDelete, handleModalVisible,id }) => {
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (!event.target.closest(".modal-content")) {
@@ -17,7 +17,7 @@ const DeleteModal = ({ item, onDelete, handleModalVisible }) => {
   }, []);
 
   const handleDelete = async () => {
-    await onDelete(item.id);
+    await onDelete(item.id,id);
     handleModalVisible(false);
   };
 

@@ -4,18 +4,18 @@ import CashierItemList from "../../../../../../../components/shared/CashierItemL
 import TotalAmount from "../../../../../../../components/shared/totalAmount/TotalAmount";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { message } from "antd";
+import { Modal, message } from "antd";
 import axios from "axios";
 import { API_ENDPOINT } from "../../../../../../../../config";
 const AddProductToOrder = () => {
   const { id } = useParams();
   const [items, setItems] = useState([]);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const calculateTotalAmount = () => {
     return items?.reduce((total, item) => total + item?.quantity * item?.price, 0);
 
   };
-
   const handleDeleteItem = (index) => {
     const updatedItems = [...items];
     updatedItems.splice(index, 1);
@@ -25,6 +25,7 @@ const AddProductToOrder = () => {
     setItems([...items, item]);
   };
   const handleSubmit = async () => {
+    setIsDisabled(true)
     const formData = new FormData();
     items.forEach((item, index) => {
       formData.append(`products[${index}][product_id]`, item.ProductId);
@@ -50,10 +51,28 @@ const AddProductToOrder = () => {
         setItems([])
       })
       console.log(response);
-      message.success("لقد تم اضافة المنتجات بنجاح");
+      const modal = Modal.success({
+        title: 'success',
+        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>لقد تم اضافة المنتجات بنجاح </div>,
+        centered: true, 
+        width: 400, 
+      });
+      
+      setTimeout(() => {
+        modal.destroy();
+      }, 2500);
     } catch (error) {
       console.error("Error creating invoice:", error);
-      message.error("حدث خطأ");
+      const modal = Modal.error({
+        title: 'Error',
+        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>{error.response.data.error.message} </div>,
+        centered: true, 
+        width: 400, 
+      });
+      
+      setTimeout(() => {
+        modal.destroy();
+      }, 5000);
     }
   };
 
@@ -63,7 +82,11 @@ const AddProductToOrder = () => {
       <CashierOrderDetailes onAddItem={handleAddItem} />
       <CashierItemList items={items} onDeleteItem={handleDeleteItem} />
       <TotalAmount total={calculateTotalAmount()} />
-      <button className="form-cashier-btn" onClick={handleSubmit}>
+      <button className="form-cashier-btn" onClick={handleSubmit}  disabled={isDisabled} style={{
+    backgroundColor: isDisabled ? "#d3d3d3" : "#AF8260", 
+    cursor: isDisabled ? "not-allowed" : "pointer",
+    color: isDisabled ? "#a9a9a9" : "white", 
+  }}>
         حفظ البيانات
       </button>
     </div>

@@ -1,22 +1,32 @@
 import { Link } from "react-router-dom";
+import Report2 from "../../../../../public/assets/images/2.jpg";
+import Report1 from "../../../../../public/assets/images/1.jpg";
+import Report3 from "../../../../../public/assets/images/5.jpg";
 
 const ReportContentsSubStores = () => {
   const reports = [
+
     {
       id: 1,
-      name: "تقرير محتويات المخازن الفرعية عن مده",
-      img: "http://10.0.0.6:50000/public/assets/images/1.jpg",
-      route: "/warehouse/reports/ShowSupplierInvoicesReport/inventory",
+      name: "تقرير المبيعات المفصل عن مده",
+      img: `${Report2}`,
+      route: "/warehouse/reports/ShowAllOrdersReport/Reports",
     },
     {
       id: 2,
-      name: "تقرير مبيعات الكاشير عن مده",
-      img: "http://10.0.0.6:50000/public/assets/images/1.jpg",
-      route: "/warehouse/reports/ShowSupplierInvoicesReport/cashier",
+      name: "تقرير الايرادات المفصل عن مده",
+      img: `${Report1}`,
+      route: "/warehouse/reports/ShowAllSalesDetails/Reports",
     },
+    // {
+    //   id: 2,
+    //   name: "تقرير الايرادات المفصل عن مده",
+    //   img: `${Report3}`,
+    //   route: "/warehouse/reports/ShowAllSalesDetails/Reports",
+    // },
   ];
   return (
-    <div>
+    <div style={{ display:"flex",flexDirection:"row", padding: "20px 20px",gap:"40px" }}>
       {reports?.map((item, index) => (
         <Link to={item?.route} style={{ textDecoration: 'none' }}>
           <div

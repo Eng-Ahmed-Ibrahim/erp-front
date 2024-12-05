@@ -10,37 +10,29 @@ import { getAllDepartments } from "../../../../../../../apis/departments";
 import { API_ENDPOINT } from "../../../../../../../../config";
 import { useNavigate, useParams } from "react-router-dom";
 import CahierWearhouseDetailes from "../../../../../../../components/shared/CashierWearhouseDetailes/CashierWearhouseDetailes";
-import ItemCashierWearhouse from "../../../../../../../components/shared/CashierWearhouseDetailes/ItemCashierWearhouse";
+import ItemCashierWearhouseForProduct from "../../../../../../../components/shared/CashierWearhouseDetailes/itemForAddProduct";
 import { message } from "antd";
 import { getProductsById } from "../../../../../../../apis/product";
 import { usePDF } from 'react-to-pdf';
-const AddProductRecipe = () => {
-  // const [suppliers, setSuppliers] = useState([]);
-  // const [department, setDepartment] = useState([]);
+const AddProductRecipe = () => { 
   const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' });
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
-
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
-  const [data, setData] = useState(); // Initialize data as null
-
+  const [data, setData] = useState(); 
   const [parentName, setParentName] = useState("");
-  // const [recipeUnit, setRecipeUnit] = useState('')
   const [ProductParentId, setRecipeParentId] = useState("");
   const [ProductCategory_id, setProductCategoryId] = useState("");
 
   const handleAddItem = (item) => {
-    setItems([...items, item]);
+    setItems((prevItems) => [...prevItems, item]); 
   };
 
   const handleDeleteItem = (index) => {
-    const updatedItems = [...items];
-    updatedItems.splice(index, 1);
-    setItems(updatedItems);
+    setItems((prevItems) => prevItems.filter((_, i) => i !== index)); 
   };
 
   const calculateTotalAmount = () => {
@@ -56,13 +48,9 @@ const AddProductRecipe = () => {
         const recipeData = await getProductsById(id);
         setData(recipeData.data);
         setParentName(recipeData.data.name);
-        // setRecipeUnit(recipeData.data.unit)
         setRecipeParentId(recipeData.data.sub_category_id);
         setProductCategoryId(recipeData.data.category_id);
-
-        // console.log("================>" + recipeData.data);
       } catch (error) {
-        // console.log("Error fetching data:", error);
       }
     };
     fetchData();
@@ -76,22 +64,27 @@ const AddProductRecipe = () => {
     })
       .then(res => {
         setRecipePrice(res.data)
-        // console.log('ajsdhnk', res.data?.data?.recipes);
       })
       .catch(err => {
         message.error(err?.response?.data?.error?.message)
-        // console.log(err);
       })
   }, [])
   const handleDownloadPDF = async () => {
     const formData = new FormData();
     formData.append("product_id", id);
-    items.forEach((item, index) => {
-      formData.append(`recipes[${index}][recipe_id]`, item.recipeId);
-      formData.append(`recipes[${index}][quantity]`, item.quantity);
-      // formData.append(`recipes[${index}][expire_date]`, item.expireDate);
+    console.log("items", items);
+  
+    items.forEach((innerArray, index) => {
+      console.log("Inner Array", innerArray);
+  
+      innerArray.forEach((item, innerIndex) => {
+        console.log(item, `items[${index}]`, item.recipeId);
+  
+        formData.append(`recipes[${innerIndex}][recipe_id]`, item.recipeId);
+        formData.append(`recipes[${innerIndex}][quantity]`, item.quantity);
+      });
     });
-
+  
     try {
       const response = await axios.post(
         `${API_ENDPOINT}/api/v1/store/products/recipts/add`,
@@ -105,24 +98,22 @@ const AddProductRecipe = () => {
       ).then(res => {
         navigate(
           `/warehouse/returants/show-resturants2/${data.sub_category_id}/details-product`
-        )
+        );
         message.success("تم اضافة المكون بنجاح");
+  
         axios.get(`${API_ENDPOINT}/api/v1/store/products/${id}`, {
           headers: {
             Authorization: `Bearer ${Token}`,
           },
-        })
-      })
-      // console.log(response.data);
-      // // console.log("Invoice created successfully!");
-      // Optionally, you can redirect or show a success message here
+        });
+      });
+  
     } catch (error) {
       console.error("Error creating invoice:", error);
-      // Handle error condition, show error message, etc.
     }
   };
+  
   const handelDelete = async (id) => {
-    // setIsPending(true);
     await axios
       .delete(`${API_ENDPOINT}/api/v1/store/products/${recipePrice?.data?.id}/recipe/delete/${id}`, {
         headers: {
@@ -130,11 +121,10 @@ const AddProductRecipe = () => {
         },
       })
       .then((response) => {
-        // setIsPending(false);
         message.success("تم حذف المكون بنجاح");
         axios
           .get(
-            `${API_ENDPOINT}/api/v1/store/sub_categories/filter_by_category/${item?.id}`,
+            `${API_ENDPOINT}/api/v1/store/sub_categories/filter_by_category/${items?.id}`,
             {
               headers: {
                 Authorization: `Bearer ${Token}`,
@@ -142,12 +132,10 @@ const AddProductRecipe = () => {
             }
           )
           .then((response) => {
-            // setIsPending(false);
             setData(response.data);
           });
       })
       .catch((error) => {
-        // setIsPending(false);
         console.log(error);
         message.error("حدث خطأ ما");
       });
@@ -170,9 +158,8 @@ const AddProductRecipe = () => {
       <CahierWearhouseDetailes
         onAddItem={handleAddItem}
         selectedSupplier={selectedSupplier}
-      // InvoiceType={lastItem}
       />
-      <ItemCashierWearhouse items={items} onDeleteItem={handleDeleteItem} />
+      <ItemCashierWearhouseForProduct items={items} onDeleteItem={handleDeleteItem} />
       <TotalAmount total={calculateTotalAmount()} />
       <button className="form-btn" onClick={handleDownloadPDF}>
         حفظ البيانات

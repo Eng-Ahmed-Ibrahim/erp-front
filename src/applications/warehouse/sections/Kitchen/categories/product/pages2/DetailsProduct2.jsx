@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { API_ENDPOINT } from "../../../../../../../../config";
 import { message, Pagination } from "antd";
@@ -12,26 +12,44 @@ const DetailsProduct2 = () => {
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const {depID}=useParams();
+  console.log(`fauyg`,depID)
   useEffect(() => {
+    fetchData(currentPage, searchTerm);
+  }, [currentPage, searchTerm]);
+
+  const fetchData = (page, searchTerm) => {
     setIsPending(true);
     axios
-      ?.get(`${API_ENDPOINT}/api/v1/store/products/subcategory/${item?.id}?page=${currentPage}`, {
+      .get(`${API_ENDPOINT}/api/v1/store/products/subcategory/${item?.id}?page=${page}`, {
         headers: {
           Authorization: `Bearer ${Token}`,
         },
       })
       .then((res) => {
         setIsPending(false);
-        setData(res?.data);
-        console.log(res?.data)
+        let products = res?.data?.data || [];
+        if (searchTerm) {
+          // Filter the products if there's a search term
+          products = products.filter((product) =>
+            product.name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }
+        setData({
+          data: products,
+          pagination: res?.data?.pagination || {},
+        });
       })
       .catch((err) => {
         setIsPending(false);
-        // console.log("error", err);
       });
-  }, [currentPage]);
-  // console.log("data from get", data);
+  };
+
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+  };
+  
   const handelDelete = async (id) => {
     setIsPending(true);
     await axios
@@ -43,7 +61,6 @@ const DetailsProduct2 = () => {
       .then((response) => {
         setIsPending(false);
         message.success("تم الحذف بنجاح");
-        // alert("Deleted Success");
         axios
           .get(
             `${API_ENDPOINT}/api/v1/store/products/subcategory/${item?.id}?page=${currentPage}`,
@@ -60,7 +77,6 @@ const DetailsProduct2 = () => {
       })
       .catch((error) => {
         setIsPending(false);
-        // console.log(error);
       });
   };
   const handlePageChange = (page) => {
@@ -71,6 +87,7 @@ const DetailsProduct2 = () => {
       <div className="my-5">
         <h1 className="heading text-center p-3">اقسام المنتجات <span className="text-warning">({item?.name})</span></h1>
       </div>
+
       <div className="content-area-table">
         <Link
           className="data-table-info"
@@ -82,7 +99,15 @@ const DetailsProduct2 = () => {
           </button>
         </Link>
       </div>
-
+      <div style={{display:"flex", flexDirection:"column",alignItems:"center",textAlign:"start" ,marginTop:"4px"}}>
+      <input
+          className="filter-input"
+          type="text"
+          placeholder={"ابحث بالاسم"}
+          value={searchTerm}
+          onChange={(e) => handleSearchChange(e.target.value)}
+        />
+      </div>
       <table className="table table table-hover mt-5 "
         style={{
           width: "100%",

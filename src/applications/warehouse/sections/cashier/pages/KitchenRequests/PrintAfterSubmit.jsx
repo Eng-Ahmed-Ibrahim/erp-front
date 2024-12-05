@@ -6,107 +6,81 @@ import { getOrderById } from "../../../../../../apis/orders";
 import { Br, Cut, Line, Printer, Text, Row, render } from 'react-thermal-printer';
 import { useReactToPrint } from "react-to-print";
 
-function PrintAfterSubmit({ id }) {
-    // const { id } = useParams();
+
+function PrintAfterSubmit({ id,table_no }) {
+//   
   const componentRef = useRef();
-  const navigate = useNavigate();  // Initialize navigate
+  const navigate = useNavigate();
+  const [device, setDevice] = useState(null);
 
-    const [data, setData] = useState({
-      code: "",
-      status: "",
-      client: "",
-      invoice_date: "",
-      client_type: "",
-      recipeData: [],
-      total_price: 0,
-      total_price_after_discount_and_tax: 0,
-      departmentName: "",
-      cashier:"",
-      client :"",
-      payment:""
-    });
+  const [data, setData] = useState({
+    code: "",
+    status: "",
+    client: "",
+    invoice_date: "",
+    client_type: "",
+    recipeData: [],
+    total_price: 0,
+    total_price_after_discount_and_tax: 0,
+    departmentName: "",
+    cashier: "",
+    payment: "",
+    comment:""
+  });
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          console.log("Iddddddddddd",id)
-          const InvoiceData = await getOrderById(id);
-           console.log("DAttttttttaaaaaaaa",InvoiceData.data);
-          setData({
-            code: InvoiceData.data.code,
-            cashier:InvoiceData.data.casher,
-            products:InvoiceData.data.products,
-            payment_method: InvoiceData.data.payment_method,
-            order_date:InvoiceData.data.order_date,
-            client:InvoiceData.data.client,
-            payment : InvoiceData.data.payment_method,
-            status: InvoiceData.data.status,
-            invoice_date: InvoiceData.data.order_date,
-            table_number: InvoiceData.data.table_number,
-            client_type: InvoiceData.data.client_type,
-            recipeData: InvoiceData.data.products,
-            price: InvoiceData.data.price,
-            total_price:InvoiceData.data.total_price,
-            waiter_name:InvoiceData.data.waiter.name,
-            total_price_after_discount_and_tax:
-              InvoiceData.data.total_price_after_discount_and_tax,
-            departmentName: InvoiceData.data.department,
-          });
-        } catch (error) {
-          // console.log("Error fetching data:", error);
-        }
-      };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const InvoiceData = await getOrderById(id);
+        console.log(`uh8ydhgdyu8sgy8ds`,InvoiceData)
+        setData({
+          code: InvoiceData.data.code,
+          cashier: InvoiceData.data.casher,
+          products: InvoiceData.data.products,
+          payment_method: InvoiceData.data.payment_method,
+          order_date: InvoiceData.data.order_date,
+          client: InvoiceData.data.client,
+          payment: InvoiceData.data.payment_method,
+          status: InvoiceData.data.status,
+          invoice_date: InvoiceData.data.order_date,
+          table_number: InvoiceData.data.table_number,
+          client_type: InvoiceData.data.client_type,
+          recipeData: InvoiceData.data.products,
+          price: InvoiceData.data.price,
+          total_price: InvoiceData.data.total_price,
+          waiter_name: InvoiceData.data.waiter.name,
+          comment :InvoiceData.data.comment,
+          total_price_after_discount_and_tax:
+            InvoiceData.data.total_price_after_discount_and_tax,
+          departmentName: InvoiceData.data.department,
+        });
+      } catch (error) {
+         
+      }
+    };
 
-      fetchData();
-    }, [id]);
-
-  // console.log("dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa>>>>>>>>>>>>>>>>>>>>>>>>>>>>",data)
-
+    fetchData();
+  }, [id]);
   const generatePDF = useReactToPrint({
     content: () => componentRef.current,
     documentTitle: `${data.code + "-" + "أوردر كود"}`,
     onAfterPrint: () => {
-      navigate('/warehouse/cashier/create-order');  // Navigate after printing
+      navigate('/warehouse/cashier/create-order');  
     }
   });
-
   useEffect(() => {
-    if(data.code !=""){
-      generatePDF();
-
+    if (data.total_price !== 0&&data.price !== 0) {
+      generatePDF()
     }
   }, [data]);
 
-
-
-  const styles = {
-    printer: {
-      padding: "20px",
-    },
-    text: {
-      fontSize: "16px",
-    },
-    title: {
-      fontSize: "2rem",
-      fontWeight: "600",
-      padding: "3px",
-    },
-    line: {
-      marginBottom: "10px",
-    },
-    totalPrice: {
-      textAlign: "right",
-      fontWeight: "bold",
-      backgroundColor: "#c5f7f3",
-    },
-  };
-
   return (
     <div id="invoice-container" ref={componentRef} dir="rtl" style={{ display: "flex", justifyContent: "center" }} >
+
       <Printer ref={componentRef} className="main">
         <div className="headers-wrapper">
           <div className="main-title">
-            <p> أوردر من {data.department}</p>
+            <p> أوردر من {data.departmentName}</p>
           </div>
           <div className="header-img">
             <img
@@ -118,19 +92,19 @@ function PrintAfterSubmit({ id }) {
         </div>
         <div className="invoice-info">
           <div className="invoice-info-item">
-           
             <p>كـــــود الأوردر : {data.code}</p>
             <p>تـاريـــخ الأوردر : {data.order_date}</p>
-            <p>رقم الترابيزة : {data.table_number}</p>
+            <p>رقم الترابيزة : {table_no}</p>
+            <p>الملاحظه : {data.comment}</p>
           </div>
           <div className="invoice-info-item">
             <p>
               اسم الكاشير : {data.cashier}
             </p>
             <p>
-            اسم الويتر : {data.waiter_name}
+              اسم الويتر : {data.waiter_name}
             </p>
-            <p>اسم العميل : {data?.client}</p>
+            <p>اسم العميل : {data?.client == "" ? "Guest" : data?.client}</p>
             <p>الفئة : {data?.client_type}</p>
             <p> طريقة الدفع : {data?.payment_method}</p>
           </div>
@@ -144,6 +118,8 @@ function PrintAfterSubmit({ id }) {
                 <th className="text-center">اسم العنصر</th>
                 <th className="text-center">سعر العنصر الواحد</th>
                 <th className="text-right">الكمية</th>
+                <th className="text-right">الاجمالي</th>
+
               </tr>
             </thead>
             <tbody>
@@ -153,17 +129,19 @@ function PrintAfterSubmit({ id }) {
                   <td className="text-center">{recipe?.name}</td>
                   <td className="text-center">{recipe?.price}</td>
                   <td className="text-right">{recipe?.quantity}</td>
+                  <td className="text-right">{(recipe?.quantity)*(recipe?.price)}</td>
+
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan={2}>السعر الكلي</td>
-                <td colSpan={2}>{data.price} ج.م</td>
+                <td className="text-price" colSpan={3}>السعر الكلي</td>
+                <td className="text-price" colSpan={3}>{data.price} ج.م</td>
               </tr>
               <tr>
-                <td colSpan={2}>السعر الكلي بعد الخصم</td>
-                <td colSpan={2}>{data.total_price} ج.م</td>
+                <td className="text-price" colSpan={3}>السعر الكلي بعد الخدمة</td>
+                <td className="text-price" colSpan={3}>{data.total_price} ج.م</td>
               </tr>
             </tfoot>
           </table>

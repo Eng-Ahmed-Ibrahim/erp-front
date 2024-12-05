@@ -12,9 +12,10 @@ export default defineConfig({
   plugins: [react()],
   // base: '/warehouse/home',
     server: {
-     host: '192.168.0.88',
+     host: '10.0.0.6',
      port: '50000'
-    }
+    },
 
 })
+
 

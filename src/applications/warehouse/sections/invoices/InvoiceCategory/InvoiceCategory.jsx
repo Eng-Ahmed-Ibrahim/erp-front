@@ -16,11 +16,12 @@ import { getSuppliers } from "../../../../../apis/suppliers";
 import { useAuth } from "../../../../../context/AuthContext";
 import { getAllDeaprtments } from "../../../../../apis/department";
 function Categories(props) {
-  const [selectedCategory, setSelectedCategory] = useState("inComing"); // Default selected category is "الوارد"
+  const [selectedCategory, setSelectedCategory] = useState("inComing"); 
   const [supplier, setAllSupplier] = useState([]);
   const [departments, setDepartments] = useState([]);
 
   const { user } = useAuth();
+
   useEffect(() => {
     const fetchSupplier = async () => {
       const res = await getSuppliers({}, "", () => { });
@@ -31,7 +32,6 @@ function Categories(props) {
           })
         )
       );
-      // console.log(departments);
     };
 
     fetchSupplier();
@@ -50,25 +50,25 @@ function Categories(props) {
   // user?.department.type != "both"?(
   //   ):null
   const tableHeadersIncoming = [
-    { key: "code", value: "  كود الفاتوره" },
-    { key: "invoice_date", value: "تاريخ الإصدار" },
-
+    { key: "code", value: "  كود الفاتوره", },
+    { key: "created_at", value: "تاريخ الإصدار" },
+    { key: "created_by", value: "اسم مدخل البيانات", nestedKey: "name" },
     { key: "supplier", value: "اسم المورد", nestedKey: "name" },
     { key: "status", value: "الحالة" },
     { key: "total_price", value: "السعر" },
   ]
   const tableHeadersOutGoing = [
-    { key: "code", value: "  كود الفاتوره" },
-    { key: "invoice_date", value: "تاريخ الإصدار" },
-
+    
+    { key: "code", value: "  كود الفاتوره",isInput: user?.department.type === "master" ? true : false},
+    { key: "created_at", value: "تاريخ الإصدار",isInput: user?.department.type === "master" ? true : false ,type:"date"},
+    { key: "created_by", value: "اسم مدخل البيانات", nestedKey: "name" },
     { key: "to", value: "القسم المنصرف اليه", nestedKey: "name" },
     { key: "status", value: "الحالة" },
     { key: "total_price", value: "السعر" },
   ];
   const tableHeadersReterned = [
     { key: "code", value: "  كود الفاتوره" },
-    { key: "invoice_date", value: "تاريخ الإصدار" },
-
+    { key: "created_at", value: "تاريخ الإصدار" },
     { key: "from", value: "مرتجع من", nestedKey: "name" },
     { key: "status", value: "الحالة" },
     { key: "total_price", value: "السعر" },
@@ -89,8 +89,6 @@ function Categories(props) {
       ],
     }
   ];
-  // // console.log("if value approved",statusOptions[1]?.value);
-
   const filtersIncoming = [
     {
       key: "code",
@@ -253,6 +251,10 @@ function Categories(props) {
       label: " طباعه",
       route: "/warehouse/invoices/print/:id",
     },
+    {
+      type: "edit-inv",
+      label: " حفظ",
+    },
   ];
 
   const actionsReturnd = [
@@ -311,7 +313,8 @@ function Categories(props) {
   };
 
   return (
-    <>
+    <>   
+    {/* AND HENE  */}
       <div className="invoice-container">
         <h1 className="heading text-center p-3">الفواتير </h1>
         <div className="row">
@@ -332,17 +335,20 @@ function Categories(props) {
                 filters={filtersIncoming}
                 title="فاتورة مورد"
                 actions={actionsIncoming}
-                fetchData={(filters, id, setIsLoading, status) =>
-                  getIncomingInvoiceByType(filters, id, setIsLoading, status)
+                fetchData={async (filters, id, setIsLoading, status) =>
+                  (await getIncomingInvoiceByType(filters, id, setIsLoading, status))
+                }
+                getTotalPrice={async (filters, id, setIsLoading, status) => {
+                  const data = await getIncomingInvoiceByType(filters, id, setIsLoading, status)
+                  return data.total;
+                }
                 }
                 detailsHeaders={detailsHeaders}
                 updateFn={user?.permissions.some(
                   (permission) => permission.name === "edit invoice") ? user?.department.type === "master" ? updateInvoicePrice : user?.department.type === "source" ? updateInvoiceQuintity : null : null}
                 acceptTitle={user?.permissions.some(
                   (permission) => permission.name === "change invoice status") ? { value: "approved", label: "قبول" } : null}
-                rejectTitle={user?.permissions.some(
-                  (permission) => permission.name === "change invoice status") ? { value: "rejected", label: "رفض" } : null}
-                changeStatusFn={
+               changeStatusFn={
                   user.permissions.some(
                     (permission) =>
                       permission.name === "change invoice status"
@@ -353,7 +359,12 @@ function Categories(props) {
               />
             )
           ) : null}
-
+{/** rafd mowared sarf
+ * 
+ * rejectTitle={user?.permissions.some(
+                (permission) => permission.name === "change invoice status") ? { value: "rejected", label: "رفض" } : null}
+           
+ */}
           {selectedCategory === "outGoing" && (
             <Table
               headers={tableHeadersOutGoing}
@@ -363,14 +374,13 @@ function Categories(props) {
               fetchData={(filters, id, setIsLoading) =>
                 getOutgoingInvoiceByType(filters, id, setIsLoading)
               }
+              
               detailsHeaders={detailsHeaders}
               updateFn={user?.permissions.some(
                 (permission) => permission.name === "edit invoice") ? user?.department.type === "master" ? updateInvoicePrice : user?.department.type === "source" ? updateInvoiceQuintity : null : null}
               acceptTitle={user?.permissions.some(
                 (permission) => permission.name === "change invoice status") ? { value: "approved", label: "قبول" } : null}
-              rejectTitle={user?.permissions.some(
-                (permission) => permission.name === "change invoice status") ? { value: "rejected", label: "رفض" } : null}
-              changeStatusFn={
+                 changeStatusFn={
                 user.permissions.some(
                   (permission) =>
                     permission.name === "change invoice status"
@@ -389,9 +399,7 @@ function Categories(props) {
               fetchData={(filters, id, setIsLoading) =>
                 getReturndInvoiceByType(filters, id, setIsLoading)
               }
-              header={"recipes"}
-              showFn={getInvoiceById}
-              detailsHeaders={detailsHeaders}
+               detailsHeaders={detailsHeaders}
               updateFn={user?.permissions.some(
                 (permission) => permission.name === "edit invoice") ? user?.department.type === "master" ? updateInvoicePrice : user?.department.type === "source" ? updateInvoiceQuintity : null : null}
               acceptTitle={user?.permissions.some(

@@ -1,0 +1,17 @@
+.table-cards{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+.tables-title{
+    font-size: 24px;
+    font-weight: 900;
+    text-align: center;
+    color: white;
+    /* margin-bottom: 12px; */
+    background-color: var(--brown-color);
+    border-radius: 6px;
+    padding: 5px 10px;
+    margin-bottom: 30px;
+    pointer-events: none;
+}

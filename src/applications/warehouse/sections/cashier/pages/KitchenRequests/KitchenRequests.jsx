@@ -1,15 +1,19 @@
 import Table from "../../../../../../components/shared/table/Table";
 import { changeOrderStatus, getOrders } from "../../../../../../apis/orders";
+import { API_ENDPOINT } from "../../../../../../../config";
 import { getOrderById, deleteOrder } from "../../../../../../apis/orders";
 import { getAllUsers } from "../../../../../../apis/users";
 import { getAllDepartments } from "../../../../../../apis/departments";
 import "../../../../../../components/shared/table/Table.scss";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../../../context/AuthContext";
+
 const KitchenRequests = () => {
+   
   const [departments, setDepartments] = useState([]);
   const [users, setusers] = useState([]);
   const { user } = useAuth();
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -21,7 +25,7 @@ const KitchenRequests = () => {
           })
         )
       );
-      // console.log(departments);
+
     };
     const fetchUsers = async () => {
       const res = await getAllUsers();
@@ -32,39 +36,30 @@ const KitchenRequests = () => {
           })
         )
       );
-      // console.log(users);
     };
+    
+    const fetchOrders = async () => {
+      const res = await getOrders();
+      setOrders(res.data);
+    };
+
     fetchDepartments();
     fetchUsers();
+    fetchOrders();
   }, []);
-
   const tableHeaders = [
-    { key: "discount_name", value: "سبب الخصم" },
+    { key: "client_type", value: "نوع العميل" },
     { key: "table_number", value: "رقم الترابيزة" },
     { key: "status", value: "الحالة" },
     { key: "code", value: "كود الأوردر" },
     { key: "order_date", value: "التاريخ" },
     { key: "client", value: "إسم العميل" },
-    { key: "client_type", value: "نوع العميل" },
   ];
   const filters = [
     { key: "code", type: "text", id: "كود الفاتورة" },
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },
-    // {
-    //   key: "user_id",
-    //   type: "selection",
-    //   id: "من",
-    //   placeholder: "المستخدمين",
-    //   options: users,
-    // },
-    // {
-    //   key: "department_id",
-    //   type: "selection",
-    //   id: "إلى",
-    //   placeholder: "الأقسام",
-    //   options: departments,
-    // },
+    
     {
       key: "status",
       type: "selection",
@@ -87,11 +82,17 @@ const KitchenRequests = () => {
           value: "closed",
           label: "تم الدفع",
         },
+        {
+          value: "printed",
+          label: "تم الطباعة",
+        },
       ],
     },
   ];
+
+
   const actions = [
-    // {
+    // {  
     //   type: `${
     //     user?.permissions.some(
     //       (permission) => permission.name === "delete order"
@@ -127,7 +128,20 @@ const KitchenRequests = () => {
       route: "/warehouse/cashier/print-order/:id",
     },
   ];
-  // console.log('actions', actions, filters);
+  const ordersRecieveCol = [
+    {
+      type: `${user?.permissions.some(
+        (permission) =>
+          permission.name === "add order" ||
+          permission.name === "change order status cashier" ||
+          permission.name === "change order status kitchen"
+      )
+        ? "print"
+        : ""
+        }`,
+      label: "طباعة نسخة التشغيل",
+    },
+  ];
   const detailsHeaders = [
     {
       key: "products",
@@ -150,12 +164,13 @@ const KitchenRequests = () => {
         filters={filters}
         fetchData={(filterValues, id, setIsLoading) =>
           getOrders(
-            filterValues,
+            {...filterValues , user_id : user.id , department_id : user?.department.id },
             user?.department.type === "reciver" ? user?.department.id : null,
             setIsLoading
           )
         }
         actions={actions}
+        ordersRecieve={ordersRecieveCol}
         deleteFn={deleteOrder}
         changeStatusFn={changeOrderStatus}
         detailsHeaders={detailsHeaders}
@@ -175,6 +190,7 @@ const KitchenRequests = () => {
         }
         isRequests
       />
+
     </div>
   );
 };

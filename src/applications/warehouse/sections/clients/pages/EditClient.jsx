@@ -26,9 +26,7 @@ const EditClient = () => {
       try {
         const recipeData = await getClientById(id);
         setData(recipeData?.data);
-        // console.log(recipeData.data);
       } catch (error) {
-        // console.log("Error fetching data:", error);
       }
     };
 
@@ -37,7 +35,6 @@ const EditClient = () => {
   }, [id]);
 
   const handleSubmit = async (formData) => {
-    // console.log(formData);
     await updateClient(formData, id);
     navigate(`/warehouse/clients/client`);
   };
@@ -74,17 +71,18 @@ const EditClient = () => {
       placeholder: "  ادخل الحوافز",
       labelName: "الحوافز",
     },
-    // {
-    //   type: "select",
-    //   name: "is_worker",
-    //   placeholder: "يجب عليك ادخال النوع",
-    //   labelName: "النوع",
-    //   options: [
-    //     { value: 0, label: "غير عامل بالدار" },
-    //     { value: 1, label: "عامل بالدار" },
-    //   ],
-    //   required: true,
-    // },
+    {
+      type: "number",
+      name: "discount",
+      labelName: "نسبة الخصم",
+      placeholder: "نسبة الخصم",
+    },
+    {
+      type: "number",
+      name: "tax",
+      labelName: "ضريبة الخدمه",
+      placeholder: "ضريبة الخدمه",
+    },
     {
       type: "select",
       name: "client_type_id",

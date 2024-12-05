@@ -22,7 +22,7 @@ export async function getCategories() {
   }
 }
 export async function getSubCategories({ id }) {
-  // // console.log(id)
+ console.log(`iddddd`,id)
   try {
     const res = await axios.get(
       `${domain}/api/v1/store/sub_categories/filter_by_category/${id}`, {

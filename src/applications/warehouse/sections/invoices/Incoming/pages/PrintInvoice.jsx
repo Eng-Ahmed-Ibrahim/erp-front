@@ -40,6 +40,35 @@ function PrintInvoice() {
   const renderModal = () => (
     <Modal title="عرض فاتورة المورد" visible={isModalOpen} onCancel={showModalCansel} footer={null}>
       <img src={data.image} alt="invoice_image" style={{ width: "100%" }} />
+      <a href={data.image} download onClick={(e) => {
+         
+        e.preventDefault();
+          // Log the URL
+
+        fetch(data.image).then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.blob();
+        }).then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'invoice_image.png');
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        })
+          .catch((error) => {
+            console.error('Download failed:', error);
+          });
+      }}>
+        <div className=" center" style={{padding:"20px 0px 0 "}}>
+        <button className="btn btn-primary">تحميل</button>
+        </div>
+      </a>
+
 
     </Modal>
   );
@@ -68,17 +97,16 @@ function PrintInvoice() {
           registration_date: InvoiceData.data.registration_date,
           image: InvoiceData.data.image
         });
-        // console.log(InvoiceData.data);
+        //  
       } catch (error) {
-        // console.log("Error fetching data:", error);
+        //  
       }
     };
 
-    fetchData(); // Call fetchData when component mounts
-  }, [id]); // us
+    fetchData(); 
+  }, [id]); 
   const generatePDF = () => {
     const element = document.getElementById("invoice-container");
-
     {
       data.invoiceType === "in_coming"
         ? html2pdf()
@@ -166,7 +194,7 @@ function PrintInvoice() {
             <h2>الـــــــــي</h2>
             <ul>
               <li>الاســـــم :{data.to}</li>
-              <li>كــود : {data.toCode}</li>
+              <li>كــود : {data.code}</li>
               <li>الهاتــــــف : {data.toPhone}</li>
             </ul>
           </div>

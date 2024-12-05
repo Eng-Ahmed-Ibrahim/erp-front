@@ -36,9 +36,9 @@ const AddTaintedInvoices = () => {
             try {
                 const supplierData = await getSuppliers({}, "", () => { });
                 setSuppliers(supplierData.data);
-                // console.log(suppliers);
+                //  
             } catch (error) {
-                // console.log("Error fetching data:", error);
+                //  
             }
         };
 
@@ -50,9 +50,9 @@ const AddTaintedInvoices = () => {
             try {
                 const departmentData = await getAllDepartments();
                 setDepartment(departmentData.data);
-                // console.log(departmentData);
+                //  
             } catch (error) {
-                // console.log("Error fetching data:", error);
+                //  
             }
         };
 
@@ -124,9 +124,9 @@ const AddTaintedInvoices = () => {
                     },
                 }
             );
-            // console.log(response.data);
-            await navigate("/warehouse/invoices/show-tained");
-            // console.log("Invoice created successfully!");
+            //  
+             navigate("/warehouse/invoices/show-tained");
+            //  
             message.success("تم اضافة  الفاتوره بنجاح ");
             // Optionally, you can redirect or show a success message here
         } catch (error) {

@@ -41,7 +41,12 @@ main {
 
     background-color: #CC3232;
 }
-
+.notPrintedText {
+    color: white;
+  }
+  .printedText {
+    color: #53a86e;
+  }
 .status-green {
     padding: 5px 10px;
     border: 1px solid #ddd;
@@ -66,6 +71,10 @@ main {
     color: white;
 
     background-color: #130101;
+}
+
+.working-copy {
+    font-size: large;
 }
 
 .status-yellow {
@@ -132,6 +141,10 @@ main {
     list-style: none;
     padding: 0;
 }
+.text-price{
+    font-size: 24px;
+    font-weight:500;
+}
 
 .invoice-info-item ul li {
     margin-bottom: 10px;
@@ -141,24 +154,32 @@ main {
 .invoice-items {
     margin-bottom: 10px;
     border: 1px solid #ddd;
-    padding: 20px;
+    padding: 25px;
+
 }
 
 .invoice-items table {
     width: 100%;
     border-collapse: collapse;
-}
 
+}
+.invoice-items tr {
+    page-break-inside: avoid;
+  }
+  
 .invoice-items table th,
 .invoice-items table td {
-    padding: 5px;
-    font-size: 16px;
-    border: 1px solid #ddd;
+    font-size: 24px;
+    border: 2px solid #d8cfcf;
     text-align: center;
+    padding: 10px; 
+
+
 }
 
 .invoice-items table thead th {
     background-color: #eee;
+
 }
 
 .invoice-total {
@@ -202,10 +223,15 @@ main {
     box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
 
 }
-
+.text-centerr{
+    text-align: center;
+    
+}
 .pdf-button:hover {
     background-color: var(--light-beige-color);
     color: var(--brown-color);
     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 
 }
+/* Add a border around the entire page */
+   

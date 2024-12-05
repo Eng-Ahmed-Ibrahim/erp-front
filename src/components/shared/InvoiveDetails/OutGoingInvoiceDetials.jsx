@@ -55,9 +55,9 @@ const OutGoingDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
         setUnit(oneRecipe.unit.name);
       }
 
-      // console.log(oneRecipe);
+      //  
     } catch (error) {
-      // console.log("Error fetching data:", error);
+      //  
     }
   };
   
@@ -78,7 +78,7 @@ const OutGoingDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
       );
       const data = await response.json();
       setRecipeCategoryParents(data.data);
-      // console.log(data);
+      //  
     } catch (error) {
       console.error("Error fetching recipe category parents:", error);
     }
@@ -163,7 +163,7 @@ const OutGoingDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
 
   const onSubmit = (formData) => {
     // Handle form submission here
-    // console.log("Form data:", formData);
+    //  
   };
 
   const handleAddItem = () => {
@@ -174,8 +174,8 @@ const OutGoingDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
 
 
     // Logging for troubleshooting
-    // console.log("recipes:", recipes);
-    // console.log("selectedRecipe:", selectedRecipe);
+    //  
+    //  
 
 
 
@@ -186,16 +186,16 @@ const OutGoingDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
     );
 
     // Logging for troubleshooting
-    // console.log("selectedRecipeObj:", selectedRecipeObj);
+    //  
 
     // If the selected recipe is found, extract its name
     const recipeName = selectedRecipeObj ? selectedRecipeObj.name : "";
     const recipeImage = selectedRecipeObj ? selectedRecipeObj.image : "";
 
     // Logging for troubleshooting
-    // console.log("recipeName:", recipeName);
-    // console.log("recipeName:", recipeImage);
-    // console.log("recipeprice:", recipeImage);
+    //  
+    //  
+    //  
 
     // const isItemsExist = recipes.some(
     //   (item)=> item.recipeId ===selectedRecipe && item.quantity === parseInt(newQuantity )
@@ -282,7 +282,7 @@ const OutGoingDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
             onChange={(value) => field.onChange(value)}
             required={field.required}
             filterOption={(input, option) => {
-              // console.log(option, input);
+              //  
               return (option?.children ?? "")
                 .toLowerCase()
                 .includes(input.toLowerCase());

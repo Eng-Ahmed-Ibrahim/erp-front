@@ -9,6 +9,7 @@ const ShowSuppliers = () => {
     { key: "name", value: "الإسم" },
     { key: "phone", value: "الرقم" },
     { key: "type", value: "النوع" },
+    { key: "total_invoices_price", value: "إجمالي سعر الفواتير" },
   ];
   const filters = [
     { key: "name", type: "text", placeholder: "إبحث باللإسم", id: "الإسم" },

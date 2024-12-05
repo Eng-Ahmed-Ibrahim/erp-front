@@ -6,7 +6,7 @@ import { addDeaprtments } from '../../../../../apis/department';
 const AddDepartments = () => {
     const navigate = useNavigate()
     const handleSubmit = async (formData) => {
-        // console.log(formData);
+        //  
         await addDeaprtments(formData.name, formData.image, formData.code, formData.phone)
         await navigate('/warehouse/departments/show-departments')
 

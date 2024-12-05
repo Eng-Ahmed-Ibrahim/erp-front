@@ -2,7 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import tableImg from '../../../../public/assets/images/departments images/table-dining-sets.jpg'
 import "./TableCard.scss";
-const TableCard = ({ id, number }) => {
+const TableCard = ({ id, number,comment }) => {
+  console.log(`comment`,comment)
   const navigate = useNavigate();
   const handleCardClick = () => {
     navigate(`/warehouse/cashier/order/${id}`);
@@ -20,7 +21,10 @@ const TableCard = ({ id, number }) => {
       <div className="table-number">
         <p className="table-number-title">{number}</p>
       </div>
-    
+      <div className="comment">
+      <p className="p-title"> ملاحظه: {comment}</p>
+
+      </div>
     </button>
   );
 };

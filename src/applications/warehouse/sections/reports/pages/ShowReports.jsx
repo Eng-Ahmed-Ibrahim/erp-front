@@ -9,18 +9,44 @@ import Report2 from "../../../../../../public/assets/images/2.jpg";
 import Report3 from "../../../../../../public/assets/images/3.jpg";
 import Report4 from "../../../../../../public/assets/images/4.png";
 import Report5 from "../../../../../../public/assets/images/5.jpg";
+import { useAuth } from "../../../../../context/AuthContext";
+
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import ReportContentsSubStores from "../ReportContentsSubStores";
 function ShowReports() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [isMechOrChem,setIsMechOrChem] = useState(false);
+ const [isTalaat ,setIsTalaat] = useState(false)
+  const repairId ="9d727355-cad2-48b4-9671-aebbcfdc6771"
+  const chemicalId ="9d72735b-c904-4b4b-a613-f5f16ba8ad98"
+  const talaatId = "9d7b0996-857f-4a59-997b-64d605af07c0"
 
+  const { user } = useAuth();
+  useEffect(() => {
+    if(user.roles[0]==talaatId){
+      setIsTalaat(true)
+    }
+    if(!(user.roles[0]==repairId || user.roles[0]==chemicalId)){
+      setIsMechOrChem(false)
+    }
+    else {
+      setIsMechOrChem(true)
+
+    }
+   
+  }, []);
   const reportData = [
     {
       image: `${Report1}`,
       name: "المنصرف لقسم عن مدة",
       route: "/warehouse/reports/show-reports/department",
+    },
+    {
+      image: `${Report1}`,
+      name: "اجمالي المنصرف من المخزن عن مدة",
+      route: "/warehouse/reports/show-reports/alldepartments",
     },
     {
       image: `${Report2}`,
@@ -45,12 +71,17 @@ function ShowReports() {
     {
       image: `${Report5}`,
       name: "الميزان المخزنى",
-      route: "/warehouse/reports/show-reports/inventory-balance",
+      route:"/warehouse/reports/show-reports/departmentbalance"
+     // route: "/warehouse/reports/show-reports/inventory-balance",
     },
     {
       image: `${Report5}`,
       name: "جرد المدفوعات للمنفذ",
       route: "/warehouse/reports/show-reports/department-orders",
+    }, {
+      image: `${Report3}`,
+      name: "كارت الصنف ",
+      route: "/warehouse/reports/show-reports/type-card",
     },
   ];
 
@@ -63,9 +94,11 @@ function ShowReports() {
       <h1 className="heading text-center p-3"> التقارير </h1>
       <Tabs>
         <TabList>
-          <Tab>تقارير </Tab>
-          <Tab>Title 2</Tab>
+         {!(isMechOrChem ||isTalaat) && <Tab>تقارير </Tab>}
+         { isMechOrChem || isTalaat ? (<Tab>تقارير</Tab>):(<Tab>التقارير 2</Tab>)}
         </TabList>
+{!(isMechOrChem ||isTalaat )&&
+ 
 
         <TabPanel >
           <div className="cards-container">
@@ -90,6 +123,8 @@ function ShowReports() {
             </div>
           </div>
         </TabPanel>
+        
+        }
         <TabPanel>
           <ReportContentsSubStores />
         </TabPanel>

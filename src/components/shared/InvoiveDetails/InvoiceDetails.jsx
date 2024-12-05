@@ -11,13 +11,18 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
   const [item, setItem] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [price, setPrice] = useState(0);
+  const [pastQuantity, setPastQuantity] = useState(0);
+  const [pastPrice, setPastPrice] = useState(0);
   const [uint, setUnit] = useState("");
   const [epireDate, setExpireDate] = useState();
+  const [expirationOptions, setExpirationOptions] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
   const [recipeCategoryParents, setRecipeCategoryParents] = useState([]);
   const [recipeCategories, setRecipeCategories] = useState([]);
   const [recipes, setRecipes] = useState([]);
+  const [invoiceId, setInvoiceId] = useState("");
+
   // const [fields, setFields] = useState([]);
   const [selectedParent, setSelectedParent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -30,16 +35,44 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
   useEffect(() => {
     fetchRecipeCategoryParents();
   }, []);
-
+  useEffect(() => {
+    if (selectedRecipe) {
+      const selectedRecipeObj = recipes.find(recipe => recipe.id === selectedRecipe);
+       
+      if (selectedRecipeObj) {
+         
+        const { price, quantity } = selectedRecipeObj.last_recipe_invoice;
+         
+        setPastPrice(price);
+        setPastQuantity(quantity);
+      }
+    }
+  }, [selectedRecipe, recipes]);
   const fetchOneRecipe = async (id, departmentId) => {
     try {
+
+      departmentId = departmentId ? departmentId :user.department.id
       const oneRecipe = await getRecipesById(id, departmentId);
       setSelectedOneRecipe(oneRecipe);
       if (InvoiceType === "out_going") {
         setQuantity(oneRecipe.total_quantity);
         setPrice(oneRecipe.price);
         setUnit(oneRecipe.unit.name);
-        setNewPrice(oneRecipe.quantitesDetails[0].price)
+        // console.log(expirationOptions)
+        // if (expirationOptions){add
+        //   // setNewPrice()
+        // }
+        setNewPrice(oneRecipe.price/oneRecipe.total_quantity)
+
+        console.log(oneRecipe.price,oneRecipe.total_quantity, oneRecipe.price/oneRecipe.total_quantity )
+
+        const expirationOptions = oneRecipe.quantitesDetails.map((detail) => ({
+          value: `${detail.invoice_id}-${detail.expire_date}`, // Create a unique value
+          label: `${"  السعر:   " + `${detail.price}` + "   --   " + "  التاريخ:    " + `${detail.expire_date}`+ "   --   " + "  الكميه:    " + `${detail.quantity}` }`,
+        }));
+
+        setExpirationOptions(expirationOptions);
+
       }
       if (InvoiceType === "in_coming") {
         setUnit(oneRecipe.unit.name);
@@ -55,14 +88,17 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
         setUnit(oneRecipe.unit.name);
       }
 
-      // console.log(oneRecipe);
+      return oneRecipe;
+      //  
     } catch (error) {
-      // console.log("Error fetching data:", error);
+      //  
     }
   };
 
   useEffect(() => {
     fetchOneRecipe(selectedRecipe, user.department.id);
+
+
   }, [selectedRecipe, quantity]);
 
   const fetchRecipeCategoryParents = async () => {
@@ -77,7 +113,7 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
       );
       const data = await response.json();
       setRecipeCategoryParents(data.data);
-      // console.log(data);
+      //  
     } catch (error) {
       console.error("Error fetching recipe category parents:", error);
     }
@@ -157,75 +193,159 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
       required: true,
       onChange: (value) => setSelectedRecipe(value), // Update selectedRecipe state with selected recipe value
     },
+    {
+      label: " اختر تاريخ الصلاحية",
+      type: "select",
+      placeholder: "اختر تاريخ الصلاحية",
+      options: expirationOptions || [],
+      required: true,
+      onChange: (value) => {
+          const [invoiceId, expireyear,expiremonth,expireday] = value.split('-'); 
+            const expireDateConcat = `${expireyear}-${expiremonth}-${expireday}`;
+            setInvoiceId(invoiceId)
+            const concatValue=`${invoiceId}-${expireDateConcat}`
+          setExpireDate(expireDateConcat); 
+      },    
+    }
   ]
+if (InvoiceType != 'out_going') {
+  fileds.pop()
 
+}
+    // const expirationOptionsLabel = 
 
   const onSubmit = (formData) => {
     // Handle form submission here
-    // console.log("Form data:", formData);
+    //  
   };
 
-  const handleAddItem = () => {
+  const handleAddItem =async  () => {
+
     if (!selectedRecipe.trim()) {
       setErrorMessage(`Please select a recipe.`);
       return;
     }
 
+    
 
     // Logging for troubleshooting
-    // console.log("recipes:", recipes);
-    // console.log("selectedRecipe:", selectedRecipe);
+    //  
+    //  
 
-
+    const selectedRecipeObj = await fetchOneRecipe(selectedRecipe);
+    if (! selectedRecipeObj) {
+        setErrorMessage(`لم يتم العثور على المكون المختارة.`);
+        return;
+    }
 
     // Find the selected recipe object from the recipes array
-    const selectedRecipeObj = recipes.find(
-      (recipe) => String(recipe.id) === selectedRecipe
+    // const selectedRecipeObj = recipes.find(
+    //   (recipe) => String(recipe.id) === selectedRecipe
 
-    );
+    // );
 
     // Logging for troubleshooting
-    // console.log("selectedRecipeObj:", selectedRecipeObj);
+    //  
 
     // If the selected recipe is found, extract its name
     const recipeName = selectedRecipeObj ? selectedRecipeObj.name : "";
     const recipeImage = selectedRecipeObj ? selectedRecipeObj.image : "";
 
     // Logging for troubleshooting
-    // console.log("recipeName:", recipeName);
-    // console.log("recipeName:", recipeImage);
-    // console.log("recipeprice:", recipeImage);
+    //  
+    //  
+    //  
 
-    // const isItemsExist = recipes.some(
-    //   (item)=> item.recipeId ===selectedRecipe && item.quantity === parseInt(newQuantity )
-    // )
+    const isItemsExist = recipes.some(
+      (item)=> item.recipeId ===selectedRecipe && item.quantity === parseInt(newQuantity)
+    )
 
-    // if(isItemsExist ){
-    //   setErrorMessage(`  لا يمكن اضافة العنصر مرتين`);
-    //   return
-    // }
-
-    const cuurentDate = new Date()
-    const selectedDate = new Date(epireDate)
-
-    if (selectedDate < cuurentDate) {
-      setErrorMessage(`  التاريخ يجب ان يكون بداية من النهاردة`);
+    if(isItemsExist ){
+      setErrorMessage(`  لا يمكن اضافة العنصر مرتين`);
       return
     }
 
-    // Additional validation or processing logic
-    const newItem = {
-      name: recipeName,
-      image: recipeImage,
-      recipeId: selectedRecipe, // Accessing selectedRecipe directly
-      quantity: parseFloat(newQuantity),
-      price: InvoiceType === "in_coming" ? parseFloat(price) : parseFloat(newPrice),
-      expireDate: epireDate,
-    };
-    if (InvoiceType === "in_coming") {
-      // if( selectedRecipe !=newItem.recipeId ){
 
-      // }
+    if (InvoiceType != 'out_going') {
+
+      const cuurentDate = new Date()
+      const selectedDate = new Date(epireDate)
+      if (selectedDate < cuurentDate) {
+        setErrorMessage(`  التاريخ يجب ان يكون بداية من النهاردة`);
+        return
+      }
+  }
+
+    // Additional validation or processing logic
+    // const newItem = {
+    //   name: recipeName,
+    //   image: recipeImage,
+    //   recipeId: selectedRecipe, // Accessing selectedRecipe directly
+    //   quantity: parseFloat(newQuantity),
+    //   price: InvoiceType === "in_coming" ? parseFloat(price) : parseFloat(newPrice),
+    //   expireDate: epireDate,
+    //   invoiceId: invoiceId
+    // };
+
+
+    // if (InvoiceType === "in_coming") {
+    //   // if( selectedRecipe !=newItem.recipeId ){
+
+    //   // }
+
+    //   onAddItem(newItem);
+    //   setItem("");
+    //   setNewQuantity(1);
+    //   setNewPrice(0)
+    //   setPrice(0);
+
+    //   setErrorMessage("");
+    // }
+
+    if (InvoiceType === "out_going") {
+      const matchedDetail = selectedRecipeObj.quantitesDetails.find(detail => detail.expire_date === epireDate &&detail.invoice_id==invoiceId);
+      let  quantityToCompare = quantity
+      let itemPrice =  parseFloat(newPrice) 
+      if (matchedDetail){
+        itemPrice =  matchedDetail.price
+        quantityToCompare =  matchedDetail.quantity 
+      }
+
+      if (parseFloat(newQuantity) <= quantityToCompare) {
+        const newItem = {
+          name: recipeName,
+          image: recipeImage,
+          recipeId: selectedRecipe, // Accessing selectedRecipe directly
+          quantity: parseFloat(newQuantity),
+          price: itemPrice,
+          expireDate: epireDate,
+          invoiceId: invoiceId
+        };
+
+        
+        onAddItem(newItem);
+        setItem("");
+        setNewQuantity(1);
+        setNewPrice(matchedDetail.price)
+        setPrice(0);
+        setErrorMessage("");
+
+      }
+      else {
+        setErrorMessage(`  الكميه غير متاحه من :${selectedRecipeObj.name}`);
+      }
+    }else {
+
+      const newItem = {
+        name: recipeName,
+        image: recipeImage,
+        recipeId: selectedRecipe, // Accessing selectedRecipe directly
+        quantity: parseFloat(newQuantity),
+        price: parseFloat(price) ,
+        expireDate: epireDate,
+        invoiceId: invoiceId
+      };
+  
 
       onAddItem(newItem);
       setItem("");
@@ -234,29 +354,7 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
       setPrice(0);
 
       setErrorMessage("");
-
     }
-
-    if (InvoiceType === "out_going") {
-      if (parseFloat(newQuantity) <= quantity) {
-        onAddItem(newItem);
-        setItem("");
-        setNewQuantity(1);
-        setNewPrice(0)
-        setPrice(0);
-
-        setErrorMessage("");
-
-      }
-      else {
-        setErrorMessage(`  الكميه غير متاحه من :${selectedRecipeObj.name}`);
-      }
-
-
-    }
-
-
-
   };
 
   return (
@@ -271,7 +369,7 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
             onChange={(value) => field.onChange(value)}
             required={field.required}
             filterOption={(input, option) => {
-              // console.log(option, input);
+              //  
               return (option?.children ?? "")
                 .toLowerCase()
                 .includes(input.toLowerCase());
@@ -289,8 +387,15 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
           </Select>
         </div>
       ))}
-
-      {InvoiceType === "in_coming" || InvoiceType === "returned" || InvoiceType === "tainted" ? null : <label className="form-label">{` الكميه المتاحه فى المخزن هى ${quantity}  ${uint}`}</label>}
+{InvoiceType === "in_coming" && selectedRecipe ? (
+  <>
+    <label className="form-label">تفاصيل المنتج في اخر فاتوره:</label>
+      <option className="form-select-pp" >
+        الكميه الوارده {pastQuantity} -- سعر الكميه في الفاتوره {pastPrice}
+      </option>
+  </>
+) : null}
+      {InvoiceType === "in_coming" || InvoiceType === "returned" || InvoiceType === "tainted" ? null : <label className="form-label">{` اجمالي الكميه المتاحه فى المخزن هى ${quantity}  ${uint}`}</label>}
       <label className="form-label">الكمية:</label>
       <input
         className="form-input"
@@ -309,7 +414,7 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
           onWheel={(event) => event.currentTarget.blur()}
         />
       </> : null}
-
+       
       {/* {InvoiceType === "returned" ? <>
         <label className="form-label">السعر:</label>
         <input
@@ -321,7 +426,7 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
         />
       </> : null} */}
 
-
+      
       <label className="form-label">الوحده:</label>
       <input className="form-input" type="text" value={uint} disabled={true} style={{ cursor: "not-allowed" }} />
       {InvoiceType === "in_coming" || InvoiceType === "returned" || InvoiceType === "tainted" ? <> <label className="form-label"> تاريخ  انتهاء الصلاحيه:</label>

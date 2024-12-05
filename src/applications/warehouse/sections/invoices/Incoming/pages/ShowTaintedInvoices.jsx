@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
-// import "./InvoiceCategory.scss";
-// import Button from "./Button/Button";
 import {
-
     updateInvoice,
-
     getTaintedInvoices,
     getTaintedInvoiceById,
     updateTaintedInvoice,
@@ -13,12 +9,17 @@ import {
 import Table from "../../../../../../components/shared/table/Table";
 import { getSuppliers } from "../../../../../../apis/suppliers";
 import { useAuth } from "../../../../../../context/AuthContext";
-
 function ShowTaintedInvoices() {
     const [supplier, setAllSupplier] = useState([]);
-    const {user}= useAuth()
+    const { user } = useAuth()
+const [canAddTained,setCanAddTained]=useState(false);
 
     useEffect(() => {
+        const userPermissions= user.permissions.filter(permission=>permission.name==="add tainted")
+        if(userPermissions.length>0){
+            setCanAddTained(true)
+            console.log("okk")
+        }
         const fetchSupplier = async () => {
             const res = await getSuppliers({}, "", () => { });
             setAllSupplier(
@@ -28,9 +29,7 @@ function ShowTaintedInvoices() {
                     })
                 )
             );
-            // // console.log(departments);
         };
-
         fetchSupplier();
     }, []);
     const statusOptions = [
@@ -43,7 +42,6 @@ function ShowTaintedInvoices() {
         { key: "code", value: "  كود الفاتوره" },
         { key: "invoice_date", value: "تاريخ الإصدار" },
         { key: "registration_date", value: "تاريخ التسجيل" },
-        // { key: "status", value: "الحالة" },
     ];
     const detailsHeaders = [
         {
@@ -52,14 +50,13 @@ function ShowTaintedInvoices() {
             isArray: true,
             isInput: true,
             details: [
-            //   { key: "category", label: "التصنيف الرئيسي", isInput: false },
-            //   { key: "sub_category", label: "التصنيف الفرعى", isInput: false },
-              { key: "name", label: "الإسم", isInput: false },
-              { key: "quantity", label: "الكمية", isInput: user?.department.type === "source" ? true : false },
-              { key: "price", label: "السعر", isInput: user?.department.type === "master" ? true : false },
-              { key: "expire_date", label: "تاريخ الصلاحية", isInput: false },
+
+                { key: "name", label: "الإسم", isInput: false },
+                { key: "quantity", label: "الكمية", isInput: user?.department.type === "source" ? true : false },
+                { key: "price", label: "السعر", isInput: user?.department.type === "master" ? true : false },
+                { key: "expire_date", label: "تاريخ الصلاحية", isInput: false },
             ],
-          }
+        }
     ];
     const filtersIncoming = [
         {
@@ -92,8 +89,7 @@ function ShowTaintedInvoices() {
         { key: "to_date", type: "date", id: "إلى تاريخ" },
     ];
 
-
-    const actionsIncoming = [
+    const actionsIncoming = canAddTained ? [
         {
             type: "add",
             label: "اضافة فاتورة هالك",
@@ -105,10 +101,22 @@ function ShowTaintedInvoices() {
         },
         {
             type: "navigate",
-            label: " طباعه",
+            label: "طباعه",
+            route: "/warehouse/invoices/print/:id"
+        },
+    ] : [
+       
+        {
+            type: "show",
+            label: "مراجعة",
+        },
+        {
+            type: "navigate",
+            label: "طباعه",
             route: "/warehouse/invoices/print/:id"
         },
     ];
+    
 
 
 

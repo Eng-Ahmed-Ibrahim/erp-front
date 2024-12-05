@@ -13,7 +13,7 @@ import {
   FaTruckArrowRight,
   FaCalendarXmark,
 } from "react-icons/fa6";
-import { FaUserCircle, FaUser, FaUsers } from "react-icons/fa";
+import { FaUserCircle, FaUser, FaUsers} from "react-icons/fa";
 import { BsCashCoin, BsCreditCard2FrontFill } from "react-icons/bs";
 
 import { HiOutlineOfficeBuilding } from "react-icons/hi";
@@ -54,8 +54,16 @@ const Sidebar = () => {
   const [arrowDirection, setArrowDirection] = useState("");
   const [justifyContent, setJustifyContent] = useState("d-flex-start");
   const { wrapperMargin, toggleWrapperMargin } = useContext(SidebarContext);
-  const [key, setKey] = useState(0); // Added state to force rerender
+  const [key, setKey] = useState(0); 
+  const [isMechOrChem,setIsMechOrChem] = useState(false);
+  const [isTalaat ,setIsTalaat] = useState(false)
+  const [isAdmin ,setIsAdmin] = useState(false)
+  const [isIncentives ,setIsIncentives] = useState(false)
 
+  const repairId ="9d727355-cad2-48b4-9671-aebbcfdc6771"
+  const chemicalId ="9d72735b-c904-4b4b-a613-f5f16ba8ad98"
+  const talaatId = "9d7b0996-857f-4a59-997b-64d605af07c0"
+//9d8ac2b2-3371-4daf-b1cb-7ffba121f7e4
   const checkMenuItemPermission = (requiredPermission) => {
     if (!user?.permissions) return;
     return user
@@ -65,7 +73,23 @@ const Sidebar = () => {
       : false;
   };
   useEffect(() => {
-    // console.log("Location changed, triggering rerender");
+    if(user.id==="01hy3km0ce0hv4w80hadt8sbt1"){
+      setIsAdmin(true)
+    }
+    if(user.permissions.map((permission)=>permission.id==="9c17t5au-74tn-48gb-4845-c9nrr3456b0d")||
+    user.permissions.map((permission)=>permission.id==="f5b1a3c2-91e3-4e34-a44d-5f56b6f9b22e")){
+      setIsIncentives(true)
+    }
+    if(user.roles[0]==talaatId){
+      setIsTalaat(true)
+    }
+    if(!(user.roles[0]==repairId || user.roles[0]==chemicalId)){
+      setIsMechOrChem(false)
+    }
+    else {
+      setIsMechOrChem(true)
+
+    }
     setKey((prevKey) => prevKey + 1);
   }, [location]);
   const handleLogout = () => {
@@ -73,12 +97,10 @@ const Sidebar = () => {
     sessionStorage.removeItem("token");
     navigate("/login");
   };
-  // Handle clicking on menu links
   const handleMenuLinkClick = (link) => {
     setActiveLink(link);
   };
 
-  // closing the navbar when clicked outside the sidebar area
   const handleClickOutside = (event) => {
     if (
       navbarRef.current &&
@@ -131,8 +153,7 @@ const Sidebar = () => {
               handleCloseSidebar();
             }}
           />
-          {/* <i className="arrow right"></i> */}
-          {/* <i className="arrow left"></i> */}
+
         </div>
         <button className="sidebar-close-btn">
           <MdOutlineClose size={24} />
@@ -355,10 +376,14 @@ const Sidebar = () => {
                 className="menu-item"
                 title="الكاشير"
                 style={{
-                  display: `${checkMenuItemPermission({
+                  display: `${ (checkMenuItemPermission({
                     id: 124,
                     name: "add order",
+                  })&& ! checkMenuItemPermission({
+                    id: 124,
+                    name: "view sales points only",
                   })
+                )
                     ? ""
                     : "none"
                     }`,
@@ -391,10 +416,14 @@ const Sidebar = () => {
                 className="menu-item"
                 title="ترابيزات مفتوحة"
                 style={{
-                  display: `${checkMenuItemPermission({
+                  display: `${ ( checkMenuItemPermission({
                     id: 124,
                     name: "add order",
+                  }) && ! checkMenuItemPermission({
+                    id: 124,
+                    name: "view sales points only",
                   })
+                )
                     ? ""
                     : "none"
                     }`,
@@ -429,10 +458,10 @@ const Sidebar = () => {
               className="menu-item"
               title="  نقاط البيع"
               style={{
-                display: `${checkMenuItemPermission({
+                display: `${ checkMenuItemPermission({
                   id: 124,
                   name: "add order",
-                })
+                }) 
                   ? ""
                   : "none"
                   }`,
@@ -449,7 +478,7 @@ const Sidebar = () => {
                 }
               >
                 <span className="menu-link-icon">
-                  <MdLocalFireDepartment size={30} />
+                  <MdLocalFireDepartment size={30} /> 
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
@@ -462,7 +491,7 @@ const Sidebar = () => {
 
 
 
-
+{!isTalaat &&
             <li
               className="menu-item"
               title="طلبات المطبخ"
@@ -496,7 +525,7 @@ const Sidebar = () => {
                   الأوردرات
                 </span>
               </Link>
-            </li>
+            </li>}
 
 
 
@@ -504,10 +533,14 @@ const Sidebar = () => {
               className="menu-item"
               title="تقارير المبيعات"
               style={{
-                display: `${checkMenuItemPermission({
+                display: `${(checkMenuItemPermission({
                   id: 124,
                   name: "view orders",
                 })
+              && ! checkMenuItemPermission({
+                id: 124,
+                name: "view orders only",
+              }))
                   ? ""
                   : "none"
                   }`,
@@ -534,7 +567,8 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-            <li
+{  !isMechOrChem  &&
+<>          <li
               className="menu-item"
               title=" حد الامان"
               style={{
@@ -609,7 +643,8 @@ const Sidebar = () => {
                 <CgDanger size={30} style={{ color: "red" }} />
               </Link>
             </li>
-
+            </>
+}
             {/* <li
               className="menu-item"
               title="المنتجات"
@@ -914,7 +949,7 @@ const Sidebar = () => {
               </Link>
             </li>
 
-            <li
+         <li
               className="menu-item"
               title="المنافذ"
               style={{
@@ -948,7 +983,112 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
+            {isIncentives &&
+            <>
+            <li
+              className="menu-item"
+              title="الحوافز"
+              style={{
+                display: `${checkMenuItemPermission({
+                  id: 148,
+                  name: "view incentives",
+                })
+                  ? ""
+                  : "none"
+                  }`,
+              }}
+            >
+              <Link
+                to="/warehouse/Incentives/show-Incentives"
+                className={`menu-link ${activeLink === "/warehouse/Incentives/show-Incentives"
+                  ? "active"
+                  : ""
+                  } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick("/warehouse/Incentives/show-Incentives")
+                }
+              >
+                <span className="menu-link-icon">
+                  <BsCashCoin size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  الحوافز
+                </span>
+              </Link>
+            </li>
+            <li
+              className="menu-item"
+              title="الوظائف"
+              style={{
+                display: `${checkMenuItemPermission({
+                  id: 148,
+                  name: "view employees_and_jobs",
+                })
+                  ? ""
+                  : "none"
+                  }`,
+              }}
+            >
+              <Link
+                to="/warehouse/jobs/show-jobs"
+                className={`menu-link ${activeLink === "/warehouse/jobs/show-jobs"
+                  ? "active"
+                  : ""
+                  } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick("/warehouse/jobs/show-jobs")
+                }
+              >
+                <span className="menu-link-icon">
+                  <BsCashCoin size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  الوظائف
+                </span>
+              </Link>
+            </li>
+            <li
+              className="menu-item"
+              title="العاملين بالدار"
+              style={{
+                display: `${checkMenuItemPermission({
+                  id: 148,
+                  name: "view employees_and_jobs",
+                })
+                  ? ""
+                  : "none"
+                  }`,
+              }}
+            >
+              <Link
+                to="/warehouse/staff/show-staff"
+                className={`menu-link ${activeLink === "/warehouse/staff/show-staff"
+                  ? "active"
+                  : ""
+                  } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick("/warehouse/staff/show-staff")
+                }
+              >
+                <span className="menu-link-icon">
+                  <FaUsers size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  العاملين بالدار
+                </span>
+              </Link>
+            </li>
+            </>}
+            {!isMechOrChem&& <> 
             <li
               className="menu-item"
               title="المنافذ"
@@ -996,7 +1136,7 @@ const Sidebar = () => {
                   : "none"
                   }`,
               }}
-            >
+              >
               <Link
                 to="/warehouse/units/show-units"
                 className={`menu-link ${activeLink === "/warehouse/units/show-units" ? "active" : ""
@@ -1016,8 +1156,12 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-            {user?.username != "مخزن" ? (
+            </>}
+
+            {user?.department.type != "source" ? (
               <>
+               {!isMechOrChem&&
+               <> 
                 <li
                   className="menu-item"
                   title="الشيفتات"
@@ -1050,7 +1194,6 @@ const Sidebar = () => {
                     </span>
                   </Link>
                 </li>
-
                 <li
                   className="menu-item"
                   title="الويتر"
@@ -1115,6 +1258,7 @@ const Sidebar = () => {
                     </span>
                   </Link>
                 </li>
+                </>}
               </>
             ) : null}
 

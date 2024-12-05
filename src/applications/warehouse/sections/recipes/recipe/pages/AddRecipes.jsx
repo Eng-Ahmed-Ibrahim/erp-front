@@ -15,7 +15,7 @@ const AddRecipes = () => {
   const { id } = useParams();
 
   const handleSubmit = async (formData) => {
-    // console.log(formData);
+    //  
     await addRecipes(
       formData.name,
       formData.image,
@@ -36,9 +36,9 @@ const AddRecipes = () => {
       try {
         const recipeData = await getRecipeSubCategoryById(id);
         setData(recipeData.data.name);
-        // console.log(recipeData.data.name);
+        //  
       } catch (error) {
-        // console.log("Error fetching data:", error);
+        //  
       }
     };
 
@@ -51,7 +51,7 @@ const AddRecipes = () => {
         const unitData = await getUnits();
         setUnits(unitData.data);
       } catch (error) {
-        // console.log("Error fetching data:", error);
+        //  
       }
     };
 

@@ -2,26 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   eidtRecipes,
-  getRecipes,
   getRecipesById,
   getUnits,
 } from "../../../../../../apis/recipes/recipe";
 import DynamicForm from "../../../../../../components/shared/form/Form";
 import { useAuth } from "../../../../../../context/AuthContext";
+import { getRecipeCategoryParent } from "../../../../../../apis/recipes/recipeCategoryParent";
+import { getRecipeSubCategory } from "../../../../../../apis/recipes/recipeSubCategory";
 
 const EditRecipes = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState(); // Initialize data as null
-
+  const [data, setData] = useState();
   const { id } = useParams();
+  const { user } = useAuth();
 
-  const { user } = useAuth()
-
-  // const [departmentId, setDepartmentId] = useState(user.department.id); // Initialize data as null
-  // // console.log("id", departmentId)
   const handleSubmit = async (formData) => {
-    // console.log("=================>" + formData.name);
-
     await eidtRecipes(
       formData.name,
       formData.image,
@@ -29,51 +24,42 @@ const EditRecipes = () => {
       formData.unit_id,
       formData.minimum_limt,
       formData.days_before_expire,
-      id
+      id,
+      formData.categories,
+      formData.sub_categories
     );
     await navigate(`/warehouse/recipes/recipe/show-recipe/${recipeParentId}`);
   };
-  const [units, setUnits] = useState([]); // Initialize categories state
+
+  const [units, setUnits] = useState([]);
   const [parentName, setParentName] = useState("");
   const [recipeUnit, setRecipeUnit] = useState("");
   const [recipeParentId, setRecipeParentId] = useState("");
+  const [categoriesParent, setCategoriesParent] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [selectedCategoryParentId, setSelectedCategoryParentId] = useState(null);
+  const [subCategoryCache, setSubCategoryCache] = useState({}); // Cache for subcategories
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const recipeData = await getRecipesById(id, user.department.id);
-        // console.log("================>" + recipeData.data.name);
         setData(recipeData.data);
         setParentName(recipeData.data.recipe_category.name);
         setRecipeUnit(recipeData.data.unit);
         setRecipeParentId(recipeData.data.recipe_category.id);
-
-        // console.log("================>" + recipeData.data);
       } catch (error) {
-        // console.log("Error fetching data:", error);
+        // Handle error
       }
     };
     fetchData();
-  }, [id]); // useEffect dependency on id
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const unitData = await getUnits();
-        setUnits(unitData.data);
-      } catch (error) {
-        // console.log("Error fetching data:", error);
-      }
-    };
-
-    fetchData(); // Call fetchData when component mounts
-  }, []);
+  }, [id]);
 
   const fields = [
     {
       type: "text",
       name: "parent",
-      placeholder: `${parentName}`,
+      placeholder: parentName,
       required: false,
       disabled: true,
     },
@@ -105,27 +91,95 @@ const EditRecipes = () => {
       type: "select",
       name: "unit_id",
       labelName: "الوحدة",
-      options: units?.map((units) => {
-        // console.log(units);
-        return { value: units.id, label: units.name };
-      }),
+      options: units?.map((unit) => ({
+        value: unit.id,
+        label: unit.name,
+      })),
     },
     { type: "image", name: "image", placeholder: "يجب عليك ادخال الصوره" },
+    {
+      type: "select",
+      name: "categories",
+      labelName: "القسم الرئيسي",
+      options: categoriesParent?.map((categoryParent) => ({
+        value: categoryParent.id,
+        label: categoryParent.name,
+        subCategories: subCategoryCache[categoryParent.id] || [] // Add this line
+      })),
+      handleSelectedItemId: (catParentId) => setSelectedCategoryParentId(catParentId),
+
+    },
+    {
+      type: "select",
+      name: "sub_categories",
+      labelName: "القسم الفرعي",
+      options: subCategories?.map((subCategory) => ({
+        value: subCategory.id,
+        label: subCategory.name,
+      })),
+      disabled: subCategories.length === 0
+    },
   ];
 
-  // Map the recipe data to match form field names
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const unitData = await getUnits();
+        const categoriesParentData = await getRecipeCategoryParent({}, "");
+        setUnits(unitData.data);
+        setCategoriesParent(categoriesParentData.data);
+      } catch (error) {
+        // Handle error
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    setSubCategories([]);
+    const fetchSubCategories = async () => {
+      if (selectedCategoryParentId) {
+        // Check if we have cached data for this category
+        if (subCategoryCache[selectedCategoryParentId]) {
+          setSubCategories(subCategoryCache[selectedCategoryParentId]);
+        } else {
+          const subCategoriesData = await getRecipeSubCategory({}, selectedCategoryParentId);
+          setSubCategories(subCategoriesData.data);
+          // Cache the fetched subcategories
+          setSubCategoryCache((prevCache) => ({
+            ...prevCache,
+            [selectedCategoryParentId]: subCategoriesData.data,
+          }));
+        }
+      }
+    };
+    fetchSubCategories();
+  }, [selectedCategoryParentId]);
+
+
+  useEffect(() => {
+    setSelectedCategoryParentId(data?.recipe_category?.parent_id);
+  }, [data]);
+
   const initialValues = {
     name: data?.name || "",
     minimum_limt: data?.minimum_limt || "",
-    days_before_expire:
-      data?.days_before_expire !== undefined ? data.days_before_expire : "", // Check if day_before_expire is present
-    unit_id: data?.unit.id || "", // Check if unit_id is present
-    image: data?.image || null, // Assuming image is present in recipe data
+    days_before_expire: data?.days_before_expire !== undefined ? data.days_before_expire : "",
+    unit_id: data?.unit.id || "",
+    image: data?.image || null,
+    categories: data?.recipe_category?.parent_id,
+    sub_categories: data?.recipe_category?.id || "",
   };
 
-  // console.log(initialValues);
-  // console.log("Name from data:", data?.name);
-  // console.log("Minimum limit from data:", data?.minimum_limt);
+  useEffect(
+    () => {
+      setSelectedCategoryParentId(data?.recipe_category?.parent_id);
+    }, [data]
+  )
+
+  //  
+  //  
+  //  
 
   return (
     <div className="form-container">

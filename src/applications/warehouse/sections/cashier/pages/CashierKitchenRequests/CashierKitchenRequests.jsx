@@ -51,7 +51,7 @@ const CashierKitchenRequests = () => {
           },
         }
       );
-      // console.log(response.data);
+      //  
       message.success("لقد تم اضافة الاوردر بنجاح");
     } catch (error) {
       console.error("Error creating invoice:", error);

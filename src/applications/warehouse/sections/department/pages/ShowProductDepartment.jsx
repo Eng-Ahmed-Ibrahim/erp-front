@@ -24,7 +24,7 @@ const ShowProductDepartment = () => {
   useEffect(() => {
     const fetchSubCategories = async () => {
       const res = await getSubCategoriesForDepartment(id);
-      // console.log(res.data);
+      //  
       setSubCategories(res.data);
     };
     fetchSubCategories();
@@ -35,7 +35,6 @@ const ShowProductDepartment = () => {
       key: "name",
       value: " الاسم ",
     },
-    { key: "image", value: "الصوره", type: "image" },
     { key: "quantity", value: "الكمية" },
   ];
   const filters = [
@@ -79,49 +78,10 @@ const ShowProductDepartment = () => {
       label: "الكمية",
       isInput: true,
     },
-  ];
-
-  const [data, setData] = useState([])
-
-  useEffect(() => {
-    axios.get(`${API_ENDPOINT}/api/v1/store/invoice/filter/get_recipes/out_going_from_to_date/${item?.id}`, {
-
-      headers: {
-        Authorization: `Bearer ${Token}`,
-      },
-    }
-    )
-      .then(res => {
-        setData(res?.data?.data)
-      })
-
-
-  }, [])
-  console.log('data from invoice', data);
+  ];   
   return (
     <div>
-      {/* <h1>المخزن الفرعى</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>الرقم</th>
-            <th>الاسم</th>
-            <th>الكمية</th>
-            <th>الصوره</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.map((item, index) => (
-            <tr key={index}>
-              <th>{index + 1}</th>
-              <th>{item?.name}</th>
-              <th>{item?.total_quantity}</th>
-              <th><img src={item?.image} alt={item?.name} /></th>
-
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
+    
 
       <Table
         headers={tableHeaders}

@@ -11,12 +11,12 @@ const AddClient = () => {
     const fetchClientTypes = async () => {
       const res = await getClientTypes({}, "", () => { });
       setClientTypes(res?.data);
-      // console.log(res?.data);
+      //  
     };
     fetchClientTypes();
   }, []);
   const handleSubmit = async (formData) => {
-    // console.log(formData);
+    //  
     await addClient(formData);
     navigate(`/warehouse/clients/client`);
   };

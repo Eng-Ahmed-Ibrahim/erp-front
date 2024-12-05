@@ -8,7 +8,6 @@ import { useAuth } from "../../../../../../context/AuthContext";
 const ShowRecipesCategoryParent = () => {
   const { user } = useAuth();
   const tableHeaders = [
-
     { key: "name", value: "الإسم" },
     { key: "image", value: "الصوره", type: "image" },
   ];
@@ -18,8 +17,8 @@ const ShowRecipesCategoryParent = () => {
       type: `${user?.permissions.some(
         (permission) => permission.name === "edit recipe_category_parent"
       )
-          ? "edit"
-          : ""
+        ? "edit"
+        : ""
         }`,
       label: "تعديل",
       route: "/warehouse/recipes/edit-recipes-parent/:id",
@@ -28,8 +27,8 @@ const ShowRecipesCategoryParent = () => {
       type: `${user?.permissions.some(
         (permission) => permission.name === "delete recipe_category_parent"
       )
-          ? "delete"
-          : ""
+        ? "delete"
+        : ""
         }`,
       label: "حذف",
     },
@@ -37,8 +36,8 @@ const ShowRecipesCategoryParent = () => {
       type: `${user?.permissions.some(
         (permission) => permission.name === "create recipe_category_parent"
       )
-          ? "add"
-          : ""
+        ? "add"
+        : ""
         }`,
       label: "إضافة قسم المخزن",
       route: `/warehouse/recipes/add-recipes-parent`,
@@ -52,8 +51,10 @@ const ShowRecipesCategoryParent = () => {
         filters={filters}
         title="القسم"
         actions={actions}
-        fetchData={(filters, id, setIsLoading) =>
-          getRecipeCategoryParent(filters, id, setIsLoading)
+        fetchData={(filters, id, setIsLoading) => {
+           
+          return getRecipeCategoryParent(filters, id, setIsLoading)
+        }
         }
         deleteFn={deleteRecipeSubCategoryParent}
       />

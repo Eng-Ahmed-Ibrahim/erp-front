@@ -1,0 +1,27 @@
+.invoice-container .row {
+
+    justify-content: space-around;
+    // margin-inline: 40px;
+    padding-inline: 40px;
+}
+
+.invoice-container {
+    .row {
+        .category-btn {
+            width: calc(calc(100% / 3) - 60px);
+
+            @media (max-width:767px) {
+                width: calc(33.3333333333% - 30px);
+                font-size: 10px;
+            }
+
+            // &.inComing,
+            // &.outGoing,
+            // &.returnd {
+            //     background-color: var(--light-beige-color);
+            //     color: var(--brown-color);
+            //     box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+            // }
+        }
+    }
+}

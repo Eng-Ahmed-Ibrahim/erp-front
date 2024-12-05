@@ -185,15 +185,18 @@ export async function deleteDeaprtment(id) {
   }
 }
 
-export async function deleteProductDeaprtment(id) {
+export async function deleteProductDeaprtment(id ,dep_id) {
   try {
     const res = await axios.delete(
       `${domain}/api/v1/store/products/department/delete/${id}`,
-      {
+      {params : {
+        department_id:dep_id
+      },
+      
         headers: {
           Authorization: `Bearer ${Token}`,
-        },
-      }
+        },}
+      
     );
     // // console.log(res.data);
     return res.data;

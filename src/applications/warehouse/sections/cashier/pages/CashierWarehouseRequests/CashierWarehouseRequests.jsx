@@ -32,9 +32,9 @@ const CashierWarehouseRequests = () => {
       try {
         const supplierData = await getSuppliers();
         setSuppliers(supplierData.data);
-        // console.log(suppliers);
+        //  
       } catch (error) {
-        // console.log("Error fetching data:", error);
+        //  
       }
     };
 
@@ -46,9 +46,9 @@ const CashierWarehouseRequests = () => {
       try {
         const departmentData = await getAllDepartments();
         setDepartment(departmentData.data);
-        // console.log(departmentData);
+        //  
       } catch (error) {
-        // console.log("Error fetching data:", error);
+        //  
       }
     };
 
@@ -101,14 +101,10 @@ const CashierWarehouseRequests = () => {
           },
         }
       );
-      // console.log(response.data);
       // navigate("/warehouse/invoices/show");
-      // console.log("Invoice created successfully!");
       message.success("تم اضافة طلب بنجاح");
-      // Optionally, you can redirect or show a success message here
     } catch (error) {
       console.error("Error creating invoice:", error);
-      // Handle error condition, show error message, etc.
     }
   };
 

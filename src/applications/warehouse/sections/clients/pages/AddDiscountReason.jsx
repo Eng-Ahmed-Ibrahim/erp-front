@@ -7,7 +7,7 @@ const AddDiscountReason = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (formData) => {
-    // console.log(formData);
+    //  
     await addDiscountReason(formData);
     navigate(`/warehouse/clients/discount-reason`);
   };

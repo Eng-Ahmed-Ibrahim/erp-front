@@ -14,7 +14,7 @@ const EditRecipe = () => {
                 const recipeData = await getRecipeById(id);
                 setData(recipeData);
             } catch (error) {
-                // console.log("Error fetching data:", error);
+                //  
             }
         };
 
@@ -22,7 +22,7 @@ const EditRecipe = () => {
     }, [id]); // useEffect dependency on id
 
     const handleSubmit = async (formData) => {
-        // console.log(formData);
+        //  
         await eidtRecipe(formData.name, formData.description, formData.image, id);
         await navigate('/warehouse/recipes/show-recipes');
     };

@@ -10,12 +10,15 @@ const Token =
 export async function getRcipeReports(filteredValues, id, setIsLoading) {
     try {
         setIsLoading(true);
-        const { name, page } = filteredValues;
+        const { name, page, from_date, to_date,category_id } = filteredValues;
 
         const res = await axios.get(`${domain}/api/v1/store/invoice/filter/get_recipes/out_going_from_to_date/${id}`, {
             params: {
-                //   name: name,
+                from: from_date,
+                to: to_date,
                 page,
+                name,
+                category_id,
             },
             headers: {
                 Authorization: `Bearer ${Token}`,
@@ -23,7 +26,7 @@ export async function getRcipeReports(filteredValues, id, setIsLoading) {
         });
         // console.log(res.data);
         setIsLoading(false);
-        return res.data;
+        return res.data?.data;
     } catch (error) {
         // console.log("Error fetching data:", error);
         setIsLoading(false);
@@ -31,6 +34,31 @@ export async function getRcipeReports(filteredValues, id, setIsLoading) {
     }
 }
 
+export async function getAllinvoicesOutGoing(filteredValues, id, setIsLoading) {
+    try {
+        setIsLoading(true);
+        const { name, page, from_date, to_date,category_id } = filteredValues;
+        const res = await axios.get(`${domain}/api/v1/store/invoice/filter/get_recipes/out_going_from_department_from_to_date/${id}`, {
+            params: {
+                from: from_date,
+                to: to_date,
+                name :name,
+                page,
+                category_id,
+            },
+            headers: {
+                Authorization: `Bearer ${Token}`,
+            },
+        });
+        // console.log(res.data);
+        setIsLoading(false);
+        return res.data?.data;
+    } catch (error) {
+        // console.log("Error fetching data:", error);
+        setIsLoading(false);
+        message.error("حدث خطأ الرجاء إعادة المحاولة");
+    }
+}
 
 
 
@@ -48,11 +76,11 @@ export async function getTotalStores(filteredValues, id, setIsLoading) {
                 Authorization: `Bearer ${Token}`,
             },
         });
-        // console.log(res.data);
+     console.log(`res.data`,res.data);
         setIsLoading(false);
+  
         return res.data;
     } catch (error) {
-        // console.log("Error fetching data:", error);
         setIsLoading(false);
         message.error("حدث خطأ الرجاء إعادة المحاولة");
     }

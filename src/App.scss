@@ -150,6 +150,12 @@ ul {
   }
 }
 
+.row-display {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
 .page-wrapper {
   background-color: var(--background-color);
   min-height: 100vh;
@@ -180,7 +186,11 @@ ul {
     margin-left: 50px;
     padding: 16px;
   }
-
+  .total-sum{
+    font-size: 18px;
+    font-weight: 700;
+  
+  }
   .back-arrow {
     font-size: 32px;
     font-weight: 700;
@@ -299,6 +309,12 @@ ul {
     }
   }
 }
+.form-select-pp{
+  color:gray;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 2px;
+}
 .shifts {
   background-color: #803D3B;
   color: white;
@@ -308,4 +324,105 @@ ul {
   background-color: #803D3B;
   color: white;
   cursor: pointer;
+}
+
+.white-space-nowrap {
+  white-space: nowrap;
+}
+
+.mt-0 {
+  margin-top: 0 !important;
+}
+
+.flex {
+  display: flex
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+
+.gap-small {
+  gap: 0.5rem;
+  /* 8px */
+}
+
+.gap-medium {
+  gap: 1rem;
+  /* 16px */
+}
+
+.gap-large {
+  gap: 1.5rem;
+  /* 24px */
+}
+
+.gap-xlarge {
+  gap: 2rem;
+  /* 32px */
+}
+
+/* From Uiverse.io by barisdogansutcu */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  background-color: rgb(26, 25, 25, 0.35);
+
+  svg {
+    width: 3.25em;
+    transform-origin: center;
+    animation: rotate4 2s linear infinite;
+  }
+
+  circle {
+    fill: none;
+    stroke: hsl(214, 97%, 59%);
+    stroke-width: 4;
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    animation: dash4 1.5s ease-in-out infinite;
+  }
+
+  @keyframes rotate4 {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes dash4 {
+    0% {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+    }
+
+    50% {
+      stroke-dasharray: 90, 200;
+      stroke-dashoffset: -35px;
+    }
+
+    100% {
+      stroke-dashoffset: -125px;
+    }
+  }
 }

@@ -1,0 +1,211 @@
+/* styles.css */
+
+/* * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: none;
+    background-color: #faf2f2;
+} */
+
+/* body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+} */
+@media print {
+    .print-hidden {
+        display: none;
+    }
+}
+
+main {
+    padding: 20px;
+}
+
+.headers-wrapper {
+    padding-top: 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.status-red {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    justify-content: center;
+    color: white;
+
+    background-color: #CC3232;
+}
+
+.status-green {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    justify-content: center;
+    color: white;
+
+    background-color: green;
+}
+
+.status-black {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    justify-content: center;
+    color: white;
+
+    background-color: #130101;
+}
+
+.status-yellow {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    justify-content: center;
+    color: white;
+
+    background-color: #E7B416;
+}
+
+
+
+
+.status-red p {
+    padding: 3px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #CC3232;
+    color: white;
+}
+
+.main-title {
+    padding: 5px 10px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-title p {
+    padding: 3px;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.invoice-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    padding: 20px;
+}
+
+.invoice-info-item {
+    width: 30%;
+}
+
+.invoice-info-item h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.invoice-info-item p {
+    font-size: 24px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.invoice-info-item ul {
+    list-style: none;
+    padding: 0;
+}
+
+.invoice-info-item ul li {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.invoice-items {
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    padding: 20px;
+}
+
+.invoice-items table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.invoice-items table th,
+.invoice-items table td {
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.invoice-items table thead th {
+    background-color: #eee;
+}
+
+.invoice-total {
+    text-align: right;
+}
+
+.invoice-notes {
+    display: flex;
+    justify-content: space-between;
+}
+
+.invoice-notes h2 {
+    margin-bottom: 10px;
+    padding-right: 8px;
+}
+
+.invoice-notes p {
+    padding: 8px;
+    font-size: 16px;
+}
+
+.invoice-notes-section {
+    width: 30rem;
+    overflow-wrap: break-word;
+}
+
+.invoice-items table tfoot td {
+    font-weight: bold;
+    background-color: #c5f7f3;
+}
+
+.pdf-button {
+    background-color: var(--beige-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 15px 0 20px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+
+}
+
+.pdf-button:hover {
+    background-color: var(--light-beige-color);
+    color: var(--brown-color);
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+
+}
