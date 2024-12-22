@@ -2,41 +2,27 @@ import Table from "../../../../../components/shared/table/Table";
 import "../../../../../components/shared/table/Table.scss";
 import { deleteDeaprtment, getDeaprtments } from "../../../../../apis/department";
 import { useLocation } from "react-router-dom";
-const ShowAllDepartments = () => {
+
+
+const ShowDepartmentsProducts = () => {
    
     const tableHeaders = [
         { key: "code", value: "الكود" },
         {
         key: "name", value: " الاسم ", clickable: true,
-        route: "/warehouse/reports/show-reports/department/recipe/:id",
+        route: "order-products/:id",
         },
-        { key: "total_invoices_price", value: "إجمالي سعر الفواتير" },
+        // { key: "total_invoices_price", value: "إجمالي سعر الفواتير" },
     ];
+
+
     const filters = [
         { key: "name", type: "text", placeholder: "إبحث باللإسم", id: "الإسم" },
         { key: "from_date", type: "date", id: "من تاريخ" },
         { key: "to_date", type: "date", id: "إلى تاريخ" },
 
     ];
-    // const actions = [
-    //     {
-    //         type: "edit",
-    //         label: "تعديل",
-    //         route: "/warehouse/departments/:id/edit-departments",
-    //     },
-    //     {
-    //         type: "delete",
-    //         label: "حذف",
-    //     },
 
-
-    //     {
-    //         type: "add",
-    //         label: "إضافة قسم ",
-    //         route: "/warehouse/departments/add-departments",
-    //     },
-    // ];
-   
     return (
         <div>
             <Table
@@ -52,4 +38,4 @@ const ShowAllDepartments = () => {
     );
 };
 
-export default ShowAllDepartments;
+export default ShowDepartmentsProducts;

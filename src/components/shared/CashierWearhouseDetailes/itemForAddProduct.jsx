@@ -1,10 +1,8 @@
 import { API_ENDPOINT } from "../../../../config";
 
 const ItemCashierWearhouseForProduct = ({ items, onDeleteItem }) => {
-    console.log("inside", items);
   
     const flattenedItems = items.flat().filter(item => item); 
-    console.log(`dji`, flattenedItems);
   
     return (
       <div className="item-list">

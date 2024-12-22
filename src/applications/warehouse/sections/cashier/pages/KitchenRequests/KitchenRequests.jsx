@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../../../../../context/AuthContext";
 
 const KitchenRequests = () => {
-   
   const [departments, setDepartments] = useState([]);
   const [users, setusers] = useState([]);
   const { user } = useAuth();
@@ -25,7 +24,6 @@ const KitchenRequests = () => {
           })
         )
       );
-
     };
     const fetchUsers = async () => {
       const res = await getAllUsers();
@@ -37,11 +35,11 @@ const KitchenRequests = () => {
         )
       );
     };
-    
+
     const fetchOrders = async () => {
       const res = await getOrders();
       setOrders(res.data);
-    };
+    }
 
     fetchDepartments();
     fetchUsers();
@@ -59,12 +57,13 @@ const KitchenRequests = () => {
     { key: "code", type: "text", id: "كود الفاتورة" },
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },
-    
+
     {
       key: "status",
       type: "selection",
       id: "الحالة",
       placeholder: "الحالة",
+      
       options: [
         {
           value: "",
@@ -88,11 +87,19 @@ const KitchenRequests = () => {
         },
       ],
     },
+    
+    {
+      key: "selected_department",
+      type: "selection",
+      id: "القسم",
+      placeholder: "اختر القسم",
+      
+      options: departments
+    },
   ];
 
-
   const actions = [
-    // {  
+    // {
     //   type: `${
     //     user?.permissions.some(
     //       (permission) => permission.name === "delete order"
@@ -103,42 +110,42 @@ const KitchenRequests = () => {
     //   label: "حذف",
     // },
     {
-      type: `${user?.permissions.some(
-        (permission) =>
-          permission.name === "add order" ||
-          permission.name === "change order status cashier" ||
-          permission.name === "change order status kitchen"
-      )
-        ? "show"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) =>
+            permission.name === "add order" ||
+            permission.name === "change order status cashier" ||
+            permission.name === "change order status kitchen"
+        )
+          ? "show"
+          : ""
+      }`,
       label: "تعديل الحالة",
     },
     {
-
-      type: `${user?.permissions.some(
-        (permission) =>
-          permission.name === "create department"
-
-      )
-        ? `${"navigate"}`
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "create department"
+        )
+          ? `${"navigate"}`
+          : ""
+      }`,
       label: "طباعة",
       route: "/warehouse/cashier/print-order/:id",
     },
   ];
   const ordersRecieveCol = [
     {
-      type: `${user?.permissions.some(
-        (permission) =>
-          permission.name === "add order" ||
-          permission.name === "change order status cashier" ||
-          permission.name === "change order status kitchen"
-      )
-        ? "print"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) =>
+            permission.name === "add order" ||
+            permission.name === "change order status cashier" ||
+            permission.name === "change order status kitchen"
+        )
+          ? "print"
+          : ""
+      }`,
       label: "طباعة نسخة التشغيل",
     },
   ];
@@ -158,13 +165,18 @@ const KitchenRequests = () => {
 
   return (
     <div>
+ 
       <Table
         headers={tableHeaders}
         title="الأوردرات"
         filters={filters}
         fetchData={(filterValues, id, setIsLoading) =>
           getOrders(
-            {...filterValues , user_id : user.id , department_id : user?.department.id },
+            {
+              ...filterValues,
+              user_id: user.id,
+              department_id: user?.department.id,
+            },
             user?.department.type === "reciver" ? user?.department.id : null,
             setIsLoading
           )
@@ -190,7 +202,6 @@ const KitchenRequests = () => {
         }
         isRequests
       />
-
     </div>
   );
 };

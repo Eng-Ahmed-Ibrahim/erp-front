@@ -124,6 +124,8 @@ const EditClientType = () => {
         >
           <Input placeholder="أضف الضريبه المضافه" type="number" onWheel={(event) => event.currentTarget.blur()} />
         </Form.Item>
+
+        
         <Form.Item label="طرق الدفع" style={{ marginBottom: "20px" }}>
           <Select
             mode="multiple"

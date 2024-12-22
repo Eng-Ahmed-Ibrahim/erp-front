@@ -141,6 +141,15 @@ const DynamicForm = ({ fields, onSubmit, initialValues }) => {
               ))}
             </Select>
           )}
+
+
+
+
+
+
+
+
+          
           {field.type === "multi-select" && (
             <Select
               mode="multiple"
@@ -154,6 +163,15 @@ const DynamicForm = ({ fields, onSubmit, initialValues }) => {
               ))}
             </Select>
           )}
+
+
+
+
+
+
+
+
+
           {field.type === "text" && (
             <Input
               placeholder={field.placeholder}

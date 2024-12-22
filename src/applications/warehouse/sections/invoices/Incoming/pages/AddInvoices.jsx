@@ -10,22 +10,24 @@ import { getAllDepartments } from "../../../../../../apis/departments";
 
 import { API_ENDPOINT } from "../../../../../../../config";
 import { useNavigate } from "react-router-dom";
-import { message,Modal } from "antd";
+import { message, Modal } from "antd";
 import Invoice from "../../Invoice";
 import TaintedInvoiceDetailes from "../../../../../../components/shared/InvoiveDetails/TaintedInvoiceDetailes";
 
 import { useAuth } from "../../../../../../context/AuthContext";
 
 const AddInvoices = () => {
-  const Token = localStorage.getItem('token') || sessionStorage.getItem('token')
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
   const [items, setItems] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [department, setDepartment] = useState([]);
 
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [targetDepartment, setTargetDepartment] = useState(null);
 
   const [invoiceDate, setInvoiceDate] = useState("");
   const [invoiceCode, setInvoiceCode] = useState("");
@@ -37,16 +39,17 @@ const AddInvoices = () => {
   const [discount, setDiscount] = useState(0);
   const [tax, setTx] = useState(0);
   const pathname = location.pathname;
-  const lastItem = pathname.split("/").pop(); 
+  const lastItem = pathname.split("/").pop();
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchDataSuppliers = async () => {
       try {
-        const supplierData = await getSuppliers({}, "", () => { });
+        const supplierData = await getSuppliers({}, "", () => {});
         setSuppliers(supplierData.data);
-        //  
+        //
       } catch (error) {
-        //  
+        //
       }
     };
 
@@ -57,12 +60,12 @@ const AddInvoices = () => {
     const fetchDepartment = async () => {
       try {
         const departmentData = await getAllDepartments();
-        const depWithoutStore = departmentData.data.filter((item)=>item.id !== "01hy3km07mf7fafqn2j6388d1t")
+        const depWithoutStore = departmentData.data.filter(
+          (item) => item.id !== "01hy3km07mf7fafqn2j6388d1t"
+        );
         setDepartment(depWithoutStore);
-
-
       } catch (error) {
-        //  
+        //
       }
     };
 
@@ -70,7 +73,6 @@ const AddInvoices = () => {
   }, []);
 
   const handleAddItem = (item) => {
-
     // const isItemsExist = items.some(
     //   (existingItem) => existingItem.recipeId === item.recipeId
     // )
@@ -91,38 +93,62 @@ const AddInvoices = () => {
 
   const calculateTotalAmount = () => {
     if (lastItem === "in_coming") {
-      return (items.reduce(
-        (total, item) =>
-          total +
-          (item.quantity * item.price),
-        0
-      )) - (parseInt(discount)) + (parseInt(tax))
-    }
-    else {
-      console.log(items)
+      return (
+        items.reduce((total, item) => total + item.quantity * item.price, 0) -
+        parseInt(discount) +
+        parseInt(tax)
+      );
+    } else {
+      console.log(items);
       return items.reduce(
-        (total, item) =>
-          total +
-          (item.quantity * item.price),
+        (total, item) => total + item.quantity * item.price,
         0
       );
     }
-
   };
 
   const navigate = useNavigate();
   const handleDownloadPDF = async () => {
-    setIsDisabled(true)
+    setIsDisabled(true);
     const formData = new FormData();
-    console.log('items ', items)
+
+
+
     items.forEach((item, index) => {
+
+
       formData.append(`recipes[${index}][recipe_id]`, item.recipeId);
-      { { lastItem === "out_going" ? null : formData.append(`recipes[${index}][price]`, item.price) } }
-      { { lastItem === "out_going" ? formData.append(`recipes[${index}][invoice_id]`, item.invoiceId) : null } }
+      {
+        {
+          lastItem === "out_going"
+            ? null
+            : formData.append(`recipes[${index}][price]`, item.price);
+        }
+      }
+
+      {
+        {
+          lastItem === "out_going" || lastItem == 'transfare'
+            ? formData.append(`recipes[${index}][invoice_id]`, item.invoiceId)
+            : null;
+        }
+      }
 
       formData.append(`recipes[${index}][quantity]`, item.quantity);
-      { lastItem === "in_coming" || lastItem === "returned" ? formData.append(`recipes[${index}][expire_date]`, item.expireDate) : null }
+
+      {
+        lastItem === "in_coming" || lastItem === "returned" || lastItem == 'transfare'
+          ? formData.append(`recipes[${index}][expire_date]`, item.expireDate)
+          : null;
+      }
     });
+
+
+    if (lastItem == 'transfare'){
+      formData.append("from", selectedDepartment);
+      formData.append("to", targetDepartment );
+
+    }
 
     if (lastItem === "out_going") {
       formData.append("to", selectedDepartment);
@@ -153,9 +179,9 @@ const AddInvoices = () => {
     formData.append("tax", lastItem === "in_coming" ? tax : 0);
 
     try {
+      // setErrorMessage("تاريخ انتهاء الصلاحية المحدد غير موجود في التفاصيل المتاحة.");
 
 
-      console.log(formData)
       const response = await axios.post(
         `${API_ENDPOINT}/api/v1/store/invoice/create`,
         formData,
@@ -167,19 +193,53 @@ const AddInvoices = () => {
         }
       );
       navigate("/warehouse/invoices/show");
-      //  
-      message.success("تم اضافة  الفاتوره بنجاح ")
+      //
+      message.success("تم اضافة  الفاتوره بنجاح ");
     } catch (error) {
-      console.error("Error creating invoice:", error);
-      message.error(error.response.data.error.message, 10)
+      setIsDisabled(false);
+        Object.entries(error.response.data.error.errors).forEach(([key, value]) => {
+          // message.error(value)
+
+          const modal = Modal.error({
+            title: 'Error',
+            content: <div style={{ fontSize: '24px', textAlign: 'center' }}>  {value}</div>,
+            centered: true, 
+            width: 400, 
+          });
+          
+          setTimeout(() => {
+            modal.destroy();
+          }, 4000);  
+           return;
+
+        }    
+      )
+      // message.error(error.response.data.error.message, 10);
+
+      c
+    
     }
   };
+
+
+
+
+
+
+
+
+
+
+
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setInvoiceImage(file);
   };
-  const [selectedType, setSelectedType] = useState()
+  const [selectedType, setSelectedType] = useState();
+
+
   const MoveInvoiceToDepartment = async () => {
     try {
       const response = await axios.post(
@@ -187,7 +247,7 @@ const AddInvoices = () => {
         {
           to: selectedDepartment,
           from: user.department.id,
-          code: invoiceCode
+          code: invoiceCode,
         },
         {
           headers: {
@@ -197,34 +257,40 @@ const AddInvoices = () => {
         }
       );
       const modal = Modal.success({
-        title: 'success',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}> تم اضافة  الفاتوره بنجاح </div>,
-        centered: true, 
-        width: 400, 
+        title: "success",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            {" "}
+            تم اضافة الفاتوره بنجاح{" "}
+          </div>
+        ),
+        centered: true,
+        width: 400,
       });
-      
+
       setTimeout(() => {
         modal.destroy();
-      }, 2500)
+      }, 2500);
       navigate("/warehouse/invoices/show");
-      //  
-      
-
     } catch (error) {
-      console.log(error)
+
       const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}> {error.response.data.error.message} </div>,
-        centered: true, 
-        width: 400, 
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            {" "}
+            {error.response.data.error.message}{" "}
+          </div>
+        ),
+        centered: true,
+        width: 400,
       });
-      
+
       setTimeout(() => {
         modal.destroy();
       }, 4000);
-      }
-  }
-
+    }
+  };
 
   return (
     <div className="form-container">
@@ -232,10 +298,13 @@ const AddInvoices = () => {
         {lastItem === "in_coming"
           ? "اضافة فاتورة مورد"
           : lastItem === "out_going"
-            ? "اضافه فاتورة اذن صرف"
-            : " اضافة فاتورة مرتجع"}
+          ? "اضافه فاتورة اذن صرف"
+          : lastItem === "returned"
+          ? "اضافة فاتورة مرتجع"
+          : "اضافة فاتورة تحويل "}
       </h1>
-      {lastItem === "out_going" || lastItem === "returned" ? null : (
+
+      {lastItem === "out_going" || lastItem === "returned"  || lastItem === "transfare" ? null : (
         <div>
           {/** MOWARED */}
           <label className="form-label" htmlFor="supplierSelect">
@@ -256,43 +325,75 @@ const AddInvoices = () => {
         </div>
       )}
 
-      {lastItem === "out_going" || lastItem === "returned" ? (
-        <div>
-          <label className="form-label" htmlFor="supplierSelect">
-            اختر قسم:
+      {lastItem === "out_going" || lastItem === "returned" || lastItem === "transfare" ? (
+              <div>
+                <label className="form-label" htmlFor="supplierSelect">
+                {lastItem === "transfare" ? " تحويل من" : "اختر قسم:"} 
+                </label>
+                <select
+                  className="form-select"
+                  id="supplierSelect"
+                  onChange={(e) => setSelectedDepartment(e.target.value)}
+                >
+                  <option value="">اختر قسم</option>
+                  {department.map((supplier) => (
+                    <option key={supplier.id} value={supplier.id}>
+                      {supplier.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+            
+            {lastItem === "transfare" ? (
+              <div>
+                <label className="form-label" htmlFor="supplierSelect">
+                 إلي
+                </label>
+                <select
+                  className="form-select"
+                  id="supplierSelect"
+                  onChange={(e) => setTargetDepartment(e.target.value)}
+                >
+                  <option value="">اختر قسم</option>
+                  {department.map((supplier) => (
+                    <option key={supplier.id} value={supplier.id}>
+                      {supplier.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+
+      {lastItem === "out_going" ? (
+        <>
+          <label className="form-label">
+            هل تريد ارسال فاتورة كامله ام مكونات منفصله:
           </label>
           <select
-            className="form-select"
-            id="supplierSelect"
-            onChange={(e) => setSelectedDepartment(e.target.value)}
+            className="form-input"
+            onChange={(e) => setSelectedType(e.target.value)}
           >
-            <option value="">اختر قسم</option>
-            {department.map((supplier) => (
-              <option key={supplier.id} value={supplier.id}>
-                {supplier.name}
-              </option>
-            ))}
+            <option value="">اختر النوع المناسب</option>
+            <option value="MoveInoice">نقل مكونات فاتورة كامله</option>
+            <option value="InvoiceRecipe">نقل كل مكون على حده</option>
           </select>
+        </>
+      ) : (
+        <></>
+      )}
+
+      {selectedType === "MoveInoice" ? null : (
+        <div>
+          <label className="form-label">اختر تاريخ الفاتورة:</label>
+          <input
+            className="form-input"
+            type="date"
+            value={invoiceDate}
+            onChange={(e) => setInvoiceDate(e.target.value)}
+          />
         </div>
-      ) : null}
-      {lastItem === "out_going" ? <>
-        <label className="form-label">هل تريد ارسال فاتورة كامله ام مكونات منفصله:</label>
-        <select className="form-input" onChange={(e) => setSelectedType(e.target.value)}>
-          <option value="">اختر النوع المناسب</option>
-          <option value="MoveInoice">نقل مكونات فاتورة كامله</option>
-          <option value="InvoiceRecipe">نقل كل مكون على حده</option>
-        </select>
-      </> : <></>}
-      {selectedType === "MoveInoice" ? null : <div>
-        <label className="form-label">اختر تاريخ الفاتورة:</label>
-        <input
-          className="form-input"
-          type="date"
-          value={invoiceDate}
-          onChange={(e) => setInvoiceDate(e.target.value)}
-         
-        />
-      </div>}
+      )}
 
       {lastItem === "in_coming" ? (
         <div>
@@ -307,17 +408,21 @@ const AddInvoices = () => {
         </div>
       ) : null}
 
-      {lastItem === "in_coming" || lastItem === "returned" ? <>
-        <div>
-          <label className="form-label">صورة الفاتورة:</label>
-          <input
-            className="form-input"
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-          />
-        </div>
-      </> : null}
+      {lastItem === "in_coming" || lastItem === "returned" ||  lastItem === "transfare"  ? (
+        <>
+          <div>
+            <label className="form-label">صورة الفاتورة:</label>
+            <input
+              className="form-input"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </div>
+        </>
+      ) : null}
+
+
       {lastItem === "in_coming" ? (
         <>
           <div>
@@ -345,18 +450,22 @@ const AddInvoices = () => {
           </div>
         </>
       ) : null}
-      {selectedType === "MoveInoice" ? null : <div>
-        <label className="form-label"> اضافة تعليق:</label>
-        <input
-          className="form-input"
-          type="textarea"
-          value={invoiceNote}
-          onChange={(e) => setInvoiceNote(e.target.value)}
-        />
-      </div>}
 
-      {
-        selectedType === "InvoiceRecipe" ? <div>
+
+      {selectedType === "MoveInoice" ? null : (
+        <div>
+          <label className="form-label"> اضافة تعليق:</label>
+          <input
+            className="form-input"
+            type="textarea"
+            value={invoiceNote}
+            onChange={(e) => setInvoiceNote(e.target.value)}
+          />
+        </div>
+      )}
+
+      {selectedType === "InvoiceRecipe" ? (
+        <div>
           <label className="form-label">كود فاتورة الصرف</label>
           <input
             className="form-input"
@@ -365,10 +474,12 @@ const AddInvoices = () => {
             onChange={(e) => setInvoiceCode(e.target.value)}
             onWheel={(event) => event.currentTarget.blur()}
           />
-        </div> : null
-      }
-      {
-        selectedType === "MoveInoice" ? <div>
+        </div>
+      ) : null}
+
+
+      {selectedType === "MoveInoice" ? (
+        <div>
           <label className="form-label">كود فاتوره المورد:</label>
           <input
             className="form-input"
@@ -377,47 +488,66 @@ const AddInvoices = () => {
             onChange={(e) => setInvoiceCode(e.target.value)}
             onWheel={(event) => event.currentTarget.blur()}
           />
-        </div> : null
-      }
+        </div>
+      ) : null}
 
-      {
-        lastItem === "in_coming" ? <>
+      {lastItem === "in_coming" ? (
+        <>
           <InvoiceDetails
             onAddItem={handleAddItem}
             selectedSupplier={selectedSupplier}
             InvoiceType={lastItem}
           />
-        </> : lastItem === "out_going" && selectedType === "InvoiceRecipe" ?
-          <>
-            <InvoiceDetails
-              onAddItem={handleAddItem}
-              selectedSupplier={selectedSupplier}
-              InvoiceType={lastItem}
-            />
-          </>
-          : lastItem === "returned" ? <><TaintedInvoiceDetailes
+        </>
+      ) : lastItem === "out_going" && selectedType === "InvoiceRecipe"? (
+        <>
+          <InvoiceDetails
+            onAddItem={handleAddItem}
+            selectedSupplier={selectedSupplier}
+            InvoiceType={lastItem}
+          />
+        </>
+      ) : lastItem === "returned"  ||  lastItem === "transfare"   ? (
+        <>
+          <TaintedInvoiceDetailes
             onAddItem={handleAddItem}
             selectedSupplier={selectedSupplier}
             departmentId={selectedDepartment}
-
-
             InvoiceType={"tainted"}
           />
-          </> : null
-      }
+        </>
+      ) : null}
 
-      {selectedType === "MoveInoice" ? null : <ItemList items={items} onDeleteItem={handleDeleteItem} InvoiceType={lastItem} />}
-      {lastItem === "returned" || selectedType === "MoveInoice" ? null : <TotalAmount total={calculateTotalAmount()} />}
-      {selectedType === "MoveInoice" ? <button className="form-btn" onClick={MoveInvoiceToDepartment}>
-        نقل جميع مكونات الفاتورة
-      </button> : <button className="form-btn" onClick={handleDownloadPDF} disabled={isDisabled} style={{
-    backgroundColor: isDisabled ? "#d3d3d3" : "#AF842444460", // gray for disabled, green otherwise
-    cursor: isDisabled ? "not-allowed" : "pointer",
-    color: isDisabled ? "#a9a9a9" : "white", // adjust text color if needed
-  }}>
-        حفظ البيانات
-      </button>}
+      {selectedType === "MoveInoice"   ? null : (
+        <ItemList
+          items={items}
+          onDeleteItem={handleDeleteItem}
+          InvoiceType={lastItem}
+        />
+      )}
 
+      {lastItem === "returned" || selectedType === "MoveInoice" ? null : (
+        <TotalAmount total={calculateTotalAmount()} />
+      )}
+
+      {selectedType === "MoveInoice" ? (
+        <button className="form-btn" onClick={MoveInvoiceToDepartment}>
+          نقل جميع مكونات الفاتورة
+        </button>
+      ) : (
+        <button
+          className="form-btn"
+          onClick={handleDownloadPDF}
+          disabled={isDisabled}
+          style={{
+            backgroundColor: isDisabled ? "#d3d3d3" : "#AF842444460", // gray for disabled, green otherwise
+            cursor: isDisabled ? "not-allowed" : "pointer",
+            color: isDisabled ? "#a9a9a9" : "white", // adjust text color if needed
+          }}
+        >
+          حفظ البيانات
+        </button>
+      )}
     </div>
   );
 };

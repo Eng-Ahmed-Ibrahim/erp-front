@@ -310,6 +310,51 @@ export async function getReturndInvoiceByType(
   }
 }
 
+export async function getTransfareInvoiceByType(
+  filteredValues,
+  id,
+  setIsLoading
+) {
+  const {
+    from_date,
+    to_date,
+    supplier_id,
+    invoice_price,
+    page,
+    code,
+    status,
+    department_id,
+  } = filteredValues;
+
+  try {
+    setIsLoading(true);
+    const res = await axios.get(
+      `${domain}/api/v1/store/invoice/get_invoices_based_on_type/transfare`,
+      {
+        params: {
+          "date[from]": from_date,
+          "date[to]": to_date,
+          code,
+          invoice_price,
+          supplier_id,
+          status,
+          department_id,
+          page,
+        },
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    setIsLoading(false);
+    return res.data.data;
+  } catch (error) {
+    setIsLoading(false);
+    // //  
+    message.error("حدث خطأ الرجاء إعادة المحاولة");
+  }
+}
+
 export async function getTaintedInvoices(filteredValues, id, setIsLoading) {
   const { from_date, to_date, supplier_id, invoice_price, page, code, status } =
     filteredValues;

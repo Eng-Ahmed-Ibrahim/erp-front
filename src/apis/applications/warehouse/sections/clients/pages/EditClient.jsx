@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import {message} from 'antd'
 import {
   updateClient,
   getClientById,
@@ -18,7 +19,7 @@ const EditClient = () => {
     const fetchClientTypes = async () => {
       const res = await getClientTypes({}, "", () => { });
       setClientTypes(res?.data);
-      // console.log(res?.data);
+
     };
 
 
@@ -26,9 +27,8 @@ const EditClient = () => {
       try {
         const recipeData = await getClientById(id);
         setData(recipeData?.data);
-        // console.log(recipeData.data);
       } catch (error) {
-        // console.log("Error fetching data:", error);
+        message.error(error);
       }
     };
 
@@ -41,6 +41,7 @@ const EditClient = () => {
     await updateClient(formData, id);
     navigate(`/warehouse/clients/client`);
   };
+
 
   const fields = [
     {
@@ -85,12 +86,15 @@ const EditClient = () => {
     //   ],
     //   required: true,
     // },
+    
     {
-      type: "select",
+      type: "checkbox",
       name: "client_type_id",
       labelName: "نوع العميل",
       placeholder: "نوع العميل",
       required: true,
+      mode : "multiple",
+
       options: clientTypes.map((type) => {
         return { value: type.id, label: type.name };
       }),
@@ -101,6 +105,7 @@ const EditClient = () => {
   return (
     <div className="form-container">
       <h1 className="form-title">تعديل عميل</h1>
+
       {data && (
         <DynamicForm
           fields={fields}
@@ -108,6 +113,8 @@ const EditClient = () => {
           onSubmit={handleSubmit}
         />
       )}
+
+
     </div>
   );
 };

@@ -415,6 +415,8 @@ function Categories(props) {
               }
             />
           )}
+
+          
         </div>
       </div>
     </>

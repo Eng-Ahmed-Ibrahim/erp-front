@@ -8,7 +8,7 @@
 .invoice-container {
     .row {
         .category-btn {
-            width: calc(calc(100% / 3) - 60px);
+            width: calc(calc(100% /     4) - 60px);
 
             @media (max-width:767px) {
                 width: calc(33.3333333333% - 30px);

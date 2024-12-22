@@ -141,6 +141,8 @@ const Table = ({
   //     }, 20000);
   //   }
   // }, []);
+
+
   useEffect(() => {
     let intervalId;
     if (isRequests) {
@@ -161,6 +163,11 @@ const Table = ({
     return () => clearInterval(intervalId); // Cleanup
   }, [isRequests, filterValues, currentPage, data]);
 
+
+
+
+
+  
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };

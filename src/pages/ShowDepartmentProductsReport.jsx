@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { API_ENDPOINT } from "../../config";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
+
 import axios from "axios";
 import { message, Modal } from "antd";
 import LogoDAR from "../../public/assets/images/Dar_logo.svg";
@@ -10,10 +11,12 @@ import generatePDF, { Resolution, Margin } from "react-to-pdf";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useAuth } from "../context/AuthContext";
-const ShowProductDepartment2 = () => {
+
+const ShowDepartmentProductsReport = () => {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const item = useLocation()?.state?.item;
+
   const [isDataFetched, setIsDataFetched] = useState(false);
   const [data, setData] = useState(null);
   const [filteredData, setFilteredData] = useState([]);
@@ -29,22 +32,24 @@ const ShowProductDepartment2 = () => {
   const [sum, setSum] = useState(0);
   const { user } = useAuth();
 
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState(new Date().toISOString().split("T")[0]);
   const [newPrices, setNewPrices] = useState({});
-
-  const imageurl = "/assets/images/Screenshot (1).png";
-  const [recipeCategoryParents, setRecipeCategoryParents] = useState([]);
-  const [base64Image, setBase64Image] = useState("");
+  const [categoryParents, setCategoryParents] = useState([]);
   const tableRef = useRef();
   const [isAdmin, setIsAdmin] = useState(false);
+  const { id } = useParams();
 
   useEffect(() => {
+    console.log(id);
     if (user.department.type == "master") {
       setIsAdmin(true);
     }
-    const fetchRecipeCategoryParents = async () => {
+
+    const fetchCategoryParents = async () => {
       try {
         const response = await fetch(
-          `${API_ENDPOINT}/api/v1/store/recipe_category_parent/all`,
+          `${API_ENDPOINT}/api/v1/store/categories`,
           {
             headers: {
               Authorization: `Bearer ${Token}`,
@@ -52,46 +57,44 @@ const ShowProductDepartment2 = () => {
           }
         );
         const data = await response.json();
-        setRecipeCategoryParents(data.data);
+        console.log(data);
+        setCategoryParents(data.data);
       } catch (error) {
         console.error("Error fetching recipe category parents:", error);
       }
     };
-    const fetchImage = async () => {
-      const response = await fetch(imageurl);
-      const blob = await response.blob();
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBase64Image(reader.result);
-      };
-      reader.readAsDataURL(blob);
-    };
 
-    fetchImage();
-    fetchRecipeCategoryParents();
-  }, [imageurl]);
+    fetchCategoryParents();
+  }, []);
 
-  const fetchData = (parentId) => {
-    axios
-      .get(`${API_ENDPOINT}/api/v1/search`, {
+  const fetchData = async  (parentId) => {
+   await  axios
+      .get(`${API_ENDPOINT}/api/v1/department_products_report`, {
         headers: {
           Authorization: `Bearer ${Token}`,
         },
         params: {
           data: {
-            parent_id: parentId,
-            department_id: item?.id,
+            department_id: id,
+            from: fromDate,
+            to: toDate,
+            category_id: value,
+            name :searchTerm
           },
         },
       })
       .then((res) => {
-        setData(res?.data?.data);
+        console.log(res?.data.data);
+
+        setData(res?.data?.data?.orders);
+        setSum(res?.data?.data?.total)
         setIsDataFetched(true);
+
         const modal = Modal.success({
           title: "success",
           content: (
             <div style={{ fontSize: "24px", textAlign: "center" }}>
-              تم عرض المواد الخام بنجاح
+              تم عرض المنتجات بنجاح
             </div>
           ),
           centered: true,
@@ -124,9 +127,10 @@ const ShowProductDepartment2 = () => {
   };
 
   useEffect(() => {
-    if (!item?.id) return;
+    if (!id) return;
     fetchData(value);
-  }, [item?.id]);
+  }, [id, fromDate, toDate, value, searchTerm]);
+
   const sortedDepartmentStore = useMemo(() => {
     if (!data?.department_store) return [];
 
@@ -149,6 +153,7 @@ const ShowProductDepartment2 = () => {
     console.log(`Filtering with parent_id: `, value);
     fetchData(value);
   };
+
   useEffect(() => {
     if (sortedDepartmentStore.length > 0) {
       const filtered = sortedDepartmentStore.filter((item) =>
@@ -169,129 +174,10 @@ const ShowProductDepartment2 = () => {
       .toFixed(4);
   }, [sortedDepartmentStore, newCosts]);
 
+
   useEffect(() => {
     setSum(calculateSum);
   }, [calculateSum]);
-
-  const handlePriceChange = (id, value) => {
-    setNewPrices((prevPrices) => ({
-      ...prevPrices,
-      [id]: value,
-    }));
-  };
-
-  const handleBlur = async (recipeId) => {
-    const newUnitPrice = newPrices[recipeId];
-    const departmentId = item?.id;
-
-    if (newUnitPrice !== undefined) {
-      try {
-        await axios.post(
-          `${API_ENDPOINT}/api/v1/store/department/update_recipe_price`,
-          {
-            recipe_id: recipeId,
-            unit_price: newUnitPrice,
-            department_id: departmentId,
-          },
-          { headers: { Authorization: `Bearer ${Token}` } }
-        );
-        const modal = Modal.success({
-          title: "success",
-          content: (
-            <div style={{ fontSize: "24px", textAlign: "center" }}>
-              Unit price updated successfully
-            </div>
-          ),
-          centered: true,
-          width: 400,
-        });
-
-        setTimeout(() => {
-          modal.destroy();
-        }, 2000);
-      } catch (error) {
-        const modal = Modal.error({
-          title: "success",
-          content: (
-            <div style={{ fontSize: "24px", textAlign: "center" }}>
-              Error updating unit price
-            </div>
-          ),
-          centered: true,
-          width: 400,
-        });
-
-        setTimeout(() => {
-          modal.destroy();
-        }, 3000);
-        console.error("Error:", error);
-      }
-    }
-  };
-
-  const ItemDetailsModal = ({ visible, onHide, item }) => {
-    if (!item) return null;
-    console.log(item)
-    return (
-      <Modal
-      visible={visible}
-        title="تفاصيل فواتيرالمكون "
-        // open={show}
-        onOk={onHide}
-        onCancel={onHide}
-        width={1200}
-        centered
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-        </div>
-        <table
-          className="table table-hover mt-5"
-          style={{ fontSize: "24px" }}
-          ref={tableRef}
-        >
-          <thead>
-            <tr>
-            <th scope="col">كود الفاتورة</th>
-            <th scope="col">تاريخ الفاتورة</th>
-              <th scope="col">اسم المنتج</th>
-              <th scope="col">الكمية	</th>
-              <th scope="col">سعر الوحده	</th>
-              <th scope="col">اجمالي السعر</th>
-              <th scope="col"> المتبقى</th>
-            </tr>
-          </thead>
-          <tbody>
-            {item.invoices && item.invoices.length > 0 ? (
-               item.invoices.map((invoice, index) => (
-                <tr key={invoice.id}>
-                  <td>{invoice.code}</td>
-                  <td>{invoice.invoice_date}</td>
-                  <td>{item.name}</td>
-                  <td> {invoice.pivot.quantity} </td>
-                  <td>{invoice.pivot.price}</td>
-                  <td>{invoice.pivot.total_price}</td>
-                  <td>{invoice.remaining ?? 0}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center">
-                  لا توجد فواتير لهذا المكون.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </Modal>
-    );
-  };
 
   const handleSavePDF = async () => {
     const pdf = new jsPDF("p", "mm", "a4");
@@ -311,7 +197,7 @@ const ShowProductDepartment2 = () => {
       pdf.addImage(rowImgData, "PNG", 10, position, pageWidth, rowHeight);
       position += rowHeight;
     }
-    pdf.save("تقرير_المخازن.pdf");
+    pdf.save("تقرير_مبيعات.pdf");
   };
 
   if (error) return <p>{error}</p>;
@@ -321,39 +207,16 @@ const ShowProductDepartment2 = () => {
     setIsModalVisible(true); // Open the modal
   };
 
-  /**
- * se3r el we7da update 
- *            {isAdmin?(<td className="text-right">
-  <input
-    type="number"
-    style={{
-      width: "100px",       
-      textAlign: "right",    
-      padding: "5px",         
-      borderRadius: "4px",  
-      border: "1px solid #ccc", 
-      fontWeight: "600",  
-      fontSize: "24px",       
-      color: "#333",         
-      backgroundColor: "#f9f9f9" 
-    }}      value={newPrices[item.id] || Math.round((item.price / item.quantity) * 100) / 100}
-  
-  /> جنيه
-</td>):(                      <td className="text-right"> {Math.round((item.price/item.quantity)* 100) / 100} جنيه</td>
-)}
-    
- * 
- */
-
-console.log(filteredData);
+  console.log(filteredData);
   return (
     <div>
       <h2 className="heading text-center">
-        مخزن <span className="text-danger">{data?.name}</span> الفرعي
+        تقرير مبيعات المنتجات المفصل{" "}
+        <span className="text-danger">{data?.name}</span>
       </h2>
       <main ref={targetRef}>
         <div id="invoice-container">
-          <div className="headers-wrapper">
+          {/* <div className="headers-wrapper">
             <div className="header-img">
               <img
                 src={LogoDAR}
@@ -365,8 +228,9 @@ console.log(filteredData);
                 }}
               />
             </div>
-          </div>
-          <div className="invoice-info">
+          </div> */}
+
+          {/* <div className="invoice-info">
             <div className="invoice-info-item" style={{ width: "100%" }}>
               <h2 className="text-center fw-bold fs-2">
                 {" "}
@@ -374,60 +238,126 @@ console.log(filteredData);
                 <span className="fs-1 text-danger">{data?.name}</span>
               </h2>
             </div>
-          </div>
-          <div className="center" style={{ margin: "20px 0" }}>
-            <input
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="filter-input"
-              type="text"
-              placeholder="إبحث باللإسم"
-              value={searchTerm}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="exampleInputEmail1" className="form-label">
-              القسم :
-            </label>
-            <select
-              className="form-select"
-              aria-label="المنفذ"
-              value={value}
-              onChange={(e) => {
-                const selectedText = e.target.selectedOptions[0].text;
-                setValue(e.target.value);
-                setMainCat(selectedText);
-              }}
-            >
-              <option value=""> من فضلك اختر القسم</option>
-              {recipeCategoryParents.map((parent, index) => (
-                <option key={parent.id} value={parent.id}>
-                  {parent.name}
-                </option>
-              ))}
-            </select>
-            <button onClick={handleSubmit} className="pdf-button">
-              {" "}
-              فلتره
-            </button>
+          </div> */}
+
+          <div className="row align-items-center">
+            <div className="col-md-2">
+              <div className="mb-3 d-flex text-center flex-column gap-small">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label ps-3 "
+                >
+                  من
+                </label>
+                <input
+                  onChange={(e) => {
+                    const selectedDay = e.target.value;
+                    setFromDate(selectedDay);
+                  }}
+                  value={fromDate}
+                  type="date"
+                  className="form-control"
+                  id="exampleFormControlInput1"
+                  placeholder="name@example.com"
+                />
+              </div>
+            </div>
+
+            <div className="col-md-2">
+              <div className="mb-3 d-flex text-center flex-column gap-small">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label ps-3 "
+                >
+                  الي
+                </label>
+                <input
+                  onChange={(e) => {
+                    const selectedDay = e.target.value;
+                    setToDate(selectedDay);
+                  }}
+                  value={toDate}
+                  type="date"
+                  className="form-control"
+                  id="exampleFormControlInput1"
+                  placeholder="name@example.com"
+                />
+              </div>
+            </div>
+
+            <div className="col-md-2">
+              <div className="mb-3 d-flex text-center flex-column gap-small">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label ps-3 "
+                >
+                  الاسم
+                </label>
+                <input
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  // className="filter-input"
+                  type="text"
+                  placeholder="إبحث باللإسم"
+                  className="form-control"
+                  id="exampleFormControlInput1"
+                  value={searchTerm}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-2">
+              <label
+                htmlFor="exampleInputEmail1"
+                className="form-label"
+                style={{
+                  marginTop: "5px",
+                }}
+              >
+                القسم :
+              </label>
+              <select
+                className="form-select"
+                aria-label="المنفذ"
+                value={value}
+                onChange={(e) => {
+                  const selectedText = e.target.selectedOptions[0].text;
+                  setValue(e.target.value);
+                  setMainCat(selectedText);
+                }}
+              >
+                <option value=""> من فضلك اختر القسم</option>
+                {categoryParents.map((parent, index) => (
+                  <option key={parent.id} value={parent.id}>
+                    {parent.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
+              flexDirection: "row",
               justifyContent: "start",
-              alignItems: "start",
+              gap: "50px",
             }}
           >
+            <button onClick={handleSubmit} className="pdf-button">
+              {" "}
+              فلتره
+            </button>
             <button onClick={handleSavePDF} className="pdf-button">
               {" "}
               حفظ PDF
             </button>
           </div>
-          <ItemDetailsModal
+
+          <div></div>
+          {/* <ItemDetailsModal
             visible={isModalVisible}
             onHide={() => setIsModalVisible(false)}
             item={selectedItem}
-          />
+          /> */}
 
           <div className="invoice-items">
             <table ref={tableRef}>
@@ -435,21 +365,16 @@ console.log(filteredData);
                 <tr>
                   <th colSpan="8" className="text-center">
                     <div>
-                      <span>مخزن {data?.name} الفرعي</span>
+                      {/* <span>مخزن {data?.name} الفرعي</span>
                       <span> || </span>
-                      <span> القسم الرئيسي : {mainCat}</span>
+                      <span> القسم الرئيسي : {mainCat}</span> */}
                     </div>
                   </th>
                 </tr>
                 <tr>
                   <th colSpan="8" className="text-center">
                     <div>
-                      <span className="fs-5 fw-bold">
-                        {new Date().toLocaleDateString()} -{" "}
-                        {new Date().toLocaleTimeString()}
-                      </span>{" "}
-                      -<span> || </span>
-                      <span>سعر الفاتوره الكلي {sum}</span>
+                      <span> اجمالي المبيعات {sum}</span>
                     </div>
                   </th>
                 </tr>
@@ -460,44 +385,35 @@ console.log(filteredData);
                   <th className="text-center">التصنيف الرئيسي</th>
                   <th className="text-right">اسم المنتج</th>
                   <th className="text-right">الكمية</th>
-                  <th className="text-right">  الأوفر</th>
-                  <th className="text-right">كميه الجرد الفعلي</th>
-                  <th className="text-right">سعر الوحده</th>
                   <th className="text-right"> السعر الكلي </th>
                 </tr>
               </thead>
               <tbody>
-                {filteredData.length > 0 ? (
-                  filteredData.map((item, index) => (
+                {data?.length > 0 ? (
+                  data?.map((item, index) => (
                     <tr
                       className="fw-bold fs-4"
                       key={index}
                       style={{ cursor: "pointer" }}
-
                       onClick={() => handleRowClick(item)}
                     >
                       <td className="text-center">{index + 1}</td>
                       <td className="text-center">
                         {" "}
-                        {item.recipe_category?.parent}
+                        {item.category_name}
                       </td>
                       <td className="text-center">
                         {" "}
-                        {item.recipe_category?.name}
+                        {item.sub_category_name}
                       </td>
+
                       <td className="text-right"> {item.name}</td>
+
                       <td className="text-right">
                         {" "}
-                        {item.quantity} {item.unit}
+                        {item.total_quantity} 
                       </td>
-                      <td className="text-right">{item.over_quantity ?? 'لا يوجد'}</td>
-                      <td className="text-right"></td>
-                      <td className="text-right">
-                        {" "}
-                        {Math.round((item.price / item.quantity) * 100) /
-                          100}{" "}
-                        جنيه
-                      </td>
+
                       <td className="text-right">
                         {" "}
                         {Math.round(item.price * 100) / 100} جنيه
@@ -507,19 +423,13 @@ console.log(filteredData);
                 ) : (
                   <tr>
                     <td className="text-center fw-bold fs-4" colSpan="8">
-                      لا توجد مواد مصروفة للمخزن
+                      لا توجد منتجات مباعة
                     </td>
                   </tr>
                 )}
               </tbody>
               <tfoot>
-                <tr>
-                  <td colSpan="8" className="text-center">
-                    <div>
-                      <img src={base64Image} alt="Product" width={"100%"} />
-                    </div>
-                  </td>
-                </tr>
+                <tr></tr>
               </tfoot>
             </table>
           </div>
@@ -529,4 +439,4 @@ console.log(filteredData);
   );
 };
 
-export default ShowProductDepartment2;
+export default ShowDepartmentProductsReport;

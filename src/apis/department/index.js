@@ -10,12 +10,16 @@ export async function getDeaprtments(
 ) {
   try {
     setIsLoading(true);
-    const { name, page } = filteredValues;
+    const { name, page, from_date, to_date } = filteredValues;
 
     const res = await axios.get(`${domain}/api/v1/store/department`, {
       params: {
         name: name,
         Deaprtment_category_id: id,
+        date :{
+          from: from_date,
+          to: to_date,
+        },
         page,
       },
       headers: {

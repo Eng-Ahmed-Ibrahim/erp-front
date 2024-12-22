@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import "./App.scss";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import Warehouse from "./applications/warehouse/Warehouse";
 import {
   ShowSuppliers,
@@ -79,6 +79,7 @@ import {
   ShowProduct,
 } from "./applications/warehouse/sections/Kitchen/categories/product/pages";
 import KitchenRequests from "./applications/warehouse/sections/cashier/pages/KitchenRequests/KitchenRequests";
+import KitchenOrders from "./applications/warehouse/sections/cashier/pages/KitchenRequests/KitchenOrders";
 import Department from "./applications/warehouse/sections/department/Deaprtment";
 import ShowDepartment from "./applications/warehouse/sections/department/pages/ShowDepartments";
 import {
@@ -140,10 +141,11 @@ import {
   ShowSupplierInvoicesReport,
   ShowTotalStores,
 } from "./applications/warehouse/sections/reports/pages";
+import ShowDepartmentsProducts from "./applications/warehouse/sections/reports/pages/ShowDepartmentsProducts"; 
 import Home from "./applications/warehouse/sections/home/Home";
-import MenuSellsPoints from './pages/MenuSellsPoints'
-import Shifts from './pages/Shifts'
-import Witer from './pages/witer'
+import MenuSellsPoints from "./pages/MenuSellsPoints";
+import Shifts from "./pages/Shifts";
+import Witer from "./pages/witer";
 import UpdateWiter from "./pages/UpdateWiter";
 import CreateNewWiter from "./pages/CreateNewWiter";
 import ReviewProduct from "./pages/ReviewProduct";
@@ -169,13 +171,15 @@ import ShowInventoryDepartmentOrdersReport from "./pages/ShowInventoryDepartment
 import OrdersReports from "./applications/warehouse/sections/cashier/pages/KitchenRequests/OrdersReports";
 import ShowCardTypeReport from "./pages/showCardType";
 import { RelatedProducts } from "./applications/warehouse/sections/recipes/recipe/pages/RelatedProducts";
-import ShowRecipesFromAllDepartments from './pages/ShowRecipesFromAllDepartments'
+import ShowRecipesFromAllDepartments from "./pages/ShowRecipesFromAllDepartments";
 import ShowAllOrdersReports from "./pages/showAllOrdersReports";
 import ShowAllSalesDetails from "./pages/ShowAllSalesDetails";
-import ShowDepartmentsForBalance from "./applications/warehouse/sections/reports/pages/ShowDepartmentsForBalance"
-import ShowInventives from "./applications/warehouse/sections/incentives/pages/showIncentives"
-import ShowAllStaff from "./applications/warehouse/sections/incentives/pages/showAllStaff"
-import ShowAllJobs from "./applications/warehouse/sections/incentives/pages/showAllJobs"
+import ShowDepartmentProductsReport from "./pages/ShowDepartmentProductsReport";
+// import ShowDepartmentsProducts from  "./pages/ShowDepartmentsProducts";
+import ShowDepartmentsForBalance from "./applications/warehouse/sections/reports/pages/ShowDepartmentsForBalance";
+import ShowInventives from "./applications/warehouse/sections/incentives/pages/showIncentives";
+import ShowAllStaff from "./applications/warehouse/sections/incentives/pages/showAllStaff";
+import ShowAllJobs from "./applications/warehouse/sections/incentives/pages/showAllJobs";
 
 function App() {
   return (
@@ -239,6 +243,7 @@ function App() {
 
         <Route path="/warehouse" element={<Warehouse />}>
           <Route path="/warehouse/recipes" element={<RecipesCategoryParent />}>
+         
             <Route
               path="/warehouse/recipes/show-departments"
               element={
@@ -252,6 +257,7 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+            
             <Route
               path="/warehouse/recipes/show-recipes"
               element={
@@ -532,7 +538,6 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-
           </Route>
         </Route>
 
@@ -639,8 +644,6 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-
-
           </Route>
         </Route>
 
@@ -659,6 +662,8 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+
+
             <Route
               path="/warehouse/invoices/show-tained"
               element={
@@ -740,8 +745,23 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/warehouse/invoices/incoming/add-Invoices/returned"
+                element={
+                  <ProtectedRoute
+                    requiredPermission={{
+                      id: 141,
+                      name: "view invoices",
+                    }}
+                  >
+                    <AddInvoices />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/warehouse/invoices/incoming/add-Invoices/transfare"
                 element={
                   <ProtectedRoute
                     requiredPermission={{
@@ -936,6 +956,33 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+
+            <Route
+              path="/warehouse/cashier/kitchen-requests"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 123,
+                    name: "view orders",
+                  }}
+                >
+                  <KitchenRequests />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/cashier/kitchen-orders"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 123,
+                    name: "view Kitchen_orders",
+                  }}
+                >
+                  <KitchenOrders />
+                </ProtectedRoute>
+              }
+            ></Route>
             <Route
               path="/warehouse/cashier/order-reports"
               element={
@@ -1094,6 +1141,8 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+
+
             <Route
               path="/warehouse/departments/add-departments"
               element={
@@ -1132,8 +1181,6 @@ function App() {
                     id: 81,
                     name: "view recipes",
                   }}
-
-
                 >
                   <ShowProductDepartment />
                 </ProtectedRoute>
@@ -1147,7 +1194,6 @@ function App() {
                     id: 81,
                     name: "view recipes",
                   }}
-
                 >
                   <ShowProductDepartment2 />
                 </ProtectedRoute>
@@ -1193,7 +1239,6 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-
           </Route>
         </Route>
 
@@ -1434,45 +1479,45 @@ function App() {
         </Route>
 
         <Route path="/warehouse" element={<Warehouse />}>
-        <Route
-              path="/warehouse/Incentives/show-Incentives"
-              element={
-                <ProtectedRoute
-                  requiredPermission={{
-                    id: 148,
-                    name: "view incentives",
-                  }}
-                >
-                  <ShowInventives />
-                </ProtectedRoute>
-              }
-            ></Route>
-             <Route
-              path="/warehouse/staff/show-staff"
-              element={
-                <ProtectedRoute
-                  requiredPermission={{
-                    id: 148,
-                    name: "view employees_and_jobs",
-                  }}
-                >
-                  <ShowAllStaff />
-                </ProtectedRoute>
-              }
-            ></Route>
-            <Route
-              path="/warehouse/jobs/show-jobs"
-              element={
-                <ProtectedRoute
-                  requiredPermission={{
-                    id: 148,
-                    name: "view employees_and_jobs",
-                  }}
-                >
-                  <ShowAllJobs />
-                </ProtectedRoute>
-              }
-            ></Route>
+          <Route
+            path="/warehouse/Incentives/show-Incentives"
+            element={
+              <ProtectedRoute
+                requiredPermission={{
+                  id: 148,
+                  name: "view incentives",
+                }}
+              >
+                <ShowInventives />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="/warehouse/staff/show-staff"
+            element={
+              <ProtectedRoute
+                requiredPermission={{
+                  id: 148,
+                  name: "view employees_and_jobs",
+                }}
+              >
+                <ShowAllStaff />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="/warehouse/jobs/show-jobs"
+            element={
+              <ProtectedRoute
+                requiredPermission={{
+                  id: 148,
+                  name: "view employees_and_jobs",
+                }}
+              >
+                <ShowAllJobs />
+              </ProtectedRoute>
+            }
+          ></Route>
           <Route path="/warehouse/reports" element={<Reports />}>
             <Route
               path="/warehouse/reports/show-reports"
@@ -1500,7 +1545,7 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-              <Route
+            <Route
               path="/warehouse/reports/show-reports/departmentbalance"
               element={
                 <ProtectedRoute
@@ -1509,7 +1554,7 @@ function App() {
                     name: "view reports",
                   }}
                 >
-                  <ShowDepartmentsForBalance/>
+                  <ShowDepartmentsForBalance />
                 </ProtectedRoute>
               }
             ></Route>
@@ -1566,7 +1611,7 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-             <Route
+            <Route
               path="/warehouse/reports/ShowAllOrdersReport/Reports"
               element={
                 <ProtectedRoute
@@ -1579,7 +1624,7 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-            
+
             <Route
               path="/warehouse/reports/ShowAllSalesDetails/Reports"
               element={
@@ -1593,6 +1638,39 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+
+
+<Route
+              path="/warehouse/reports/ShowDepartments"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: "view reports",
+                  }}
+                >
+                <ShowDepartmentsProducts />
+
+                  </ProtectedRoute>
+              }
+            ></Route>
+<Route
+              path="/warehouse/reports/ShowDepartments/order-products/:id"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: "view reports",
+                  }}
+                >
+                <ShowDepartmentProductsReport />
+
+                  </ProtectedRoute>
+              }
+            ></Route>
+
+
+
             <Route
               path="/warehouse/reports/show-reports/get-allsupllier"
               element={
@@ -1647,7 +1725,7 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-            
+
             <Route
               path="/warehouse/reports/show-reports/department-orders"
               element={

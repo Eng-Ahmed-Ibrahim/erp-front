@@ -535,3 +535,136 @@
   justify-content: center;
   
 }
+
+
+
+
+.order-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.order-card {
+  background-color: #a89f9f;
+  background-color: #e6e6e6;
+  // background-color: #b19797;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border:#a3a3a3 1px solid;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  // height: 400px; /* Ensures all cards have equal height */
+}
+
+.order-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.order-card h3 {
+  margin: 0 0 10px;
+  color: #1a73e8; /* Material Design blue */
+  font-size: 1.4rem;
+  justify-self: center;
+  text-align: center;
+}
+// #1a73e8
+.order-card p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 1rem;
+}
+
+.order-products {
+  margin-top: 10px;
+  background-color: #f1f1f1;
+  padding: 15px;
+  border-radius: 8px;
+  // flex-grow: 1; 
+  // max-height: 400px;
+  // overflow-y: auto;
+}
+.table{
+  border-radius: 8px;
+
+}
+.table-hover{
+  border-radius: 8px;
+
+}
+.order-products ::-webkit-scrollbar{
+  display: none;
+}
+
+.order-products ul {
+  list-style: none;
+  padding: 0;
+}
+
+.order-products li {
+  margin: 10px 0;
+  padding-left: 10px;
+  position: relative;
+  font-size: 1rem;
+}
+
+.order-products li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #4caf50; 
+  font-size: 1.5rem;
+}
+
+.actions button {
+  margin-top: 10px;
+  padding: 12px 18px;
+  background-color: #4caf50; /* Green button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  font-size: 1rem;
+}
+
+.actions button:hover {
+  // background-color: #45a049;
+  background-color: #b9e7bc;
+  transform: translateY(-2px);
+}
+
+.butons_container {
+  align-content: center;
+  display: flex;
+  align-items: center;
+  
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0;
+  // width:80%
+}
+.butons_container button {
+  width: 120px;
+  border-radius: 15px;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

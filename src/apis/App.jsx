@@ -79,6 +79,7 @@ import {
   ShowProduct,
 } from "./applications/warehouse/sections/Kitchen/categories/product/pages";
 import KitchenRequests from "./applications/warehouse/sections/cashier/pages/KitchenRequests/KitchenRequests";
+import KitchenOrders from "./applications/warehouse/sections/cashier/pages/KitchenRequests/KitchenOrders";
 import Department from "./applications/warehouse/sections/department/Deaprtment";
 import ShowDepartment from "./applications/warehouse/sections/department/pages/ShowDepartments";
 import {
@@ -927,7 +928,24 @@ function App() {
                   <KitchenRequests />
                 </ProtectedRoute>
               }
-            ></Route>
+            ></Route>          
+            
+            
+              <Route
+            path="/warehouse/cashier/kitchen-orders"
+            element={
+              <ProtectedRoute
+                requiredPermission={{
+                  id: 129,
+                  name: "view Kitchen_orders",
+                }}
+              >
+                <KitchenOrders />
+              </ProtectedRoute>
+            }
+          ></Route>
+
+
             <Route
               path="/warehouse/cashier/order-reports"
               element={

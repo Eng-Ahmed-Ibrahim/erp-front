@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
       const { id, username, name, phone, department, permissions, roles } =
         profileData?.data;
         const roleId = roles ? roles.map(role => role.id) : [];
+        const roleName = roles ? roles.map(role => role.username) : [];
       setUser({
         id,
         name,
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }) => {
         department,
         permissions,
         roles:roleId,
+        roleName:roleName[0]
       });
       setIsLoading(false);
       setIsAuthenticated(true);

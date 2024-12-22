@@ -3,10 +3,11 @@ import axios from "axios";
 import { API_ENDPOINT } from "../../../config";
 const domain = API_ENDPOINT;
 const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
+
 export async function getOrders(filteredValues, id, setIsLoading) {
   try {
     setIsLoading(true);
-    const { from_date, to_date, department_id, user_id, page, status, code } =
+    const { from_date, to_date, department_id, user_id, page, status, code,show_history ,selected_department} =
       filteredValues;
     const default_from = "1970-01-01";
     const default_to = new Date().toISOString().split("T")[0];
@@ -19,7 +20,9 @@ export async function getOrders(filteredValues, id, setIsLoading) {
         status,
         page,
         code,
-        department_id
+        department_id, 
+        show_history, 
+        selected_department
       },
       headers: {
         Authorization: `Bearer ${Token}`,

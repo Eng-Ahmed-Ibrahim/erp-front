@@ -10,13 +10,14 @@ import {
   changeInvoiceStatus,
   updateInvoiceQuintity,
   updateInvoicePrice,
+  getTransfareInvoiceByType,
 } from "../../../../../apis/invoices";
 import Table from "../../../../../components/shared/table/Table";
 import { getSuppliers } from "../../../../../apis/suppliers";
 import { useAuth } from "../../../../../context/AuthContext";
 import { getAllDeaprtments } from "../../../../../apis/department";
 function Categories(props) {
-  const [selectedCategory, setSelectedCategory] = useState("inComing"); 
+  const [selectedCategory, setSelectedCategory] = useState("inComing");
   const [supplier, setAllSupplier] = useState([]);
   const [departments, setDepartments] = useState([]);
 
@@ -24,7 +25,7 @@ function Categories(props) {
 
   useEffect(() => {
     const fetchSupplier = async () => {
-      const res = await getSuppliers({}, "", () => { });
+      const res = await getSuppliers({}, "", () => {});
       setAllSupplier(
         [{ label: "", value: "" }].concat(
           res.data.map((item) => {
@@ -50,22 +51,31 @@ function Categories(props) {
   // user?.department.type != "both"?(
   //   ):null
   const tableHeadersIncoming = [
-    { key: "code", value: "  كود الفاتوره", },
+    { key: "code", value: "  كود الفاتوره" },
     { key: "created_at", value: "تاريخ الإصدار" },
     { key: "created_by", value: "اسم مدخل البيانات", nestedKey: "name" },
     { key: "supplier", value: "اسم المورد", nestedKey: "name" },
     { key: "status", value: "الحالة" },
     { key: "total_price", value: "السعر" },
-  ]
+  ];
   const tableHeadersOutGoing = [
-    
-    { key: "code", value: "  كود الفاتوره",isInput: user?.department.type === "master" ? true : false},
-    { key: "created_at", value: "تاريخ الإصدار",isInput: user?.department.type === "master" ? true : false ,type:"date"},
+    {
+      key: "code",
+      value: "  كود الفاتوره",
+      isInput: user?.department.type === "master" ? true : false,
+    },
+    {
+      key: "created_at",
+      value: "تاريخ الإصدار",
+      isInput: user?.department.type === "master" ? true : false,
+      type: "date",
+    },
     { key: "created_by", value: "اسم مدخل البيانات", nestedKey: "name" },
     { key: "to", value: "القسم المنصرف اليه", nestedKey: "name" },
     { key: "status", value: "الحالة" },
     { key: "total_price", value: "السعر" },
   ];
+
   const tableHeadersReterned = [
     { key: "code", value: "  كود الفاتوره" },
     { key: "created_at", value: "تاريخ الإصدار" },
@@ -73,6 +83,17 @@ function Categories(props) {
     { key: "status", value: "الحالة" },
     { key: "total_price", value: "السعر" },
   ];
+
+  const tableHeadersTransfare = [
+    { key: "code", value: "  كود الفاتوره" },
+    { key: "created_at", value: "تاريخ الإصدار" },
+    { key: "from", value: "تحويل من", nestedKey: "name" },
+    { key: "to", value: "تحويل الي", nestedKey: "name" },
+    { key: "created_by", value: "اسم مدخل البيانات", nestedKey: "name" },
+    { key: "status", value: "الحالة" },
+    { key: "total_price", value: "السعر" },
+  ];
+
   const detailsHeaders = [
     {
       key: "recipes",
@@ -83,11 +104,19 @@ function Categories(props) {
         { key: "category", label: "التصنيف الرئيسي", isInput: false },
         { key: "sub_category", label: "التصنيف الفرعى", isInput: false },
         { key: "name", label: "الإسم", isInput: false },
-        { key: "quantity", label: "الكمية", isInput: user?.department.type === "source" ? true : false },
-        { key: "price", label: "السعر", isInput: user?.department.type === "master" ? true : false },
+        {
+          key: "quantity",
+          label: "الكمية",
+          isInput: user?.department.type === "source" ? true : false,
+        },
+        {
+          key: "price",
+          label: "السعر",
+          isInput: user?.department.type === "master" ? true : false,
+        },
         { key: "expire_date", label: "تاريخ الصلاحية", isInput: false },
       ],
-    }
+    },
   ];
   const filtersIncoming = [
     {
@@ -111,14 +140,14 @@ function Categories(props) {
     },
     user?.department.type === "master"
       ? {
-        key: "department_id",
-        type: "selection",
-        id: "نوع القسم",
-        placeholder: "إختار قسم لإظهار نتائج",
-        options: departments.map((department) => {
-          return { value: department.id, label: department.name };
-        }),
-      }
+          key: "department_id",
+          type: "selection",
+          id: "نوع القسم",
+          placeholder: "إختار قسم لإظهار نتائج",
+          options: departments.map((department) => {
+            return { value: department.id, label: department.name };
+          }),
+        }
       : null,
     {
       key: "status",
@@ -147,14 +176,14 @@ function Categories(props) {
     },
     user?.department.type === "master"
       ? {
-        key: "department_id",
-        type: "selection",
-        id: "نوع القسم",
-        placeholder: "إختار قسم لإظهار نتائج",
-        options: departments.map((department) => {
-          return { value: department.id, label: department.name };
-        }),
-      }
+          key: "department_id",
+          type: "selection",
+          id: "نوع القسم",
+          placeholder: "إختار قسم لإظهار نتائج",
+          options: departments.map((department) => {
+            return { value: department.id, label: department.name };
+          }),
+        }
       : null,
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },
@@ -167,16 +196,47 @@ function Categories(props) {
       placeholder: "إبحث بسعر الفاتورة",
       id: "سعر الفاتورة",
     },
+
     user?.department.type === "master"
       ? {
-        key: "department_id",
-        type: "selection",
-        id: "نوع القسم",
-        placeholder: "إختار قسم لإظهار نتائج",
-        options: departments.map((department) => {
-          return { value: department.id, label: department.name };
-        }),
-      }
+          key: "department_id",
+          type: "selection",
+          id: "نوع القسم",
+          placeholder: "إختار قسم لإظهار نتائج",
+          options: departments.map((department) => {
+            return { value: department.id, label: department.name };
+          }),
+        }
+      : null,
+    {
+      key: "status",
+      type: "selection",
+      id: "اختر الحالة",
+      placeholder: "الحالة",
+      options: statusOptions,
+    },
+    { key: "from_date", type: "date", id: "من تاريخ" },
+    { key: "to_date", type: "date", id: "إلى تاريخ" },
+  ];
+  const filtersTransfare = [
+    { key: "code", type: "text", placeholder: "إبحث بالكود", id: "الكود" },
+    {
+      key: "invoice_price",
+      type: "text",
+      placeholder: "إبحث بسعر الفاتورة",
+      id: "سعر الفاتورة",
+    },
+
+    user?.department.type === "master"
+      ? {
+          key: "department_id",
+          type: "selection",
+          id: "نوع القسم",
+          placeholder: "إختار قسم لإظهار نتائج",
+          options: departments.map((department) => {
+            return { value: department.id, label: department.name };
+          }),
+        }
       : null,
     {
       key: "status",
@@ -191,12 +251,13 @@ function Categories(props) {
 
   const actionsIncoming = [
     {
-      type: `${user?.permissions.some(
-        (permission) => permission.name === "create invoice"
-      )
-        ? "add"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "create invoice"
+        )
+          ? "add"
+          : ""
+      }`,
       label: "اضافة فاتورة مورد",
       route: "/warehouse/invoices/incoming/add-Invoices/in_coming",
     },
@@ -209,7 +270,7 @@ function Categories(props) {
           ? "show"
           : ""
         // ):null
-        }`,
+      }`,
       label: "مراجعة",
     },
     {
@@ -227,22 +288,24 @@ function Categories(props) {
 
   const actionsOutComing = [
     {
-      type: `${user?.permissions.some(
-        (permission) => permission.name === "create invoice"
-      )
-        ? "add"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "create invoice"
+        )
+          ? "add"
+          : ""
+      }`,
       label: "اضافة فاتورة صرف القسم",
       route: "/warehouse/invoices/incoming/add-Invoices/out_going",
     },
     {
-      type: `${user?.permissions.some(
-        (permission) => permission.name === "edit invoice"
-      )
-        ? "show"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "edit invoice"
+        )
+          ? "show"
+          : ""
+      }`,
 
       label: "مراجعة",
     },
@@ -259,22 +322,52 @@ function Categories(props) {
 
   const actionsReturnd = [
     {
-      type: `${user?.permissions.some(
-        (permission) => permission.name === "create invoice"
-      )
-        ? "add"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "create invoice"
+        )
+          ? "add"
+          : ""
+      }`,
       label: "إضافة   فاتورة مرتجع من القسم",
       route: "/warehouse/invoices/incoming/add-Invoices/returned",
     },
     {
-      type: `${user?.permissions.some(
-        (permission) => permission.name === "edit invoice"
-      )
-        ? "show"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "edit invoice"
+        )
+          ? "show"
+          : ""
+      }`,
+      label: "مراجعة",
+    },
+    {
+      type: "navigate",
+      label: " طباعه",
+      route: "/warehouse/invoices/print/:id",
+    },
+  ];
+  const actionTransfare = [
+    {
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "create transfare_invoice"
+        )
+          ? "add"
+          : ""
+      }`,
+      label: "إضافة تحويل من قسم لقسم",
+      route: "/warehouse/invoices/incoming/add-Invoices/transfare",
+    },
+    {
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "edit invoice"
+        )
+          ? "show"
+          : ""
+      }`,
       label: "مراجعة",
     },
     {
@@ -305,6 +398,7 @@ function Categories(props) {
     // : []),
     { cat: "فاتورة صرف القسم", type: "outGoing" },
     { cat: "فاتورة مرتجع من القسم", type: "returnd" },
+    { cat: "فاتورة تحويل من قسم لقسم", type: "transfare" },
   ];
 
   const handleCategoryClick = (type) => {
@@ -313,8 +407,8 @@ function Categories(props) {
   };
 
   return (
-    <>   
-    {/* AND HENE  */}
+    <>
+      {/* AND HENE  */}
       <div className="invoice-container">
         <h1 className="heading text-center p-3">الفواتير </h1>
         <div className="row">
@@ -328,43 +422,67 @@ function Categories(props) {
           ))}
         </div>
         <div className="invoice-table">
-          {user?.department.type != "both" ? (
-            selectedCategory === "inComing" && (
-              <Table
-                headers={tableHeadersIncoming}
-                filters={filtersIncoming}
-                title="فاتورة مورد"
-                actions={actionsIncoming}
-                fetchData={async (filters, id, setIsLoading, status) =>
-                  (await getIncomingInvoiceByType(filters, id, setIsLoading, status))
-                }
-                getTotalPrice={async (filters, id, setIsLoading, status) => {
-                  const data = await getIncomingInvoiceByType(filters, id, setIsLoading, status)
-                  return data.total;
-                }
-                }
-                detailsHeaders={detailsHeaders}
-                updateFn={user?.permissions.some(
-                  (permission) => permission.name === "edit invoice") ? user?.department.type === "master" ? updateInvoicePrice : user?.department.type === "source" ? updateInvoiceQuintity : null : null}
-                acceptTitle={user?.permissions.some(
-                  (permission) => permission.name === "change invoice status") ? { value: "approved", label: "قبول" } : null}
-               changeStatusFn={
-                  user.permissions.some(
-                    (permission) =>
-                      permission.name === "change invoice status"
-                  )
-                    ? changeInvoiceStatus
-                    : null
-                }
-              />
-            )
-          ) : null}
-{/** rafd mowared sarf
- * 
- * rejectTitle={user?.permissions.some(
-                (permission) => permission.name === "change invoice status") ? { value: "rejected", label: "رفض" } : null}
-           
- */}
+          {user?.department.type != "both"
+            ? selectedCategory === "inComing" && (
+                <Table
+                  headers={tableHeadersIncoming}
+                  filters={filtersIncoming}
+                  title="فاتورة مورد"
+                  actions={actionsIncoming}
+                  fetchData={async (filters, id, setIsLoading, status) =>
+                    await getIncomingInvoiceByType(
+                      filters,
+                      id,
+                      setIsLoading,
+                      status
+                    )
+                  }
+                  getTotalPrice={async (filters, id, setIsLoading, status) => {
+                    const data = await getIncomingInvoiceByType(
+                      filters,
+                      id,
+                      setIsLoading,
+                      status
+                    );
+                    return data.total;
+                  }}
+                  detailsHeaders={detailsHeaders}
+                  updateFn={
+                    user?.permissions.some(
+                      (permission) => permission.name === "edit invoice"
+                    )
+                      ? user?.department.type === "master"
+                        ? updateInvoicePrice
+                        : user?.department.type === "source"
+                        ? updateInvoiceQuintity
+                        : null
+                      : null
+                  }
+                  acceptTitle={
+                    user?.permissions.some(
+                      (permission) =>
+                        permission.name === "change invoice status"
+                    )
+                      ? { value: "approved", label: "قبول" }
+                      : null
+                  }
+                  changeStatusFn={
+                    user.permissions.some(
+                      (permission) =>
+                        permission.name === "change invoice status"
+                    )
+                      ? changeInvoiceStatus
+                      : null
+                  }
+                />
+              )
+            : null}
+          {/** rafd mowared sarf
+                         * 
+                         * rejectTitle={user?.permissions.some(
+                                        (permission) => permission.name === "change invoice status") ? { value: "rejected", label: "رفض" } : null}
+                                  
+                        */}
           {selectedCategory === "outGoing" && (
             <Table
               headers={tableHeadersOutGoing}
@@ -374,16 +492,28 @@ function Categories(props) {
               fetchData={(filters, id, setIsLoading) =>
                 getOutgoingInvoiceByType(filters, id, setIsLoading)
               }
-              
               detailsHeaders={detailsHeaders}
-              updateFn={user?.permissions.some(
-                (permission) => permission.name === "edit invoice") ? user?.department.type === "master" ? updateInvoicePrice : user?.department.type === "source" ? updateInvoiceQuintity : null : null}
-              acceptTitle={user?.permissions.some(
-                (permission) => permission.name === "change invoice status") ? { value: "approved", label: "قبول" } : null}
-                 changeStatusFn={
+              updateFn={
+                user?.permissions.some(
+                  (permission) => permission.name === "edit invoice"
+                )
+                  ? user?.department.type === "master"
+                    ? updateInvoicePrice
+                    : user?.department.type === "source"
+                    ? updateInvoiceQuintity
+                    : null
+                  : null
+              }
+              acceptTitle={
+                user?.permissions.some(
+                  (permission) => permission.name === "change invoice status"
+                )
+                  ? { value: "approved", label: "قبول" }
+                  : null
+              }
+              changeStatusFn={
                 user.permissions.some(
-                  (permission) =>
-                    permission.name === "change invoice status"
+                  (permission) => permission.name === "change invoice status"
                 )
                   ? changeInvoiceStatus
                   : null
@@ -399,17 +529,80 @@ function Categories(props) {
               fetchData={(filters, id, setIsLoading) =>
                 getReturndInvoiceByType(filters, id, setIsLoading)
               }
-               detailsHeaders={detailsHeaders}
-              updateFn={user?.permissions.some(
-                (permission) => permission.name === "edit invoice") ? user?.department.type === "master" ? updateInvoicePrice : user?.department.type === "source" ? updateInvoiceQuintity : null : null}
-              acceptTitle={user?.permissions.some(
-                (permission) => permission.name === "change invoice status") ? { value: "approved", label: "قبول" } : null}
-              rejectTitle={user?.permissions.some(
-                (permission) => permission.name === "change invoice status") ? { value: "rejected", label: "رفض" } : null}
+              detailsHeaders={detailsHeaders}
+              updateFn={
+                user?.permissions.some(
+                  (permission) => permission.name === "edit invoice"
+                )
+                  ? user?.department.type === "master"
+                    ? updateInvoicePrice
+                    : user?.department.type === "source"
+                    ? updateInvoiceQuintity
+                    : null
+                  : null
+              }
+              acceptTitle={
+                user?.permissions.some(
+                  (permission) => permission.name === "change invoice status"
+                )
+                  ? { value: "approved", label: "قبول" }
+                  : null
+              }
+              rejectTitle={
+                user?.permissions.some(
+                  (permission) => permission.name === "change invoice status"
+                )
+                  ? { value: "rejected", label: "رفض" }
+                  : null
+              }
               changeStatusFn={
                 user.permissions.some(
-                  (permission) =>
-                    permission.name === "change invoice status"
+                  (permission) => permission.name === "change invoice status"
+                )
+                  ? changeInvoiceStatus
+                  : null
+              }
+            />
+          )}
+
+          {selectedCategory === "transfare" && (
+            <Table
+              headers={tableHeadersTransfare}
+              filters={filtersTransfare}
+              title="فاتورة تحويل من قسم لقسم"
+              actions={actionTransfare}
+              fetchData={(filters, id, setIsLoading) =>
+                getTransfareInvoiceByType(filters, id, setIsLoading)
+              }
+              detailsHeaders={detailsHeaders}
+              updateFn={
+                user?.permissions.some(
+                  (permission) => permission.name === "edit invoice"
+                )
+                  ? user?.department.type === "master"
+                    ? updateInvoicePrice
+                    : user?.department.type === "source"
+                    ? updateInvoiceQuintity
+                    : null
+                  : null
+              }
+              acceptTitle={
+                user?.permissions.some(
+                  (permission) => permission.name === "change invoice status"
+                )
+                  ? { value: "approved", label: "قبول" }
+                  : null
+              }
+              rejectTitle={
+                user?.permissions.some(
+                  (permission) => permission.name === "change invoice status"
+                )
+                  ? { value: "rejected", label: "رفض" }
+                  : null
+              }
+              changeStatusFn={
+                user.permissions.some(
+                  (permission) => permission.name === "change invoice status"
                 )
                   ? changeInvoiceStatus
                   : null

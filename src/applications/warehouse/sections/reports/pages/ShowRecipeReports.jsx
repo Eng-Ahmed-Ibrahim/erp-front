@@ -49,7 +49,7 @@ const ShowRecipeReports = () => {
     { key: "out_going", value: "اجمالي المصروف للقسم " },
     { key: "returned_to", value: "مرتجع اليه" },
     { key: "returned_from", value: "مرتجع منه" },
-    { key: "total_quantity", value: "اجمالي الكميه بعد المرتجع " },
+    { key: "total_quantity", value: "اجمالي الكميه بعد المرتجع والهالك" },
     { key: "total_price", value: "اجمالي السعر " },
   ];
 
@@ -66,7 +66,7 @@ const ShowRecipeReports = () => {
       options: RecipeCategoryParent.map((category) => {
         return { value: category.id, label: category.name };
       }),
-      multi: true,
+    //   multi: true,
     },
     // {
     //     key: "department_ids",

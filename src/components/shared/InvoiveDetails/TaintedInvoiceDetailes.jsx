@@ -12,7 +12,7 @@ const TaintedInvoiceDetailes = ({ onAddItem, onDeleteItem, InvoiceType, departme
     const [price, setPrice] = useState(0);
     const [unit, setUnit] = useState("");
     const [expireDate, setExpireDate] = useState("");
-       const [invoiceId, setInvoiceId] = useState("");
+    const [invoiceId, setInvoiceId] = useState("");
 
     const [expirationOptions, setExpirationOptions] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -178,6 +178,8 @@ const TaintedInvoiceDetailes = ({ onAddItem, onDeleteItem, InvoiceType, departme
             quantity: parseFloat(newQuantity),
             price: parseFloat(price), // Default price
             expireDate: expireDate,
+            invoiceId: invoiceId,
+
         };
         const matchedDetail = selectedRecipeObj.quantitesDetails.find(detail => detail.expire_date === expireDate&&detail.invoice_id==invoiceId);
         if (matchedDetail) {

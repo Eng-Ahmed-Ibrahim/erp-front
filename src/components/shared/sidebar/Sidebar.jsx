@@ -491,6 +491,44 @@ const Sidebar = () => {
 
 
 
+
+
+            <li
+              className="menu-item"
+              title="طلبات المطبخ"
+              style={{
+                display: `${checkMenuItemPermission({
+                  id: 124,
+                  name: "view orders",
+                })
+                  ? ""
+                  : "none"
+                  }`,
+              }}
+            >
+              <Link
+                to="/warehouse/cashier/kitchen-orders"
+                className={`menu-link ${activeLink === "/warehouse/cashier/kitchen-orders"
+                  ? "active"
+                  : ""
+                  } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick("/warehouse/cashier/kitchen-orders")
+                }
+              >
+                <span className="menu-link-icon">
+                  <FaKitchenSet size={30} />
+                </span>
+                <span
+                  className={`menu-link-text special-txt ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  أوردرات المطبخ
+                </span>
+              </Link>
+            </li>
+
+
 {!isTalaat &&
             <li
               className="menu-item"

@@ -61,8 +61,8 @@ export async function updateClient(editValues, id) {
   formData.append("sallary", editValues.salary ? editValues.salary : "");
   formData.append("incentives", editValues.incentives ? editValues.incentives : "");
   formData.append("client_type_id", editValues.client_type_id);
-  formData.append("tax", editValues.tax);
-  formData.append("discount", editValues.discount);
+  formData.append("tax", editValues.tax ?? '');
+  formData.append("discount", editValues.discount?? '');
   formData.append("_method", "PUT");
   try {
     const res = await axios.post(

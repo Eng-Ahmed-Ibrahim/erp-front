@@ -29,7 +29,7 @@ export async function getOrders(filteredValues, id, setIsLoading) {
       },
     });
     setIsLoading(false);
-    return res.data;
+    return res.data.data;
   } catch (error) {
     // // console.log("Error fetching data:", error);
     setIsLoading(false);

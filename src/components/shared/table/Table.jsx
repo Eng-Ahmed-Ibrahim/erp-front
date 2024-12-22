@@ -31,6 +31,7 @@ const SoundPlayer = ({ play }) => {
 
   return <audio ref={audioRef} src={soundFile} />;
 };
+
 const Table = ({
   headers,
   title,
@@ -75,13 +76,13 @@ const Table = ({
   const [editedCell, setEditedCell] = useState({});  
   const [cellValue, setCellValue] = useState("");    
   const [editedItems, setEditedItems] = useState([]);
-
+  
+  const KITCHEN_DEPARTMENTS = ['3d1e1d26-91ff-40b8-9b2c-139aa79430e9','01j45gtesjz0mm3qf0sz6bzvn9'];
 
 
   useEffect(() => {
-    if(user.department.type=="both"){
-      console.log("kit")
-setIsKitchien(true)
+    if(user.department.type=="both" || KITCHEN_DEPARTMENTS.includes(user.department.id)){
+      setIsKitchien(true)
     }
 
     (async () => {
@@ -117,7 +118,7 @@ setIsKitchien(true)
               setPlaySound(true);
               setTimeout(() => {
                 setPlaySound(false);
-              }, 5000);
+              }, 6000);
             }
             setData(result);
           }
@@ -321,7 +322,9 @@ setIsKitchien(true)
       case "completed":
         return <p className="status approved">تم التجهيز</p>;
       case "closed":
-        return <p className="status done">تم الدفع</p>;
+          return <p className="status done">تم الدفع</p>;
+      case "returned":
+          return <p className="status rejected"> تم الحذف</p>;
       default:
         break;
     }

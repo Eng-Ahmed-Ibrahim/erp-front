@@ -9,25 +9,32 @@ import {
 } from "../../../../../../apis/orders";
 import { message, Select } from "antd";
 import { useNavigate } from "react-router-dom";
-import { API_ENDPOINT } from '../../../../../../../config'
+import { API_ENDPOINT } from "../../../../../../../config";
 import { useAuth } from "../../../../../../context/AuthContext";
-import axios from 'axios'
+import axios from "axios";
 import PrintAfterSubmit from "../KitchenRequests/PrintAfterSubmit";
+
 const OrderDetails = () => {
   const { user } = useAuth();
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
   const { id } = useParams();
   const [order, setOrder] = useState({});
   const [currentProduct, setCurrentProduct] = useState(null);
   const [currentProductId, setCurrentProductId] = useState(null);
   const [isModalVisible, setisModalVisible] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [comments, setComments] = useState([]);
   const navigate = useNavigate();
+
   useEffect(() => {
     const getOrderByID = async () => {
       try {
         const res = await getTableOrderById(id);
         setOrder(res.data);
 
+        if (res.data.comment) {
+          setComments(res.data.comment.split(","));
+        }
       } catch (error) {
         console.error("Error fetching order details:", error);
       }
@@ -51,16 +58,13 @@ const OrderDetails = () => {
   const [errors, setErrors] = useState({});
   const [addFormVisible, setAddFormVisible] = useState(false);
   const [discountReasons, setDiscountReasons] = useState([]);
-  const [flag, setFlag] = useState(false)
+  const [flag, setFlag] = useState(false);
   const [printData, setPrintData] = useState();
 
-
   useEffect(() => {
-     
     const fetchData = async () => {
       await fetchPaymentMethods();
       // await fetchDiscountReasons();
-
     };
     fetchData();
   }, []);
@@ -99,12 +103,11 @@ const OrderDetails = () => {
         }
       );
       setClientTypes(response.data.data);
-      //  
+      //
     } catch (error) {
       console.error("Error fetching client types for payment method:", error);
     }
   };
-
 
   const handleClientTypeChange = async (value) => {
     setNewUserValues((prevState) => ({
@@ -123,41 +126,79 @@ const OrderDetails = () => {
         }
       );
       setClients(response.data.data);
-      fetchClientType(newUserValues["client_type_id"])
+      fetchClientType(newUserValues["client_type_id"]);
     } catch (error) {
       console.error("Error fetching clients for client type:", error);
     }
   };
   const handlePrintCompletion = () => {
-    navigate('/warehouse/cashier/create-order');
+    navigate("/warehouse/cashier/create-order");
   };
   const handelDelete = async (id) => {
-
     await axios
-      .post(`${API_ENDPOINT}/api/v1/orders/update/status/${id}`, {
-        status: "closed"
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      .post(
+        `${API_ENDPOINT}/api/v1/orders/update/status/${id}`,
+        {
+          status: "closed",
         },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
       .then((response) => {
-        message.success('تم الإنهاء بنجاح');
-        setFlag(true)
+        message.success("تم الإنهاء بنجاح");
+        setFlag(true);
         // setTimeout(() => {
         //   navigate('/warehouse/cashier/create-order');
         // }, 4000);
-         // navigate('/warehouse/cashier/create-order')
-        //  
+        // navigate('/warehouse/cashier/create-order')
+        //
       })
       .catch((error) => {
-        //  
-        message.error('حدث خطأ')
+        //
+        message.error("حدث خطأ");
       });
   };
-  ///////////////////////////////////
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      const updatedComments = [...comments, newComment.trim()];
+      setComments(updatedComments);
+      console.log(comments, updatedComments)
+      setNewComment("");
+      storeComment(updatedComments);
+    }
+  };
 
+  const storeComment = async (updatedComments) => {
+    const commentString = updatedComments.join(",");
+    await axios
+      .post(
+        `${API_ENDPOINT}/api/v1/orders/update/comment/${id}`,
+        {
+          comment: commentString,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        message.success("تم إضافة الملاحظة بنجاح");
+      })
+      .catch((error) => {
+        message.error("حدث خطأ");
+      });
+  };
+  const getCommentColor = () => {
+    const colors = ["#c2ac84", "#8ca3a3", "#9fa9a3", "#b1cbbb", "#b2b2b2"];
+
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
 
   return (
     <div>
@@ -165,19 +206,71 @@ const OrderDetails = () => {
         <div>
           <h1 className="order-title">ترابيزه رقم {order?.table_number}</h1>
           <div className="order-header">
-            {order.comment && <p>ملاحظة: <span className="text-danger fw-bold fs-5">{order.comment}</span> </p>}
-            {order.discount !== null && <p>سبب الخصم: {order.discount_name}</p>}
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "gap",
+                    gap: "30px",
+                    alignItems: "center"
+                  }}
+                >
+                  <p style={{textAlign:"center", marginTop:'20px'}}>ملاحظات: </p>
+                  
+                  <input
+                    type="text"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="أضف ملاحظة جديدة"
+                    className="comment-input"
+                  />
+                  <button className="comment-button" onClick={handleAddComment}>
+                    أضف 
+                  </button>
+                </div>
+                {comments?.length > 0 && (
+
+                <div className="comments-container">
+                  {comments.map((comment, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        backgroundColor: getCommentColor(),
+                        padding: "5px",
+                        margin: "5px",
+                        borderRadius: "5px",
+                        color: "black",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      {comment}
+                    </span>
+                  ))} 
+                </div>
+                      )}
+              </div>
+      
+
+            {order.discount !== null && <p style={{textAlign:"center", marginTop:'20px'}} >سبب الخصم: {order.discount_name}</p>}
             {order.discount_resones && (
-              <p>سبب الخصم: {order.discount_resones}</p>
+              <p style={{textAlign:"center", marginTop:'20px'}}>سبب الخصم: {order.discount_resones}</p>
             )}
             {order.total_price_after_discount && (
-              <p>اجمالى السعر بعد الخصم: {order.total_price_after_discount_and_tax}</p>
+              <p>
+                اجمالى السعر بعد الخصم:{" "}
+                {order.total_price_after_discount_and_tax}
+              </p>
             )}
-            {order.order_date && <p>تاريخ الأوردر: {order.order_date}</p>}
+            {order.order_date && <p style={{textAlign:"center", marginTop:'20px'}} >تاريخ الأوردر: {order.order_date}</p>}
             {order.target_department_name && (
               <p>إسم القسم المراد: {order.target_department_name}</p>
             )}
           </div>
+
+
+
           <h2>المنتجات:</h2>
           <button
             className="add-btn"
@@ -190,7 +283,7 @@ const OrderDetails = () => {
           <ul className="order-details-container">
             {order.products &&
               order.products.map((product, index) => {
-                //  
+                //
                 return (
                   <li key={index} className="order">
                     <div className="img-container">
@@ -234,8 +327,21 @@ const OrderDetails = () => {
                 );
               })}
           </ul>
-          <button className="btn btn-danger" onClick={() => handelDelete(id)}>انهاء الاوردر</button>
-          {flag && <PrintAfterSubmit id={id} table_no ={order?.table_number} />}
+          <button
+            className="btn btn-danger"
+            onClick={() => handelDelete(id)}
+            hidden={
+              user?.permissions.some(
+                (permission) =>
+                  permission.name === "change order status cashier"
+              )
+                ? false
+                : true
+            }
+          >
+            انهاء الاوردر
+          </button>
+          {flag && <PrintAfterSubmit id={id} table_no={order?.table_number} />}
         </div>
       )}
     </div>

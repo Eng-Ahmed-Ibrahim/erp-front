@@ -39,6 +39,8 @@ const ShowSuppliers = () => {
         },
       ],
     },
+    { key: "from_date", type: "date", id: "من تاريخ" },
+    { key: "to_date", type: "date", id: "إلى تاريخ" },
   ];
   const actions = [
     {

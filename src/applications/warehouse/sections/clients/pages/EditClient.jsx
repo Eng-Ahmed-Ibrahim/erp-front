@@ -6,6 +6,7 @@ import {
 } from "../../../../../apis/clients/Client";
 import DynamicForm from "../../../../../components/shared/form/Form";
 import { getClientTypes } from "../../../../../apis/clients/ClientType";
+import { Form, Input, Button, Select } from "antd";
 
 const EditClient = () => {
   const navigate = useNavigate();
@@ -16,18 +17,16 @@ const EditClient = () => {
 
   useEffect(() => {
     const fetchClientTypes = async () => {
-      const res = await getClientTypes({}, "", () => { });
+      const res = await getClientTypes({}, "", () => {});
       setClientTypes(res?.data);
       // console.log(res?.data);
     };
 
-
     const fetchData = async () => {
       try {
-        const recipeData = await getClientById(id);
-        setData(recipeData?.data);
-      } catch (error) {
-      }
+        const data = await getClientById(id);
+        setData(data?.data);
+      } catch (error) {}
     };
 
     fetchData();
@@ -36,7 +35,7 @@ const EditClient = () => {
 
   const handleSubmit = async (formData) => {
     await updateClient(formData, id);
-    navigate(`/warehouse/clients/client`);
+    // navigate(`/warehouse/clients/client`);
   };
 
   const fields = [
@@ -84,7 +83,7 @@ const EditClient = () => {
       placeholder: "ضريبة الخدمه",
     },
     {
-      type: "select",
+      type: "multi-select",
       name: "client_type_id",
       labelName: "نوع العميل",
       placeholder: "نوع العميل",
@@ -92,19 +91,20 @@ const EditClient = () => {
       options: clientTypes.map((type) => {
         return { value: type.id, label: type.name };
       }),
-
     },
   ];
+
+  const initialValues = data ? { ...data, client_type_id: data.client_types.map((type) => ({id: type.id, label: type.name}))|| [] } : {};
 
   return (
     <div className="form-container">
       <h1 className="form-title">تعديل عميل</h1>
       {data && (
-        <DynamicForm
-          fields={fields}
-          initialValues={data}
-          onSubmit={handleSubmit}
-        />
+          <DynamicForm
+            fields={fields}
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+          />
       )}
     </div>
   );

@@ -17,25 +17,23 @@ import ReportContentsSubStores from "../ReportContentsSubStores";
 function ShowReports() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const [isMechOrChem,setIsMechOrChem] = useState(false);
- const [isTalaat ,setIsTalaat] = useState(false)
-  const repairId ="9d727355-cad2-48b4-9671-aebbcfdc6771"
-  const chemicalId ="9d72735b-c904-4b4b-a613-f5f16ba8ad98"
-  const talaatId = "9d7b0996-857f-4a59-997b-64d605af07c0"
-
+  const [viewTabTwoOnly, setViewTabTwoOnly] = useState(false);
+  const [isTalaat, setIsTalaat] = useState(false);
+  const repairId = "9d727355-cad2-48b4-9671-aebbcfdc6771";
+  const chemicalId = "9d72735b-c904-4b4b-a613-f5f16ba8ad98";
+  const talaatId = "9d7b0996-857f-4a59-997b-64d605af07c0";
+  const tabTwoUsers =['9c10de53-14b1-4ae9-89d6-665ce7c0ccc5']
   const { user } = useAuth();
   useEffect(() => {
-    if(user.roles[0]==talaatId){
-      setIsTalaat(true)
+    if (user.roles[0] == talaatId) {
+      setIsTalaat(true);
     }
-    if(!(user.roles[0]==repairId || user.roles[0]==chemicalId)){
-      setIsMechOrChem(false)
-    }
-    else {
-      setIsMechOrChem(true)
+console.log(user)
+setViewTabTwoOnly(false);
 
-    }
-   
+    if (tabTwoUsers.includes(user.roles[0])) {
+      setViewTabTwoOnly(true);
+    } 
   }, []);
   const reportData = [
     {
@@ -71,14 +69,15 @@ function ShowReports() {
     {
       image: `${Report5}`,
       name: "الميزان المخزنى",
-      route:"/warehouse/reports/show-reports/departmentbalance"
-     // route: "/warehouse/reports/show-reports/inventory-balance",
+      route: "/warehouse/reports/show-reports/departmentbalance",
+      // route: "/warehouse/reports/show-reports/inventory-balance",
     },
     {
       image: `${Report5}`,
       name: "جرد المدفوعات للمنفذ",
       route: "/warehouse/reports/show-reports/department-orders",
-    }, {
+    },
+    {
       image: `${Report3}`,
       name: "كارت الصنف ",
       route: "/warehouse/reports/show-reports/type-card",
@@ -94,37 +93,34 @@ function ShowReports() {
       <h1 className="heading text-center p-3"> التقارير </h1>
       <Tabs>
         <TabList>
-         {!(isMechOrChem ||isTalaat) && <Tab>تقارير </Tab>}
-         { isMechOrChem || isTalaat ? (<Tab>تقارير</Tab>):(<Tab>التقارير 2</Tab>)}
+          {!(viewTabTwoOnly || isTalaat) && <Tab>تقارير </Tab>}
+          {viewTabTwoOnly || isTalaat ? <Tab>تقارير</Tab> : <Tab>التقارير 2</Tab>}
         </TabList>
-{!(isMechOrChem ||isTalaat )&&
- 
-
-        <TabPanel >
-          <div className="cards-container">
-            <div className="row">
-              {reportData.map((department, index) => (
-                <ReportCards
-                  key={index}
-                  img={department.image}
-                  department={department.name}
-                  onClick={() => handleCardClick(department.route)}
-                />
-              ))}
-              {isLoading && (
-                <>
-                  <Spin
-                    indicator={
-                      <LoadingOutlined style={{ fontSize: 56 }} spin />
-                    }
+        {!(viewTabTwoOnly || isTalaat) && (
+          <TabPanel>
+            <div className="cards-container">
+              <div className="row">
+                {reportData.map((department, index) => (
+                  <ReportCards
+                    key={index}
+                    img={department.image}
+                    department={department.name}
+                    onClick={() => handleCardClick(department.route)}
                   />
-                </>
-              )}
+                ))}
+                {isLoading && (
+                  <>
+                    <Spin
+                      indicator={
+                        <LoadingOutlined style={{ fontSize: 56 }} spin />
+                      }
+                    />
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        </TabPanel>
-        
-        }
+          </TabPanel>
+        )}
         <TabPanel>
           <ReportContentsSubStores />
         </TabPanel>

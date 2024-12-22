@@ -107,6 +107,7 @@ const ShowProductDepartment2 = () => {
               value={searchTerm}
             />
           </div>
+          
           <div className="invoice-items">
             <table>
               <thead>

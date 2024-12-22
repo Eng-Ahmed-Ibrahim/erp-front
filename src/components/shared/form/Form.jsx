@@ -10,6 +10,9 @@ const DynamicForm = ({ fields, onSubmit, initialValues }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); 
 console.log(`initialValues`,initialValues)
+
+
+
   const handleFormSubmit = async () => {
     try {
       setLoading(true); 
@@ -122,7 +125,7 @@ console.log(`initialValues`,initialValues)
               optionFilterProp="children" 
               onChange={(value) => {
                 handleSelectChange(value, field)
-                console.log("Field: ", field)
+
                 if (field?.handleSelectedItemId) {
                   field?.handleSelectedItemId(value)
                 }
@@ -136,6 +139,8 @@ console.log(`initialValues`,initialValues)
               ))}
             </Select>
           )}
+
+          
           {field.type === "multi-select" && (
             <Select
               mode="multiple"
@@ -149,6 +154,8 @@ console.log(`initialValues`,initialValues)
               ))}
             </Select>
           )}
+
+
           {field.type === "text" && (
             <Input
               placeholder={field.placeholder}

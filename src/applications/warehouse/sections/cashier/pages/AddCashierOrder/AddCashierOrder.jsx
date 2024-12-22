@@ -1,10 +1,10 @@
-import React, { useState, useEffect,useCallback , useRef} from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import TotalAmount from "../../../../../../components/shared/totalAmount/TotalAmount";
 import LogoDAR from "../../../../../../../public/assets/images/Dar_logo.svg";
 import "./AddCashierOrder.scss";
 import axios from "axios";
 import { API_ENDPOINT } from "../../../../../../../config";
-import { message, Select,Modal  } from "antd";
+import { message, Select, Modal } from "antd";
 import { useAuth } from "../../../../../../context/AuthContext";
 import { checkTableNumber } from "../../../../../../apis/orders";
 import CashierOrderDetailes from "../../../../../../components/shared/CashierOrderDetails/CashierOrderDetailes";
@@ -15,9 +15,16 @@ import { changeOrderStatus, getOrders } from "../../../../../../apis/orders";
 import { getOrderById, deleteOrder } from "../../../../../../apis/orders";
 import { getRoles } from "../../../../../../apis/roles";
 import { useNavigate } from "react-router-dom";
-import { useReactToPrint } from 'react-to-print'; // Import the hook
-import { Br, Cut, Line, Printer, Text, Row, render } from 'react-thermal-printer';
-
+import { useReactToPrint } from "react-to-print"; // Import the hook
+import {
+  Br,
+  Cut,
+  Line,
+  Printer,
+  Text,
+  Row,
+  render,
+} from "react-thermal-printer";
 
 function PrintAfterFinish({ id, table_no }) {
   const componentRef = useRef();
@@ -34,7 +41,7 @@ function PrintAfterFinish({ id, table_no }) {
     total_price_after_discount_and_tax: 0,
     departmentName: "",
     cashier: "",
-    payment: ""
+    payment: "",
   });
 
   useEffect(() => {
@@ -59,11 +66,11 @@ function PrintAfterFinish({ id, table_no }) {
           price: InvoiceData.data.price,
           total_price: InvoiceData.data.total_price,
           waiter_name: InvoiceData.data.waiter.name,
-          total_price_after_discount_and_tax: InvoiceData.data.total_price_after_discount_and_tax,
+          total_price_after_discount_and_tax:
+            InvoiceData.data.total_price_after_discount_and_tax,
           departmentName: InvoiceData.data.department,
         });
       } catch (error) {
-         
       } finally {
         setLoading(false); // Set loading to false after data is fetched
       }
@@ -76,9 +83,8 @@ function PrintAfterFinish({ id, table_no }) {
     content: () => componentRef.current,
     documentTitle: `${data.code + "-" + "أوردر كود"}`,
     onAfterPrint: () => {
-     window.location.reload(); 
-
-    }
+      window.location.reload();
+    },
   });
 
   useEffect(() => {
@@ -88,7 +94,12 @@ function PrintAfterFinish({ id, table_no }) {
   }, [loading, data]);
 
   return (
-    <div id="invoice-container" ref={componentRef} dir="rtl" style={{ display: "flex", justifyContent: "center" }}>
+    <div
+      id="invoice-container"
+      ref={componentRef}
+      dir="rtl"
+      style={{ display: "flex", justifyContent: "center" }}
+    >
       <Printer ref={componentRef} className="main">
         <div className="headers-wrapper">
           <div className="main-title">
@@ -139,12 +150,20 @@ function PrintAfterFinish({ id, table_no }) {
             </tbody>
             <tfoot>
               <tr>
-                <td className="text-price" colSpan={2}>السعر الكلي</td>
-                <td className="text-price" colSpan={2}>{data.price} ج.م</td>
+                <td className="text-price" colSpan={2}>
+                  السعر الكلي
+                </td>
+                <td className="text-price" colSpan={2}>
+                  {data.price} ج.م
+                </td>
               </tr>
               <tr>
-                <td className="text-price" colSpan={2}>السعر الكلي بعد الخدمة</td>
-                <td className="text-price" colSpan={2}>{data.total_price} ج.م</td>
+                <td className="text-price" colSpan={2}>
+                  السعر الكلي بعد الخدمة
+                </td>
+                <td className="text-price" colSpan={2}>
+                  {data.total_price} ج.م
+                </td>
               </tr>
             </tfoot>
           </table>
@@ -154,7 +173,6 @@ function PrintAfterFinish({ id, table_no }) {
     </div>
   );
 }
-
 
 const { Option } = Select;
 
@@ -168,20 +186,24 @@ const AddCashierOrder = () => {
   const [discountReasons, setDiscountReasons] = useState([]);
   const [flag, setFlag] = useState(false);
   const [printData, setPrintData] = useState();
-  const [selectedPaymentMethodNakdy, setSelectedPaymentMethodNakdy] = useState("");
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("dc2a3eb5-0efd-4bed-a297-8f5b43e8dc13");
-  const [selectedClientName, setSelectedClientName] = useState(`guest`)
+  const [selectedPaymentMethodNakdy, setSelectedPaymentMethodNakdy] =
+    useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
+    "dc2a3eb5-0efd-4bed-a297-8f5b43e8dc13"
+  );
+  const [selectedClientName, setSelectedClientName] = useState(`guest`);
   const [items, setItems] = useState([]);
   const [showTable, setShowTable] = useState(false); // Controls table display
   const [showDetails, setShowDetails] = useState(false);
   const [isTakeAway, setIsTakeAway] = useState(false);
   const [isguest, setIsGuest] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const [shouldPrint, setShouldPrint] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [orderID, setOrderID] = useState("");
   message.config({
     duration: 3, // message duration in seconds
-    top: '50%', // vertically center the message
+    top: "50%", // vertically center the message
     maxCount: 3, // only show up to 3 messages at once
   });
   const [newUserValues, setNewUserValues] = useState({
@@ -213,9 +235,11 @@ const AddCashierOrder = () => {
     return "";
   };
   const validateTableNumber = (value) => {
-    if(!isTakeAway){    if (value <= 0 || !value) {
-      return "رقم التربيزة يجب أن يكون أكبر من صفر";
-    }}
+    if (!isTakeAway) {
+      if (value <= 0 || !value) {
+        return "رقم التربيزة يجب أن يكون أكبر من صفر";
+      }
+    }
     return "";
   };
   const validateUser = () => {
@@ -239,50 +263,63 @@ const AddCashierOrder = () => {
     const errors = {};
     // && !isguest
     if (clients.length > 0 && !newUserValues.client_id && !isguest) {
-      setIsDisabled(false)
+      setIsDisabled(false);
 
       const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}> يجب اختيار اسم العميل </div>,
-        centered: true, 
-        width: 400, 
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            {" "}
+            يجب اختيار اسم العميل{" "}
+          </div>
+        ),
+        centered: true,
+        width: 400,
       });
-      
+
       setTimeout(() => {
         modal.destroy();
-      }, 4000);  
-      errors.mustChooseClientName = "يجب اختيار اسم العميل"
-    }    
+      }, 4000);
+      errors.mustChooseClientName = "يجب اختيار اسم العميل";
+    }
     if (selectedClientName == "ظابط مشاه" && !militryIdInputValue) {
-      setIsDisabled(false)      
+      setIsDisabled(false);
       const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}> يجب اضافة رقم العضوية</div>,
-        centered: true, 
-        width: 400, 
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            {" "}
+            يجب اضافة رقم العضوية
+          </div>
+        ),
+        centered: true,
+        width: 400,
       });
-      
-      setTimeout(() => {
-        modal.destroy();
-      }, 4000); 
-      errors.mustHaveMilitryNumber = "يجب اضافة رقم العضوية"
 
-    }
-    if(selectedClientType!= "01hzf60qrasrm5x2ytvyrsne1j"){
-    if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
-      setIsDisabled(false)
-      const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>يجب اختيار اسم الويتر</div>,
-        centered: true, 
-        width: 400, 
-      });
-    
       setTimeout(() => {
         modal.destroy();
-      }, 4000); 
-      return Object.values(errors).every((error) => error === "");
+      }, 4000);
+      errors.mustHaveMilitryNumber = "يجب اضافة رقم العضوية";
     }
+    if (selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j") {
+      if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
+        setIsDisabled(false);
+        const modal = Modal.error({
+          title: "Error",
+          content: (
+            <div style={{ fontSize: "24px", textAlign: "center" }}>
+              يجب اختيار اسم الويتر
+            </div>
+          ),
+          centered: true,
+          width: 400,
+        });
+
+        setTimeout(() => {
+          modal.destroy();
+        }, 4000);
+        return Object.values(errors).every((error) => error === "");
+      }
     }
     errors.userError = validateUser();
     errors.tableNumber = validateTableNumber(newUserValues["table_number"]);
@@ -345,9 +382,8 @@ const AddCashierOrder = () => {
       const response = await axios.get(
         `${API_ENDPOINT}/api/v1/store/client_type/payment_method/${value}`,
         {
-          params:{
-department_id :user.department.id
-
+          params: {
+            department_id: user.department.id,
           },
           headers: {
             Authorization: `Bearer ${Token}`,
@@ -355,7 +391,6 @@ department_id :user.department.id
         }
       );
       setClientTypes(response.data.data);
-
     } catch (error) {
       console.error("Error fetching client types for payment method:", error);
     }
@@ -363,29 +398,39 @@ department_id :user.department.id
   const [selectedClientType, setSelectedClientType] = useState("");
 
   const handleClientTypeChange = async (value) => {
-    const selectedClient = clientTypes.find(ele => ele.id == value)?.name;
+
+    const selectedClient = clientTypes.find((ele) => ele.id == value)?.name;
     setSelectedClientName(selectedClient);
     if (selectedClient == "ظابط مشاه") {
-      setAddFormVisible(true)
+      setAddFormVisible(true);
     } else {
-      setAddFormVisible(false)
+      setAddFormVisible(false);
       setSelectedClientType(false);
     }
-    setSelectedClientType(value)
+    setSelectedClientType(value);
     ///////////////////
-   if(selectedClient == "تيك اواي")
-    {setIsTakeAway(true)}
-   else{   setIsTakeAway(false)
-   }
-   if(selectedClient=="Guest"){setIsGuest(true)}
-   else {
-    setIsGuest(false)
-   }
+    if (selectedClient == "تيك اواي") {
+      setIsTakeAway(true);
+    } else {
+      setIsTakeAway(false);
+    }
+    if (selectedClient == "Guest") {
+      setIsGuest(true);
+    } else {
+      setIsGuest(false);
+    }
+    if (selectedClient == "تيك اواي المطعم") {
+      setIsHidden(true);
+    } else {
+      setIsHidden(false);
+    }
     setNewUserValues((prevState) => ({
       ...prevState,
       client_type_id: value,
     }));
-    handleNewUserFormChange("client_id", ``)
+
+
+    handleNewUserFormChange("client_id", ``);
     try {
       const Token =
         localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -425,12 +470,16 @@ department_id :user.department.id
       setWaiterName(response.data.data);
     } catch (error) {
       const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>لايوجد ويتر</div>,
-        centered: true, 
-        width: 400, 
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            لايوجد ويتر
+          </div>
+        ),
+        centered: true,
+        width: 400,
       });
-      
+
       setTimeout(() => {
         modal.destroy();
       }, 4000);
@@ -448,8 +497,7 @@ department_id :user.department.id
       setClientData(recipeData?.data);
       setDiscount(recipeData.data.discount);
       setResedent(recipeData.data.name);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
   useEffect(
     () => {
@@ -472,23 +520,26 @@ department_id :user.department.id
       (total, item) => total + item?.quantity * item?.price,
       0
     );
-  }; 
+  };
   const handleFinish = async () => {
-    if(selectedClientType=="")
-      {
-        const modal = Modal.error({
-          title: 'Error',
-          content: <div style={{ fontSize: '24px', textAlign: 'center' }}>ادخل نوع العميل من فضلك </div>,
-          centered: true, 
-          width: 400, 
-        });
-        
-        setTimeout(() => {
-          modal.destroy();
-        }, 5000);
-        return
-      }
-    setIsDisabled(true)
+    if (selectedClientType == "") {
+      const modal = Modal.error({
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            ادخل نوع العميل من فضلك{" "}
+          </div>
+        ),
+        centered: true,
+        width: 400,
+      });
+
+      setTimeout(() => {
+        modal.destroy();
+      }, 5000);
+      return;
+    }
+    setIsDisabled(true);
 
     const formData = new FormData();
     const productQuantities = new Map();
@@ -496,7 +547,7 @@ department_id :user.department.id
       const { ProductId, productType, quantity } = item;
       if (productQuantities.has(ProductId)) {
         const existingItem = productQuantities.get(ProductId);
-        existingItem.quantity += quantity; 
+        existingItem.quantity += quantity;
       } else {
         productQuantities.set(ProductId, {
           productType,
@@ -504,13 +555,15 @@ department_id :user.department.id
         });
       }
     });
-    Array.from(productQuantities.entries()).forEach(([productId, { productType, quantity }], index) => {
-      formData.append(`products[${index}][product_id]`, productId);
-      formData.append(`products[${index}][product_type]`, productType);
-      formData.append(`products[${index}][quantity]`, quantity);
-    });
+    Array.from(productQuantities.entries()).forEach(
+      ([productId, { productType, quantity }], index) => {
+        formData.append(`products[${index}][product_id]`, productId);
+        formData.append(`products[${index}][product_type]`, productType);
+        formData.append(`products[${index}][quantity]`, quantity);
+      }
+    );
     const date = new Date();
-    const datetype = new Date(date.toLocaleString()); 
+    const datetype = new Date(date.toLocaleString());
     const year = datetype.getFullYear();
     const month = String(datetype.getMonth() + 1).padStart(2, "0");
     const day = String(datetype.getDate()).padStart(2, "0");
@@ -524,13 +577,17 @@ department_id :user.department.id
     formData.append("comment", newUserValues["comment"]);
     formData.append("deleviery_type", newUserValues["deleviery_type"]);
     formData.append("payment_method_id", newUserValues["payment_method_id"]);
-    formData.append("client_id",
+    formData.append(
+      "client_id",
       newUserValues["client_id"] === "add-new" ? "" : newUserValues["client_id"]
     );
     formData.append("client_type_id", newUserValues["client_type_id"]);
     formData.append("military_number", newUserValues["military_number"]);
     formData.append("department_id", user?.department.id);
-    { selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j" && formData.append("waiter_id", selectWaiter);}
+    {
+      selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j" &&
+        formData.append("waiter_id", selectWaiter);
+    }
     formData.append("name", newUserValues["name"]);
     formData.append("phone", newUserValues["phone"]);
     formData.append("tax", 0);
@@ -547,47 +604,50 @@ department_id :user.department.id
           },
         }
       );
-if(response.data){
-      setPrintData(response.data.data);
-      const modal = Modal.success({
-        title: 'success',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>لقد تم اضافة الاوردر بنجاح</div>,
-        centered: true, 
-        width: 400, 
-      });
-      
-      setTimeout(() => {
-        modal.destroy();
-      }, 2000);  
-      setItems([]);
-      setOrderID(response.data.data.id)
-      getOrderById(response.data.data.id)
-    .then(datsss => {
-      
-    })
-    .catch(error => {
-      setIsDisabled(false)
-      console.error("Error fetching order by ID:", error);
-    });
-      setShouldPrint(true);
+      if (response.data) {
+        setPrintData(response.data.data);
+        const modal = Modal.success({
+          title: "success",
+          content: (
+            <div style={{ fontSize: "24px", textAlign: "center" }}>
+              لقد تم اضافة الاوردر بنجاح
+            </div>
+          ),
+          centered: true,
+          width: 400,
+        });
 
-}
-    
+        setTimeout(() => {
+          modal.destroy();
+        }, 2000);
+        setItems([]);
+        setOrderID(response.data.data.id);
+        getOrderById(response.data.data.id)
+          .then((datsss) => {})
+          .catch((error) => {
+            setIsDisabled(false);
+            console.error("Error fetching order by ID:", error);
+          });
+        setShouldPrint(true);
+      }
     } catch (error) {
       console.error("Error creating invoice:", error);
       const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>{error.response.data.error.message}</div>,
-        centered: true, 
-        width: 400, 
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            {error.response.data.error.message}
+          </div>
+        ),
+        centered: true,
+        width: 400,
       });
-      
+
       setTimeout(() => {
         modal.destroy();
       }, 4000);
     }
   };
-
 
   const detailsHeaders = [
     {
@@ -614,75 +674,89 @@ if(response.data){
     };
   };
   const handleSubmit = async () => {
-    console.log(`selectWaiterselectWaiter` ,selectedClientType)
-
-    if(newUserValues["table_number"]==""){
+    if (newUserValues["table_number"] == "") {
       const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>تبا لك لقد نسيت رقم الترابيزه</div>,
-        centered: true, 
-        width: 400, 
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            تبا لك لقد نسيت رقم الترابيزه
+          </div>
+        ),
+        centered: true,
+        width: 400,
       });
-      
+
       setTimeout(() => {
         modal.destroy();
-      }, 5000);  
-       return;
+      }, 5000);
+      return;
     }
-    if(selectedClientType=="")
-      {
+    if (selectedClientType == "") {
+      const modal = Modal.error({
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            ادخل نوع العميل من فضلك{" "}
+          </div>
+        ),
+        centered: true,
+        width: 400,
+      });
+
+      setTimeout(() => {
+        modal.destroy();
+      }, 5000);
+      return;
+    }
+    setIsDisabled(true);
+
+    if (newUserValues["client_type_id"] != "01j593a427a3kfrrxj8bkn115k") {
+      const resMessage = await checkTableNumber(newUserValues["table_number"]);
+      if (resMessage === false) {
+        setIsDisabled(false);
         const modal = Modal.error({
-          title: 'Error',
-          content: <div style={{ fontSize: '24px', textAlign: 'center' }}>ادخل نوع العميل من فضلك </div>,
-          centered: true, 
-          width: 400, 
+          title: "Error",
+          content: (
+            <div style={{ fontSize: "24px", textAlign: "center" }}>
+              هذه الترابيزة مشغولة
+            </div>
+          ),
+          centered: true,
+          width: 400,
         });
-        
+
         setTimeout(() => {
           modal.destroy();
         }, 5000);
-      return
-      }
-    setIsDisabled(true)
 
-  if(newUserValues["client_type_id"]!="01j593a427a3kfrrxj8bkn115k"){   
-     const resMessage = await checkTableNumber(newUserValues["table_number"]);
-    if (resMessage === false) {
-      setIsDisabled(false)
-      const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>هذه الترابيزة مشغولة</div>,
-        centered: true, 
-        width: 400, 
-      });
-      
-      setTimeout(() => {
-        modal.destroy();
-      }, 5000);  
-      
-      return;
-    }}
-if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
-    if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
-      setIsDisabled(false)
-      const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>يجب اختيار اسم الويتر</div>,
-        centered: true, 
-        width: 400, 
-      });
-      
-      setTimeout(() => {
-        modal.destroy();
-      }, 5000);  
-      return
+        return;
+      }
     }
-  }
+    if (selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j") {
+      if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
+        setIsDisabled(false);
+        const modal = Modal.error({
+          title: "Error",
+          content: (
+            <div style={{ fontSize: "24px", textAlign: "center" }}>
+              يجب اختيار اسم الويتر
+            </div>
+          ),
+          centered: true,
+          width: 400,
+        });
+
+        setTimeout(() => {
+          modal.destroy();
+        }, 5000);
+        return;
+      }
+    }
     if (!validateForm()) return;
-    
+
     const formData = new FormData();
     const productQuantities = new Map();
-  
+
     items.forEach((item) => {
       const { ProductId, productType, quantity } = item;
       if (productQuantities.has(ProductId)) {
@@ -695,31 +769,35 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
         });
       }
     });
-  
-    Array.from(productQuantities.entries()).forEach(([productId, { productType, quantity }], index) => {
-      formData.append(`products[${index}][product_id]`, productId);
-      formData.append(`products[${index}][product_type]`, productType);
-      formData.append(`products[${index}][quantity]`, quantity);
-    });
-  
+
+    Array.from(productQuantities.entries()).forEach(
+      ([productId, { productType, quantity }], index) => {
+        formData.append(`products[${index}][product_id]`, productId);
+        formData.append(`products[${index}][product_type]`, productType);
+        formData.append(`products[${index}][quantity]`, quantity);
+      }
+    );
+
     const date = new Date();
-    const datetype = new Date(date.toLocaleString()); 
+    const datetype = new Date(date.toLocaleString());
     const year = datetype.getFullYear();
     const month = String(datetype.getMonth() + 1).padStart(2, "0");
     const day = String(datetype.getDate()).padStart(2, "0");
     const hours = String(datetype.getHours()).padStart(2, "0");
     const minutes = String(datetype.getMinutes()).padStart(2, "0");
     const seconds = String(datetype.getSeconds()).padStart(2, "0");
-     
 
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     formData.append("order_date", formattedDate);
 
     formData.append("discount", discount);
-       if(newUserValues["client_type_id"]=="01j593a427a3kfrrxj8bkn115k") {formData.append("table_number", "");}
-    else {formData.append("table_number", newUserValues["table_number"]);}
-  //  formData.append("table_number", newUserValues["table_number"]);
+    if (newUserValues["client_type_id"] == "01j593a427a3kfrrxj8bkn115k") {
+      formData.append("table_number", "");
+    } else {
+      formData.append("table_number", newUserValues["table_number"]);
+    }
+    //  formData.append("table_number", newUserValues["table_number"]);
     formData.append("comment", newUserValues["comment"]);
     formData.append("deleviery_type", newUserValues["deleviery_type"]);
     formData.append("payment_method_id", newUserValues["payment_method_id"]);
@@ -731,9 +809,11 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
     formData.append("military_number", militryIdInputValue);
     formData.append("department_id", user?.department.id);
 
-   { selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j" && formData.append("waiter_id", selectWaiter);}
-    
-    
+    {
+      selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j" &&
+        formData.append("waiter_id", selectWaiter);
+    }
+
     formData.append("name", newUserValues["name"]);
     formData.append("phone", newUserValues["phone"]);
     formData.append("tax", 0);
@@ -751,43 +831,53 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
           },
         }
       );
-      setIsDisabled(false)
+      setIsDisabled(false);
       setFlag(true);
       setPrintData(response.data.data);
       const modal = Modal.success({
-        title: 'success',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>لقد تم اضافة الاوردر بنجاح</div>,
-        centered: true, 
-        width: 400, 
+        title: "success",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            لقد تم اضافة الاوردر بنجاح
+          </div>
+        ),
+        centered: true,
+        width: 400,
       });
-      
+
       setTimeout(() => {
         modal.destroy();
-      }, 2000);  
+      }, 2000);
       setItems([]);
       //}
     } catch (error) {
-      setIsDisabled(false)
+      setIsDisabled(false);
 
       console.error("Error creating invoice:", error);
       const modal = Modal.error({
-        title: 'Error',
-        content: <div style={{ fontSize: '24px', textAlign: 'center' }}>{error.response.data.error.message}</div>,
-        centered: true, 
-        width: 400, 
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            {error.response.data.error.message}
+          </div>
+        ),
+        centered: true,
+        width: 400,
       });
-      
+
       setTimeout(() => {
         modal.destroy();
-      }, 5000);  
+      }, 5000);
     }
   };
-  const [militryIdInputValue, setMilitryIdInputValue] = useState('');
+  const [militryIdInputValue, setMilitryIdInputValue] = useState("");
   const [militryIdGotClicked, setMilitryIdGotClicked] = useState(false);
   const [timer, setTimer] = useState(null);
   const [messageVisible, setMessageVisible] = useState(false);
-  const debouncedHandleSubmit = useCallback(debounce(handleSubmit, 400), [handleSubmit]);
- 
+  const debouncedHandleSubmit = useCallback(debounce(handleSubmit, 400), [
+    handleSubmit,
+  ]);
+
   // useEffect(() => {
   //   // Clear previous timer on input change
   //   // if (timer) {
@@ -812,7 +902,6 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
   //   return () => clearTimeout(newTimer);
   // }, [militryIdInputValue, militryIdGotClicked]);
 
-
   const handleInputChange = (e) => {
     const value = e.target.value;
     setMilitryIdInputValue(value);
@@ -823,8 +912,6 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
     const resetMessageVisibility = () => setMessageVisible(false);
     return () => resetMessageVisibility();
   }, [messageVisible]);
-
-
 
   return (
     <div className="form-cashier-container fs-5">
@@ -868,7 +955,6 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
               );
             })}
           </select>
-
         </div>
       </div>
       <div className="form-cashier-product-category-parent">
@@ -891,7 +977,11 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
               optionFilterProp="children"
             >
               {paymentMethods.map((method) => (
-                <Option key={method.id} value={method.id} style={{ fontSize: '22px' , weight:"800"}}>
+                <Option
+                  key={method.id}
+                  value={method.id}
+                  style={{ fontSize: "22px", weight: "800" }}
+                >
                   {method.name}
                 </Option>
               ))}
@@ -914,12 +1004,15 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
               optionFilterProp="children"
             >
               {clientTypes.map((type) => (
-                <Option key={type.id} value={type.id} style={{ fontSize: '22px' , weight:"800"}}>
+                <Option
+                  key={type.id}
+                  value={type.id}
+                  style={{ fontSize: "22px", weight: "800" }}
+                >
                   {type.name}
-                </Option>)
-              )}
+                </Option>
+              ))}
             </Select>
-
           </div>
           <div className="form-cashier-select-wrraper">
             <label className="form-cashier-label">العميل</label>
@@ -929,7 +1022,7 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
               className="form-cashier-select"
               placeholder="اختر العميل"
               onChange={(value) => {
-                handleNewUserFormChange("client_id", value)
+                handleNewUserFormChange("client_id", value);
               }}
               filterOption={(input, option) => {
                 return (option?.children ?? "")
@@ -941,12 +1034,15 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
             >
               <option>اختر اسم العميل</option>
               {clients.map((client) => (
-                <Option key={client.id} value={client.id} style={{ fontSize: '22px' , weight:"800"}}>
+                <Option
+                  key={client.id}
+                  value={client.id}
+                  style={{ fontSize: "22px", weight: "800" }}
+                >
                   {client.name}
                 </Option>
               ))}
             </Select>
-
           </div>
         </div>
 
@@ -971,27 +1067,27 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
 
       <div className="form-cashier-details-parent">
         <div>
-         
- {!isTakeAway ? (
-  <>
-    <label className="form-cashier-label">رقم التربيزة:</label>
-    <input
-      required
-      className="form-cashier-input"
-      type="number"
-      min={1}
-      value={newUserValues["table_number"]}
-      onChange={(e) => handleNewUserFormChange("table_number", e.target.value)}
-      onWheel={(event) => event.currentTarget.blur()}
-    />
-    {errors.tableNumber && (
-      <span className="error cashier-input-error">
-        {errors.tableNumber}
-      </span>
-    )}
-  </>
-) : null}
-
+          {!isTakeAway ? (
+            <>
+              <label className="form-cashier-label">رقم التربيزة:</label>
+              <input
+                required
+                className="form-cashier-input"
+                type="number"
+                min={1}
+                value={newUserValues["table_number"]}
+                onChange={(e) =>
+                  handleNewUserFormChange("table_number", e.target.value)
+                }
+                onWheel={(event) => event.currentTarget.blur()}
+              />
+              {errors.tableNumber && (
+                <span className="error cashier-input-error">
+                  {errors.tableNumber}
+                </span>
+              )}
+            </>
+          ) : null}
         </div>
         <div>
           <label className="form-cashier-label">ملاحظة : </label>
@@ -1008,44 +1104,42 @@ if(selectedClientType!="01hzf60qrasrm5x2ytvyrsne1j"){
       <CashierItemList items={items} onDeleteItem={handleDeleteItem} />
       <TotalAmount total={calculateTotalAmount()} />
       <div className="btns">
-        
-        
         {!isTakeAway ? (
-  <>
-           <button className="form-cashier-btn" onClick={debouncedHandleSubmit} disabled={isDisabled}  style={{
-    backgroundColor: isDisabled ? "#d3d3d3" : "#AF8260", 
-    cursor: isDisabled ? "not-allowed" : "pointer",
-    color: isDisabled ? "#a9a9a9" : "white",
-  }}>
-          حفظ البيانات
-        </button>
-  </>
-) : null}
-        
+          <>
+            <button
+              className="form-cashier-btn"
+              onClick={debouncedHandleSubmit}
+              disabled={isDisabled}
+              style={{
+                backgroundColor: isDisabled ? "#d3d3d3" : "#AF8260",
+                cursor: isDisabled ? "not-allowed" : "pointer",
+                color: isDisabled ? "#a9a9a9" : "white",
+              }}
+            >
+              حفظ البيانات
+            </button>
+          </>
+        ) : null}
 
-
-{!isguest ? (
-<>
-<button className="finish-cashier" onClick={() => handleFinish()} disabled={isDisabled}  style={{
-    backgroundColor: isDisabled ? "#d3d3d3" : "#ff0000", // gray for disabled, green otherwise
-    cursor: isDisabled ? "not-allowed" : "pointer",
-    color: isDisabled ? "#a9a9a9" : "white", // adjust text color if needed
-  }}>
-          إنهاء الأوردر
-        </button>
-</>
-  
-
-) : null
-
-}
-
-       
-
+        {!isguest && !isHidden? (
+          <>
+            <button
+              className="finish-cashier"
+              onClick={() => handleFinish()}
+              disabled={isDisabled}
+              style={{
+                backgroundColor: isDisabled ? "#d3d3d3" : "#ff0000", // gray for disabled, green otherwise
+                cursor: isDisabled ? "not-allowed" : "pointer",
+                color: isDisabled ? "#a9a9a9" : "white", // adjust text color if needed
+              }}
+            >
+              إنهاء الأوردر
+            </button>
+          </>
+        ) : null}
       </div>
-    
 
-    {shouldPrint && <PrintAfterFinish id={orderID}  />}
+      {shouldPrint && <PrintAfterFinish id={orderID} />}
     </div>
   );
 };

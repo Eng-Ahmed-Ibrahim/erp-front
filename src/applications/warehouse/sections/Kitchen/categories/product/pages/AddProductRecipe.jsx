@@ -13,26 +13,26 @@ import CahierWearhouseDetailes from "../../../../../../../components/shared/Cash
 import ItemCashierWearhouseForProduct from "../../../../../../../components/shared/CashierWearhouseDetailes/itemForAddProduct";
 import { message } from "antd";
 import { getProductsById } from "../../../../../../../apis/product";
-import { usePDF } from 'react-to-pdf';
-const AddProductRecipe = () => { 
-  const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' });
+import { usePDF } from "react-to-pdf";
+const AddProductRecipe = () => {
+  const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
-  const [data, setData] = useState(); 
+  const [data, setData] = useState();
   const [parentName, setParentName] = useState("");
   const [ProductParentId, setRecipeParentId] = useState("");
   const [ProductCategory_id, setProductCategoryId] = useState("");
 
   const handleAddItem = (item) => {
-    setItems((prevItems) => [...prevItems, item]); 
+    setItems((prevItems) => [...prevItems, item]);
   };
 
   const handleDeleteItem = (index) => {
-    setItems((prevItems) => prevItems.filter((_, i) => i !== index)); 
+    setItems((prevItems) => prevItems.filter((_, i) => i !== index));
   };
 
   const calculateTotalAmount = () => {
@@ -50,76 +50,75 @@ const AddProductRecipe = () => {
         setParentName(recipeData.data.name);
         setRecipeParentId(recipeData.data.sub_category_id);
         setProductCategoryId(recipeData.data.category_id);
-      } catch (error) {
-      }
+      } catch (error) {}
     };
     fetchData();
   }, [id]);
-  const [recipePrice, setRecipePrice] = useState([])
+  const [recipePrice, setRecipePrice] = useState([]);
   useEffect(() => {
-    axios.get(`${API_ENDPOINT}/api/v1/store/products/${id}`, {
-      headers: {
-        Authorization: `Bearer ${Token}`,
-      },
-    })
-      .then(res => {
-        setRecipePrice(res.data)
-      })
-      .catch(err => {
-        message.error(err?.response?.data?.error?.message)
-      })
-  }, [])
-  const handleDownloadPDF = async () => {
-    const formData = new FormData();
-    formData.append("product_id", id);
-    console.log("items", items);
-  
-    items.forEach((innerArray, index) => {
-      console.log("Inner Array", innerArray);
-  
-      innerArray.forEach((item, innerIndex) => {
-        console.log(item, `items[${index}]`, item.recipeId);
-  
-        formData.append(`recipes[${innerIndex}][recipe_id]`, item.recipeId);
-        formData.append(`recipes[${innerIndex}][quantity]`, item.quantity);
-      });
-    });
-  
-    try {
-      const response = await axios.post(
-        `${API_ENDPOINT}/api/v1/store/products/recipts/add`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${Token}`,
-          },
-        }
-      ).then(res => {
-        navigate(
-          `/warehouse/returants/show-resturants2/${data.sub_category_id}/details-product`
-        );
-        message.success("تم اضافة المكون بنجاح");
-  
-        axios.get(`${API_ENDPOINT}/api/v1/store/products/${id}`, {
-          headers: {
-            Authorization: `Bearer ${Token}`,
-          },
-        });
-      });
-  
-    } catch (error) {
-      console.error("Error creating invoice:", error);
-    }
-  };
-  
-  const handelDelete = async (id) => {
-    await axios
-      .delete(`${API_ENDPOINT}/api/v1/store/products/${recipePrice?.data?.id}/recipe/delete/${id}`, {
+    axios
+      .get(`${API_ENDPOINT}/api/v1/store/products/${id}`, {
         headers: {
           Authorization: `Bearer ${Token}`,
         },
       })
+      .then((res) => {
+        setRecipePrice(res.data);
+      })
+      .catch((err) => {
+        message.error(err?.response?.data?.error?.message);
+      });
+  }, []);
+
+  const handleDownloadPDF = async () => {
+    const formData = new FormData();
+    formData.append("product_id", id);
+    let index = 0;
+    items.forEach((innerArray, i) => {
+      innerArray.forEach((item, innerIndex) => {
+        formData.append(`recipes[${index}][recipe_id]`, item.recipeId);
+        formData.append(`recipes[${index}][quantity]`, item.quantity);
+        index++;
+      });
+    });
+
+    try {
+      const response = await axios
+        .post(`${API_ENDPOINT}/api/v1/store/products/recipts/add`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${Token}`,
+          },
+        })
+        .then((res) => {
+        
+          message.success("تم اضافة المكون بنجاح");
+
+          navigate(
+            `/warehouse/returants/show-resturants2/${data.sub_category_id}/details-product`
+          );
+
+          axios.get(`${API_ENDPOINT}/api/v1/store/products/${data.sub_category_id}`, {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+            },
+          });
+        });
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+    }
+  };
+
+  const handelDelete = async (id) => {
+    await axios
+      .delete(
+        `${API_ENDPOINT}/api/v1/store/products/${recipePrice?.data?.id}/recipe/delete/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      )
       .then((response) => {
         message.success("تم حذف المكون بنجاح");
         axios
@@ -159,38 +158,98 @@ const AddProductRecipe = () => {
         onAddItem={handleAddItem}
         selectedSupplier={selectedSupplier}
       />
-      <ItemCashierWearhouseForProduct items={items} onDeleteItem={handleDeleteItem} />
+      <ItemCashierWearhouseForProduct
+        items={items}
+        onDeleteItem={handleDeleteItem}
+      />
       <TotalAmount total={calculateTotalAmount()} />
       <button className="form-btn" onClick={handleDownloadPDF}>
         حفظ البيانات
       </button>
-      <table className="table table-hover mt-5" style={{ width: "100%", borderCollapse: "collapse", color: '#edede9' }} >
+      <table
+        className="table table-hover mt-5"
+        style={{ width: "100%", borderCollapse: "collapse", color: "#edede9" }}
+      >
         <thead>
           <tr className="fw-bold fs-5 my-3">
-            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>الرقم</th>
-            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>اسم المكون</th>
-            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>الكميه</th>
-            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>التصنيف الفرعى</th>
-            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>الاجراءات</th>
+            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>
+              الرقم
+            </th>
+            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>
+              اسم المكون
+            </th>
+            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>
+              الكميه
+            </th>
+            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>
+              التصنيف الفرعى
+            </th>
+            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>
+              الاجراءات
+            </th>
           </tr>
         </thead>
         <tbody style={{ borderColor: "rgb(175, 130, 96)" }}>
           {recipePrice?.data?.recipes?.map((item, index) => (
-            <tr key={index} className='content-area-table'>
-              <th className="clickable-cell"
-                style={{ padding: "14px 12px", border: "1px solid rgb(228, 197, 158)", color: "rgb(128, 61, 59)", fontSize: "18px", fontWeight: "700" }}
-                scope="row">{index + 1}</th>
-              <td className="clickable-cell"
-                style={{ padding: "14px 12px", border: "1px solid rgb(228, 197, 158)", color: "rgb(128, 61, 59)", fontSize: "18px", fontWeight: "700" }}
-              >{item?.name}</td>
-              <td className="clickable-cell"
-                style={{ padding: "14px 12px", border: "1px solid rgb(228, 197, 158)", color: "rgb(128, 61, 59)", fontSize: "18px", fontWeight: "700" }}
-              >{item?.quantity} {item?.unit}</td>
-              <td className="clickable-cell"
-                style={{ padding: "14px 12px", border: "1px solid rgb(228, 197, 158)", color: "rgb(128, 61, 59)", fontSize: "18px", fontWeight: "700" }}
-              >{item?.type}</td>
-              <td className="clickable-cell"
-                style={{ padding: "14px 12px", border: "1px solid rgb(228, 197, 158)", color: "rgb(128, 61, 59)", fontSize: "18px", fontWeight: "700" }}
+            <tr key={index} className="content-area-table">
+              <th
+                className="clickable-cell"
+                style={{
+                  padding: "14px 12px",
+                  border: "1px solid rgb(228, 197, 158)",
+                  color: "rgb(128, 61, 59)",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                }}
+                scope="row"
+              >
+                {index + 1}
+              </th>
+              <td
+                className="clickable-cell"
+                style={{
+                  padding: "14px 12px",
+                  border: "1px solid rgb(228, 197, 158)",
+                  color: "rgb(128, 61, 59)",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                }}
+              >
+                {item?.name}
+              </td>
+              <td
+                className="clickable-cell"
+                style={{
+                  padding: "14px 12px",
+                  border: "1px solid rgb(228, 197, 158)",
+                  color: "rgb(128, 61, 59)",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                }}
+              >
+                {item?.quantity} {item?.unit}
+              </td>
+              <td
+                className="clickable-cell"
+                style={{
+                  padding: "14px 12px",
+                  border: "1px solid rgb(228, 197, 158)",
+                  color: "rgb(128, 61, 59)",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                }}
+              >
+                {item?.type}
+              </td>
+              <td
+                className="clickable-cell"
+                style={{
+                  padding: "14px 12px",
+                  border: "1px solid rgb(228, 197, 158)",
+                  color: "rgb(128, 61, 59)",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                }}
               >
                 <button
                   type="button"
@@ -204,7 +263,10 @@ const AddProductRecipe = () => {
           ))}
         </tbody>
       </table>
-      <button onClick={() => toPDF()} className="pdf-button"> حفظ PDF</button>
+      <button onClick={() => toPDF()} className="pdf-button">
+        {" "}
+        حفظ PDF
+      </button>
     </div>
   );
 };
