@@ -10,7 +10,7 @@ export async function getDeaprtments(
 ) {
   try {
     setIsLoading(true);
-    const { name, page, from_date, to_date } = filteredValues;
+    const { name, page, from_date, to_date, warehouse_section_id } = filteredValues;
 
     const res = await axios.get(`${domain}/api/v1/store/department`, {
       params: {
@@ -21,6 +21,7 @@ export async function getDeaprtments(
           to: to_date,
         },
         page,
+        warehouse_section_id
       },
       headers: {
         Authorization: `Bearer ${Token}`,

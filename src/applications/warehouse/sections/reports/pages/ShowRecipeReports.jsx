@@ -13,42 +13,44 @@ const ShowRecipeReports = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState("");
   const [mainCat, setMainCat] = useState("");
-  const [recipeCategoryParents, setRecipeCategoryParents] = useState([]);
+  const [WarehouseSections, setWarehouseSections] = useState([]);
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false); // Control visibility of the dropdown
 
 
   useEffect(() => {
-    const fetchRecipeCategoryParents = async () => {
-        try {
-          const response = await fetch(
-            `${API_ENDPOINT}/api/v1/store/recipe_category_parent/all`,
-            {
-              headers: {
-                Authorization: `Bearer ${Token}`,
-              },
-            }
-          );
-          const data = await response.json();
-          setRecipeCategoryParents(data.data);
-        } catch (error) {
-          console.error("Error fetching recipe category parents:", error);
-        }
+    const fetchWareHouseSections = async () => {
+      try {
+        const response = await fetch(
+          `${API_ENDPOINT}/api/v1/store/warehouse_sections`,
+          {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setWarehouseSections(data.data);
+      } catch (error) {
+        console.error("Error fetching recipe category parents:", error);
+      }
       };
     const fetchRecipeCategoryParent = async () => {
       const res = await getRecipeCategoryParent({}, "", setIsLoading);
       setRecipeCategoryParent(res.data);
     };
 
-    // fetchRecipeCategoryParents();
     fetchRecipeCategoryParent();
-    fetchRecipeCategoryParents();
+    fetchWareHouseSections();
   }, []);
+  
   const tableHeaders = [
     { key: "name", value: "الإسم" },
     { key: "out_going", value: "اجمالي المصروف للقسم " },
     { key: "returned_to", value: "مرتجع اليه" },
     { key: "returned_from", value: "مرتجع منه" },
+    { key: "tainted", value: "الهالك" },
+    { key: "transfare", value: "التحويل" },
     { key: "total_quantity", value: "اجمالي الكميه بعد المرتجع والهالك" },
     { key: "total_price", value: "اجمالي السعر " },
   ];
@@ -59,11 +61,11 @@ const ShowRecipeReports = () => {
     { key: "to_date", type: "date", id: "إلى تاريخ" },
     { key: "name", type: "text", placeholder: "إبحث باللإسم", id: "الإسم" },
     {
-      key: "category_id",
+      key: "warehouse_section_id",
       type: "selection",
       id: "نوع القسم",
       placeholder: "إختار قسم لإظهار نتائج",
-      options: RecipeCategoryParent.map((category) => {
+      options: WarehouseSections.map((category) => {
         return { value: category.id, label: category.name };
       }),
     //   multi: true,
@@ -73,7 +75,7 @@ const ShowRecipeReports = () => {
     //     type: "multi-selection",
     //     id: "الأقسام",
     //     placeholder: "إختر الأقسام",
-    //     options: recipeCategoryParents.map((parent) => {
+    //     options: WareHouseSections.map((parent) => {
     //       return { value: parent.id, label: parent.name };
     //     }),
     //   }
@@ -170,7 +172,7 @@ const ShowRecipeReports = () => {
           }}
         >
           <option value=""> من فضلك اختر القسم</option>
-          {recipeCategoryParents.map((parent, index) => (
+          {WareHouseSections.map((parent, index) => (
             <option key={parent.id} value={parent.id}>
               {parent.name}
             </option>
@@ -195,7 +197,7 @@ const ShowRecipeReports = () => {
 
         {isDropdownVisible && (
           <div className="checkbox-dropdown">
-            {recipeCategoryParents.map((parent) => (
+            {WareHouseSections.map((parent) => (
               <div key={parent.id} className="form-check">
                 <input
                   type="checkbox"

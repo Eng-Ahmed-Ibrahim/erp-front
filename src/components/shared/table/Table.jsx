@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { Pagination, Select, message ,Modal} from "antd";
+import { Pagination, Select, message, Modal } from "antd";
 import "./Table.scss";
 import { API_ENDPOINT } from "../../../../config";
 import DeleteModal from "../../ui/DeleteModal/DeleteModal";
@@ -8,14 +8,14 @@ import ShowDataModal from "../../ui/ShowDataModal/ShowDataModal";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useAuth } from "../../../context/AuthContext";
-import { usePDF } from 'react-to-pdf';
-import { DownloadTableExcel } from 'react-export-table-to-excel';
-import soundFile from './beem.mp3'
+import { usePDF } from "react-to-pdf";
+import { DownloadTableExcel } from "react-export-table-to-excel";
+import soundFile from "./beem.mp3";
 import axios from "axios";
-import TotalAmount from '../../shared/totalAmount/TotalAmount'
+import TotalAmount from "../../shared/totalAmount/TotalAmount";
 import PrintCopy from "../../../applications/warehouse/sections/cashier/pages/KitchenRequests/PrintCopy";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
 const SoundPlayer = ({ play }) => {
@@ -41,6 +41,7 @@ const Table = ({
   ordersRecieve,
   id,
   deleteFn,
+  adminlogin,
   detailsHeaders,
   header,
   updateFn,
@@ -49,7 +50,8 @@ const Table = ({
   acceptTitle,
   closeAfterEdit,
   isRequests,
-  getTotalPrice
+  getTotalPrice,
+  pdfHeader,
 }) => {
   const tableRef = useRef();
   const { user } = useAuth();
@@ -65,64 +67,73 @@ const Table = ({
   const [isBeeming, setIsBeeming] = useState(false);
   const navigate = useNavigate();
   const { location } = useLocation();
-  const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' });
+  const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
   const [playSound, setPlaySound] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(0)
+  const [totalPrice, setTotalPrice] = useState(0);
   const [shouldPrint, setShouldPrint] = useState(false);
   const [ids, setIds] = useState("");
   const [table_ids, setTable_ids] = useState("");
-  const [isKitchien,setIsKitchien] = useState(false);
-  const [dataLen,setDataLen] = useState(0);
-  const [editedCell, setEditedCell] = useState({});  
-  const [cellValue, setCellValue] = useState("");    
+  const [isKitchien, setIsKitchien] = useState(false);
+  const [dataLen, setDataLen] = useState(0);
+  const [editedCell, setEditedCell] = useState({});
+  const [cellValue, setCellValue] = useState("");
   const [editedItems, setEditedItems] = useState([]);
-  
-  const KITCHEN_DEPARTMENTS = ['3d1e1d26-91ff-40b8-9b2c-139aa79430e9','01j45gtesjz0mm3qf0sz6bzvn9'];
 
+  const KITCHEN_DEPARTMENTS = [
+    "3d1e1d26-91ff-40b8-9b2c-139aa79430e9",
+    "01j45gtesjz0mm3qf0sz6bzvn9",
+  ];
 
   useEffect(() => {
-    if(user.department.type=="both" || KITCHEN_DEPARTMENTS.includes(user.department.id)){
-      setIsKitchien(true)
+    if (
+      user.department.type == "both" ||
+      KITCHEN_DEPARTMENTS.includes(user.department.id)
+    ) {
+      setIsKitchien(true);
     }
 
     (async () => {
       try {
-
-        const total_price = await getTotalPrice({ ...filterValues, page: currentPage }, id, setIsLoading);
-        setTotalPrice(total_price)
+        const total_price = await getTotalPrice(
+          { ...filterValues, page: currentPage },
+          id,
+          setIsLoading
+        );
+        setTotalPrice(total_price);
       } catch (e) {
-        console.log(`err`, e)
+        console.log(`err`, e);
       }
     })();
-    
+
     fetchData({ ...filterValues, page: currentPage }, id, setIsLoading).then(
       (result) => {
         if (result && result.data) {
           setData(result);
-         } else {
+        } else {
           console.error("Unexpected data format:", result);
-          setData({ pagination: { total: 0 }, data: [] }); 
+          setData({ pagination: { total: 0 }, data: [] });
         }
       }
     );
   }, [filterValues, currentPage]);
-//174611
+  //174611
   useEffect(() => {
     let intervalId;
     if (isRequests) {
       intervalId = setInterval(() => {
-        fetchData({ ...filterValues, page: currentPage }, id, setIsLoading).then(
-          (result) => {
-            if (result?.pagination?.total > data?.pagination?.total) {
-              
-              setPlaySound(true);
-              setTimeout(() => {
-                setPlaySound(false);
-              }, 6000);
-            }
-            setData(result);
+        fetchData(
+          { ...filterValues, page: currentPage },
+          id,
+          setIsLoading
+        ).then((result) => {
+          if (result?.pagination?.total > data?.pagination?.total) {
+            setPlaySound(true);
+            setTimeout(() => {
+              setPlaySound(false);
+            }, 6000);
           }
-        );
+          setData(result);
+        });
       }, 20000);
     }
     return () => clearInterval(intervalId); // Cleanup
@@ -133,7 +144,6 @@ const Table = ({
   };
 
   const handleFilterChange = (key, value) => {
- 
     setFilterValues((prevFilterValues) => ({
       ...prevFilterValues,
       [key]: value,
@@ -147,15 +157,17 @@ const Table = ({
     }
   };
   const handleFinish = async (id) => {
-    setShouldPrint(true)
-    setIds(id)
-
+    setShouldPrint(true);
+    setIds(id);
   };
 
   const handleAction = (actionType, item) => {
     switch (actionType) {
       case "delete":
-        handleDelete(item ,id);
+        handleDelete(item, id);
+        break;
+      case "admin-login":
+        handleAdminLogin(item, id);
         break;
       case "print":
         handlePrintData(item);
@@ -169,17 +181,17 @@ const Table = ({
       case "navigate":
         handleNavigate(item);
         break;
-        case "edit-inv":
+      case "edit-inv":
         handleEditInv(item);
         break;
       default:
         break;
     }
   };
-  const handleEditInv  = async (item) => {
+  const handleEditInv = async (item) => {
     setSelectedItem(item);
-    const editedItem = editedItems.find(edItem => edItem.id === item.id);
-    const formattedDate = editedItem?.invoice_date || item.invoice_date; 
+    const editedItem = editedItems.find((edItem) => edItem.id === item.id);
+    const formattedDate = editedItem?.invoice_date || item.invoice_date;
 
     const dataToSend = {
       code: editedItem?.code || item.code,
@@ -199,7 +211,11 @@ const Table = ({
 
       const modal = Modal.success({
         title: "Success",
-        content: <div style={{ fontSize: "24px", textAlign: "center" }}>Data updated successfully!</div>,
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            Data updated successfully!
+          </div>
+        ),
         centered: true,
         width: 400,
       });
@@ -208,13 +224,16 @@ const Table = ({
         modal.destroy();
       }, 2000);
     } catch (error) {
-
       console.error("Error:", error);
     }
   };
-  const handleDelete = (item,id) => {
+  const handleDelete = (item, id) => {
     setSelectedItem(item);
     setisDeleteModalVisible(true);
+  };
+  const handleAdminLogin = (item, id) => {
+    setSelectedItem(item);
+    adminlogin(item);
   };
 
   const handleShowData = (item) => {
@@ -223,15 +242,17 @@ const Table = ({
   };
 
   const handlePrintData = async (item) => {
-
     try {
-      const res = await axios.get(`${API_ENDPOINT}/api/v1/orders/print-order/${item.id}`, {
-        headers: {
-          Authorization: `Bearer ${Token}`,
-        },
-      });
+      const res = await axios.get(
+        `${API_ENDPOINT}/api/v1/orders/print-order/${item.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
       if (res.data.status) {
-        message.success('تم الطباعة بنجاح')
+        message.success("تم الطباعة بنجاح");
       }
 
       fetchData({ ...filterValues, page: currentPage }, id, setIsLoading).then(
@@ -240,14 +261,14 @@ const Table = ({
             setData(result);
           } else {
             console.error("Unexpected data format:", result);
-            setData({ pagination: { total: 0 }, data: [] }); 
+            setData({ pagination: { total: 0 }, data: [] });
           }
         }
       );
     } catch (error) {
       console.error(error);
     }
-  }
+  };
   const handleNavigate = (item) => {
     navigate(
       actions
@@ -271,31 +292,65 @@ const Table = ({
   };
   const handleSavePDF = async () => {
     const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = 190; 
-    const pageHeight = 297; 
+    const pageWidth = 190;
+    const pageHeight = 297;
+
     const rows = Array.from(tableRef.current.querySelectorAll("tr"));
-    let position = 10;
-// 
-//for (let j=1;j< data?.pagination?.total ;j++){
+    let position = 10 ;
+
+    // console.log(filterValues);
+    // let result = "";
+    // filterValues;
+    // const headerText =pdfHeader 
+    
+    // // " " + filterValues["from_date"]
+    // //     ? "from " + filterValues["from_date"] + " "
+    // //     : " " + filterValues["to_date"]
+    // //     ? "to " + filterValues["to_date"]
+    // //     : " "; // Example header in Arabic
+
+    // pdf.setFontSize(12); // Set font size for the header
+    // const from  = filterValues["from_date"]  ? "from " + filterValues["from_date"] + " "  : " "
+    // const to  = filterValues["to_date"]  ? "from " + filterValues["to_date"] + " "  : " "
+    // pdf.setFont("helvetica");
+    // pdf.text(headerText, 10, 10);
+    // pdf.text(from, 10, 10);
+    // pdf.text(to, 10, 10);
+
+    // const arabicFontBase64 = ""; // Replace with your Base64 font data
+
+    // pdf.addFileToVFS("arabicFont.ttf", arabicFontBase64); // Add font to the virtual file system
+    // pdf.addFont("arabicFont.ttf", "arabicFont", "normal"); // Register the font
+    // pdf.setFont("arabicFont", "normal"); // Set the font to Arabic
+
+    // // // Set the font size for the header
+    // pdf.setFontSize(16);
+    // const headerText =pdfHeader ; // Arabic text
+    // pdf.setFont("helvetica");
+
+    // pdf.text(headerText, 10, 20); // Add the header text at (10, 20)
+
+    //
+    //for (let j=1;j< data?.pagination?.total ;j++){
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const rowCanvas = await html2canvas(row, { scale: 2 });
       const rowImgData = rowCanvas.toDataURL("image/png");
-      const rowHeight = (rowCanvas.height * pageWidth) / rowCanvas.width; 
-      if (position + rowHeight > pageHeight - 10) { 
+      const rowHeight = (rowCanvas.height * pageWidth) / rowCanvas.width;
+      
+      if (position + rowHeight > pageHeight - 10) {
         pdf.addPage();
-        position = 10; 
+        position = 10;
       }
+
       pdf.addImage(rowImgData, "PNG", 10, position, pageWidth, rowHeight);
-      position += rowHeight; 
+      position += rowHeight;
     }
-   // setCurrentPage(j)
-  // }
+
     pdf.save("تقرير المبيعات المفصل.pdf");
   };
- 
-  
-  const generateTableRowHTML = (index,row) => {
+
+  const generateTableRowHTML = (index, row) => {
     return `
       <tr style="border-bottom:1px solid var(--brown-color); padding:5px;">
         <td style="padding: 5px; text-align: center; font-size: 24px; font-wight:400;">${index}</td> 
@@ -304,9 +359,7 @@ const Table = ({
       </tr>
     `;
   };
-  
-  
-  
+
   const renderStatus = (status) => {
     switch (status) {
       case "pending":
@@ -322,9 +375,9 @@ const Table = ({
       case "completed":
         return <p className="status approved">تم التجهيز</p>;
       case "closed":
-          return <p className="status done">تم الدفع</p>;
+        return <p className="status done">تم الدفع</p>;
       case "returned":
-          return <p className="status rejected"> تم الحذف</p>;
+        return <p className="status rejected"> تم الحذف</p>;
       default:
         break;
     }
@@ -371,25 +424,28 @@ const Table = ({
   const handleInputChange = (headerKey, value, itemId) => {
     setEditedItems((prevState) => {
       const updatedItems = [...prevState];
-      const itemIndex = updatedItems.findIndex(item => item.id === itemId);
+      const itemIndex = updatedItems.findIndex((item) => item.id === itemId);
       if (itemIndex > -1) {
-        updatedItems[itemIndex] = { ...updatedItems[itemIndex], [headerKey]: value };
+        updatedItems[itemIndex] = {
+          ...updatedItems[itemIndex],
+          [headerKey]: value,
+        };
       } else {
         updatedItems.push({ id: itemId, [headerKey]: value });
       }
       return updatedItems;
     });
   };
-  const renderInputField = (headerKey, value ,id,code,date) => {
-    const editedValue = editedItems.find(item => item.id === id)?.[headerKey];
-    
-    if (headerKey === 'invoice_date') {
+  const renderInputField = (headerKey, value, id, code, date) => {
+    const editedValue = editedItems.find((item) => item.id === id)?.[headerKey];
+
+    if (headerKey === "invoice_date") {
       return (
         <input
           className="form-input xd"
           type="date"
-          value={editedValue || value || ""} 
-          onChange={(e) => handleInputChange(headerKey, e.target.value, id)} 
+          value={editedValue || value || ""}
+          onChange={(e) => handleInputChange(headerKey, e.target.value, id)}
         />
       );
     }
@@ -398,8 +454,8 @@ const Table = ({
       <input
         className="form-input xd"
         type="text"
-        value={editedValue || value || ""}  
-        onChange={(e) => handleInputChange(headerKey, e.target.value, id)} 
+        value={editedValue || value || ""}
+        onChange={(e) => handleInputChange(headerKey, e.target.value, id)}
       />
     );
   };
@@ -455,7 +511,12 @@ const Table = ({
     <div>
       <section className="content-area-table">
         <div className="data-table-info">
-          <h4 className="data-table-title">{title} - <span className="text-warning fw-bold fs-3">({data?.data?.length})</span></h4>
+          <h4 className="data-table-title">
+            {title} -{" "}
+            <span className="text-warning fw-bold fs-3">
+              ({data?.data?.length})
+            </span>
+          </h4>
           {filters && (
             <div className="data-table-filters">
               {filters?.map((filter) => {
@@ -470,10 +531,26 @@ const Table = ({
             </div>
           )}
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: `flex`, flexWrap: `nowrap`, gap: 10, alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              display: `flex`,
+              flexWrap: `nowrap`,
+              gap: 10,
+              alignItems: "center",
+            }}
+          >
             {actions && actions.some((action) => action.type === "add") && (
-              <button className="add-btn white-space-nowrap" onClick={handleAdd}>
+              <button
+                className="add-btn white-space-nowrap"
+                onClick={handleAdd}
+              >
                 {"+ "} {actions.find((action) => action.type === "add").label}
               </button>
             )}
@@ -482,40 +559,45 @@ const Table = ({
               sheet="users"
               currentTableRef={tableRef.current}
             >
-              <button className="pdf-button white-space-nowrap">حفظ اكسيل </button>
-
+              <button className="pdf-button white-space-nowrap">
+                حفظ اكسيل{" "}
+              </button>
             </DownloadTableExcel>
-            <button onClick={handleSavePDF} className="pdf-button white-space-nowrap"> حفظ PDF</button>
+            <button
+              onClick={handleSavePDF}
+              className="pdf-button white-space-nowrap"
+            >
+              {" "}
+              حفظ PDF
+            </button>
           </div>
           <div style={{ width: "100%" }} className="center">
-
-            {!totalPrice ? "" : <TotalAmount className={`mt-0`} total={totalPrice} />}
-
+            {!totalPrice ? (
+              ""
+            ) : (
+              <TotalAmount className={`mt-0`} total={totalPrice} />
+            )}
           </div>
         </div>
         <div></div>
         <div className="data-table-diagram" ref={targetRef}>
-          <table className="data-table"
-            ref={tableRef}
-          >
+          <table className="data-table" ref={tableRef}>
             <thead>
               <tr>
                 <th>الرقم</th>
                 {headers.map((header) => (
-                  
                   <th key={header.key}>{header.value}</th>
                 ))}
                 {ordersRecieve && <th>اشعارإستلام الاوردر</th>}
                 {actions && <th>الإجراءات</th>}
-
               </tr>
             </thead>
             <tbody>
-              {
-                data?.data?.length &&
+              {data?.data?.length &&
                 !isLoading &&
                 data?.data?.map((item, index) => (
-                  <tr key={item.id}
+                  <tr
+                    key={item.id}
                     className={` ${item?.is_printed ? "printed" : ""}`}
                   >
                     <td>{index + 1 + (currentPage - 1) * 10} </td>
@@ -528,27 +610,33 @@ const Table = ({
                         }
                         className={header.clickable ? "clickable-cell" : ""}
                       >
-                        {header.isInput && (header.key === 'code' || header.key === 'invoice_date') ? (
-                    renderInputField(header.key, item[header.key], item.id)
-                  ) : header.type === "image" ? (
-                    <img
-                      src={`${item.image}`}
-                      alt={`alt-${item.name}`}
-                      style={{ width: "50px", height: "50px" }}
-                    />
-                  ) : header.nestedKey ? (
-                    item[header.key][header.nestedKey] || "لا يوجد"
-                  ) : header.key === "status" ? (
-                    renderStatus(item[header.key])
-                  ) : header.key === "type" ? (
-                    renderType(item[header.key])
-                  ) : header.key === "new_client" ? (
-                    renderClient(item[header.key])
-                  ) : header.key === "is_worker" ? (
-                    renderWorker(item[header.key])
-                  ) : (
-                    item[header.key] || "لا يوجد"
-                  )}
+                        {header.isInput &&
+                        (header.key === "code" ||
+                          header.key === "invoice_date") ? (
+                          renderInputField(
+                            header.key,
+                            item[header.key],
+                            item.id
+                          )
+                        ) : header.type === "image" ? (
+                          <img
+                            src={`${item.image}`}
+                            alt={`alt-${item.name}`}
+                            style={{ width: "50px", height: "50px" }}
+                          />
+                        ) : header.nestedKey ? (
+                          item[header.key][header.nestedKey] || "لا يوجد"
+                        ) : header.key === "status" ? (
+                          renderStatus(item[header.key])
+                        ) : header.key === "type" ? (
+                          renderType(item[header.key])
+                        ) : header.key === "new_client" ? (
+                          renderClient(item[header.key])
+                        ) : header.key === "is_worker" ? (
+                          renderWorker(item[header.key])
+                        ) : (
+                          item[header.key] || "لا يوجد"
+                        )}
                       </td>
                     ))}
                     {ordersRecieve && (
@@ -558,22 +646,26 @@ const Table = ({
                             if (order.type === "add" || order.type === "")
                               return;
                             return (
-
                               <button
-                                className={`button ${!item.is_printed ? "notPrinted" : "printedBtn"}`}
+                                className={`button ${
+                                  !item.is_printed ? "notPrinted" : "printedBtn"
+                                }`}
                                 key={index}
                                 onClick={() => {
-
                                   {
-                                    item.is_printed ?
-                                      handleFinish(item.id) :
-                                      handleFinish(item.id)
-                                    handlePrintData(item)
+                                    item.is_printed
+                                      ? handleFinish(item.id)
+                                      : handleFinish(item.id);
+                                    handlePrintData(item);
                                   }
                                 }}
                               >
                                 <span
-                                  className={`${!item.is_printed ? "notPrintedText" : "printedText"}`}
+                                  className={`${
+                                    !item.is_printed
+                                      ? "notPrintedText"
+                                      : "printedText"
+                                  }`}
                                 >
                                   {item.is_printed ? "تم الطباعة" : order.label}
                                 </span>
@@ -590,12 +682,10 @@ const Table = ({
                             if (action.type === "add" || action.type === "")
                               return;
                             return (
-
                               <button
                                 className={`button ${action.type}`}
                                 key={index}
-                                style={{background:"red" , color:"white"}}
-
+                                style={{ background: "red", color: "white" }}
                                 onClick={() => {
                                   handleAction(action.type, item);
                                 }}
@@ -607,12 +697,18 @@ const Table = ({
                         </div>
                       </td>
                     )}
-
                   </tr>
                 ))}
               {data?.data?.length === 0 && (
                 <tr>
-                  <td colSpan={headers.length + (actions ? 1 : 0) + (ordersRecieve ? 1 : 0) + 1}>
+                  <td
+                    colSpan={
+                      headers.length +
+                      (actions ? 1 : 0) +
+                      (ordersRecieve ? 1 : 0) +
+                      1
+                    }
+                  >
                     لا يوجد نتائج
                   </td>
                 </tr>
@@ -620,7 +716,12 @@ const Table = ({
               {isLoading && (
                 <tr>
                   <td
-                    colSpan={headers.length + (actions ? 1 : 0) + (ordersRecieve ? 1 : 0) + 1}
+                    colSpan={
+                      headers.length +
+                      (actions ? 1 : 0) +
+                      (ordersRecieve ? 1 : 0) +
+                      1
+                    }
                     style={{ textAlign: "center" }}
                   >
                     <Spin
@@ -634,16 +735,16 @@ const Table = ({
             </tbody>
           </table>
         </div>
+
         {data?.data?.length > 0 && !isLoading && (
-         <Pagination
-         className="pagination"
-         current={currentPage}
-         onChange={handlePageChange}
-         total={data?.pagination?.total || 1}
-         pageSize={10} 
-         showSizeChanger={false}
-       />
-       
+          <Pagination
+            className="pagination"
+            current={currentPage}
+            onChange={handlePageChange}
+            total={data?.pagination?.total || 1}
+            pageSize={10}
+            showSizeChanger={false}
+          />
         )}
         {isDeleteModalVisible && (
           <DeleteModal
@@ -653,6 +754,7 @@ const Table = ({
             handleModalVisible={setisDeleteModalVisible}
           />
         )}
+
         {isShowModalVisible && (
           <ShowDataModal
             id={id}
@@ -668,11 +770,8 @@ const Table = ({
           />
         )}
       </section>
-      {  isKitchien &&      
-        <SoundPlayer play={playSound} />
-      }
-      {shouldPrint && <PrintCopy id={ids} />} 
-
+      {isKitchien && <SoundPlayer play={playSound} />}
+      {shouldPrint && <PrintCopy id={ids} />}
     </div>
   );
 };

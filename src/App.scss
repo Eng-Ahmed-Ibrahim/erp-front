@@ -426,4 +426,44 @@ ul {
       stroke-dashoffset: -125px;
     }
   }
+
+
+
+  .custom-heading {
+    font-size: 1.2rem;
+    font-family: 'Arial', sans-serif; 
+  }
+  
+  .custom-label {
+    font-size: 0.9rem; 
+    font-family: 'Arial', sans-serif; 
+  }
+  
+  .custom-input {
+    font-size: 0.9rem; 
+    font-family: 'Arial', sans-serif; 
+  }  
+
+
+
+  .custom-table {
+    font-size: 0.9rem; /* Smaller font size for table */
+    font-family: 'Arial', sans-serif; 
+  }
+  
+  .custom-header {
+    background: #b3946f;
+    font-size: 0.85rem; /* Smaller font size for table headers */
+  }
+  
+  .custom-row {
+    font-size: 0.9rem; /* Smaller font size for table rows */
+  }
+  
+  .custom-cell {
+    font-size: 0.9rem; /* Smaller font size for table cells */
+  } 
+
+
+  
 }

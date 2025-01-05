@@ -6,8 +6,7 @@ const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
 import { API_ENDPOINT } from "../../../../../../../config";
 import { useEffect, useState } from "react";
 import { BsBorderAll } from "react-icons/bs";
-import { Pagination, Select, message ,Modal} from "antd";
-
+import { Pagination, Select, message, Modal } from "antd";
 
 const OrderCard = ({ order, actions, changeStatusFn, user, refreshOrders }) => {
   // const [cardStyle, setCardStyle] = useState("");
@@ -15,22 +14,28 @@ const OrderCard = ({ order, actions, changeStatusFn, user, refreshOrders }) => {
   const formattedDate = new Date(order.date).toLocaleString();
 
   const cardStyle = (order) => {
-    return order.is_printed == 1 ? { 
-       background: '#a89f9f', BsBorderAll:'#0066CC',
-    } : {} 
-  }  
-  
-  
+    return order.status == "completed"
+      ? { background: "#949494", BsBorderAll: "#0066CC" }
+      : order.is_printed == 1
+      ? {
+          background: "#a89f9f",
+          BsBorderAll: "#0066CC",
+        }
+      : {};
+  };
+
   const productsStyle = (order) => {
-    return order.is_printed == 1 ? { 
-      //  background: '#a89f9f',
-      //  BsBorderAll:'#0066CC',
-    } : {} 
-  }
+    return order.is_printed == 1
+      ? {
+          //  background: '#a89f9f',
+          //  BsBorderAll:'#0066CC',
+        }
+      : {};
+  };
 
   const handleChangeStatus = (status) => {
     changeOrderStatus(order.id, status);
-    refreshOrders()
+    refreshOrders();
   };
 
   const handleRecievedOrder = async (id) => {
@@ -50,37 +55,31 @@ const OrderCard = ({ order, actions, changeStatusFn, user, refreshOrders }) => {
     } catch (error) {
       console.error(error);
     }
-    refreshOrders()
-
+    refreshOrders();
   };
 
-  
-
-
-  //  to be refactored !!!!!
   const mapOrderStaus = (status) => {
-    console.log('this is the data here mapOrderStaus(order.status)')
-    console.log(status)
+    const options = {
+      returned: "تم الحذف",
+      processing: "تحت التجهيز",
+      completed: "تم التجهيز",
+      closed: "تم الدفع",
+      printed: "تم الإستلام",
+    };
 
-    const options = { 'returned' : 'تم الحذف',
-      "processing": "تحت التجهيز",
-      "completed":"تم التجهيز",
-      "closed": "تم الدفع",
-      "printed": "تم الإستلام",}
-     
-  
-    return options[status] ? options[status]  :status
+    return options[status] ? options[status] : status;
   };
   const productRowStyle = (isNew) => {
     if (isNew) {
-      return { backgroundColor: "#b9e7bc", // Light yellow background
+      return {
+        backgroundColor: "#b9e7bc", // Light yellow background
         color: "#D9534F", // Red text color to make it stand out
         fontWeight: "bold", // Make the text bold for emphasis
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", // Subtle shadow to make the row pop
         transition: "all 0.3s ease", // Smooth transition effect for when it appears
         animation: "fadeIn 0.5s ease-out", // Apply the fade-in animation
+      };
     }
-  }
     return {};
   };
   return (
@@ -102,13 +101,13 @@ const OrderCard = ({ order, actions, changeStatusFn, user, refreshOrders }) => {
         </h5>
       )}
       <h5>
-        <strong>الحالة:</strong> {mapOrderStaus(order.status) }
+        <strong>الحالة:</strong> {mapOrderStaus(order.status)}
       </h5>
       <h5>
         <strong>تاريخ الأوردر:</strong> {formattedDate}
       </h5>
 
-      <div className="order-products"style={productsStyle(order)}>
+      <div className="order-products" style={productsStyle(order)}>
         <h5 style={{ color: "#08489b" }}>تفاصيل الأوردر:</h5>
 
         <table className="table table-hover mt-5">
@@ -119,16 +118,16 @@ const OrderCard = ({ order, actions, changeStatusFn, user, refreshOrders }) => {
               <th scope="col">الكمية</th>
             </tr>
           </thead>
-          <tbody >
+          <tbody>
             {order?.products &&
               order?.products.map((product, index) => {
                 const rowStyle = productRowStyle(product.is_new); // Get the row color style
                 return (
-                  <React.Fragment key={index} >
-                  <tr key={index}  >
+                  <React.Fragment key={index}>
+                    <tr key={index}>
                       {/* <th scope="row" >{index + 1}</th> */}
                       <td style={rowStyle}>{product.name}</td>
-                      <td style={rowStyle} >{product.quantity}</td>
+                      <td style={rowStyle}>{product.quantity}</td>
                     </tr>
                   </React.Fragment>
                 );
@@ -143,22 +142,17 @@ const OrderCard = ({ order, actions, changeStatusFn, user, refreshOrders }) => {
           if (action.type === "show") {
             return (
               <div className="butons_container" key={action.type}>
-                
-                {order.is_printed == 0 && (<button
-                  style={{
-                    background: "#ff8001",
-                  }}
-                  onClick={() => handleRecievedOrder(order.id)}
-                >
-                  تم الإستلام
-                </button>)}
-                <button
-                  onClick={() =>
-                    handleChangeStatus(
-                      order.status === "completed" ? "closed" : "completed"
-                    )
-                  }
-                >
+                {order.is_printed == 0 && (
+                  <button
+                    style={{
+                      background: "#ff8001",
+                    }}
+                    onClick={() => handleRecievedOrder(order.id)}
+                  >
+                    تم الإستلام
+                  </button>
+                )}
+                <button onClick={() => handleChangeStatus("completed")}>
                   جهز
                 </button>
               </div>

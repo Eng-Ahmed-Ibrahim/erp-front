@@ -1,7 +1,13 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { ThemeContext } from "../../../context/ThemeContext";
 import LogoDAR from "../../../../public/assets/images/Dar_logo.svg";
-import { MdAssignmentLate, MdLocalFireDepartment, MdReport } from "react-icons/md";
+import { Pagination, Select, Modal, message } from "antd";
+
+import {
+  MdAssignmentLate,
+  MdLocalFireDepartment,
+  MdReport,
+} from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { CgDanger } from "react-icons/cg";
 
@@ -13,7 +19,7 @@ import {
   FaTruckArrowRight,
   FaCalendarXmark,
 } from "react-icons/fa6";
-import { FaUserCircle, FaUser, FaUsers} from "react-icons/fa";
+import { FaUserCircle, FaUser, FaUsers } from "react-icons/fa";
 import { BsCashCoin, BsCreditCard2FrontFill } from "react-icons/bs";
 
 import { HiOutlineOfficeBuilding } from "react-icons/hi";
@@ -41,6 +47,84 @@ import { SidebarContext } from "../../../context/SidebarContext";
 import { useTranslation } from "react-i18next";
 import { RightOutlined } from "@ant-design/icons";
 import { useAuth } from "../../../context/AuthContext";
+
+function SaveIncentivesModal({ show, onHide, user }) {
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+  const navigate = useNavigate();
+
+  const handdleLogoutClick = async () => {
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+    navigate("/login");
+    onHide();
+  };
+
+  const handleshowTablesClick = () => {
+    navigate("/warehouse/cashier/opened-tables");
+    onHide();
+  };
+  return (
+    <Modal
+      centered
+      open={show}
+      onCancel={onHide}
+      onOk={onHide}
+      width={900}
+      footer={null}
+    >
+      <div className="mb-3">
+        <h3
+          htmlFor="exampleInputPassword"
+          className="form-label"
+          style={{ justifySelf: "center", margin: "20px" }}
+        >
+          رجاء التأكد من عدم وجود ترابيزات مفتوحة قبل تقفيل الشيفت
+        </h3>
+        <h3></h3>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            margin: "40px 20px 20px 20px",
+          }}
+        >
+          {" "}
+          <button
+            type="button"
+            className="pdf-button white-space-nowrap"
+            style={{
+              // backgroundColor: "#AF8260",
+              fontSize: "18px",
+              height: "43px",
+              margin: "15px 0 20px",
+              // background: "firebrick",
+            }}
+            onClick={handdleLogoutClick}  
+          >
+            تسجيل الخروج
+          </button>
+          <button
+            type="button"
+            className="pdf-button white-space-nowrap"
+            style={{
+              backgroundColor: "#AF8260",
+              fontSize: "18px",
+              height: "43px",
+              margin: "15px 0 20px",
+              background: "#803D3B",
+            }}
+            onClick={handleshowTablesClick}
+          >
+            عرض الترابيزات المفتوحة
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
 const Sidebar = () => {
   const { theme } = useContext(ThemeContext);
   const { closeSidebar } = useContext(SidebarContext);
@@ -54,49 +138,79 @@ const Sidebar = () => {
   const [arrowDirection, setArrowDirection] = useState("");
   const [justifyContent, setJustifyContent] = useState("d-flex-start");
   const { wrapperMargin, toggleWrapperMargin } = useContext(SidebarContext);
-  const [key, setKey] = useState(0); 
-  const [isMechOrChem,setIsMechOrChem] = useState(false);
-  const [isTalaat ,setIsTalaat] = useState(false)
-  const [isAdmin ,setIsAdmin] = useState(false)
-  const [isIncentives ,setIsIncentives] = useState(false)
+  const [key, setKey] = useState(0);
+  const [isMechOrChem, setIsMechOrChem] = useState(false);
+  const [isTalaat, setIsTalaat] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userRole, setUserRole] = useState("");
+  const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
 
-  const repairId ="9d727355-cad2-48b4-9671-aebbcfdc6771"
-  const chemicalId ="9d72735b-c904-4b4b-a613-f5f16ba8ad98"
-  const talaatId = "9d7b0996-857f-4a59-997b-64d605af07c0"
-//9d8ac2b2-3371-4daf-b1cb-7ffba121f7e4
+  const [isIncentives, setIsIncentives] = useState(false);
+  const [incentivesCollapsedGroup, setIncentivesCollapsedGroup] =
+    useState(false);
+
+  const [warehouseCollapsedGroup, setWarehouseCollapsedGroup] = useState(false);
+
+  const repairId = "9d727355-cad2-48b4-9671-aebbcfdc6771";
+  const chemicalId = "9d72735b-c904-4b4b-a613-f5f16ba8ad98";
+  const talaatId = "9d7b0996-857f-4a59-997b-64d605af07c0";
+  const CASHIER_ROLE = "9c10dd38-9229-4b5f-b48b-37aab38e9af7";
+
   const checkMenuItemPermission = (requiredPermission) => {
     if (!user?.permissions) return;
     return user
       ? user?.permissions.some(
-        (permission) => permission.name === requiredPermission.name
-      )
+          (permission) => permission.name === requiredPermission.name
+        )
       : false;
   };
-  useEffect(() => {
-    if(user.id==="01hy3km0ce0hv4w80hadt8sbt1"){
-      setIsAdmin(true)
-    }
-    if(user.permissions.map((permission)=>permission.id==="9c17t5au-74tn-48gb-4845-c9nrr3456b0d")||
-    user.permissions.map((permission)=>permission.id==="f5b1a3c2-91e3-4e34-a44d-5f56b6f9b22e")){
-      setIsIncentives(true)
-    }
-    if(user.roles[0]==talaatId){
-      setIsTalaat(true)
-    }
-    if(!(user.roles[0]==repairId || user.roles[0]==chemicalId)){
-      setIsMechOrChem(false)
-    }
-    else {
-      setIsMechOrChem(true)
 
+  useEffect(() => {
+    if (user.id === "01hy3km0ce0hv4w80hadt8sbt1") {
+      setIsAdmin(true);
     }
+
+    if (
+      user.permissions.map(
+        (permission) => permission.id === "9c17t5au-74tn-48gb-4845-c9nrr3456b0d"
+      ) ||
+      user.permissions.map(
+        (permission) => permission.id === "f5b1a3c2-91e3-4e34-a44d-5f56b6f9b22e"
+      )
+    ) {
+      setIsIncentives(true);
+    }
+
+    if (user.roles[0] == talaatId) {
+      setIsTalaat(true);
+    }
+
+    if (user.roles[0] == CASHIER_ROLE) {
+      setUserRole("cashier");
+    }
+
+    // setting if the roel is cachiere
+
+    if (!(user.roles[0] == repairId || user.roles[0] == chemicalId)) {
+      setIsMechOrChem(false);
+    } else {
+      setIsMechOrChem(true);
+    }
+
     setKey((prevKey) => prevKey + 1);
   }, [location]);
+
   const handleLogout = () => {
+    if (userRole == "cashier") {
+      setLogoutModalVisible(true);
+      return;
+    }
+
     localStorage.removeItem("token");
     sessionStorage.removeItem("token");
     navigate("/login");
   };
+
   const handleMenuLinkClick = (link) => {
     setActiveLink(link);
   };
@@ -111,6 +225,13 @@ const Sidebar = () => {
     }
   };
 
+  const handleIncentivesGroupClick = () => {
+    setIncentivesCollapsedGroup(!incentivesCollapsedGroup);
+  };
+
+  const handleWarehouseGroupClick = () => {
+    setWarehouseCollapsedGroup(!warehouseCollapsedGroup);
+  };
   const handleCloseSidebar = () => {
     {
       display === "d-block" ? setDisplay("d-none") : setDisplay("d-block");
@@ -153,7 +274,6 @@ const Sidebar = () => {
               handleCloseSidebar();
             }}
           />
-
         </div>
         <button className="sidebar-close-btn">
           <MdOutlineClose size={24} />
@@ -170,21 +290,23 @@ const Sidebar = () => {
               className="menu-item"
               title="الموردين"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 88,
-                  name: "view suppliers",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 88,
+                    name: "view suppliers",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/suppliers/show-suppliers"
-                className={`menu-link ${activeLink === "/warehouse/suppliers/show-suppliers"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/suppliers/show-suppliers"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() => {
                   // console.log("show-suppliers");
                   handleMenuLinkClick("/warehouse/suppliers/show-suppliers");
@@ -205,21 +327,23 @@ const Sidebar = () => {
               className="menu-item"
               title="اقسام المخزن"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 135,
-                  name: "view recipe_category_parents",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 135,
+                    name: "view recipe_category_parents",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/recipes/show-departments"
-                className={`menu-link ${activeLink === "/warehouse/recipes/show-departments"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/recipes/show-departments"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() => {
                   handleMenuLinkClick("/warehouse/recipes/show-departments");
                 }}
@@ -240,19 +364,21 @@ const Sidebar = () => {
               className="menu-item"
               title="الفواتير"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 140,
-                  name: "view invoices",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 140,
+                    name: "view invoices",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/invoices/show"
-                className={`menu-link ${activeLink === "/warehouse/invoices/show" ? "active" : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/invoices/show" ? "active" : ""
+                } ${justifyContent}`}
                 onClick={() => handleMenuLinkClick("/warehouse/invoices/show")}
               >
                 <span className="menu-link-icon">
@@ -271,21 +397,23 @@ const Sidebar = () => {
               className="menu-item"
               title="الهالك"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 140,
-                  name: "view tainted",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 140,
+                    name: "view tainted",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/invoices/show-tained"
-                className={`menu-link ${activeLink === "/warehouse/invoices/show-tained"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/invoices/show-tained"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() =>
                   handleMenuLinkClick("/warehouse/invoices/show-tained")
                 }
@@ -306,21 +434,23 @@ const Sidebar = () => {
               className="menu-item"
               title="المدفوعات"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 140,
-                  name: "view payable",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 140,
+                    name: "view payable",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/payable/show-payable"
-                className={`menu-link ${activeLink === "/warehouse/payable/show-payable"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/payable/show-payable"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() =>
                   handleMenuLinkClick("/warehouse/payable/show-payable")
                 }
@@ -340,21 +470,23 @@ const Sidebar = () => {
               className="menu-item"
               title="الطلبات"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 140,
-                  name: "view requests",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 140,
+                    name: "view requests",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/requests/show-requests"
-                className={`menu-link ${activeLink === "/warehouse/requests/show-requests"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/requests/show-requests"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() =>
                   handleMenuLinkClick("/warehouse/requests/show-requests")
                 }
@@ -371,30 +503,31 @@ const Sidebar = () => {
               </Link>
             </li>
             {user?.username != "رئيس قسم الحسابات" || "يحيي" ? (
-
               <li
                 className="menu-item"
                 title="الكاشير"
                 style={{
-                  display: `${ (checkMenuItemPermission({
-                    id: 124,
-                    name: "add order",
-                  })&& ! checkMenuItemPermission({
-                    id: 124,
-                    name: "view sales points only",
-                  })
-                )
-                    ? ""
-                    : "none"
-                    }`,
+                  display: `${
+                    checkMenuItemPermission({
+                      id: 124,
+                      name: "add order",
+                    }) &&
+                    !checkMenuItemPermission({
+                      id: 124,
+                      name: "view sales points only",
+                    })
+                      ? ""
+                      : "none"
+                  }`,
                 }}
               >
                 <Link
                   to="/warehouse/cashier/create-order"
-                  className={`menu-link ${activeLink === "/warehouse/cashier/create-order"
-                    ? "active"
-                    : ""
-                    } ${justifyContent}`}
+                  className={`menu-link ${
+                    activeLink === "/warehouse/cashier/create-order"
+                      ? "active"
+                      : ""
+                  } ${justifyContent}`}
                   onClick={() => {
                     handleMenuLinkClick("/warehouse/cashier/create-order");
                   }}
@@ -416,25 +549,27 @@ const Sidebar = () => {
                 className="menu-item"
                 title="ترابيزات مفتوحة"
                 style={{
-                  display: `${ ( checkMenuItemPermission({
-                    id: 124,
-                    name: "add order",
-                  }) && ! checkMenuItemPermission({
-                    id: 124,
-                    name: "view sales points only",
-                  })
-                )
-                    ? ""
-                    : "none"
-                    }`,
+                  display: `${
+                    checkMenuItemPermission({
+                      id: 124,
+                      name: "add order",
+                    }) &&
+                    !checkMenuItemPermission({
+                      id: 124,
+                      name: "view sales points only",
+                    })
+                      ? ""
+                      : "none"
+                  }`,
                 }}
               >
                 <Link
                   to="/warehouse/cashier/opened-tables"
-                  className={`menu-link ${activeLink === "/warehouse/cashier/opened-tables"
-                    ? "active"
-                    : ""
-                    } ${justifyContent}`}
+                  className={`menu-link ${
+                    activeLink === "/warehouse/cashier/opened-tables"
+                      ? "active"
+                      : ""
+                  } ${justifyContent}`}
                   onClick={() =>
                     handleMenuLinkClick("/warehouse/cashier/opened-tables")
                   }
@@ -452,33 +587,33 @@ const Sidebar = () => {
               </li>
             ) : null}
 
-
-
             <li
               className="menu-item"
               title="  نقاط البيع"
               style={{
-                display: `${ checkMenuItemPermission({
-                  id: 124,
-                  name: "add order",
-                }) 
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 124,
+                    name: "add order",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/cashier/selles-points"
-                className={`menu-link ${activeLink === "/warehouse/cashier/selles-points"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/cashier/selles-points"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() =>
                   handleMenuLinkClick("/warehouse/cashier/selles-points")
                 }
               >
                 <span className="menu-link-icon">
-                  <MdLocalFireDepartment size={30} /> 
+                  <MdLocalFireDepartment size={30} />
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
@@ -489,29 +624,27 @@ const Sidebar = () => {
               </Link>
             </li>
 
-
-
-
-
             <li
               className="menu-item"
               title="طلبات المطبخ"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 124,
-                  name: "view orders",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 124,
+                    name: "view orders",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/cashier/kitchen-orders"
-                className={`menu-link ${activeLink === "/warehouse/cashier/kitchen-orders"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/cashier/kitchen-orders"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() =>
                   handleMenuLinkClick("/warehouse/cashier/kitchen-orders")
                 }
@@ -528,68 +661,70 @@ const Sidebar = () => {
               </Link>
             </li>
 
-
-{!isTalaat &&
-            <li
-              className="menu-item"
-              title="طلبات المطبخ"
-              style={{
-                display: `${checkMenuItemPermission({
-                  id: 124,
-                  name: "view orders",
-                })
-                  ? ""
-                  : "none"
+            {!isTalaat && (
+              <li
+                className="menu-item"
+                title="طلبات المطبخ"
+                style={{
+                  display: `${
+                    checkMenuItemPermission({
+                      id: 124,
+                      name: "view orders",
+                    })
+                      ? ""
+                      : "none"
                   }`,
-              }}
-            >
-              <Link
-                to="/warehouse/cashier/kitchen-requests"
-                className={`menu-link ${activeLink === "/warehouse/cashier/kitchen-requests"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
-                onClick={() =>
-                  handleMenuLinkClick("/warehouse/cashier/kitchen-requests")
-                }
+                }}
               >
-                <span className="menu-link-icon">
-                  <FaKitchenSet size={30} />
-                </span>
-                <span
-                  className={`menu-link-text special-txt ${display}`}
-                  style={{ fontSize: "20px" }}
+                <Link
+                  to="/warehouse/cashier/kitchen-requests"
+                  className={`menu-link ${
+                    activeLink === "/warehouse/cashier/kitchen-requests"
+                      ? "active"
+                      : ""
+                  } ${justifyContent}`}
+                  onClick={() =>
+                    handleMenuLinkClick("/warehouse/cashier/kitchen-requests")
+                  }
                 >
-                  الأوردرات
-                </span>
-              </Link>
-            </li>}
-
-
+                  <span className="menu-link-icon">
+                    <FaKitchenSet size={30} />
+                  </span>
+                  <span
+                    className={`menu-link-text special-txt ${display}`}
+                    style={{ fontSize: "20px" }}
+                  >
+                    الأوردرات
+                  </span>
+                </Link>
+              </li>
+            )}
 
             <li
               className="menu-item"
               title="تقارير المبيعات"
               style={{
-                display: `${(checkMenuItemPermission({
-                  id: 124,
-                  name: "view orders",
-                })
-              && ! checkMenuItemPermission({
-                id: 124,
-                name: "view orders only",
-              }))
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 124,
+                    name: "view orders",
+                  }) &&
+                  !checkMenuItemPermission({
+                    id: 124,
+                    name: "view orders only",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/cashier/order-reports"
-                className={`menu-link ${activeLink === "/warehouse/cashier/order-reports"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/cashier/order-reports"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() =>
                   handleMenuLinkClick("/warehouse/cashier/order-reports")
                 }
@@ -605,84 +740,90 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-{  !isMechOrChem  &&
-<>          <li
-              className="menu-item"
-              title=" حد الامان"
-              style={{
-                display: `${checkMenuItemPermission({
-                  id: 85,
-                  name: "safe limit",
-                })
-                  ? ""
-                  : "none"
-                  }`,
-              }}
-            >
-              <Link
-                to="/warehouse/underLimit/show-under-limit"
-                className={`menu-link ${activeLink === "/warehouse/underLimit/show-under-limit"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
-                onClick={() =>
-                  handleMenuLinkClick("/warehouse/underLimit/show-under-limit")
-                }
-              >
-                <span className="menu-link-icon">
-                  <AiOutlineSafetyCertificate size={30} />
-                </span>
-                <span
-                  className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+            {!isMechOrChem && (
+              <>
+                {" "}
+                <li
+                  className="menu-item"
+                  title=" حد الامان"
+                  style={{
+                    display: `${
+                      checkMenuItemPermission({
+                        id: 85,
+                        name: "safe limit",
+                      })
+                        ? ""
+                        : "none"
+                    }`,
+                  }}
                 >
-                  حد الامان
-                </span>
-                <CgDanger size={30} style={{ color: "red" }} />
-              </Link>
-            </li>
-
-            <li
-              className="menu-item"
-              title=" حد الامان"
-              style={{
-                display: `${checkMenuItemPermission({
-
-                  id: 86,
-                  name: "expire_date limit",
-                })
-                  ? ""
-                  : "none"
-                  }`,
-              }}
-            >
-              <Link
-                to="/warehouse/underLimit/show-under-limit/show-expire-limit"
-                className={`menu-link ${activeLink ===
-                  "/warehouse/underLimit/show-under-limit/show-expire-limit"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
-                onClick={() =>
-                  handleMenuLinkClick(
-                    "/warehouse/underLimit/show-under-limit/show-expire-limit"
-                  )
-                }
-              >
-                <span className="menu-link-icon">
-                  <FaCalendarXmark size={30} />
-                </span>
-                <span
-                  className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  <Link
+                    to="/warehouse/underLimit/show-under-limit"
+                    className={`menu-link ${
+                      activeLink === "/warehouse/underLimit/show-under-limit"
+                        ? "active"
+                        : ""
+                    } ${justifyContent}`}
+                    onClick={() =>
+                      handleMenuLinkClick(
+                        "/warehouse/underLimit/show-under-limit"
+                      )
+                    }
+                  >
+                    <span className="menu-link-icon">
+                      <AiOutlineSafetyCertificate size={30} />
+                    </span>
+                    <span
+                      className={`menu-link-text ${display}`}
+                      style={{ fontSize: "20px" }}
+                    >
+                      حد الامان
+                    </span>
+                    <CgDanger size={30} style={{ color: "red" }} />
+                  </Link>
+                </li>
+                <li
+                  className="menu-item"
+                  title=" حد الامان"
+                  style={{
+                    display: `${
+                      checkMenuItemPermission({
+                        id: 86,
+                        name: "expire_date limit",
+                      })
+                        ? ""
+                        : "none"
+                    }`,
+                  }}
                 >
-                  حد الصلاحية
-                </span>
-                <CgDanger size={30} style={{ color: "red" }} />
-              </Link>
-            </li>
-            </>
-}
+                  <Link
+                    to="/warehouse/underLimit/show-under-limit/show-expire-limit"
+                    className={`menu-link ${
+                      activeLink ===
+                      "/warehouse/underLimit/show-under-limit/show-expire-limit"
+                        ? "active"
+                        : ""
+                    } ${justifyContent}`}
+                    onClick={() =>
+                      handleMenuLinkClick(
+                        "/warehouse/underLimit/show-under-limit/show-expire-limit"
+                      )
+                    }
+                  >
+                    <span className="menu-link-icon">
+                      <FaCalendarXmark size={30} />
+                    </span>
+                    <span
+                      className={`menu-link-text ${display}`}
+                      style={{ fontSize: "20px" }}
+                    >
+                      حد الصلاحية
+                    </span>
+                    <CgDanger size={30} style={{ color: "red" }} />
+                  </Link>
+                </li>
+              </>
+            )}
             {/* <li
               className="menu-item"
               title="المنتجات"
@@ -722,21 +863,23 @@ const Sidebar = () => {
               className="menu-item"
               title="المنتجات2"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 93,
-                  name: "view categories",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 93,
+                    name: "view categories",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/returants/show-resturants2"
-                className={`menu-link ${activeLink === "/warehouse/returants/show-resturants2"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/returants/show-resturants2"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() => {
                   handleMenuLinkClick("/warehouse/returants/show-resturants2");
                 }}
@@ -757,19 +900,21 @@ const Sidebar = () => {
               className="menu-item"
               title="الأدوار"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 113,
-                  name: "view users",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 113,
+                    name: "view users",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/users/show-users"
-                className={`menu-link ${activeLink === "/warehouse/users/show-users" ? "active" : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/users/show-users" ? "active" : ""
+                } ${justifyContent}`}
                 onClick={() => {
                   handleMenuLinkClick("/warehouse/users/show-users");
                 }}
@@ -789,19 +934,21 @@ const Sidebar = () => {
               className="menu-item"
               title="الأدوار"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 110,
-                  name: "add role",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 110,
+                    name: "add role",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/roles/show-roles"
-                className={`menu-link ${activeLink === "/warehouse/roles/show-roles" ? "active" : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/roles/show-roles" ? "active" : ""
+                } ${justifyContent}`}
                 onClick={() => {
                   handleMenuLinkClick("/warehouse/roles/show-roles");
                 }}
@@ -821,21 +968,23 @@ const Sidebar = () => {
               className="menu-item"
               title="طرق الدفع"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 123,
-                  name: "view payment methods",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 123,
+                    name: "view payment methods",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/clients/payment-method"
-                className={`menu-link ${activeLink === "/warehouse/clients/payment-method"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/clients/payment-method"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() => {
                   handleMenuLinkClick("/warehouse/clients/payment-method");
                 }}
@@ -855,21 +1004,23 @@ const Sidebar = () => {
               className="menu-item"
               title="أنواع العملاء"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 123,
-                  name: "view client types",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 123,
+                    name: "view client types",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/clients/client-type"
-                className={`menu-link ${activeLink === "/warehouse/clients/client-type"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/clients/client-type"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() => {
                   handleMenuLinkClick("/warehouse/clients/client-type");
                 }}
@@ -889,19 +1040,21 @@ const Sidebar = () => {
               className="menu-item"
               title="أنواع العملاء"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 123,
-                  name: "view clients",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 123,
+                    name: "view clients",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/clients/client"
-                className={`menu-link ${activeLink === "/warehouse/clients/client" ? "active" : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/clients/client" ? "active" : ""
+                } ${justifyContent}`}
                 onClick={() => {
                   handleMenuLinkClick("/warehouse/clients/client");
                 }}
@@ -917,17 +1070,19 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
+
             <li
               className="menu-item"
               title="طرق الدفع"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 123,
-                  name: "view discount reasons",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 123,
+                    name: "view discount reasons",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               {/* <Link
@@ -956,21 +1111,23 @@ const Sidebar = () => {
               className="menu-item"
               title="التقارير"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 140,
-                  name: "view reports",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 140,
+                    name: "view reports",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/reports/show-reports"
-                className={`menu-link ${activeLink === "/warehouse/reports/show-reports"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/reports/show-reports"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() =>
                   handleMenuLinkClick("/warehouse/reports/show-reports")
                 }
@@ -987,25 +1144,27 @@ const Sidebar = () => {
               </Link>
             </li>
 
-         <li
+            <li
               className="menu-item"
               title="المنافذ"
               style={{
-                display: `${checkMenuItemPermission({
-                  id: 135,
-                  name: "view recipe_category_parents",
-                })
-                  ? ""
-                  : "none"
-                  }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 135,
+                    name: "view recipe_category_parents",
+                  })
+                    ? ""
+                    : "none"
+                }`,
               }}
             >
               <Link
                 to="/warehouse/departments/show-departments"
-                className={`menu-link ${activeLink === "/warehouse/departments/show-departments"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
+                className={`menu-link ${
+                  activeLink === "/warehouse/departments/show-departments"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
                 onClick={() =>
                   handleMenuLinkClick("/warehouse/departments/show-departments")
                 }
@@ -1021,289 +1180,416 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-            {isIncentives &&
-            <>
-            <li
-              className="menu-item"
-              title="الحوافز"
-              style={{
-                display: `${checkMenuItemPermission({
-                  id: 148,
-                  name: "view incentives",
-                })
-                  ? ""
-                  : "none"
-                  }`,
-              }}
-            >
-              <Link
-                to="/warehouse/Incentives/show-Incentives"
-                className={`menu-link ${activeLink === "/warehouse/Incentives/show-Incentives"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
-                onClick={() =>
-                  handleMenuLinkClick("/warehouse/Incentives/show-Incentives")
-                }
-              >
-                <span className="menu-link-icon">
-                  <BsCashCoin size={30} />
-                </span>
-                <span
-                  className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
-                >
-                  الحوافز
-                </span>
-              </Link>
-            </li>
-            <li
-              className="menu-item"
-              title="الوظائف"
-              style={{
-                display: `${checkMenuItemPermission({
-                  id: 148,
-                  name: "view employees_and_jobs",
-                })
-                  ? ""
-                  : "none"
-                  }`,
-              }}
-            >
-              <Link
-                to="/warehouse/jobs/show-jobs"
-                className={`menu-link ${activeLink === "/warehouse/jobs/show-jobs"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
-                onClick={() =>
-                  handleMenuLinkClick("/warehouse/jobs/show-jobs")
-                }
-              >
-                <span className="menu-link-icon">
-                  <BsCashCoin size={30} />
-                </span>
-                <span
-                  className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
-                >
-                  الوظائف
-                </span>
-              </Link>
-            </li>
-            <li
-              className="menu-item"
-              title="العاملين بالدار"
-              style={{
-                display: `${checkMenuItemPermission({
-                  id: 148,
-                  name: "view employees_and_jobs",
-                })
-                  ? ""
-                  : "none"
-                  }`,
-              }}
-            >
-              <Link
-                to="/warehouse/staff/show-staff"
-                className={`menu-link ${activeLink === "/warehouse/staff/show-staff"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
-                onClick={() =>
-                  handleMenuLinkClick("/warehouse/staff/show-staff")
-                }
-              >
-                <span className="menu-link-icon">
-                  <FaUsers size={30} />
-                </span>
-                <span
-                  className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
-                >
-                  العاملين بالدار
-                </span>
-              </Link>
-            </li>
-            </>}
-            {!isMechOrChem&& <> 
-            <li
-              className="menu-item"
-              title="المنافذ"
-              style={{
-                display: `${checkMenuItemPermission({
-                  id: 140,
-                  name: "ترابيزات مفتوحة",
-                })
-                  ? ""
-                  : "none"
-                  }`,
-              }}
-            >
-              <Link
-                to="/warehouse/departments/show-departments/tables"
-                className={`menu-link ${activeLink === "/warehouse/departments/show-departments/tables"
-                  ? "active"
-                  : ""
-                  } ${justifyContent}`}
-                onClick={() =>
-                  handleMenuLinkClick("/warehouse/departments/show-departments/tables")
-                }
-              >
-                <span className="menu-link-icon">
-                  <HiOutlineOfficeBuilding size={30} />
-                </span>
-                <span
-                  className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
-                >
-                  كل التربيزات المفتوحة
-                </span>
-              </Link>
-            </li>
 
-            <li
-              className="menu-item"
-              title="الوحدات"
-              style={{
-                display: `${checkMenuItemPermission({
-                  id: 140,
-                  name: "view units",
-                })
-                  ? ""
-                  : "none"
-                  }`,
-              }}
-              >
-              <Link
-                to="/warehouse/units/show-units"
-                className={`menu-link ${activeLink === "/warehouse/units/show-units" ? "active" : ""
-                  } ${justifyContent}`}
-                onClick={() =>
-                  handleMenuLinkClick("/warehouse/units/show-units")
-                }
-              >
-                <span className="menu-link-icon">
-                  <TbBrandUnity size={30} />
-                </span>
-                <span
-                  className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+            {isIncentives && (
+              <>
+                {incentivesCollapsedGroup ? (
+                  <>
+                    <li
+                      className="menu-item"
+                      title="الحوافز"
+                      style={{
+                        display: `${
+                          checkMenuItemPermission({
+                            id: 148,
+                            name: "view incentives",
+                          })
+                            ? ""
+                            : "none"
+                        }`,
+                      }}
+                    >
+                      <Link
+                        to="/warehouse/Incentives/show-Incentives"
+                        className={`menu-link ${
+                          activeLink === "/warehouse/Incentives/show-Incentives"
+                            ? "active"
+                            : ""
+                        } ${justifyContent}`}
+                        onClick={() =>
+                          handleMenuLinkClick(
+                            "/warehouse/Incentives/show-Incentives"
+                          )
+                        }
+                      >
+                        <span className="menu-link-icon">
+                          <BsCashCoin size={30} />
+                        </span>
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          الحوافز
+                        </span>
+                      </Link>
+                    </li>
+
+                    <li
+                      className="menu-item"
+                      title="الوظائف"
+                      style={{
+                        display: `${
+                          checkMenuItemPermission({
+                            id: 148,
+                            name: "view employees_and_jobs",
+                          })
+                            ? ""
+                            : "none"
+                        }`,
+                      }}
+                    >
+                      <Link
+                        to="/warehouse/jobs/show-jobs"
+                        className={`menu-link ${
+                          activeLink === "/warehouse/jobs/show-jobs"
+                            ? "active"
+                            : ""
+                        } ${justifyContent}`}
+                        onClick={() =>
+                          handleMenuLinkClick("/warehouse/jobs/show-jobs")
+                        }
+                      >
+                        <span className="menu-link-icon">
+                          <BsCashCoin size={30} />
+                        </span>
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          الوظائف
+                        </span>
+                      </Link>
+                    </li>
+
+                    <li
+                      className="menu-item"
+                      title="العاملين بالدار"
+                      style={{
+                        display: `${
+                          checkMenuItemPermission({
+                            id: 148,
+                            name: "view employees_and_jobs",
+                          })
+                            ? ""
+                            : "none"
+                        }`,
+                      }}
+                    >
+                      <Link
+                        to="/warehouse/staff/show-staff"
+                        className={`menu-link ${
+                          activeLink === "/warehouse/staff/show-staff"
+                            ? "active"
+                            : ""
+                        } ${justifyContent}`}
+                        onClick={() =>
+                          handleMenuLinkClick("/warehouse/staff/show-staff")
+                        }
+                      >
+                        <span className="menu-link-icon">
+                          <FaUsers size={30} />
+                        </span>
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          العاملين بالدار
+                        </span>
+                      </Link>
+                    </li>
+                    <li
+                      className="menu-item"
+                      title="أقسام الموظفين"
+                      style={{
+                        display: `${
+                          checkMenuItemPermission({
+                            id: 148,
+                            name: "view employees_and_jobs",
+                          })
+                            ? ""
+                            : "none"
+                        }`,
+                      }}
+                    >
+                      <Link
+                        to="/warehouse/show-employees-departments"
+                        className={`menu-link ${
+                          activeLink === "/warehouse/show-employees-departments"
+                            ? "active"
+                            : ""
+                        } ${justifyContent}`}
+                        onClick={() =>
+                          handleMenuLinkClick(
+                            "/warehouse/show-employees-departments"
+                          )
+                        }
+                      >
+                        <span className="menu-link-icon">
+                          <FaUsers size={30} />
+                        </span>
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          الأقسام
+                        </span>
+                      </Link>
+                    </li>
+
+                    <li
+                      className="menu-item"
+                      style={{
+                        height: "25px",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Link
+                        className="menu-link"
+                        onClick={() => handleIncentivesGroupClick()}
+                        style={{
+                          justifyContent: "center",
+                          height: "20px",
+                        }}
+                      >
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          ^
+                        </span>
+                      </Link>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li className="menu-item" title="الحوافز">
+                      <Link
+                        className="menu-link"
+                        onClick={() => handleIncentivesGroupClick()}
+                      >
+                        <span className="menu-link-icon">
+                          <BsCashCoin size={30} />
+                        </span>
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          الحوافز
+                          <img
+                            src="../../../../assets/icons/down-arrow.png"
+                            style={{ width: "20px", marginRight: "10px" }}
+                          />
+                        </span>
+                      </Link>
+                    </li>
+                  </>
+                )}
+              </>
+            )}
+
+            {!isMechOrChem && (
+              <>
+                <li
+                  className="menu-item"
+                  title="المنافذ"
+                  style={{
+                    display: `${
+                      checkMenuItemPermission({
+                        id: 140,
+                        name: "ترابيزات مفتوحة",
+                      })
+                        ? ""
+                        : "none"
+                    }`,
+                  }}
                 >
-                  الوحدات
-                </span>
-              </Link>
-            </li>
-            </>}
+                  <Link
+                    to="/warehouse/departments/show-departments/tables"
+                    className={`menu-link ${
+                      activeLink ===
+                      "/warehouse/departments/show-departments/tables"
+                        ? "active"
+                        : ""
+                    } ${justifyContent}`}
+                    onClick={() =>
+                      handleMenuLinkClick(
+                        "/warehouse/departments/show-departments/tables"
+                      )
+                    }
+                  >
+                    <span className="menu-link-icon">
+                      <HiOutlineOfficeBuilding size={30} />
+                    </span>
+                    <span
+                      className={`menu-link-text ${display}`}
+                      style={{ fontSize: "20px" }}
+                    >
+                      كل التربيزات المفتوحة
+                    </span>
+                  </Link>
+                </li>
+
+                <li
+                  className="menu-item"
+                  title="الوحدات"
+                  style={{
+                    display: `${
+                      checkMenuItemPermission({
+                        id: 140,
+                        name: "view units",
+                      })
+                        ? ""
+                        : "none"
+                    }`,
+                  }}
+                >
+                  <Link
+                    to="/warehouse/units/show-units"
+                    className={`menu-link ${
+                      activeLink === "/warehouse/units/show-units"
+                        ? "active"
+                        : ""
+                    } ${justifyContent}`}
+                    onClick={() =>
+                      handleMenuLinkClick("/warehouse/units/show-units")
+                    }
+                  >
+                    <span className="menu-link-icon">
+                      <TbBrandUnity size={30} />
+                    </span>
+                    <span
+                      className={`menu-link-text ${display}`}
+                      style={{ fontSize: "20px" }}
+                    >
+                      الوحدات
+                    </span>
+                  </Link>
+                </li>
+              </>
+            )}
 
             {user?.department.type != "source" ? (
               <>
-               {!isMechOrChem&&
-               <> 
-                <li
-                  className="menu-item"
-                  title="الشيفتات"
-                  style={{
-                    display: `${checkMenuItemPermission({
-                      id: 140,
-                      name: "view units",
-                    })
-                      ? ""
-                      : "none"
-                      }`,
-                  }}
-                >
-                  <Link
-                    to="/warehouse/reports/show-shifts"
-                    className={`menu-link ${activeLink === "/warehouse/reports/show-shifts" ? "active" : ""
-                      } ${justifyContent}`}
-                    onClick={() =>
-                      handleMenuLinkClick("/warehouse/reports/show-shifts")
-                    }
-                  >
-                    <span className="menu-link-icon">
-                      <TbBrandUnity size={30} />
-                    </span>
-                    <span
-                      className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                {!isMechOrChem && (
+                  <>
+                    <li
+                      className="menu-item"
+                      title="الشيفتات"
+                      style={{
+                        display: `${
+                          checkMenuItemPermission({
+                            id: 140,
+                            name: "view units",
+                          })
+                            ? ""
+                            : "none"
+                        }`,
+                      }}
                     >
-                      الشيفتات
-                    </span>
-                  </Link>
-                </li>
-                <li
-                  className="menu-item"
-                  title="الويتر"
-                  style={{
-                    display: `${checkMenuItemPermission({
-                      id: 140,
-                      name: "view units",
-                    })
-                      ? ""
-                      : "none"
-                      }`,
-                  }}
-                >
-                  <Link
-                    to="/warehouse/reports/witer"
-                    className={`menu-link ${activeLink === "/warehouse/reports/witer" ? "active" : ""
-                      } ${justifyContent}`}
-                    onClick={() =>
-                      handleMenuLinkClick("/warehouse/reports/witer")
-                    }
-                  >
-                    <span className="menu-link-icon">
-                      <TbBrandUnity size={30} />
-                    </span>
-                    <span
-                      className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      <Link
+                        to="/warehouse/reports/show-shifts"
+                        className={`menu-link ${
+                          activeLink === "/warehouse/reports/show-shifts"
+                            ? "active"
+                            : ""
+                        } ${justifyContent}`}
+                        onClick={() =>
+                          handleMenuLinkClick("/warehouse/reports/show-shifts")
+                        }
+                      >
+                        <span className="menu-link-icon">
+                          <TbBrandUnity size={30} />
+                        </span>
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          الشيفتات
+                        </span>
+                      </Link>
+                    </li>
+                    <li
+                      className="menu-item"
+                      title="الويتر"
+                      style={{
+                        display: `${
+                          checkMenuItemPermission({
+                            id: 140,
+                            name: "view units",
+                          })
+                            ? ""
+                            : "none"
+                        }`,
+                      }}
                     >
-                      الويتر
-                    </span>
-                  </Link>
-                </li>
-                <li
-                  className="menu-item"
-                  title="الويتر"
-                  style={{
-                    display: `${checkMenuItemPermission({
-                      id: 140,
-                      name: "view units",
-                    })
-                      ? ""
-                      : "none"
-                      }`,
-                  }}
-                >
-                  <Link
-                    to="/warehouse/reports/review"
-                    className={`menu-link ${activeLink === "/warehouse/reports/review" ? "active" : ""
-                      } ${justifyContent}`}
-                    onClick={() =>
-                      handleMenuLinkClick("/warehouse/reports/review")
-                    }
-                  >
-                    <span className="menu-link-icon">
-                      <TbBrandUnity size={30} />
-                    </span>
-                    <span
-                      className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      <Link
+                        to="/warehouse/reports/witer"
+                        className={`menu-link ${
+                          activeLink === "/warehouse/reports/witer"
+                            ? "active"
+                            : ""
+                        } ${justifyContent}`}
+                        onClick={() =>
+                          handleMenuLinkClick("/warehouse/reports/witer")
+                        }
+                      >
+                        <span className="menu-link-icon">
+                          <TbBrandUnity size={30} />
+                        </span>
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          الويتر
+                        </span>
+                      </Link>
+                    </li>
+                    <li
+                      className="menu-item"
+                      title="الويتر"
+                      style={{
+                        display: `${
+                          checkMenuItemPermission({
+                            id: 140,
+                            name: "view units",
+                          })
+                            ? ""
+                            : "none"
+                        }`,
+                      }}
                     >
-                      مراجعه المنتجات
-                    </span>
-                  </Link>
-                </li>
-                </>}
+                      <Link
+                        to="/warehouse/reports/review"
+                        className={`menu-link ${
+                          activeLink === "/warehouse/reports/review"
+                            ? "active"
+                            : ""
+                        } ${justifyContent}`}
+                        onClick={() =>
+                          handleMenuLinkClick("/warehouse/reports/review")
+                        }
+                      >
+                        <span className="menu-link-icon">
+                          <TbBrandUnity size={30} />
+                        </span>
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          مراجعه المنتجات
+                        </span>
+                      </Link>
+                    </li>
+                  </>
+                )}
               </>
             ) : null}
 
             <li className="menu-item" title="تسجيل خروج">
               <button
-                className={`menu-link logout ${activeLink === "/warehouse/*" ? "active" : ""
-                  } ${justifyContent}`}
+                className={`menu-link logout ${
+                  activeLink === "/warehouse/*" ? "active" : ""
+                } ${justifyContent}`}
                 onClick={handleLogout}
               >
                 <span className="menu-link-icon">
@@ -1322,6 +1608,11 @@ const Sidebar = () => {
           </ul>
         </div>
       </div>
+      <SaveIncentivesModal
+        show={isLogoutModalVisible}
+        onHide={() => setLogoutModalVisible(false)}
+        user={user}
+      />
     </nav>
   );
 };

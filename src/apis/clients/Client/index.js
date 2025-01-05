@@ -1,15 +1,15 @@
 import axios from "axios";
 import { API_ENDPOINT } from "../../../../config";
 import { message } from "antd";
-const Token =
-  localStorage.getItem("token") || sessionStorage.getItem("token");
+const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
 export async function getClients(filteredValues, id, setIsLoading) {
   try {
     setIsLoading(true);
-    const { page } = filteredValues;
+    const { page, name } = filteredValues;
     const res = await axios.get(`${API_ENDPOINT}/api/v1/store/client`, {
       params: {
         page,
+        name,
       },
       headers: {
         Authorization: `Bearer ${Token}`,
@@ -57,12 +57,18 @@ export async function updateClient(editValues, id) {
   const formData = new FormData();
   formData.append("name", editValues.name);
   formData.append("phone", editValues.phone ? editValues.phone : "");
-  formData.append("military_number", editValues.military_number ? editValues.military_number : "");
+  formData.append(
+    "military_number",
+    editValues.military_number ? editValues.military_number : ""
+  );
   formData.append("sallary", editValues.salary ? editValues.salary : "");
-  formData.append("incentives", editValues.incentives ? editValues.incentives : "");
+  formData.append(
+    "incentives",
+    editValues.incentives ? editValues.incentives : ""
+  );
   formData.append("client_type_id", editValues.client_type_id);
-  formData.append("tax", editValues.tax ?? '');
-  formData.append("discount", editValues.discount?? '');
+  formData.append("tax", editValues.tax ?? "");
+  formData.append("discount", editValues.discount ?? "");
   formData.append("_method", "PUT");
   try {
     const res = await axios.post(
@@ -85,10 +91,13 @@ export async function addClient(values) {
   const formData = new FormData();
   formData.append("name", values.name);
   formData.append("phone", values.phone ? values.phone : "");
-  formData.append("military_number", values.military_number ? values.military_number : "");
+  formData.append(
+    "military_number",
+    values.military_number ? values.military_number : ""
+  );
   // formData.append("is_worker", values.is_worker);
   formData.append("tax", values.tax ? values.tax : "");
-  formData.append("discount", values.discount ? values.discount : "")
+  formData.append("discount", values.discount ? values.discount : "");
   formData.append("sallary", values.salary ? values.salary : "");
   formData.append("incentives", values.incentives ? values.incentives : "");
   formData.append("client_type_id", values.client_type_id);

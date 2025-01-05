@@ -5,13 +5,13 @@ const Token =
   localStorage.getItem("token") || sessionStorage.getItem("token"); export async function getSuppliers(filteredValues, id, setIsLoading) {
     try {
       setIsLoading(true);
-      const { name, phone, page, type } = filteredValues;
+      const { name, phone, page, type , warehouse_section_id, from_date , to_date} = filteredValues;
       const res = await axios.get(`${API_ENDPOINT}/api/v1/store/supplier`, {
         params: {
           name,
-          phone,
+          // phone,
           page,
-          type,
+          type, warehouse_section_id, from_date , to_date
         },
         headers: {
           Authorization: `Bearer ${Token}`,
@@ -130,8 +130,9 @@ export async function getSupplierInvoices(filteredValues, id, setIsLoading) {
         },
       },
     );
+    console.log( res.data.data)
     setIsLoading(false);
-    return res.data;
+    return res.data.data;
   } catch (error) {
     setIsLoading(false);
     // console.log("Error fetching data:", error);

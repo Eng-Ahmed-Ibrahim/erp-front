@@ -8,7 +8,95 @@ import { Pagination, Select, Modal, message } from "antd";
 
 import { DownloadTableExcel } from "react-export-table-to-excel";
 
-function DataModal({ show, onHide, item, itemId }) {
+function SaveIncentivesModal({ show, onHide, month }) {
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+
+  const handelSaveIncentives = async () => {
+    const res = await axios.post(
+      `${API_ENDPOINT}/api/v1/incentives/lock-incentives`,
+      {
+        month: month,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+
+    if (true) {
+      message.success("تم تعديل الحافز بنجاح");
+      onHide;
+    }
+  };
+
+  return (
+    <Modal
+      centered
+      open={show}
+      onCancel={onHide}
+      onOk={onHide}
+      width={900}
+      footer={null}
+    >
+      <div className="mb-3">
+        <h3
+          htmlFor="exampleInputPassword"
+          className="form-label"
+          style={{ justifySelf: "center", margin: "20px" }}
+        >
+          هل أنت متأكد من حفظ حوافز شهر {month ? month : ""}
+        </h3>
+        <h3></h3>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            margin: "40px 20px 20px 20px",
+          }}
+        >
+          {" "}
+          <button
+            type="button"
+            // className="pdf-button white-space-nowrap"
+            style={{
+              backgroundColor: "#AF8260",
+              fontSize: "16px",
+              height: "43px",
+              margin: "15px 0 20px",
+              background: "firebrick",
+            }}
+            onClick={handelSaveIncentives}
+            className="btn text-light fs-bold px-3"
+          >
+            حفظ البيانات
+          </button>
+          <button
+            type="button"
+            // className="pdf-button white-space-nowrap"
+            style={{
+              backgroundColor: "#AF8260",
+              fontSize: "16px",
+              height: "43px",
+              margin: "15px 0 20px",
+              background: "green",
+            }}
+            onClick={() => {
+              onHide();
+            }}
+            className="btn text-light fs-bold px-3"
+          >
+            رجوع
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function DataModal({ show, onHide, item, itemId , refreshFn}) {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const [discount, setDiscount] = useState(0);
@@ -36,13 +124,13 @@ function DataModal({ show, onHide, item, itemId }) {
         },
       }
     );
-
-    console.log(res.data.data)
     // onHide();
 
     if (res.data.data) {
+      refreshFn()
       message.success("تم تعديل الحافز بنجاح");
       onHide();
+
     }
   };
 
@@ -100,20 +188,28 @@ function DataModal({ show, onHide, item, itemId }) {
     </Modal>
   );
 }
+
 const ShowInventives = () => {
   const [departments, setDepartments] = useState([]);
   const [itemId, setItemId] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSaveIncentivesModalVisable, setIsSaveIncentivesModalVisable] =
+    useState(false);
   const [pointValue, setPointValue] = useState();
   const [editedPointValue, setEditedPointValue] = useState(pointValue);
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [nameFilter, setNameFilter] = useState("");
+  const [nationalId, setNationalId] = useState("");
   const [jobFilter, setJobFilter] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState(null);
   const [item, setItem] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState([]);
+  const [canEdit, setCanEdit] = useState(false);
   const [totalIncentives, setTotalIncentives] = useState([]);
   const [incentivesCount, setIncentivesCount] = useState([]);
+  const [employeeType, setEmployeeType] = useState([]);
+  const [employeeTypes, setEmployeesTypes] = useState([]);
   const tableRef = useRef(null);
 
   const month = new Date().toISOString().split("-")[1] - 1;
@@ -140,6 +236,16 @@ const ShowInventives = () => {
     setCurrentPage(1); // Optionally reset to page 1
   };
 
+  const handleNationalIdChange = (e) => {
+    setNationalId(e.target.value);
+  };
+  const handleMonthFilterChange = (e) => {
+    setSelectedMonth(e.target.value);
+  };
+
+  const handleEmplyeeTypChange = (type) => {
+    setEmployeeType(type);
+  };
   useEffect(() => {
     axios
       .get(`${API_ENDPOINT}/api/v1/departments`, {
@@ -156,14 +262,31 @@ const ShowInventives = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch incentives with filters
+    axios
+      .get(`${API_ENDPOINT}/api/v1/types`, {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      })
+      .then((response) => {
+        setEmployeesTypes(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching departments:", error);
+      });
+  }, []);
+  const fetchIncentives = async () => {
+
     const filters = {
       department: departmentFilter,
       name: nameFilter,
       job: jobFilter,
+      national_id: nationalId,
+      month: selectedMonth,
+      employee_type: employeeType,
     };
 
-    axios
+   await axios
       .get(`${API_ENDPOINT}/api/v1/incentives`, {
         params: filters,
         headers: {
@@ -174,13 +297,25 @@ const ShowInventives = () => {
         setData(response.data.data.incentives);
         setPointValue(response.data.data.incentives[0]?.point_value);
         setEditedPointValue(response.data.data.incentives[0]?.point_value);
-        setTotalIncentives(response.data.data.total)
-        setIncentivesCount(response.data.data.count)
+        setTotalIncentives(response.data.data.total);
+        setCanEdit(response.data.data.can_edit);
+        setIncentivesCount(response.data.data.count);
       })
       .catch((error) => {
         console.error("Error fetching incentives:", error);
       });
-  }, [departmentFilter, nameFilter, jobFilter, Token]);
+  };
+  useEffect(() => {
+    fetchIncentives();
+  }, [
+    departmentFilter,
+    nameFilter,
+    jobFilter,
+    Token,
+    nationalId,
+    selectedMonth,
+    employeeType,
+  ]);
 
   const handelEditPoints = async () => {
     const res = await axios.put(
@@ -193,13 +328,36 @@ const ShowInventives = () => {
           Authorization: `Bearer ${Token}`,
         },
       }
-    );
+    );  
 
-    if (res) {
+
+    if (res) {    
       message.success("تم تعديل الحافز بنجاح");
-      onHide;
+      onHide()
     }
   };
+  // zerox 6220
+  const handelSaveIncentives = async () => {
+    // const res = await axios.post(
+    //   `${API_ENDPOINT}/api/v1/incentives/lock-incentives`,
+    //   {
+    //     month: selectedMonth,
+    //   },
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${Token}`,
+    //     },
+    //   }
+    // );
+
+    // if (true) {
+    //   message.success("تم تعديل الحافز بنجاح");
+    //   onHide;
+    // }
+
+    setIsSaveIncentivesModalVisable(true);
+  };
+
   const handelEdit = async (item) => {
     setItemId(item.id);
     setItem(item);
@@ -209,10 +367,17 @@ const ShowInventives = () => {
     const department = departments?.find((dept) => dept.id === departmentId);
     return department ? department.name : "غير معروف";
   };
+
+  const refreshIncentives = () => {
+    fetchIncentives()
+  }
   return (
     <div>
       <div className="my-1 ">
-        <h1 className="heading text-center p-3"> الحوافز ({ incentivesCount}) : {totalIncentives} جنيه</h1>
+        <h1 className="heading text-center p-3">
+          {" "}
+          الحوافز ({incentivesCount}) : {totalIncentives} جنيه
+        </h1>
       </div>
 
       <div
@@ -224,10 +389,18 @@ const ShowInventives = () => {
           borderRadius: "8px",
         }}
       >
-        <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-          {/* Department Filter */}
+        <div
+          style={{
+            display: "flex",
+            gap: "20px",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <div>
             <label
+              className="form-label"
               style={{
                 fontWeight: "bold",
                 marginBottom: "8px",
@@ -237,12 +410,13 @@ const ShowInventives = () => {
               القسم
             </label>
             <Select
+              className="form-input"
               value={departmentFilter}
               onChange={handleDepartmentChange}
               placeholder="اختر القسم"
-              style={{ width: "200px" }}
+              style={{ width: "200px", height: "45px" }}
               dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
-              // showSearch={true} 
+              // showSearch={true}
             >
               {departments &&
                 departments.map((dept) => (
@@ -252,10 +426,9 @@ const ShowInventives = () => {
                 ))}
             </Select>
           </div>
-
-          {/* Name Filter */}
           <div>
             <label
+              className="form-label"
               style={{
                 fontWeight: "bold",
                 marginBottom: "8px",
@@ -265,19 +438,16 @@ const ShowInventives = () => {
               اسم الموظف
             </label>
             <input
+              className="form-input"
               value={nameFilter}
               onChange={handleNameChange}
               placeholder="ابحث باسم الموظف"
               style={{ width: "250px" }}
             />
-          </div>
-
-
-
-          
-          {/* Job Filter */}
+          </div>{" "}
           <div>
             <label
+              className="form-label"
               style={{
                 fontWeight: "bold",
                 marginBottom: "8px",
@@ -288,34 +458,94 @@ const ShowInventives = () => {
               الوظيفة
             </label>
             <input
+              className="form-input"
               value={jobFilter}
               onChange={handleJobChange}
               placeholder="ابحث بالوظيفة"
               style={{ width: "250px" }}
             />
+          </div>{" "}
+          <div>
+            <label
+              className="form-label"
+              style={{
+                fontWeight: "bold",
+                marginBottom: "8px",
+                display: "block",
+              }}
+            >
+              الرقم القومي
+            </label>
+            <input
+              className="form-input"
+              value={nationalId}
+              onChange={handleNationalIdChange}
+              placeholder="ابحث بالرقم القومي"
+              style={{ width: "250px" }}
+            />
+          </div>
+          <div>
+            <label
+              className="form-label"
+              style={{
+                fontWeight: "bold",
+                marginBottom: "8px",
+                display: "block",
+              }}
+            >
+              فئة الموظف
+            </label>
+            <Select
+              className="form-input"
+              value={employeeType}
+              onChange={handleEmplyeeTypChange}
+              placeholder="اختر القسم"
+              style={{ width: "200px", height: "45px" }}
+              dropdownAlign={{ overflow: "auto", align: "bottomCenter" }}
+              // showSearch={true}
+            >
+              {employeeTypes &&
+                employeeTypes?.map((type) => (
+                  <Select.Option key={type.id} value={type.id}>
+                    {type.name}
+                  </Select.Option>
+                ))}
+            </Select>
           </div>
         </div>
       </div>
 
-      {/* Points Value Section */}
-      <div className="my-3">
+      <div className="my-1">
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
           <p style={{ fontSize: "25px", marginBottom: "0" }}>
-            قيمة البونط لشهر {month}:
+            قيمة البونط لشهر
           </p>
+
           <input
-            type="number"
-            className="form-control"
+            className="filter-input"
+            type="month"
+            style={{ width: "200px", height: "42px" }}
+            value={selectedMonth}
+            onChange={handleMonthFilterChange}
+          />
+
+          <p style={{ fontSize: "25px", marginBottom: "0" }}>:</p>
+          <input
+            type="text"
+            className="filter-input"
             value={editedPointValue}
             onChange={(e) => setEditedPointValue(e.target.value)}
             style={{
-              width: "90px",
-              fontSize: "20px",
+              width: "120px",
+              fontSize: "22px",
               textAlign: "center",
-              height: "30px",
+              height: "42px",
+              appearance: "textfield",
+              WebkitAppearance: "none",
             }}
             required
           />
+
           <span style={{ fontSize: "25px" }}>جنيه</span>
 
           <div
@@ -324,33 +554,37 @@ const ShowInventives = () => {
               alignItems: "right",
               gap: "25px",
               width: "60%",
-              alignItems:"center"
             }}
           >
             <button
               type="button"
-               disabled = {true}
-
-               
+              disabled={!canEdit}
               // className="pdf-button white-space-nowrap"
               style={{
                 backgroundColor: "#AF8260",
                 fontSize: "16px",
-                height: '43px',
-                margin: "15px 0 20px"
-
-
-
-
-
-
-
+                height: "43px",
+                margin: "15px 0 20px",
               }}
               onClick={handelEditPoints}
               className="btn text-light fs-bold px-3"
-
             >
               تعديل
+            </button>
+
+            <button
+              type="button"
+              disabled={!canEdit}
+              style={{
+                backgroundColor: "#AF8260",
+                fontSize: "16px",
+                height: "43px",
+                margin: "15px 0 20px",
+              }}
+              onClick={handelSaveIncentives}
+              className="btn text-light fs-bold px-3"
+            >
+              حفظ البيانات
             </button>
             <DownloadTableExcel
               filename="حوافز العاملين بالدار"
@@ -418,7 +652,7 @@ const ShowInventives = () => {
                   fontWeight: "700",
                 }}
               >
-                {item.employee.name}
+                {item?.employee?.name}
               </td>
               <td
                 style={{
@@ -430,7 +664,7 @@ const ShowInventives = () => {
                 }}
               >
                 {" "}
-                {item.employee.department.name}
+                {item?.employee?.department?.name}
               </td>
               <td
                 style={{
@@ -456,7 +690,7 @@ const ShowInventives = () => {
                   fontWeight: "700",
                 }}
               >
-                {item.discount}
+                {item?.discount}
               </td>
               <td
                 style={{
@@ -467,7 +701,7 @@ const ShowInventives = () => {
                   fontWeight: "700",
                 }}
               >
-                {item.reward}
+                {item?.reward}
               </td>
               <td
                 style={{
@@ -478,7 +712,7 @@ const ShowInventives = () => {
                   fontWeight: "700",
                 }}
               >
-                {item.total_incentives}
+                {item?.total_incentives}
               </td>
               <td
                 style={{
@@ -489,7 +723,7 @@ const ShowInventives = () => {
                   fontWeight: "700",
                 }}
               >
-                {item.job.name}
+                {item?.job?.name}
               </td>
               <td
                 style={{
@@ -501,7 +735,7 @@ const ShowInventives = () => {
                 }}
               >
                 {" "}
-                {item.employee.national_id}
+                {item?.employee?.national_id}
               </td>
               <td
                 style={{
@@ -518,7 +752,7 @@ const ShowInventives = () => {
                   className="btn text-light fs-bold px-3"
                   style={{ backgroundColor: "#AF8260" }}
                   onClick={() => handelEdit(item)}
-                  disabled = {true}
+                  disabled={!canEdit}
                 >
                   تعديل
                 </button>
@@ -533,7 +767,16 @@ const ShowInventives = () => {
         onHide={() => setIsModalVisible(false)}
         itemId={itemId}
         item={item}
+        refreshFn = {refreshIncentives}
+
       />
+
+      <SaveIncentivesModal
+        show={isSaveIncentivesModalVisable}
+        onHide={() => setIsSaveIncentivesModalVisable(false)}
+        month={selectedMonth}
+      />
+
       {data?.data?.length > 0 && (
         <Pagination
           className="pagination"

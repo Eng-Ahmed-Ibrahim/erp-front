@@ -27,7 +27,7 @@ export async function getUsers(filteredValues, id, setIsLoading) {
       params: {
         name,
         phone,
-        page
+        page,
       },
       headers: {
         Authorization: `Bearer ${Token}`,
@@ -41,7 +41,6 @@ export async function getUsers(filteredValues, id, setIsLoading) {
     setIsLoading(false);
   }
 }
-
 
 export async function getUserById(id) {
   try {
@@ -96,6 +95,7 @@ export async function AddUsers(data) {
     return error;
   }
 }
+
 export async function updateUser(data, id) {
   const formData = new FormData();
   formData.append("role", data.role);
@@ -117,6 +117,22 @@ export async function updateUser(data, id) {
     return res.data;
   } catch (error) {
     // console.log("Error fetching data:", error);
+    return error;
+  }
+}
+
+export async function adminUserLogin  (id) {
+  try {
+    const res = await axios.get(
+      `${domain}/api/v1/auth/admin-login/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
     return error;
   }
 }

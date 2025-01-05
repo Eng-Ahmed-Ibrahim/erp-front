@@ -61,64 +61,79 @@ function DetailsOrder({ show, onHide, item }) {
                     <hr />
                     <div className="row">
                       <div className="col-sm-3">
-                        <h6 className="mb-0">المنفذ</h6>
+                        <h6 className="mb-0">المنفذ : {item?.department}</h6>
                       </div>
-                      <div className="col-sm-9">
-                        <h6 className="text-muted mb-0">{item?.department}</h6>
-                      </div>
+                      {/* <div className="col-sm-9">
+                        
+                      </div> */}
                     </div>
                     <hr />
                     <div className="row">
                       <div className="col-sm-3">
-                        <h6 className="mb-0">مكان التنفيذ</h6>
-                      </div>
-                      <div className="col-sm-9">
-                        <h6 className="text-muted mb-0">
-                          {item?.deleviery_type}
+                        <h6 className="mb-0">
+                          مكان التنفيذ : {item?.deleviery_type}
                         </h6>
                       </div>
+                      {/* <div className="col-sm-9">
+                        <h6 className="text-muted mb-0">
+                         
+                        </h6>
+                      </div> */}
                     </div>
                     <hr />
                     <div className="row">
                       <div className="col-sm-3">
-                        <h6 className="mb-0">رقم العضوية</h6>
-                      </div>
-                      <div className="col-sm-9">
-                        <h6 className="text-muted mb-0">
+                        <h6 className="mb-0">
+                          رقم العضوية :{" "}
                           {item?.client_military_number == ""
                             ? "لايوجد"
-                            : item?.client_military_number}
+                            : item?.client_military_number}{" "}
                         </h6>
                       </div>
+                      {/* <div className="col-sm-9">
+                        <h6 className="text-muted mb-0">
+                         
+                        </h6> */}
+                      {/* </div> */}
                     </div>
                     <hr />
                     <div className="row">
                       <div className="col-sm-3">
-                        <h6 className="mb-0">طريقة الدفع </h6>
+                        <h6 className="mb-0">
+                          طريقة الدفع :{" "}
+                          {item?.payment_method == null
+                            ? "غير محددة"
+                            : item?.payment_method}{" "}
+                        </h6>
                       </div>
-                      <div className="col-sm-9">
+                      {/* <div className="col-sm-9">
                         <h6 className="text-muted mb-0">
                           {item?.payment_method == null
                             ? "غير محددة"
                             : item?.payment_method}
                         </h6>
-                      </div>
+                      </div> */}
                     </div>
                     <hr />
                     <div className="row">
                       <div className="col-sm-3">
-                        <h6 className="mb-0">حالة الاوردر </h6>
-                      </div>
-                      <div className="col-sm-9">
-                        <h6 className="text-muted mb-0">
+                        <h6 className="mb-0">
+                          حالة الاوردر :{" "}
                           {item?.status == "processing"
                             ? "تحت التجهيز"
                             : "تم الدفع"}
                         </h6>
                       </div>
+                      {/* <div className="col-sm-9">
+                        <h6 className="text-muted mb-0">
+                          {item?.status == "processing"
+                            ? "تحت التجهيز"
+                            : "تم الدفع"}
+                        </h6>
+                      </div> */}
                     </div>
                     <hr />
-                    <div className="row">
+                    {/* <div className="row">
                       <div className="col-sm-3">
                         <h6 className="mb-0"> السعر بعد الخصم</h6>
                       </div>
@@ -127,9 +142,9 @@ function DetailsOrder({ show, onHide, item }) {
                           {item?.total_price_after_discount}
                         </h6>
                       </div>
-                    </div>
-                    <hr />
-                    <div className="row">
+                    </div> */}
+                    {/* <hr /> */}
+                    {/* <div className="row">
                       <div className="col-sm-3">
                         <h6 className="mb-0">السعر بعد الخصم والخدمة </h6>
                       </div>
@@ -139,23 +154,27 @@ function DetailsOrder({ show, onHide, item }) {
                         </h6>
                       </div>
                     </div>
-                    <hr />
-                    <div className="row">
+                    <hr /> */}
+
+                    {/* <div className="row">
                       <div className="col-sm-3">
                         <h6 className="mb-0">الاجمالى </h6>
                       </div>
                       <div className="col-sm-9">
                         <h6 className="text-muted mb-0">{item?.total_price}</h6>
                       </div>
-                    </div>
-                    <hr />
+                    </div> */}
+
+                    {/* <hr /> */}
                     <div className="row">
                       <div className="col-sm-3">
-                        <h6 className="mb-0">توقيت الطلب </h6>
+                        <h6 className="mb-0">
+                          توقيت الطلب : {item?.order_date}
+                        </h6>
                       </div>
-                      <div className="col-sm-9">
+                      {/* <div className="col-sm-9">
                         <h6 className="text-muted mb-0">{item?.order_date}</h6>
-                      </div>
+                      </div> */}
                     </div>
                     <hr />
                     <h1 className="heading text-center p-3">تفاصيل الاوردر </h1>
@@ -289,7 +308,7 @@ const ShowAllTable = () => {
           المنفذ :
         </label>
         <select
-          className="form-select"
+          className="form-input"
           aria-label="المنفذ"
           value={value}
           onChange={handleChange}
@@ -308,49 +327,58 @@ const ShowAllTable = () => {
           color: "var(--text-color-inverted)",
         }}
       >
-        <thead>
-          <tr className="fw-bold fs-5 my-3">
-            <th scope="col" style={{ background: "#edede9" }}>
-              الرقم
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              رقم الترابيزه
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              الاجراءات
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.data?.map((item, index) => (
-            <tr key={index} className="content-area-table">
-              <th scope="row">{index + 1}</th>
-              <td
-                className="clickable-cell"
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {item?.table_number}
-              </td>
-              <td className="">
-                <button
-                  className="btn btn-outline-info px-5"
-                  onClick={() => handleClick(item)}
-                >
-                  تفاصيل
-                </button>
-              </td>
-            </tr>
-          ))}
-          {data?.data?.length == "0" ? (
-            <h3 className="me-3 pt-3">لا يوجد تربيزات مفتوحة</h3>
-          ) : null}
-        </tbody>
+        {data?.data?.length == "0" ? (
+          <h3 className="me-3 pt-3">لا يوجد تربيزات مفتوحة</h3>
+        ) : (
+          <>
+            <thead>
+              <tr className="fw-bold fs-5 my-3">
+                <th scope="col" style={{ background: "#edede9" }}>
+                  الرقم
+                </th>
+                <th scope="col" style={{ background: "#edede9" }}>
+                  رقم الترابيزه
+                </th>
+                <th scope="col" style={{ background: "#edede9" }}>
+                  الاجراءات
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.data?.map((item, index) => (
+                <tr key={index} className="content-area-table">
+                  <th scope="row">{index + 1}</th>
+                  <td
+                    className="clickable-cell"
+                    style={{
+                      padding: " 14px 12px",
+                      border: "1px solid #E4C59E",
+                      color: "#803D3B",
+                      fontSize: "18px",
+                      fontWeight: "700",
+                    }}
+                  >
+                    {item?.table_number}
+                  </td>
+                  <td className="">
+                    <button
+                      className="btn btn-outline-info px-5"
+                      onClick={() => handleClick(item)}
+                      style={{
+                        background: "#E4C59E",
+                        color: "black",
+                        fontWeight: "500",
+                        border: "#AF8260 1px solid",
+                      }}
+                    >
+                      تفاصيل
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </>
+        )}
       </table>
       <DetailsOrder
         show={isModalVisable}

@@ -398,7 +398,6 @@ const AddCashierOrder = () => {
   const [selectedClientType, setSelectedClientType] = useState("");
 
   const handleClientTypeChange = async (value) => {
-
     const selectedClient = clientTypes.find((ele) => ele.id == value)?.name;
     setSelectedClientName(selectedClient);
     if (selectedClient == "ظابط مشاه") {
@@ -428,7 +427,6 @@ const AddCashierOrder = () => {
       ...prevState,
       client_type_id: value,
     }));
-
 
     handleNewUserFormChange("client_id", ``);
     try {
@@ -691,6 +689,7 @@ const AddCashierOrder = () => {
       }, 5000);
       return;
     }
+
     if (selectedClientType == "") {
       const modal = Modal.error({
         title: "Error",
@@ -1121,7 +1120,7 @@ const AddCashierOrder = () => {
           </>
         ) : null}
 
-        {!isguest && !isHidden? (
+        {!isguest && !isHidden ? (
           <>
             <button
               className="finish-cashier"

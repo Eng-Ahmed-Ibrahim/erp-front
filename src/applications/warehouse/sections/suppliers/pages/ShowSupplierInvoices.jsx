@@ -103,6 +103,14 @@ const ShowSupplierInvoices = () => {
         fetchData={(filterValues, currentPage, id, setIsLoading) =>
           getSupplierInvoices(filterValues, currentPage, id, setIsLoading)
         }
+        getTotalPrice={async (filterValues, currentPage, id, setIsLoading) => {
+          const data = await getSupplierInvoices(filterValues, currentPage, id, setIsLoading)
+          return data.total;
+        }
+        }
+
+
+
         filters={filters}
         actions={actions}
         detailsHeaders={detailsHeaders}

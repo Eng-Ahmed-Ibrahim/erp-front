@@ -11,7 +11,6 @@ export async function getProfile() {
     });
 
     return res.data;
-  
   } catch (error) {
     // // console.log("Error fetching data:", error);
   }

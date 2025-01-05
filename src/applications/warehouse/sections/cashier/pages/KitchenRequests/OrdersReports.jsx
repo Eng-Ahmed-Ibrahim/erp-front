@@ -74,7 +74,6 @@ const OrdersReports = () => {
         const timeDiff = toDateObj.getTime() - fromDateObj.getTime();
         const dayDiff = timeDiff / (1000 * 3600 * 24);
 
-        console.log('lllllllllllllllllll',user)
         setIsAdminRole(false)
 
         if (user.department.type === "reciver") {
@@ -99,21 +98,10 @@ const OrdersReports = () => {
           }
         } else if (user.department.type === "master") {
           setIsAdmin(true);
-
-          if(user.roleName == 'admin'){
+          if(user.roleName === 'admin'){
             setIsAdminRole(true)
           }
-          
         }
-
-        console.log({
-          fromDate,
-          toDate,
-          fromDateObj,
-          toDateObj,
-          isFromDateToday,
-          dayDiff,
-        });
 
         await getAllWaiters();
       } else {
@@ -296,10 +284,8 @@ const OrdersReports = () => {
             },
           }
         );
-        console.log(`ress`, res);
         if (!res.data.success) {
           message.info(res?.data?.error?.message);
-          console.log(`res?.data?.error?.message`, res);
           reInitializeStates();
 
           return;
@@ -644,8 +630,9 @@ const OrdersReports = () => {
             <th scope="col">اسم العميل</th>
             <th scope="col">قيمة الفاتورة</th>
             <th scope="col">نوع العميل</th>
-            {isAdmin && isAdminRole && !isTalaat && <th scope="col"> الاجرائات</th>}
             {isAdmin  && <th scope="col">المنتجات</th>}
+            {(isAdmin && isAdminRole )&& !isTalaat && <th scope="col"> الاجرائات</th>}
+
           </tr>
         </thead>
         <tbody>
@@ -699,7 +686,7 @@ const OrdersReports = () => {
                         </li>
                       ))}
                     </td>
-                    {isAdmin && !isTalaat && isAdminRole && (
+                    {(isAdmin  && isAdminRole) && !isTalaat && (
                       <td style={rowStyle}>
                         <button
                           className="form-cashier-btn"

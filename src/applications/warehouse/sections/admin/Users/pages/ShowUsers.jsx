@@ -1,10 +1,10 @@
 import React from "react";
 import Table from "../../../../../../components/shared/table/Table";
-import { getUsers, deleteUser } from "../../../../../../apis/users";
+import { getUsers, deleteUser, adminUserLogin } from "../../../../../../apis/users";
 import { useAuth } from "../../../../../../context/AuthContext";
+import { message } from "antd";
 const ShowUsers = () => {
   const tableHeaders = [
-
     { key: "username", value: "اسم المستخدم" },
     { key: "phone", value: "الرقم" },
   ];
@@ -21,32 +21,52 @@ const ShowUsers = () => {
   ];
   const actions = [
     {
-      type: `${user?.permissions.some((permission) => permission.name === "edit user")
-        ? "edit"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some((permission) => permission.name === "edit user")
+          ? "edit"
+          : ""
+      }`,
       label: "تعديل",
       route: "/warehouse/users/:id/edit-user",
     },
     {
-      type: `${user?.permissions.some(
-        (permission) => permission.name === "delete user"
-      )
-        ? "delete"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "delete user"
+        )
+          ? "delete"
+          : ""
+      }`,
       label: "حذف",
+    },
+    {
+      type: "admin-login",   
+      label: "تسجيل دخول",
     },
 
     {
-      type: `${user?.permissions.some((permission) => permission.name === "add user")
-        ? "add"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some((permission) => permission.name === "add user")
+          ? "add"
+          : ""
+      }`,
       label: "إضافة مستخدمين",
       route: "/warehouse/users/add-user",
     },
   ];
+
+  const adminLogin = async (user) => {
+    const res =await adminUserLogin(user.id);
+    if (!(res instanceof Error)) {
+       localStorage.setItem("token", res.data.token)
+       sessionStorage.setItem("token", res.data.token);
+    } else {
+      message.error(res.response.error.message);
+      return;
+    }
+
+    window.location.href = "/warehouse/home";
+  };
 
   return (
     <div>
@@ -59,6 +79,7 @@ const ShowUsers = () => {
         }
         actions={actions}
         deleteFn={deleteUser}
+        adminlogin={adminLogin}
       />
     </div>
   );

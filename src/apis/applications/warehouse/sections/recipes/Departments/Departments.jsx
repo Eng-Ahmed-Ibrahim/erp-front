@@ -55,11 +55,13 @@ function Departments() {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_ENDPOINT}/api/v1/searchItems?search=${debouncedTerm}`, {
+      const response = await  axios
+      .get(`${API_ENDPOINT}/api/v1/store/searchItems?search=${debouncedTerm}`, {
         headers: {
           Authorization: `Bearer ${Token}`,
         },
       });
+
       const data = await response.json();
       setData(data.data);
     } catch (err) {

@@ -6,9 +6,7 @@ import { API_ENDPOINT } from "../../../../../../config";
 import { Pagination, Select, Modal, message } from "antd";
 import { DownloadTableExcel } from "react-export-table-to-excel";
 
-function DataModal({ show, onHide, itemId , departments, item}) {
-
-
+function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const [name, setName] = useState("");
@@ -17,14 +15,14 @@ function DataModal({ show, onHide, itemId , departments, item}) {
   const [department, setDepartment] = useState("");
   const [jobs, setJobs] = useState([]);
   const [data, setData] = useState([]);
+  const [employeeType, setemployeeType] = useState([]);
 
   useEffect(() => {
     setName(item?.name || 0);
-    setJob(item?.job?.name || '');
+    setJob(item?.job?.name || "");
     setNationalID(item?.national_id || 0);
-    setDepartment(item?.department?.name || '');
+    setDepartment(item?.department?.name || "");
   }, [item]);
-
 
   useEffect(() => {
     axios
@@ -50,6 +48,7 @@ function DataModal({ show, onHide, itemId , departments, item}) {
         job_id: job,
         department_id: department,
         points: null,
+        employee_type_id:employeeType
       },
       {
         headers: {
@@ -62,6 +61,7 @@ function DataModal({ show, onHide, itemId , departments, item}) {
       onHide;
     }
   };
+
   const handleEditEmployee = async () => {
     const res = await axios.put(
       `${API_ENDPOINT}/api/v1/employees/${itemId}`,
@@ -84,7 +84,6 @@ function DataModal({ show, onHide, itemId , departments, item}) {
       onHide;
     }
   };
-
 
   useEffect(() => {
     axios
@@ -177,6 +176,31 @@ function DataModal({ show, onHide, itemId , departments, item}) {
           ))}
         </select>
       </div>
+
+      <div>
+      <label for="exampleInputPassword" className="form-label">
+          {" "}
+          اختر فئة الموظف
+        </label>
+        <Select
+          className="form-select"
+          value={employeeType}
+          onChange={(e)=> {
+            setemployeeType(e)
+          }}
+          placeholder="اختر القسم"
+          style={{ height: "45px" }}
+          dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
+          // showSearch={true}
+        >
+          {employeeTypes &&
+            employeeTypes?.map((type) => (
+              <Select.Option key={type.id} value={type.id}>
+                {type.name}
+              </Select.Option>
+            ))}
+        </Select>
+      </div>
     </Modal>
   );
 }
@@ -197,6 +221,10 @@ const ShowAllStaff = () => {
   const [departmentFilter, setDepartmentFilter] = useState(null);
   const [totalEmployees, setTotalEmployees] = useState([]);
   const [item, setItem] = useState("");
+  const [employeeType, setEmployeeType] = useState([]);
+  const [employeeTypes, setEmployeesTypes] = useState([]);
+  const [nationalId, setNationalId] = useState("");
+
   const tableRef = useRef(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -204,8 +232,8 @@ const ShowAllStaff = () => {
     setCurrentPage(page);
   };
   const handelEdit = async (item) => {
-    setItemId(item.id); 
-    setItem(item)
+    setItemId(item.id);
+    setItem(item);
     setIsModalVisible(true);
   };
   const handleDepartmentChange = (value) => {
@@ -220,6 +248,12 @@ const ShowAllStaff = () => {
     setJobFilter(e.target.value);
   };
 
+  const handleNationalIdChange = (e) => {
+    setNationalId(e.target.value);
+  };
+  const handleEmplyeeTypChange = (type) => {
+    setEmployeeType(type);
+  };
   useEffect(() => {
     axios
       .get(`${API_ENDPOINT}/api/v1/departments`, {
@@ -232,8 +266,21 @@ const ShowAllStaff = () => {
       })
       .catch((error) => {});
   }, []);
-
-
+  useEffect(() => {
+    axios
+      .get(`${API_ENDPOINT}/api/v1/types`, {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      })
+      .then((response) => {
+        console.log("reeeeeeeee", response);
+        setEmployeesTypes(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching departments:", error);
+      });
+  }, []);
   const handelDelete = async (id) => {
     const res = await axios.delete(`${API_ENDPOINT}/api/v1/employees/${id}`, {
       headers: {
@@ -245,14 +292,13 @@ const ShowAllStaff = () => {
     }
   };
 
-  
-
-
   useEffect(() => {
     const filters = {
       department: departmentFilter,
       name: nameFilter,
       job: jobFilter,
+      national_id: nationalId,
+      employee_type: employeeType,
     };
 
     axios
@@ -263,31 +309,49 @@ const ShowAllStaff = () => {
         },
       })
       .then((response) => {
-        console.log(response.data.data.employees)
+        console.log(response.data.data.employees);
         setData(response.data.data.employees);
-        setTotalEmployees(response.data.data.count)
+        setTotalEmployees(response.data.data.count);
         setName();
       })
       .catch((error) => {});
-  },[departmentFilter, nameFilter, jobFilter, Token]);
+  }, [
+    departmentFilter,
+    nameFilter,
+    jobFilter,
+    Token,
+    nationalId,
+    employeeType,
+  ]);
   return (
     <div>
       <div className="my-1 ">
-        <h1 className="heading text-center p-3"> العاملين بالدار ({ totalEmployees}) </h1>
+        <h1 className="heading text-center p-3">
+          {" "}
+          العاملين بالدار ({totalEmployees}){" "}
+        </h1>
       </div>
       <div
         className="filters-container"
         style={{
-          marginBottom: "0 20px",
-          padding: "20px",
+          marginBottom: "0px",
+          padding: "10px",
           backgroundColor: "#f7f7f7",
           borderRadius: "8px",
         }}
       >
-        <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "20px",
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
           {/* Department Filter */}
           <div>
             <label
+              className="form-label"
               style={{
                 fontWeight: "bold",
                 marginBottom: "8px",
@@ -297,10 +361,11 @@ const ShowAllStaff = () => {
               القسم
             </label>
             <Select
+              className="form-input"
               value={departmentFilter}
               onChange={handleDepartmentChange}
               placeholder="اختر القسم"
-              style={{ width: "200px" }}
+              style={{ width: "200px", height: "42px" }}
               dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
             >
               {departments &&
@@ -315,6 +380,7 @@ const ShowAllStaff = () => {
           {/* Name Filter */}
           <div>
             <label
+              className="form-label"
               style={{
                 fontWeight: "bold",
                 marginBottom: "8px",
@@ -324,6 +390,7 @@ const ShowAllStaff = () => {
               اسم الموظف
             </label>
             <input
+              className="form-input"
               value={nameFilter}
               onChange={handleNameChange}
               placeholder="ابحث باسم الموظف"
@@ -334,6 +401,7 @@ const ShowAllStaff = () => {
           {/* Job Filter */}
           <div>
             <label
+              className="form-label"
               style={{
                 fontWeight: "bold",
                 marginBottom: "8px",
@@ -344,12 +412,61 @@ const ShowAllStaff = () => {
               الوظيفة
             </label>
             <input
+              className="form-input"
               value={jobFilter}
               onChange={handleJobChange}
               placeholder="ابحث بالوظيفة"
               style={{ width: "250px" }}
             />
-          </div>          
+          </div>
+          <div>
+            <label
+              className="form-label"
+              style={{
+                fontWeight: "bold",
+                marginBottom: "8px",
+                display: "block",
+              }}
+            >
+              الرقم القومي
+            </label>
+            <input
+              className="form-input"
+              value={nationalId}
+              onChange={handleNationalIdChange}
+              placeholder="ابحث بالرقم القومي"
+              style={{ width: "250px" }}
+            />
+          </div>
+
+          <div>
+            <label
+              className="form-label"
+              style={{
+                fontWeight: "bold",
+                marginBottom: "8px",
+                display: "block",
+              }}
+            >
+              فئة الموظف
+            </label>
+            <Select
+              className="form-input"
+              value={employeeType}
+              onChange={handleEmplyeeTypChange}
+              placeholder="اختر القسم"
+              style={{ width: "200px", height: "45px" }}
+              dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
+              // showSearch={true}
+            >
+              {employeeTypes &&
+                employeeTypes?.map((type) => (
+                  <Select.Option key={type.id} value={type.id}>
+                    {type.name}
+                  </Select.Option>
+                ))}
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -357,25 +474,27 @@ const ShowAllStaff = () => {
         <button
           type="button"
           className="pdf-button white-space-nowrap"
-          style={{ backgroundColor: "#AF8260", margin : "20px",  alignItems: "center"}}
+          style={{
+            backgroundColor: "#AF8260",
+            margin: "20px",
+            marginTop: "0px",
+
+            alignItems: "center",
+          }}
           onClick={() => setIsModalVisible(true)}
         >
           اضافه موظف
         </button>
         <DownloadTableExcel
-              filename="العاملين بالدار"
-              sheet="users"
-              currentTableRef={tableRef.current}
-            >
-              <button className="pdf-button white-space-nowrap">
-                حفظ اكسيل{" "}
-              </button>
-            </DownloadTableExcel>
-
+          filename="العاملين بالدار"
+          sheet="users"
+          currentTableRef={tableRef.current}
+        >
+          <button className="pdf-button white-space-nowrap">حفظ اكسيل </button>
+        </DownloadTableExcel>
       </div>
       <table
         ref={tableRef}
-
         className="table table table-hover mt-5"
         style={{
           width: "100%",
@@ -503,6 +622,7 @@ const ShowAllStaff = () => {
         itemId={itemId}
         departments={departments}
         item={item}
+        employeeTypes={employeeTypes}
       />
       {data?.data?.length > 0 && (
         <Pagination

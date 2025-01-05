@@ -13,6 +13,156 @@ import { API_ENDPOINT } from "../../../../../../../config";
 import { useAuth } from "../../../../../../context/AuthContext";
 import axios from "axios";
 import PrintAfterSubmit from "../KitchenRequests/PrintAfterSubmit";
+import { Modal } from "antd";
+
+function AddPayablesModal({ show, onHide, orderId }) {
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+  const [amount, setAmount] = useState(0);
+  const [note, setNote] = useState("");
+  const [receiptNumber, setReceiptNumber] = useState("");
+  const handleAddPayable = async () => {
+    const res = await axios.post(
+      `${API_ENDPOINT}/api/v1/orders/add-payable/${orderId}`,
+      {
+        amount: amount,
+        note: note,
+        receipt_number: receiptNumber,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+
+    if (res) {
+      message.success("تم إضافة المدفوعة بنجاح");
+      onHide();
+    }
+  };
+
+  return (
+    <Modal
+      title={"إضافة مدفوعة"}
+      centered
+      open={show}
+      onCancel={onHide}
+      onOk={onHide}
+      width={900}
+      footer={null}
+    >
+      <div className="payable-container">
+        <div className="mb-4">
+          <label className="form-label">رقم الإيصال </label>
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={receiptNumber}
+            onChange={(e) => setReceiptNumber(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="form-label">قيمة المدفوعة</label>
+
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label"> أضف ملاحظات للمدفوعة </label>
+          <input
+            type="text"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            required
+          />
+        </div>
+
+        <button className="comment-button" onClick={handleAddPayable}>
+          حفظ البيانات
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+function AddCommentModal({ show, onHide, comments, orderId }) {
+  const [newComment, setNewComment] = useState("");
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+
+  const handleAddComment = async () => {
+    if (newComment.trim()) {
+      const updatedComments = [...comments, newComment.trim()];
+
+      const commentString = updatedComments.join(",");
+
+      await axios
+        .post(
+          `${API_ENDPOINT}/api/v1/orders/update/comment/${orderId}`,
+          {
+            comment: commentString,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          message.success("تم إضافة الملاحظة بنجاح");
+          onHide();
+        })
+        .catch((error) => {
+          message.error("حدث خطأ");
+          onHide();
+        });
+    }
+  };
+
+  return (
+    <Modal
+      title={"إضافة ملاحظة"}
+      centered
+      open={show}
+      onCancel={onHide}
+      onOk={onHide}
+      width={900}
+      footer={null}
+    >
+      <div className="payable-container">
+        <div className="mb-4">
+          <label className="form-label"> أضف ملاحظات </label>
+
+          <input
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="أضف ملاحظة جديدة"
+            className="form-input"
+            style={{ height: "100px" }}
+          />
+        </div>
+        <button className="comment-button" onClick={handleAddComment}>
+          حفظ البيانات
+        </button>
+      </div>
+    </Modal>
+  );
+}
 
 const OrderDetails = () => {
   const { user } = useAuth();
@@ -22,15 +172,25 @@ const OrderDetails = () => {
   const [currentProduct, setCurrentProduct] = useState(null);
   const [currentProductId, setCurrentProductId] = useState(null);
   const [isModalVisible, setisModalVisible] = useState(false);
-  const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [payables, setPayables] = useState([]);
   const navigate = useNavigate();
+  const [isExternalorder, SetIsExternalOrder] = useState(false);
 
   useEffect(() => {
     const getOrderByID = async () => {
       try {
         const res = await getTableOrderById(id);
         setOrder(res.data);
+
+        if (res.data.payables) {
+          setPayables(res.data.payables);
+        }
+
+        if (res?.data?.client_type_id == "01hzf60qrasrm5x2ytvyrsne1j") {
+
+          SetIsExternalOrder(true);
+        }
 
         if (res.data.comment) {
           setComments(res.data.comment.split(","));
@@ -50,7 +210,6 @@ const OrderDetails = () => {
     },
   ];
 
-  ///////////////////////////////////
   const { Option } = Select;
   const [clientTypes, setClientTypes] = useState([]);
   const [clients, setClients] = useState([]);
@@ -60,6 +219,8 @@ const OrderDetails = () => {
   const [discountReasons, setDiscountReasons] = useState([]);
   const [flag, setFlag] = useState(false);
   const [printData, setPrintData] = useState();
+  const [showAddPayablesModal, setShowAddPayablesModal] = useState(false);
+  const [showAddCommentModal, setShowAddCommentModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,25 +312,18 @@ const OrderDetails = () => {
       .then((response) => {
         message.success("تم الإنهاء بنجاح");
         setFlag(true);
-        // setTimeout(() => {
-        //   navigate('/warehouse/cashier/create-order');
-        // }, 4000);
-        // navigate('/warehouse/cashier/create-order')
-        //
       })
       .catch((error) => {
-        //
         message.error("حدث خطأ");
       });
   };
+
   const handleAddComment = () => {
-    if (newComment.trim()) {
-      const updatedComments = [...comments, newComment.trim()];
-      setComments(updatedComments);
-      console.log(comments, updatedComments)
-      setNewComment("");
-      storeComment(updatedComments);
-    }
+    setShowAddCommentModal(true);
+  };
+
+  const handleAddPayable = () => {
+    setShowAddPayablesModal(true);
   };
 
   const storeComment = async (updatedComments) => {
@@ -194,82 +348,121 @@ const OrderDetails = () => {
         message.error("حدث خطأ");
       });
   };
-  const getCommentColor = () => {
-    const colors = ["#c2ac84", "#8ca3a3", "#9fa9a3", "#b1cbbb", "#b2b2b2"];
-
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
 
   return (
     <div>
       {order.code && (
         <div>
-          <h1 className="order-title">ترابيزه رقم {order?.table_number}</h1>
+          <h1 className="order-title">
+            ترابيزه رقم {order?.table_number} - ({order?.discount_name})
+          </h1>
+
           <div className="order-header">
-              <div>
+            <div className="order-header-container">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "20px",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <label style={{ textAlign: "center" }} className="form-label">
+                  الملاحظات:{" "}
+                </label>
+                <button className="comment-button" onClick={handleAddComment}>
+                  أضف
+                </button>
+              </div>
+
+              {comments?.length > 0 && (
+                <div className="cards-container">
+                  {comments.map((comment, index) => (
+                    <div className="order-header-card">
+                      <div className="payable-content">
+                        <label className="comment">{comment}</label>
+                      </div>{" "}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* {order.discount !== null && (
+              <label
+                className="form-label"
+                style={{ textAlign: "center", marginTop: "20px" }}
+              >
+                نوع العميل : {order.discount_name}
+              </label>
+            )} */}
+
+            {/* {order.total_price_after_discount && (
+              <p>
+                اجمالى السعر بعد الخصم:{" "}
+                {order.total_price_after_discount_and_tax}
+              </p>
+            )} */}
+            {isExternalorder && (
+              <div className="order-header-container">
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "gap",
                     gap: "30px",
-                    alignItems: "center"
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  <p style={{textAlign:"center", marginTop:'20px'}}>ملاحظات: </p>
-                  
-                  <input
-                    type="text"
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="أضف ملاحظة جديدة"
-                    className="comment-input"
-                  />
-                  <button className="comment-button" onClick={handleAddComment}>
-                    أضف 
+                  <label style={{ textAlign: "center" }} className="form-label">
+                    المدفوعات:{" "}
+                  </label>
+
+                  <button className="comment-button" onClick={handleAddPayable}>
+                    أضف
                   </button>
                 </div>
-                {comments?.length > 0 && (
 
-                <div className="comments-container">
-                  {comments.map((comment, index) => (
-                    <span
-                      key={index}
-                      style={{
-                        backgroundColor: getCommentColor(),
-                        padding: "5px",
-                        margin: "5px",
-                        borderRadius: "5px",
-                        color: "black",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      {comment}
-                    </span>
-                  ))} 
-                </div>
-                      )}
+                {payables?.length > 0 && (
+                  <div className="cards-container">
+                    {payables.map((payable, index) => (
+                      <div className="order-header-card">
+                        <div className="created-at">
+                          {
+                            new Date(payable.created_at)
+                              .toISOString()
+                              .split("T")[0]
+                          }
+                        </div>
+
+                        <div className="payable-content">
+                          <div className="amount">
+                            <label className="card-title">رقم الإيصال : </label>
+                            {"  "}
+                            {payable?.receipt_number}
+                          </div>
+                          <div className="amount">
+                            <label className="card-title">
+                              قيمة المدفوعة:{" "}
+                            </label>
+                            {"  "}
+                            {payable.amount}
+                          </div>
+                          <div className="note">
+                            <label className="card-title">ملاحظات :</label>
+                            {"  "}
+                            {payable.note}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-      
-
-            {order.discount !== null && <p style={{textAlign:"center", marginTop:'20px'}} >سبب الخصم: {order.discount_name}</p>}
-            {order.discount_resones && (
-              <p style={{textAlign:"center", marginTop:'20px'}}>سبب الخصم: {order.discount_resones}</p>
-            )}
-            {order.total_price_after_discount && (
-              <p>
-                اجمالى السعر بعد الخصم:{" "}
-                {order.total_price_after_discount_and_tax}
-              </p>
-            )}
-            {order.order_date && <p style={{textAlign:"center", marginTop:'20px'}} >تاريخ الأوردر: {order.order_date}</p>}
-            {order.target_department_name && (
-              <p>إسم القسم المراد: {order.target_department_name}</p>
             )}
           </div>
-
-
 
           <h2>المنتجات:</h2>
           <button
@@ -344,6 +537,18 @@ const OrderDetails = () => {
           {flag && <PrintAfterSubmit id={id} table_no={order?.table_number} />}
         </div>
       )}
+
+      <AddPayablesModal
+        show={showAddPayablesModal}
+        onHide={() => setShowAddPayablesModal(false)}
+        orderId={order.id}
+      />
+      <AddCommentModal
+        show={showAddCommentModal}
+        onHide={() => setShowAddCommentModal(false)}
+        orderId={order.id}
+        comments={comments}
+      />
     </div>
   );
 };

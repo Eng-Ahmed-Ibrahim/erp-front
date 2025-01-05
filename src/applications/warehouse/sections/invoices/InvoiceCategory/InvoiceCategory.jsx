@@ -493,6 +493,17 @@ function Categories(props) {
                 getOutgoingInvoiceByType(filters, id, setIsLoading)
               }
               detailsHeaders={detailsHeaders}
+
+              getTotalPrice={async (filters, id, setIsLoading, status) => {
+                const data = await getOutgoingInvoiceByType(
+                  filters,
+                  id,
+                  setIsLoading,
+                  status
+                );
+                return data.total;
+              }}
+
               updateFn={
                 user?.permissions.some(
                   (permission) => permission.name === "edit invoice"
@@ -526,9 +537,11 @@ function Categories(props) {
               filters={filtersReturn}
               title="فاتورة مرتجع من القسم"
               actions={actionsReturnd}
+              
               fetchData={(filters, id, setIsLoading) =>
                 getReturndInvoiceByType(filters, id, setIsLoading)
               }
+
               detailsHeaders={detailsHeaders}
               updateFn={
                 user?.permissions.some(

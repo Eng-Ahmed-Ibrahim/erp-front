@@ -12,8 +12,6 @@ const OpenedTables = () => {
     const getTables = async () => {
       const res = await getAllTables(setIsLoading);
       setTables(res.data);
-      //  
-      console.log(`tables`,tables)
     };
     getTables();
   }, []);
@@ -29,7 +27,7 @@ const OpenedTables = () => {
                 key={table.id}
                 id={table.id}
                 number={table.table_number}
-                comment={table.comment?table.comment:"لا توجد ملاحظات"}
+                comment={table.comment?table.comment:null}
                 setOrder={setOrder}
               />
             );

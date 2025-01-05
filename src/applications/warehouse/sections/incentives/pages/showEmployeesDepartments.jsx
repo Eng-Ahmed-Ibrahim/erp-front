@@ -6,22 +6,36 @@ import { DownloadTableExcel } from "react-export-table-to-excel";
 import axios from "axios";
 import { API_ENDPOINT } from "../../../../../../config";
 import { Pagination, Select, Modal, message } from "antd";
-function DataModal({ show, onHide, itemId, job }) {
+
+function DataModal({ show, onHide, itemId, department }) {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
-  const [name, setName] = useState(job.name || "");
-  const [points, setPoints] = useState(job.points || 0);
+  const [name, setName] = useState(department?.name || " ");
+  const [pointsPercentage, setPointsPercentage] = useState(
+    department?.points_percentage || 0
+  );
 
   useEffect(() => {
-    setName(job?.name || 0);
-    setPoints(job?.points || 0);
-  }, [job]);
+    setName(department?.name || 0);
+    setPointsPercentage(department?.points_percentage || 0);
+  }, [department]);
 
-  const handleEditJob = async () => {
+  const validatePercentageNumber = async (percentage) => {
+    if (percentage < 0 || percentage > 100) {
+      message.error("يرجي إدخال نسبة البنط بشكل صحيح");
+      return false;
+    }
+    return true;
+  };
+
+  const handleEditDepartment = async () => {
+    if (!validatePercentageNumber(pointsPercentage)) {
+      return;
+    }
     const res = await axios.put(
-      `${API_ENDPOINT}/api/v1/jobs/${itemId}`,
+      `${API_ENDPOINT}/api/v1/employee-departments/${itemId}`,
 
-      { name: name, points: points },
+      { name: name, points_percentage: pointsPercentage },
       {
         headers: {
           Authorization: `Bearer ${Token}`,
@@ -29,17 +43,21 @@ function DataModal({ show, onHide, itemId, job }) {
       }
     );
     if (res.data) {
-      message.success("تم تعديل الوظيفه بنجاح");
+      message.success("تم تعديل القسم بنجاح");
       onHide();
     }
   };
-  const handleAddJob = async () => {
+
+  const handleAddDepartment = async () => {
+    if (!validatePercentageNumber(pointsPercentage)) {
+        return;
+      }
     const res = await axios.post(
-      `${API_ENDPOINT}/api/v1/jobs/`,
+      `${API_ENDPOINT}/api/v1/employee-departments/`,
 
       {
         name: name,
-        points: points,
+        points_percentage: pointsPercentage,
       },
       {
         headers: {
@@ -48,17 +66,17 @@ function DataModal({ show, onHide, itemId, job }) {
       }
     );
     if (res.data) {
-      message.success("تم اضافة الوظيفه بنجاح");
+      message.success("تم اضافة القسم بنجاح");
       onHide;
     }
   };
 
   return (
     <Modal
-      title={itemId ? "   تعديل وظيفه   " : "اضافة وظيفه جديده"}
+      title={itemId ? "   تعديل القسم   " : "اضافة قسم جديد"}
       centered
       open={show}
-      onOk={itemId ? handleEditJob : handleAddJob}
+      onOk={itemId ? handleEditDepartment : handleAddDepartment}
       onCancel={onHide}
       width={1000}
     >
@@ -79,21 +97,22 @@ function DataModal({ show, onHide, itemId, job }) {
       <div className="mb-3">
         <label for="exampleInputPassword" className="form-label">
           {" "}
-          عدد البونط{" "}
+          نسبة البنط{" "}
         </label>
         <input
           type="number"
           className="form-control"
           id="exampleInputEmail1"
-          value={points}
-          onChange={(e) => setPoints(e.target.value)}
+          value={pointsPercentage}
+          onChange={(e) => setPointsPercentage(e.target.value)}
           required
         />
       </div>
     </Modal>
   );
 }
-const ShowAllJobs = () => {
+
+const showEmployeesDepartments = () => {
   // const item = useLocation()?.state?.item;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const Token =
@@ -101,7 +120,7 @@ const ShowAllJobs = () => {
   const [data, setData] = useState([]);
   const [item, setItem] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [jobFilter, setJobFilter] = useState("");
+  const [departmentFilter, setdepartmentFilter] = useState("");
   const tableRef = useRef(null);
 
   const handlePageChange = (page) => {
@@ -109,16 +128,19 @@ const ShowAllJobs = () => {
   };
   const [itemId, setItemId] = useState(null);
 
-  const handleJobChange = (e) => {
-    setJobFilter(e.target.value);
+  const handleDepartmentChange = (e) => {
+    setdepartmentFilter(e.target.value);
   };
 
   const handelDelete = async (id) => {
-    const res = await axios.delete(`${API_ENDPOINT}/api/v1/jobs/${id}`, {
-      headers: {
-        Authorization: `Bearer ${Token}`,
-      },
-    });
+    const res = await axios.delete(
+      `${API_ENDPOINT}/api/v1/employee-departments/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
     if (res.data) {
       message.success("تم الحذف بنجاح");
     }
@@ -130,27 +152,27 @@ const ShowAllJobs = () => {
   };
   useEffect(() => {
     const filters = {
-      job: jobFilter,
+      name: departmentFilter,
     };
 
     axios
-      .get(`${API_ENDPOINT}/api/v1/jobs/`, {
+      .get(`${API_ENDPOINT}/api/v1/employee-departments/`, {
         params: filters,
         headers: {
           Authorization: `Bearer ${Token}`,
         },
       })
       .then((response) => {
-        setData(response.data.data.jobs);
+        setData(response.data.data.departments);
       })
       .catch((error) => {});
-  }, [jobFilter, Token]);
+  }, [departmentFilter, Token]);
   return (
     <div>
       <div className="my-1 ">
-        <h1 className="heading text-center p-3"> الوظائف </h1>
+        <h1 className="heading text-center p-3"> أقسام الموظفين </h1>
       </div>
-      {/* Job Filter */}
+      {/* Department Filter */}
       <div
         style={{
           display: "flex",
@@ -170,13 +192,13 @@ const ShowAllJobs = () => {
             }}
           >
             {" "}
-            الوظيفة
+            القسم
           </label>
           <input
             className="form-input"
-            value={jobFilter}
-            onChange={handleJobChange}
-            placeholder="ابحث بالوظيفة"
+            value={departmentFilter}
+            onChange={handleDepartmentChange}
+            placeholder="ابحث بالقسم"
             style={{ width: "250px" }}
           />
         </div>
@@ -192,7 +214,7 @@ const ShowAllJobs = () => {
           }}
           onClick={() => setIsModalVisible(true)}
         >
-          اضافه وظيفه جديده
+          اضافه قسم جديد
         </button>
         <DownloadTableExcel
           filename="وظائف العاملين بالدار "
@@ -218,7 +240,7 @@ const ShowAllJobs = () => {
               الاسم
             </th>
             <th scope="col" style={{ background: "#edede9" }}>
-              عدد البونط
+              نسبة البنط
             </th>
             <th scope="col" style={{ background: "#edede9" }}>
               ألاجرائات
@@ -248,7 +270,7 @@ const ShowAllJobs = () => {
                   fontWeight: "700",
                 }}
               >
-                {item.points}
+                {item.points_percentage}
               </td>
 
               <td
@@ -289,7 +311,7 @@ const ShowAllJobs = () => {
         show={isModalVisible}
         onHide={() => setIsModalVisible(false)}
         itemId={itemId}
-        job={item}
+        department={item}
       />
       {data?.length > 0 && (
         <Pagination
@@ -304,4 +326,4 @@ const ShowAllJobs = () => {
   );
 };
 
-export default ShowAllJobs;
+export default showEmployeesDepartments;

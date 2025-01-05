@@ -23,11 +23,12 @@ export const AuthProvider = ({ children }) => {
   const checkAuthUser = async () => {
     try {
       const profileData = await getProfile();
-      console.log(`profile`,profileData.data.roles)
+
       const { id, username, name, phone, department, permissions, roles } =
         profileData?.data;
+
         const roleId = roles ? roles.map(role => role.id) : [];
-        const roleName = roles ? roles.map(role => role.username) : [];
+        const roleName = roles ? roles.map(role => role.name) : [];
       setUser({
         id,
         name,
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }) => {
         department,
         permissions,
         roles:roleId,
-        roleName:roleName[0]
+        roleName: roleName[0]
       });
       setIsLoading(false);
       setIsAuthenticated(true);

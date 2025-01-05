@@ -36,12 +36,12 @@ const ReportContentsSubStores = () => {
       img: `${Report1}`,
       route: "/warehouse/reports/ShowDepartments",
     },
-    // {
-    //   id: 2,
-    //   name: "تقرير الايرادات المفصل عن مده",
-    //   img: `${Report3}`,
-    //   route: "/warehouse/reports/ShowAllSalesDetails/Reports",
-    // },
+    {
+      id: 4,
+      name: "تقرير أرباح الأوردرات الخارجية ",
+      img: `${Report3}`,
+      route: "/warehouse/reports/external-orders/show",
+    },
   ];
 
   if (viewProductsReport) {

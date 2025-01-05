@@ -231,10 +231,10 @@ const ShowProductDepartment2 = () => {
 
   const ItemDetailsModal = ({ visible, onHide, item }) => {
     if (!item) return null;
-    console.log(item)
+    console.log(item);
     return (
       <Modal
-      visible={visible}
+        visible={visible}
         title="تفاصيل فواتيرالمكون "
         // open={show}
         onOk={onHide}
@@ -249,8 +249,7 @@ const ShowProductDepartment2 = () => {
             justifyContent: "start",
             alignItems: "start",
           }}
-        >
-        </div>
+        ></div>
         <table
           className="table table-hover mt-5"
           style={{ fontSize: "24px" }}
@@ -258,18 +257,18 @@ const ShowProductDepartment2 = () => {
         >
           <thead>
             <tr>
-            <th scope="col">كود الفاتورة</th>
-            <th scope="col">تاريخ الفاتورة</th>
+              <th scope="col">كود الفاتورة</th>
+              <th scope="col">تاريخ الفاتورة</th>
               <th scope="col">اسم المنتج</th>
-              <th scope="col">الكمية	</th>
-              <th scope="col">سعر الوحده	</th>
+              <th scope="col">الكمية </th>
+              <th scope="col">سعر الوحده </th>
               <th scope="col">اجمالي السعر</th>
               <th scope="col"> المتبقى</th>
             </tr>
           </thead>
           <tbody>
             {item.invoices && item.invoices.length > 0 ? (
-               item.invoices.map((invoice, index) => (
+              item.invoices.map((invoice, index) => (
                 <tr key={invoice.id}>
                   <td>{invoice.code}</td>
                   <td>{invoice.invoice_date}</td>
@@ -345,7 +344,7 @@ const ShowProductDepartment2 = () => {
  * 
  */
 
-console.log(filteredData);
+  console.log(filteredData);
   return (
     <div>
       <h2 className="heading text-center">
@@ -460,7 +459,7 @@ console.log(filteredData);
                   <th className="text-center">التصنيف الرئيسي</th>
                   <th className="text-right">اسم المنتج</th>
                   <th className="text-right">الكمية</th>
-                  <th className="text-right">  الأوفر</th>
+                  <th className="text-right"> الأوفر</th>
                   <th className="text-right">كميه الجرد الفعلي</th>
                   <th className="text-right">سعر الوحده</th>
                   <th className="text-right"> السعر الكلي </th>
@@ -473,7 +472,6 @@ console.log(filteredData);
                       className="fw-bold fs-4"
                       key={index}
                       style={{ cursor: "pointer" }}
-
                       onClick={() => handleRowClick(item)}
                     >
                       <td className="text-center">{index + 1}</td>
@@ -490,7 +488,9 @@ console.log(filteredData);
                         {" "}
                         {item.quantity} {item.unit}
                       </td>
-                      <td className="text-right">{item.over_quantity ?? 'لا يوجد'}</td>
+                      <td className="text-right">
+                        {item.over_quantity ?? "لا يوجد"}
+                      </td>
                       <td className="text-right"></td>
                       <td className="text-right">
                         {" "}

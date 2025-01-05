@@ -8,10 +8,19 @@ const Client = () => {
     { key: "name", value: "الإسم" },
     { key: "phone", value: "رقم الموبايل" },
     { key: "military_number", value: "الرقم العسكرى" },
-    { key: "client_type", value: "نوع العميل" },
+    // { key: "client_type", value: "نوع العميل" },
   ];
   const filters = [
-    // { key: "name", type: "text", placeholder: "إبحث باللإسم", id: "الإسم" },
+    { key: "name", type: "text", placeholder: "إبحث باللإسم", id: "الإسم" },
+    // {
+    //   key: "sub_category_id",
+    //   type: "selection",
+    //   placeholder: "إبحث بنوع العميل",
+    //   id: "نوع العميل",
+    //   // options: 
+    // },
+
+
   ];
   const actions = [
     {

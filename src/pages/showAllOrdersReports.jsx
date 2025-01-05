@@ -41,12 +41,12 @@ function DataModal({
   };
   return (
     <Modal
-      title="تفاصيل مبيعات  المنفذ "
+      title="تفاصيل مبيعات المفصل "
       centered
       open={show}
       onOk={onHide}
       onCancel={onHide}
-      width={1000}
+      width={1400}
     >
       <div
         style={{
@@ -72,8 +72,6 @@ function DataModal({
               <div>
                 <span>الفلتر </span>
                 <span> || </span>
-                <span> ({selectedPaymentMethodName})</span>
-                <span> || </span>
                 <span>({selectedClientTypeName})</span>
                 <span> || </span>
                 <span>({selectedClientsName})</span>
@@ -84,9 +82,9 @@ function DataModal({
             <th scope="col">نوع العميل</th>
             <th scope="col">اسم العميل</th>
             <th scope="col">تاريخ الطلب</th>
-            <th scope="col">طريقه الدفع</th>
             <th scope="col">اجمالي سعر الطلب</th>
             <th scope="col">الاجمالي بعد الخصم</th>
+            <th scope="col"> المنتجات</th>
           </tr>
         </thead>
         <tbody>
@@ -98,9 +96,18 @@ function DataModal({
                   {order.client_name == "" ? "لا يوجد" : order.client_name}
                 </td>
                 <td>{order.order_date}</td>
-                <td>{order.payment_method}</td>
                 <td>{Math.round(order.price * 100) / 100}</td>
                 <td>{Math.round(order.total_price * 100) / 100}</td>
+                <td>
+                  <ul>
+                    {order.products?.map((product, index) => (
+                      <li key={index}>
+                        {product.name} - {product.quantity} ×{" "}
+                        {product.price / product.quantity} = {product.price}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
               </tr>
             ))
           ) : (
@@ -384,19 +391,6 @@ const ShowAllOrderReports = () => {
       >
         <h3>تقرير المبيعات المفصل</h3>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "start",
-          alignItems: "start",
-        }}
-      >
-        <button onClick={handleSavePDF} className="pdf-button">
-          {" "}
-          حفظ PDF
-        </button>
-      </div>
 
       <div className="container text-center text-xl">
         <div className="row align-items-center">
@@ -492,8 +486,6 @@ const ShowAllOrderReports = () => {
             </div>
           </div>
           <div className="row align-items-center">
-          
-          
             <div className="col-md-3">
               <div className="mb-3 d-flex text-center flex-column gap-small">
                 <label
@@ -515,7 +507,7 @@ const ShowAllOrderReports = () => {
                 />
               </div>
             </div>
-            
+
             <div className="col-md-3">
               <div className="mb-3 d-flex text-center flex-column gap-small">
                 <label
@@ -537,22 +529,57 @@ const ShowAllOrderReports = () => {
                 />
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
       <div>
-        <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            gap: "25px",
+            alignItems: "center",
+          }}
+        >
           <button
             className="form-cashier-btn"
             onClick={() => handleGettingReports()}
-            style={{ width: "100%", transition: `all 0.3s` }}
+            // style={{ width: "100%", transition: `all 0.3s` }}
           >
-            تأكيد
+            فلترة
           </button>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "start",
+              alignItems: "start",
+            }}
+          >
+            <button onClick={handleSavePDF} className="pdf-button">
+              {" "}
+              حفظ PDF
+            </button>
+          </div>
         </div>
       </div>
+      {/* <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "start",
+          alignItems: "start",
+        }}
+      >
+        <button onClick={handleSavePDF} className="pdf-button">
+          {" "}
+          حفظ PDF
+        </button>
+      </div> */}
+
+
       <table
         className="table table-hover mt-5"
         style={{ fontSize: "24px" }}

@@ -169,7 +169,7 @@ const KitchenRequests = () => {
       value: filterValues.status,
       onChange: handleFilterChange,
       options: [
-        { value: "", label: "" },
+        { value: "", label: "إختر حالة الاوردر" },
         { value: "processing", label: "تحت التجهيز" },
         { value: "completed", label: "تم التجهيز" },
         { value: "closed", label: "تم الدفع" },
@@ -210,11 +210,12 @@ const KitchenRequests = () => {
       <h2 className="heading text-center">أوردرات المطبخ</h2>
 
       <div
-        style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}
+        style={{ display: "flex", gap: "20px", flexWrap: "wrap"  ,   alignItems: "center",
+          justifyContent: "center",}}
         className="filters-container"
       >
         <label
-          className="filter-label"
+          className="form-label"
           style={{
             fontWeight: "bold",
             marginBottom: "8px",
@@ -229,11 +230,11 @@ const KitchenRequests = () => {
           value={filterValues.code}
           onChange={handleFilterChange}
           placeholder="أدخل كود الأوردر"
-          className="filter-input"
+          className="form-input"
           style={{ width: "200px" }}
         />
         <label
-          className="filter-label"
+          className="form-label"
           style={{
             fontWeight: "bold",
             marginBottom: "8px",
@@ -242,12 +243,14 @@ const KitchenRequests = () => {
         >
           الحالة
         </label>
+
         <select
           name="status"
           value={filterValues.status}
           onChange={handleFilterChange}
-          className="filter-select"
-          style={{ width: "200px" }}
+          className="form-select"
+          style={{ width: "200px", height: "45px" }}
+
         >
           {filters[1].options.map((option) => (
             <option key={option.value} value={option.value}>

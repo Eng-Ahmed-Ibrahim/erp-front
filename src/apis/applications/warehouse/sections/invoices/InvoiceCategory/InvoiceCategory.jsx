@@ -370,6 +370,17 @@ function Categories(props) {
               fetchData={(filters, id, setIsLoading) =>
                 getOutgoingInvoiceByType(filters, id, setIsLoading)
               }
+              
+              getTotalPrice={async (filters, id, setIsLoading, status) => {
+                const data = await getOutgoingInvoiceByType(
+                  filters,
+                  id,
+                  setIsLoading,
+                  status
+                );
+                return data.total;
+              }}
+
               detailsHeaders={detailsHeaders}
               updateFn={user?.permissions.some(
                 (permission) => permission.name === "edit invoice") ? user?.department.type === "master" ? updateInvoicePrice : user?.department.type === "source" ? updateInvoiceQuintity : null : null}

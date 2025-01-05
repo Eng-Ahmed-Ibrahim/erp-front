@@ -2,10 +2,37 @@ import Table from "../../../../../components/shared/table/Table";
 import { getSuppliers, deleteSupplier } from "../../../../../apis/suppliers";
 import "../../../../../components/shared/table/Table.scss";
 import { useAuth } from "../../../../../context/AuthContext";
+import React, { useEffect, useState } from "react";
+import { API_ENDPOINT } from "../../../../../../config";
+
 const ShowSuppliers = () => {
   const { user } = useAuth();
-  const tableHeaders = [
+  const Token =
+  localStorage.getItem("token") || sessionStorage.getItem("token");
+  const [WarehouseSections, setWarehouseSections] = useState([]);
+  
+  useEffect(() => {
+    const fetchWarehouseSections = async () => {
+      try {
+        const response = await fetch(
+          `${API_ENDPOINT}/api/v1/store/warehouse_sections`,
+          {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setWarehouseSections(data.data);
+      } catch (error) {
+        console.error("Error fetching recipe category parents:", error);
+      }
+    };
 
+    fetchWarehouseSections();
+  }, []);
+
+  const tableHeaders = [
     { key: "name", value: "الإسم" },
     { key: "phone", value: "الرقم" },
     { key: "type", value: "النوع" },
@@ -13,12 +40,7 @@ const ShowSuppliers = () => {
   ];
   const filters = [
     { key: "name", type: "text", placeholder: "إبحث باللإسم", id: "الإسم" },
-    {
-      key: "phone",
-      type: "text",
-      placeholder: "إبحث برقم الموبايل",
-      id: "رقم الموبايل",
-    },
+    // { key: "phone", type: "text",  placeholder: "إبحث برقم الموبايل", id: "رقم الموبايل", },
     {
       key: "type",
       type: "selection",
@@ -39,39 +61,60 @@ const ShowSuppliers = () => {
         },
       ],
     },
+    {
+      key: "warehouse_section_id",
+      type: "selection",
+      id: "نوع القسم",
+      placeholder: "إختار قسم لإظهار نتائج",
+      options: WarehouseSections.map((category) => {
+        return { value: category.id, label: category.name };
+      }),
+    },
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },
   ];
   const actions = [
     {
-      type: `${user?.permissions.some((permission) => permission.name === 'edit supplier')
-        ? "edit"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "edit supplier"
+        )
+          ? "edit"
+          : ""
+      }`,
       label: "تعديل",
       route: "/warehouse/suppliers/:id/edit-supplier",
     },
     {
-      type: `${user?.permissions.some((permission) => permission.name === 'delete supplier')
-        ? "delete"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "delete supplier"
+        )
+          ? "delete"
+          : ""
+      }`,
       label: "حذف",
     },
     {
-      type: `${user?.permissions.some((permission) => permission.name === 'show supplier invoices')
-        ? "navigate"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "show supplier invoices"
+        )
+          ? "navigate"
+          : ""
+      }`,
       label: "فواتير",
       route: "/warehouse/suppliers/:id/show-invoices",
     },
 
     {
-      type: `${user?.permissions.some((permission) => permission.name === 'add supplier')
-        ? "add"
-        : ""
-        }`,
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "add supplier"
+        )
+          ? "add"
+          : ""
+      }`,
       label: "إضافة موردين",
       route: "/warehouse/suppliers/add-supplier",
     },

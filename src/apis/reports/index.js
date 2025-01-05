@@ -10,7 +10,7 @@ const Token =
 export async function getRcipeReports(filteredValues, id, setIsLoading) {
     try {
         setIsLoading(true);
-        const { name, page, from_date, to_date,category_id } = filteredValues;
+        const { name, page, from_date, to_date,warehouse_section_id } = filteredValues;
 
         const res = await axios.get(`${domain}/api/v1/store/invoice/filter/get_recipes/out_going_from_to_date/${id}`, {
             params: {
@@ -18,7 +18,7 @@ export async function getRcipeReports(filteredValues, id, setIsLoading) {
                 to: to_date,
                 page,
                 name,
-                category_id,
+                warehouse_section_id,
             },
             headers: {
                 Authorization: `Bearer ${Token}`,
