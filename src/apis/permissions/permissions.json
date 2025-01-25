@@ -364,5 +364,10 @@
         "id": 145,
         "value": "add payable",
         "label": "اضافة مدفوع"
+    } ,
+    {
+        "id": 146,
+        "value": "view products_review",
+        "label": "عرض مراجعة المنتجات"
     }
 ]

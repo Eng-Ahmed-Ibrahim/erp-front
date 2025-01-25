@@ -36,12 +36,10 @@ const ProductDetailes = ({ onAddItem, onDeleteItem }) => {
   const fetchOneProduct = async (id) => {
     try {
       const oneProduct = await getClientTypeById(id);
-      // console.log(oneProduct);
       setSelectedOneProduct(oneProduct);
 
-      // console.log("=====================>" + oneProduct);
     } catch (error) {
-      // console.log("Error fetching data:", error);
+      console.log("Error fetching data:", error);
     }
   };
 
@@ -59,7 +57,6 @@ const ProductDetailes = ({ onAddItem, onDeleteItem }) => {
       });
       const data = await response.json();
       setProductCategoryParents(data.data);
-      // console.log("data from =============>", data);
     } catch (error) {
       console.error("Error fetching Product category parents:", error);
     }
@@ -80,7 +77,6 @@ const ProductDetailes = ({ onAddItem, onDeleteItem }) => {
       );
       const data = await response.json();
       setProductCategories(data.data);
-      // console.log("data", data);
     } catch (error) {
       console.error("Error fetching Product categories:", error);
     }

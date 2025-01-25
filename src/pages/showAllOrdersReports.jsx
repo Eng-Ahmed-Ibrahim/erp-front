@@ -579,7 +579,6 @@ const ShowAllOrderReports = () => {
         </button>
       </div> */}
 
-
       <table
         className="table table-hover mt-5"
         style={{ fontSize: "24px" }}

@@ -237,6 +237,7 @@ const Table = ({
   };
 
   const handleShowData = (item) => {
+    console.log("rhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", item);
     setSelectedItem(item);
     setisShowModalVisible(true);
   };
@@ -290,54 +291,21 @@ const Table = ({
       navigate(addAction.route);
     }
   };
+
   const handleSavePDF = async () => {
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = 190;
     const pageHeight = 297;
 
     const rows = Array.from(tableRef.current.querySelectorAll("tr"));
-    let position = 10 ;
+    let position = 10;
 
-    // console.log(filterValues);
-    // let result = "";
-    // filterValues;
-    // const headerText =pdfHeader 
-    
-    // // " " + filterValues["from_date"]
-    // //     ? "from " + filterValues["from_date"] + " "
-    // //     : " " + filterValues["to_date"]
-    // //     ? "to " + filterValues["to_date"]
-    // //     : " "; // Example header in Arabic
-
-    // pdf.setFontSize(12); // Set font size for the header
-    // const from  = filterValues["from_date"]  ? "from " + filterValues["from_date"] + " "  : " "
-    // const to  = filterValues["to_date"]  ? "from " + filterValues["to_date"] + " "  : " "
-    // pdf.setFont("helvetica");
-    // pdf.text(headerText, 10, 10);
-    // pdf.text(from, 10, 10);
-    // pdf.text(to, 10, 10);
-
-    // const arabicFontBase64 = ""; // Replace with your Base64 font data
-
-    // pdf.addFileToVFS("arabicFont.ttf", arabicFontBase64); // Add font to the virtual file system
-    // pdf.addFont("arabicFont.ttf", "arabicFont", "normal"); // Register the font
-    // pdf.setFont("arabicFont", "normal"); // Set the font to Arabic
-
-    // // // Set the font size for the header
-    // pdf.setFontSize(16);
-    // const headerText =pdfHeader ; // Arabic text
-    // pdf.setFont("helvetica");
-
-    // pdf.text(headerText, 10, 20); // Add the header text at (10, 20)
-
-    //
-    //for (let j=1;j< data?.pagination?.total ;j++){
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const rowCanvas = await html2canvas(row, { scale: 2 });
       const rowImgData = rowCanvas.toDataURL("image/png");
       const rowHeight = (rowCanvas.height * pageWidth) / rowCanvas.width;
-      
+
       if (position + rowHeight > pageHeight - 10) {
         pdf.addPage();
         position = 10;
@@ -350,6 +318,52 @@ const Table = ({
     pdf.save("تقرير المبيعات المفصل.pdf");
   };
 
+  // const handleSavePDF = async () => {
+  //   const pdf = new jsPDF("p", "mm", "a4");
+  //   const pageWidth = 190; // Width for content
+  //   const pageHeight = 297; // A4 height
+  //   const margin = 10; // Margin
+  //   let position = margin;
+  // console.log('hello this is me ', po)
+  //   // Add Arabic table header comment at the beginning
+  //   pdf.setFont("helvetica", "bold");
+  //   pdf.setFontSize(12);
+  //   pdf.text("تقرير المبيعات المفصل", pageWidth / 2, position, { align: "center" });
+  //   position += 10;
+  
+  //   const table = tableRef.current; // Reference to your table
+  //   const canvas = await html2canvas(table, { scale: 2 });
+  //   const tableImage = canvas.toDataURL("image/png");
+  
+  //   const imageHeight = (canvas.height * pageWidth) / canvas.width;
+  
+  //   // Split table into pages if it exceeds the page height
+  //   let remainingHeight = imageHeight;
+  
+  //   while (remainingHeight > 0) {
+  //     const currentHeight = Math.min(remainingHeight, pageHeight - position - margin);
+  
+  //     pdf.addImage(
+  //       tableImage,
+  //       "PNG",
+  //       margin,
+  //       position,
+  //       pageWidth,
+  //       currentHeight
+  //     );
+  
+  //     remainingHeight -= currentHeight;
+  //     position = margin;
+  
+  //     if (remainingHeight > 0) {
+  //       pdf.addPage();
+  //     }
+  //   }
+  
+  //   pdf.save("تقرير المبيعات المفصل.pdf");
+  // };
+
+  
   const generateTableRowHTML = (index, row) => {
     return `
       <tr style="border-bottom:1px solid var(--brown-color); padding:5px;">
@@ -554,6 +568,7 @@ const Table = ({
                 {"+ "} {actions.find((action) => action.type === "add").label}
               </button>
             )}
+
             <DownloadTableExcel
               filename="users table"
               sheet="users"
@@ -563,6 +578,7 @@ const Table = ({
                 حفظ اكسيل{" "}
               </button>
             </DownloadTableExcel>
+
             <button
               onClick={handleSavePDF}
               className="pdf-button white-space-nowrap"

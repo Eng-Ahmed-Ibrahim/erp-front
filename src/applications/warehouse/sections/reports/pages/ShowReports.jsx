@@ -18,22 +18,30 @@ function ShowReports() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [viewTabTwoOnly, setViewTabTwoOnly] = useState(false);
+  const [viewTabOneOnly, setViewTabOneOnly] = useState(false);
   const [isTalaat, setIsTalaat] = useState(false);
   const repairId = "9d727355-cad2-48b4-9671-aebbcfdc6771";
   const chemicalId = "9d72735b-c904-4b4b-a613-f5f16ba8ad98";
   const talaatId = "9d7b0996-857f-4a59-997b-64d605af07c0";
-  const tabTwoUsers =['9c10de53-14b1-4ae9-89d6-665ce7c0ccc5']
+  const tabTwoUsers = ["9c10de53-14b1-4ae9-89d6-665ce7c0ccc5"];
+  const tabOneUsers = ["9de5c9c9-08e5-424b-86c5-11e71206f9f8"];
   const { user } = useAuth();
   useEffect(() => {
     if (user.roles[0] == talaatId) {
       setIsTalaat(true);
     }
-console.log(user)
-setViewTabTwoOnly(false);
+    setViewTabTwoOnly(false);
+
+    setViewTabOneOnly(false);
 
     if (tabTwoUsers.includes(user.roles[0])) {
       setViewTabTwoOnly(true);
-    } 
+    }
+
+    if (tabOneUsers.includes(user.roles[0])) {
+      setViewTabOneOnly(true);
+      console.log("dddddddddddddddd");
+    }
   }, []);
   const reportData = [
     {
@@ -94,7 +102,15 @@ setViewTabTwoOnly(false);
       <Tabs>
         <TabList>
           {!(viewTabTwoOnly || isTalaat) && <Tab>تقارير </Tab>}
-          {viewTabTwoOnly || isTalaat ? <Tab>تقارير</Tab> : <Tab>التقارير 2</Tab>}
+
+          {!viewTabOneOnly ? (
+            viewTabTwoOnly || isTalaat ? (
+              <Tab>تقارير</Tab>
+            ) : (
+              <Tab>التقارير 2</Tab>
+            )
+          ) : null}
+          
         </TabList>
         {!(viewTabTwoOnly || isTalaat) && (
           <TabPanel>

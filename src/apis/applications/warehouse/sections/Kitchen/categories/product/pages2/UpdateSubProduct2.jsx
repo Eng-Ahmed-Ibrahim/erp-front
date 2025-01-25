@@ -8,7 +8,6 @@ const UpdateSubProduct2 = () => {
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const [isPending, setIsPending] = useState(false);
   const item = useLocation()?.state?.item;
-  // console.log('item', item);
   const [name, setName] = useState(item?.name);
   const [description, setDescription] = useState(item?.description);
   const [image, setImage] = useState("");

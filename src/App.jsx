@@ -79,6 +79,7 @@ import {
   ShowProduct,
 } from "./applications/warehouse/sections/Kitchen/categories/product/pages";
 import KitchenRequests from "./applications/warehouse/sections/cashier/pages/KitchenRequests/KitchenRequests";
+import DeletedOrders from "./applications/warehouse/sections/cashier/pages/KitchenRequests/DeletedOrders";
 import KitchenOrders from "./applications/warehouse/sections/cashier/pages/KitchenRequests/KitchenOrders";
 import Department from "./applications/warehouse/sections/department/Deaprtment";
 import ShowDepartment from "./applications/warehouse/sections/department/pages/ShowDepartments";
@@ -316,6 +317,8 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+
+            
             {/* /////////////////////////// */}
             <Route
               path="/warehouse/returants/show-resturants2"
@@ -330,6 +333,8 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+
+
             <Route
               path="/warehouse/returants/show-resturants2/:id"
               element={
@@ -943,6 +948,7 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
+
             <Route
               path="/warehouse/cashier/kitchen-requests"
               element={
@@ -957,6 +963,21 @@ function App() {
               }
             ></Route>
 
+            <Route
+              path="/warehouse/cashier/deleted-orders"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 123,
+                    name: "view orders",
+                  }}
+                >
+                  <DeletedOrders/>
+                </ProtectedRoute>
+              }
+            ></Route>
+
+            {/* /warehouse/cashier/deleted-orders */}
             <Route
               path="/warehouse/cashier/kitchen-requests"
               element={
@@ -1689,21 +1710,21 @@ function App() {
                   <ShowDepartmentProductsReport />
                 </ProtectedRoute>
               }
-            ></Route>        
-            
-               <Route
-            path="/warehouse/reports/external-orders/show"
-            element={
-              <ProtectedRoute
-                requiredPermission={{
-                  id: 103,
-                  name: "view reports",
-                }}
-              >
-                <ExternalOrdersReport />
-              </ProtectedRoute>
-            }
-          ></Route>
+            ></Route>
+
+            <Route
+              path="/warehouse/reports/external-orders/show"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: "view reports",
+                  }}
+                >
+                  <ExternalOrdersReport />
+                </ProtectedRoute>
+              }
+            ></Route>
 
             <Route
               path="/warehouse/reports/show-reports/get-allsupllier"

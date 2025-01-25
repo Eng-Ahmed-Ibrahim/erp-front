@@ -25,6 +25,7 @@ import {
   Row,
   render,
 } from "react-thermal-printer";
+import { is } from "date-fns/locale";
 
 function PrintAfterFinish({ id, table_no }) {
   const componentRef = useRef();
@@ -151,18 +152,18 @@ function PrintAfterFinish({ id, table_no }) {
             <tfoot>
               <tr>
                 <td className="text-price" colSpan={2}>
-                  السعر الكلي
+                  السعر الكلي بالخدمة
                 </td>
                 <td className="text-price" colSpan={2}>
-                  {data.price} ج.م
+                  {data.price?.toFixed(2)} ج.م
                 </td>
               </tr>
               <tr>
                 <td className="text-price" colSpan={2}>
-                  السعر الكلي بعد الخدمة
+                  السعر الكلي بعد الخصم
                 </td>
                 <td className="text-price" colSpan={2}>
-                  {data.total_price} ج.م
+                  {data.total_price?.toFixed(2)} ج.م
                 </td>
               </tr>
             </tfoot>
@@ -198,13 +199,30 @@ const AddCashierOrder = () => {
   const [isTakeAway, setIsTakeAway] = useState(false);
   const [isguest, setIsGuest] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const [canEndOrder, setCanEndOrder] = useState(true);
   const [shouldPrint, setShouldPrint] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [orderID, setOrderID] = useState("");
+  const [selectedClientType, setSelectedClientType] = useState("");
+  const [waiterName, setWaiterName] = useState([]);
+  const [clientData, setClientData] = useState();
+  const [discount, setDiscount] = useState();
+  const [reseditType, setResedent] = useState();
+  const [selectWaiter, setSelectedWatier] = useState(
+    localStorage.getItem("DefaultWaiterId") || ""
+  );
+
+  const SUPPORT_MILITARY_ID = [
+    "01j593bhrndb11k7rdhtacz7ht",
+    "01jat25db9xbgfbskk9zygj5kq",
+    "01jepaexvvm7s2zv7d9970nf5p",
+    "",
+  ];
+
   message.config({
-    duration: 3, // message duration in seconds
-    top: "50%", // vertically center the message
-    maxCount: 3, // only show up to 3 messages at once
+    duration: 3,
+    top: "50%",
+    maxCount: 3,
   });
   const [newUserValues, setNewUserValues] = useState({
     deleviery_type: "kitchen",
@@ -219,6 +237,7 @@ const AddCashierOrder = () => {
     client_id: "",
     waiter_id: "",
   });
+  const ExternalOrderCashierRole = "9db56bb2-7a34-4aad-8fbd-3f9b26a93e35";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -262,6 +281,7 @@ const AddCashierOrder = () => {
   const validateForm = () => {
     const errors = {};
     // && !isguest
+
     if (clients.length > 0 && !newUserValues.client_id && !isguest) {
       setIsDisabled(false);
 
@@ -280,7 +300,9 @@ const AddCashierOrder = () => {
       setTimeout(() => {
         modal.destroy();
       }, 4000);
-      errors.mustChooseClientName = "يجب اختيار اسم العميل";
+      e;
+
+      rrors.mustChooseClientName = "يجب اختيار اسم العميل";
     }
     if (selectedClientName == "ظابط مشاه" && !militryIdInputValue) {
       setIsDisabled(false);
@@ -395,30 +417,32 @@ const AddCashierOrder = () => {
       console.error("Error fetching client types for payment method:", error);
     }
   };
-  const [selectedClientType, setSelectedClientType] = useState("");
-
   const handleClientTypeChange = async (value) => {
-    const selectedClient = clientTypes.find((ele) => ele.id == value)?.name;
-    setSelectedClientName(selectedClient);
-    if (selectedClient == "ظابط مشاه") {
+    const selectedClient = clientTypes.find((ele) => ele.id == value)?.id;
+
+    setSelectedClientName(clientTypes.find((ele) => ele.id == value)?.name);
+
+    if (SUPPORT_MILITARY_ID.includes(selectedClient)) {
+      console.log(selectedClient);
       setAddFormVisible(true);
     } else {
       setAddFormVisible(false);
       setSelectedClientType(false);
     }
     setSelectedClientType(value);
-    ///////////////////
-    if (selectedClient == "تيك اواي") {
+
+    if (selectedClient == "01j593a427a3kfrrxj8bkn115k") {
       setIsTakeAway(true);
     } else {
       setIsTakeAway(false);
     }
-    if (selectedClient == "Guest") {
+    if (selectedClient == "01j49hpdjbqher813xrp68ejz1") {
       setIsGuest(true);
     } else {
       setIsGuest(false);
     }
-    if (selectedClient == "تيك اواي المطعم") {
+
+    if (selectedClient == "01jedx6za4e8ra7b5777qwzs45") {
       setIsHidden(true);
     } else {
       setIsHidden(false);
@@ -452,7 +476,6 @@ const AddCashierOrder = () => {
       [key]: value,
     }));
   };
-  const [waiterName, setWaiterName] = useState([]);
   const getAllWaiters = async () => {
     try {
       const Token =
@@ -483,12 +506,7 @@ const AddCashierOrder = () => {
       }, 4000);
     }
   };
-  const [clientData, setClientData] = useState();
-  const [discount, setDiscount] = useState();
-  const [reseditType, setResedent] = useState();
-  const [selectWaiter, setSelectedWatier] = useState(
-    localStorage.getItem("DefaultWaiterId") || ""
-  );
+
   const fetchClientType = async (id) => {
     try {
       const recipeData = await getClientTypeById(id);
@@ -505,6 +523,7 @@ const AddCashierOrder = () => {
     [newUserValues["client_type_id"]],
     selectWaiter
   );
+
   const handleAddItem = (item) => {
     setItems([...items, item]);
   };
@@ -519,6 +538,7 @@ const AddCashierOrder = () => {
       0
     );
   };
+
   const handleFinish = async () => {
     if (selectedClientType == "") {
       const modal = Modal.error({
@@ -677,7 +697,7 @@ const AddCashierOrder = () => {
         title: "Error",
         content: (
           <div style={{ fontSize: "24px", textAlign: "center" }}>
-            تبا لك لقد نسيت رقم الترابيزه
+            لقد نسيت رقم الترابيزه
           </div>
         ),
         centered: true,
@@ -869,6 +889,7 @@ const AddCashierOrder = () => {
       }, 5000);
     }
   };
+
   const [militryIdInputValue, setMilitryIdInputValue] = useState("");
   const [militryIdGotClicked, setMilitryIdGotClicked] = useState(false);
   const [timer, setTimer] = useState(null);
@@ -911,6 +932,13 @@ const AddCashierOrder = () => {
     const resetMessageVisibility = () => setMessageVisible(false);
     return () => resetMessageVisibility();
   }, [messageVisible]);
+
+  useEffect(() => {
+    console.log("dddddddddddddddddddddddddddddddddddddddd", user);
+    if (user?.roles[0] == ExternalOrderCashierRole) {
+      setCanEndOrder(false);
+    }
+  }, []);
 
   return (
     <div className="form-cashier-container fs-5">
@@ -1120,7 +1148,7 @@ const AddCashierOrder = () => {
           </>
         ) : null}
 
-        {!isguest && !isHidden ? (
+        {!isguest && !isHidden && canEndOrder ? (
           <>
             <button
               className="finish-cashier"

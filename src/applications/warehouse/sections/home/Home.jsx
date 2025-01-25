@@ -3,12 +3,12 @@ import { useAuth } from "../../../../context/AuthContext";
 import { Pagination, Select ,Modal} from "antd";
 
 const Home = () => {
-    console.log("الحريه 1/12/2025")
-    console.log("جمعونا احباب وفرقونا اغراب")
-    console.log("المشاه مصنع الرجال")
-    console.log("الجيش للرجاله والرجاله بتقولك متجيش")
+    // console.log("الحريه 1/12/2025")
+    // console.log("جمعونا احباب وفرقونا اغراب")
+    // console.log("المشاه مصنع الرجال")
+    // console.log("الجيش للرجاله والرجاله بتقولك متجيش")
     const { user } = useAuth();
-    console.log(user)
+
     if(user.department.type == "reciver")
     {
     const modal = Modal.warning({

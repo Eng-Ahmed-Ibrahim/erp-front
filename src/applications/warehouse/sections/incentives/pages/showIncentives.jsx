@@ -96,7 +96,7 @@ function SaveIncentivesModal({ show, onHide, month }) {
   );
 }
 
-function DataModal({ show, onHide, item, itemId , refreshFn}) {
+function DataModal({ show, onHide, item, itemId, refreshFn }) {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const [discount, setDiscount] = useState(0);
@@ -127,10 +127,9 @@ function DataModal({ show, onHide, item, itemId , refreshFn}) {
     // onHide();
 
     if (res.data.data) {
-      refreshFn()
+      refreshFn();
       message.success("تم تعديل الحافز بنجاح");
       onHide();
-
     }
   };
 
@@ -211,6 +210,7 @@ const ShowInventives = () => {
   const [employeeType, setEmployeeType] = useState([]);
   const [employeeTypes, setEmployeesTypes] = useState([]);
   const tableRef = useRef(null);
+  const [ saveButtonState , changeSaveButtonState] = useState(false);
 
   const month = new Date().toISOString().split("-")[1] - 1;
 
@@ -276,7 +276,6 @@ const ShowInventives = () => {
       });
   }, []);
   const fetchIncentives = async () => {
-
     const filters = {
       department: departmentFilter,
       name: nameFilter,
@@ -286,7 +285,8 @@ const ShowInventives = () => {
       employee_type: employeeType,
     };
 
-   await axios
+    console.log('deleteer ddnfdongfdin')
+    await axios
       .get(`${API_ENDPOINT}/api/v1/incentives`, {
         params: filters,
         headers: {
@@ -315,6 +315,7 @@ const ShowInventives = () => {
     nationalId,
     selectedMonth,
     employeeType,
+    saveButtonState
   ]);
 
   const handelEditPoints = async () => {
@@ -328,12 +329,13 @@ const ShowInventives = () => {
           Authorization: `Bearer ${Token}`,
         },
       }
-    );  
+    );
 
-
-    if (res) {    
+    if (res) {
       message.success("تم تعديل الحافز بنجاح");
-      onHide()
+      changeSaveButtonState(! saveButtonState)
+
+      // onHide();
     }
   };
   // zerox 6220
@@ -369,8 +371,8 @@ const ShowInventives = () => {
   };
 
   const refreshIncentives = () => {
-    fetchIncentives()
-  }
+    fetchIncentives();
+  };
   return (
     <div>
       <div className="my-1 ">
@@ -767,8 +769,7 @@ const ShowInventives = () => {
         onHide={() => setIsModalVisible(false)}
         itemId={itemId}
         item={item}
-        refreshFn = {refreshIncentives}
-
+        refreshFn={refreshIncentives}
       />
 
       <SaveIncentivesModal

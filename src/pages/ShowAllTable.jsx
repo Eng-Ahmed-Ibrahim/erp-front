@@ -4,34 +4,109 @@ import axios from "axios";
 import { API_ENDPOINT } from "../../config";
 import { Pagination, Select, message, Modal } from "antd";
 
-function DetailsOrder({ show, onHide, item }) {
+function DeleteOrderProductModel({ show, onHide, orderProductId }) {
+  const [deletionNote, setNewDeletionNote] = useState("");
   const [isLoading, setLoading] = useState(false);
 
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
 
-  const handelDelete = async (id) => {
+  const handleDeleteOrder = async () => {
+    if (!deletionNote || deletionNote.length < 10) {
+      message.error("لا يمكن حذف الأوردر بدون توضيح السبب");
+      return;
+    }
+
     setLoading(true);
     await axios
-      .delete(`${API_ENDPOINT}/api/v1/orders/product/delete/${id}`, {
-        headers: {
-          Authorization: `Bearer ${Token}`,
-        },
-      })
-      .then((response) => {
-        setLoading(false);
-        message.success("تم الحذف بنجاح");
-        // alert("Deleted Success");
-        axios.get(`${API_ENDPOINT}/api/v1/store/products`, {
+      .delete(
+        `${API_ENDPOINT}/api/v1/orders/product/delete/${orderProductId}`,
+        {
+          params: {
+            message: deletionNote,
+          },
           headers: {
             Authorization: `Bearer ${Token}`,
           },
-        });
+        }
+      )
+      .then((response) => {
+        setLoading(false);
+        message.success("تم الحذف بنجاح");
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
+        message.error(" حدث خطأ أثناء الحذف");
       });
+
+    setNewDeletionNote("");
+    onHide();
+  };
+
+  return (
+    <Modal
+      centered
+      open={show}
+      onCancel={onHide}
+      onOk={onHide}
+      width={900}
+      footer={null}
+    >
+      <div
+        className="payable-container"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <div className="mb-4" style={{ textAlign: "center", width: "100%" }}>
+          <h4 className="form-label"> أضف سبب حذف الأوردر </h4>
+          <input
+            type="text"
+            value={deletionNote}
+            onChange={(e) => setNewDeletionNote(e.target.value)}
+            placeholder=" أضف سبب حذف الأوردر"
+            className="form-input"
+            style={{
+              height: "120px",
+              marginTop: "20px",
+              width: "98%",
+            }}
+          />
+        </div>
+
+        <button
+          className="pdf-button"
+          style={{
+            width: "20%",
+            transition: `all 0.3s`,
+            background: "#ef0606",
+            color: "white",
+            alignSelf: "center",
+            marginTop: "20px",
+          }}
+          onClick={handleDeleteOrder}
+        >
+          حذف الأوردر
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+function DetailsOrder({ show, onHide, item }) {
+  const [isDeleteModelVisible, setIsDeleteModelVisible] = useState(false);
+  const [selectedOrderProductId, setSelectedOrderProductId] = useState("");
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+
+  const handelDelete = async (id) => {
+    setSelectedOrderProductId(id);
+
+    setIsDeleteModelVisible(true);
   };
 
   return (
@@ -133,28 +208,6 @@ function DetailsOrder({ show, onHide, item }) {
                       </div> */}
                     </div>
                     <hr />
-                    {/* <div className="row">
-                      <div className="col-sm-3">
-                        <h6 className="mb-0"> السعر بعد الخصم</h6>
-                      </div>
-                      <div className="col-sm-9">
-                        <h6 className="text-muted mb-0">
-                          {item?.total_price_after_discount}
-                        </h6>
-                      </div>
-                    </div> */}
-                    {/* <hr /> */}
-                    {/* <div className="row">
-                      <div className="col-sm-3">
-                        <h6 className="mb-0">السعر بعد الخصم والخدمة </h6>
-                      </div>
-                      <div className="col-sm-9">
-                        <h6 className="text-muted mb-0">
-                          {item?.total_price_after_discount_and_tax}
-                        </h6>
-                      </div>
-                    </div>
-                    <hr /> */}
 
                     {/* <div className="row">
                       <div className="col-sm-3">
@@ -217,6 +270,12 @@ function DetailsOrder({ show, onHide, item }) {
           </div>
         </section>
       </div>
+      <DeleteOrderProductModel
+        show={isDeleteModelVisible}
+        onHide={() => setIsDeleteModelVisible(false)}
+        orderProductId={selectedOrderProductId}
+      />
+
       {/* </div> */}
     </Modal>
   );

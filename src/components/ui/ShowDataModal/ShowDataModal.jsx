@@ -16,14 +16,14 @@ const ShowDataModal = ({
   acceptTitle,
 }) => {
   const [editedData, setEditedData] = useState(null);
-  const [shouldPrint, setShouldPrint] = useState(false); 
-  const [table_noo, setTable_noo] = useState(""); 
+  const [shouldPrint, setShouldPrint] = useState(false);
+  const [table_noo, setTable_noo] = useState("");
 
   useEffect(() => {
-    const fetchorderData = async () => {    
+    const fetchorderData = async () => {
       const InvoiceData = await getOrderById(responseData.id);
-      setTable_noo(InvoiceData.data.table_number)
-    }
+      setTable_noo(InvoiceData.data.table_number);
+    };
 
     const handleClickOutside = (event) => {
       const modalContent = document.querySelector(".modal-content");
@@ -45,11 +45,12 @@ const ShowDataModal = ({
     detailsHeaders.forEach((header) => {
       initialEditedData[header.key] = responseData[header.key];
       initialEditedData["id"] = responseData["id"];
-      initialEditedData["product_id_in_order"] =responseData["product_id_in_order"];
+      initialEditedData["product_id_in_order"] =
+        responseData["product_id_in_order"];
     });
 
     setEditedData(initialEditedData);
-    console.log(editedData)
+    console.log(editedData);
   }, [detailsHeaders]);
 
   const handleInputChange = (header, value, index, subKey) => {
@@ -57,8 +58,8 @@ const ShowDataModal = ({
     console.log(`value`, value);
     console.log(`index`, index);
     console.log(`subKey`, subKey);
-  
-    if (header === 'recipes') {
+
+    if (header === "recipes") {
       setEditedData((prevState) => {
         const updatedRecipes = [...prevState.recipes];
         if (subKey) {
@@ -69,22 +70,20 @@ const ShowDataModal = ({
         } else {
           updatedRecipes[index] = value;
         }
-  
-        return { ...prevState, recipes: updatedRecipes }; 
+
+        return { ...prevState, recipes: updatedRecipes };
       });
     } else {
       setEditedData((prevState) => ({
         ...prevState,
-        [header]: value, 
+        [header]: value,
       }));
     }
   };
-  
-  
 
   const handleEditClick = async () => {
     console.log("entered");
-  
+
     const modifiedRecipes = editedData.recipes.filter((editedRecipe, index) => {
       const originalRecipe = responseData.recipes[index];
       return Object.keys(editedRecipe).some(
@@ -95,20 +94,26 @@ const ShowDataModal = ({
       ...editedData,
       recipes: modifiedRecipes,
     };
-  
+
     await updateFn(dataToSend, responseData.id, id);
- 
+
     handleModalVisible(false);
-    
+
     if (closeAfterEdit) {
       window.location.reload();
     }
   };
-  
 
   const handleRejectClick = () => {
+    console.log("ressssssssssssssss data", responseData);
     changeStatusFn(responseData.id, rejectTitle.value);
-    setShouldPrint(true);
+
+    if (
+      !responseData.hasOwnProperty("deleted_by") ||
+      !responseData.deleted_by
+    ) {
+      setShouldPrint(true);
+    }
   };
 
   const handleAcceptClick = () => {
@@ -140,25 +145,24 @@ const ShowDataModal = ({
   const arrayHeaders = detailsHeaders.filter((header) => header.isArray);
   return (
     <div className="show-data-modal">
-        <div className="modal-content">
-        <button 
-  onClick={handleCloseClick} 
-  style={{
-    background: "red",
-    width: "65px",
-    color: "white",
-    borderRadius: "5px",
-    display: "flex",
-    justifyContent: "center",  // This centers horizontally
-    alignItems: "center",      // This centers vertically
-    textAlign: "center",       // Ensures the text itself is centered
-    height: "30px",            // Optional: Set height for better vertical centering
-    padding: "0"               // Optional: Remove extra padding if needed
-  }}
->
-  رجوع
-</button>
-
+      <div className="modal-content">
+        <button
+          onClick={handleCloseClick}
+          style={{
+            background: "red",
+            width: "65px",
+            color: "white",
+            borderRadius: "5px",
+            display: "flex",
+            justifyContent: "center", // This centers horizontally
+            alignItems: "center", // This centers vertically
+            textAlign: "center", // Ensures the text itself is centered
+            height: "30px", // Optional: Set height for better vertical centering
+            padding: "0", // Optional: Remove extra padding if needed
+          }}
+        >
+          رجوع
+        </button>
         <div className="data-table-container">
           <div className="data-table-diagram">
             <table className="data-table">
@@ -175,25 +179,23 @@ const ShowDataModal = ({
                     <td key={index}>
                       {header.isInput
                         ? renderInputField(
-                          header.key,
-                          responseData[header.key],
-                          null,
-                          null
-                        )
-                        : header.key === "quantity" 
-                          ?  renderInputField(
                             header.key,
                             responseData[header.key],
                             null,
                             null
-                          )` ${responseData.unit?.name || ''}` 
-                          : responseData[header.key] 
-                      }
+                          )
+                        : header.key === "quantity"
+                        ? renderInputField(
+                            header.key,
+                            responseData[header.key],
+                            null,
+                            null
+                          )` ${responseData.unit?.name || ""}`
+                        : responseData[header.key]}
                     </td>
                   ))}
                 </tr>
               </tbody>
-
             </table>
           </div>
         </div>
@@ -215,56 +217,58 @@ const ShowDataModal = ({
                       <tr key={itemIndex}>
                         {header.details.map((detail, detailIndex) => (
                           <td key={detail.key}>
-                            { detail.isInput
-                                ? renderInputField(
+                            {detail.isInput
+                              ? renderInputField(
                                   header.key,
                                   item[detail.key],
                                   itemIndex,
                                   detail.key
                                 )
-                                : item[detail.key]
-                            }
+                              : item[detail.key]}
                           </td>
                         ))}
                       </tr>
                     ))}
-
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
         ))}
-
         <div className="button-container">
           {updateFn && (
             <button className="data-modal-btn edit" onClick={handleEditClick}>
               تعديل
             </button>
           )}
-          {changeStatusFn && rejectTitle && responseData.status === "closed" ? <p className="status done">تم الدفع</p> : <>
-            {changeStatusFn && rejectTitle && (
-              <button
-                className="data-modal-btn delete"
-                onClick={handleRejectClick}
-              >
-                {responseData.status === "closed" ? "تم الدفع" : rejectTitle.label}
-              </button>
-            )}
-          </>}
+          {changeStatusFn && rejectTitle && responseData.status === "closed" ? (
+            <p className="status done">تم الدفع</p>
+          ) : (
+            <>
+              {changeStatusFn && rejectTitle && (
+                <button
+                  className="data-modal-btn delete"
+                  onClick={handleRejectClick}
+                >
+                  {responseData.status === "closed"
+                    ? "تم الدفع"
+                    : rejectTitle.label}
+                </button>
+              )}
+            </>
+          )}
 
           {changeStatusFn && acceptTitle && (
             <button onClick={handleAcceptClick} className="data-modal-btn show">
               {acceptTitle.label}
             </button>
           )}
-          
-         
         </div>
-        {shouldPrint && <PrintAfterSubmit id={responseData.id} table_no={table_noo} />} {/* Conditional rendering */}
-        
+        {shouldPrint && (
+          <PrintAfterSubmit id={responseData.id} table_no={table_noo} />
+        )}{" "}
+        {/* Conditional rendering */}
       </div>
-     
     </div>
   );
 };

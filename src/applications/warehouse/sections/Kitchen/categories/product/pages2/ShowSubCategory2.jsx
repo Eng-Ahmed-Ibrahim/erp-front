@@ -3,10 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { API_ENDPOINT } from "../../../../../../../../config";
 import { Pagination, Select } from "antd";
-import { DownloadTableExcel } from 'react-export-table-to-excel';
+import { DownloadTableExcel } from "react-export-table-to-excel";
 import { useAuth } from "../../../../../../../context/AuthContext";
 const ShowSubCategory2 = () => {
-  const { user } = useAuth()
+  const { user } = useAuth();
   const tableRef = useRef(null);
   const item = useLocation()?.state?.item;
   const [isPending, setIsPending] = useState(false);
@@ -15,6 +15,14 @@ const ShowSubCategory2 = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const checkMenuItemPermission = (requiredPermission) => {
+    if (!user?.permissions) return;
+    return user
+      ? user?.permissions.some(
+          (permission) => permission.name === requiredPermission.name
+        )
+      : false;
+  };
 
   useEffect(() => {
     setIsPending(true);
@@ -71,30 +79,45 @@ const ShowSubCategory2 = () => {
   return (
     <div>
       <div className="my-5 ">
-        <h1 className="heading text-center p-3">اقسام المنتجات <span className="text-warning">({item?.name})</span></h1>
+        <h1 className="heading text-center p-3">
+          اقسام المنتجات <span className="text-warning">({item?.name})</span>
+        </h1>
       </div>
-      <div className="content-area-table">
+      <div
+        className="content-area-table"
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "20px",
+          alignItems: "center",
+        }}
+      >
         <Link
           className="data-table-info"
           to={`/warehouse/returants/show-resturants2/${item?.id}/create-new`}
           state={{ item }}
         >
-          <button type="button" className="btn  add-btn">
-            ادخال تصنيف فرعى
-          </button>
+          {checkMenuItemPermission({
+            id: 94,
+            name: "add category",
+          }) && (
+            <button type="button" className="btn  add-btn">
+              ادخال تصنيف فرعى
+            </button>
+          )}
         </Link>
+        <DownloadTableExcel
+          filename="users table"
+          sheet="users"
+          currentTableRef={tableRef.current}
+        >
+          <button className="pdf-button white-space-nowrap">حفظ اكسيل </button>{" "}
+        </DownloadTableExcel>
       </div>
-      <DownloadTableExcel
-        filename="users table"
-        sheet="users"
-        currentTableRef={tableRef.current}
-      >
 
-        <button> Export excel </button>
-
-      </DownloadTableExcel>
-      <table ref={tableRef}
-        className="table table table-hover mt-5"
+      <table
+        ref={tableRef}
+        className="table table table-hover mt-2"
         style={{
           width: "100%",
           borderCollapse: "collapse",
@@ -103,10 +126,23 @@ const ShowSubCategory2 = () => {
       >
         <thead>
           <tr className="fw-bold fs-5 my-3">
-            <th scope="col" style={{ background: '#edede9' }}>الرقم</th>
-            <th scope="col" style={{ background: '#edede9' }}>الإسم</th>
-            <th scope="col" style={{ background: '#edede9' }}>الصوره</th>
-            <th scope="col" style={{ background: '#edede9' }}>الإجراءات</th>
+            <th scope="col" style={{ background: "#edede9" }}>
+              الرقم
+            </th>
+            <th scope="col" style={{ background: "#edede9" }}>
+              الإسم
+            </th>
+            <th scope="col" style={{ background: "#edede9" }}>
+              الصوره
+            </th>
+            {checkMenuItemPermission({
+              id: 95,
+              name: "edit category",
+            }) && (
+              <th scope="col" style={{ background: "#edede9" }}>
+                الإجراءات
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -141,27 +177,42 @@ const ShowSubCategory2 = () => {
                   fontWeight: "700",
                 }}
               >
-                <img src={item?.image} alt={item?.name} width={'80'} height={"60px"} />
+                <img
+                  src={item?.image}
+                  alt={item?.name}
+                  width={"80"}
+                  height={"60px"}
+                />
               </td>
-              <td>
-                <Link
-                  to={`/warehouse/returants/show-resturants2/${item?.id}/updated-product`}
-                  state={{ item }}
-                >
-                  <button type="button" className="mx-3 btn btn-primary px-4" style={{ background: '#1677ff' }}>
-                    تعديل
-                  </button>
-                </Link>
-                {user?.id != '01j4qqe8nvyqm1sqawg1rfhnw3' ? (
-                  <button
-                    type="button"
-                    onClick={() => handelDelete(item.id)}
-                    className="mx-3 btn btn-danger px-4"
+
+              {checkMenuItemPermission({
+                id: 95,
+                name: "edit category",
+              }) && (
+                <td>
+                  <Link
+                    to={`/warehouse/returants/show-resturants2/${item?.id}/updated-product`}
+                    state={{ item }}
                   >
-                    حذف
-                  </button>
-                ) : null}
-              </td>
+                    <button
+                      type="button"
+                      className="mx-3 btn btn-primary px-4"
+                      style={{ background: "#1677ff" }}
+                    >
+                      تعديل
+                    </button>
+                  </Link>
+                  {user?.id != "01j4qqe8nvyqm1sqawg1rfhnw3" ? (
+                    <button
+                      type="button"
+                      onClick={() => handelDelete(item.id)}
+                      className="mx-3 btn btn-danger px-4"
+                    >
+                      حذف
+                    </button>
+                  ) : null}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

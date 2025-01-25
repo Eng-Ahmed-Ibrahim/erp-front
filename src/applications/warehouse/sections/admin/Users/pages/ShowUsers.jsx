@@ -5,13 +5,14 @@ import { useAuth } from "../../../../../../context/AuthContext";
 import { message } from "antd";
 const ShowUsers = () => {
   const tableHeaders = [
-    { key: "username", value: "اسم المستخدم" },
+    { key: "name", value: "اسم المستخدم" },
+    { key: "username", value: "# #" },
     { key: "phone", value: "الرقم" },
   ];
 
   const { user } = useAuth();
   const filters = [
-    { key: "name", type: "text", placeholder: "إبحث باللإسم", id: "الإسم" },
+    { key: "name", type: "text", placeholder: "إبحث بإسم المستخدم", id: "الإسم" },
     {
       key: "phone",
       type: "text",

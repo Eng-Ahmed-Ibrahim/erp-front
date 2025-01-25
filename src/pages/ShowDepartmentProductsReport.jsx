@@ -67,8 +67,8 @@ const ShowDepartmentProductsReport = () => {
     fetchCategoryParents();
   }, []);
 
-  const fetchData = async  (parentId) => {
-   await  axios
+  const fetchData = async (parentId) => {
+    await axios
       .get(`${API_ENDPOINT}/api/v1/department_products_report`, {
         headers: {
           Authorization: `Bearer ${Token}`,
@@ -79,7 +79,7 @@ const ShowDepartmentProductsReport = () => {
             from: fromDate,
             to: toDate,
             category_id: value,
-            name :searchTerm
+            name: searchTerm,
           },
         },
       })
@@ -87,7 +87,7 @@ const ShowDepartmentProductsReport = () => {
         console.log(res?.data.data);
 
         setData(res?.data?.data?.orders);
-        setSum(res?.data?.data?.total)
+        setSum(res?.data?.data?.total);
         setIsDataFetched(true);
 
         const modal = Modal.success({
@@ -160,7 +160,6 @@ const ShowDepartmentProductsReport = () => {
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredData(filtered);
-      console.log("Filtered Data:", filtered);
     }
   }, [searchTerm, sortedDepartmentStore]);
 
@@ -173,7 +172,6 @@ const ShowDepartmentProductsReport = () => {
       }, 0)
       .toFixed(4);
   }, [sortedDepartmentStore, newCosts]);
-
 
   useEffect(() => {
     setSum(calculateSum);
@@ -216,30 +214,6 @@ const ShowDepartmentProductsReport = () => {
       </h2>
       <main ref={targetRef}>
         <div id="invoice-container">
-          {/* <div className="headers-wrapper">
-            <div className="header-img">
-              <img
-                src={LogoDAR}
-                alt=""
-                style={{
-                  width: "64px",
-                  marginBottom: "5px",
-                  marginLeft: "5px",
-                }}
-              />
-            </div>
-          </div> */}
-
-          {/* <div className="invoice-info">
-            <div className="invoice-info-item" style={{ width: "100%" }}>
-              <h2 className="text-center fw-bold fs-2">
-                {" "}
-                تقرير عن محتويات{" "}
-                <span className="fs-1 text-danger">{data?.name}</span>
-              </h2>
-            </div>
-          </div> */}
-
           <div className="row align-items-center">
             <div className="col-md-2">
               <div className="mb-3 d-flex text-center flex-column gap-small">
@@ -398,21 +372,12 @@ const ShowDepartmentProductsReport = () => {
                       onClick={() => handleRowClick(item)}
                     >
                       <td className="text-center">{index + 1}</td>
-                      <td className="text-center">
-                        {" "}
-                        {item.category_name}
-                      </td>
-                      <td className="text-center">
-                        {" "}
-                        {item.sub_category_name}
-                      </td>
+                      <td className="text-center"> {item.category_name}</td>
+                      <td className="text-center"> {item.sub_category_name}</td>
 
                       <td className="text-right"> {item.name}</td>
 
-                      <td className="text-right">
-                        {" "}
-                        {item.total_quantity} 
-                      </td>
+                      <td className="text-right"> {item.total_quantity}</td>
 
                       <td className="text-right">
                         {" "}

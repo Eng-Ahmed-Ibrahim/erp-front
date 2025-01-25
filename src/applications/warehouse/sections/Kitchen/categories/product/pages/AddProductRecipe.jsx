@@ -6,6 +6,7 @@ import TotalAmount from "../../../../../../../components/shared/totalAmount/Tota
 import axios from "axios";
 import { getSuppliers } from "../../../../../../../apis/suppliers";
 import { getAllDepartments } from "../../../../../../../apis/departments";
+import { useAuth } from "../../../../../../../context/AuthContext";
 
 import { API_ENDPOINT } from "../../../../../../../../config";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,6 +16,8 @@ import { message } from "antd";
 import { getProductsById } from "../../../../../../../apis/product";
 import { usePDF } from "react-to-pdf";
 const AddProductRecipe = () => {
+  const { user } = useAuth();
+
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -30,7 +33,14 @@ const AddProductRecipe = () => {
   const handleAddItem = (item) => {
     setItems((prevItems) => [...prevItems, item]);
   };
-
+  const checkMenuItemPermission = (requiredPermission) => {
+    if (!user?.permissions) return;
+    return user
+      ? user?.permissions.some(
+          (permission) => permission.name === requiredPermission.name
+        )
+      : false;
+  };
   const handleDeleteItem = (index) => {
     setItems((prevItems) => prevItems.filter((_, i) => i !== index));
   };
@@ -91,18 +101,20 @@ const AddProductRecipe = () => {
           },
         })
         .then((res) => {
-        
           message.success("تم اضافة المكون بنجاح");
 
           navigate(
             `/warehouse/returants/show-resturants2/${data.sub_category_id}/details-product`
           );
 
-          axios.get(`${API_ENDPOINT}/api/v1/store/products/${data.sub_category_id}`, {
-            headers: {
-              Authorization: `Bearer ${Token}`,
-            },
-          });
+          axios.get(
+            `${API_ENDPOINT}/api/v1/store/products/${data.sub_category_id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${Token}`,
+              },
+            }
+          );
         });
     } catch (error) {
       console.error("Error creating invoice:", error);
@@ -163,9 +175,15 @@ const AddProductRecipe = () => {
         onDeleteItem={handleDeleteItem}
       />
       <TotalAmount total={calculateTotalAmount()} />
-      <button className="form-btn" onClick={handleDownloadPDF}>
-        حفظ البيانات
-      </button>
+
+      {checkMenuItemPermission({
+        id: 108,
+        name: "add recipes to product",
+      }) && (
+        <button className="form-btn" onClick={handleDownloadPDF}>
+          حفظ البيانات
+        </button>
+      )}
       <table
         className="table table-hover mt-5"
         style={{ width: "100%", borderCollapse: "collapse", color: "#edede9" }}
@@ -184,9 +202,15 @@ const AddProductRecipe = () => {
             <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>
               التصنيف الفرعى
             </th>
-            <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>
-              الاجراءات
-            </th>
+
+            {checkMenuItemPermission({
+              id: 109,
+              name: "remove recipe from product",
+            }) && (
+              <th scope="col" style={{ background: "rgb(237, 237, 233)" }}>
+                الاجراءات
+              </th>
+            )}
           </tr>
         </thead>
         <tbody style={{ borderColor: "rgb(175, 130, 96)" }}>
@@ -241,24 +265,30 @@ const AddProductRecipe = () => {
               >
                 {item?.type}
               </td>
-              <td
-                className="clickable-cell"
-                style={{
-                  padding: "14px 12px",
-                  border: "1px solid rgb(228, 197, 158)",
-                  color: "rgb(128, 61, 59)",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => handelDelete(item.id)}
-                  className="mx-3 btn btn-danger px-4"
+
+              {checkMenuItemPermission({
+                id: 109,
+                name: "remove recipe from product",
+              }) && (
+                <td
+                  className="clickable-cell"
+                  style={{
+                    padding: "14px 12px",
+                    border: "1px solid rgb(228, 197, 158)",
+                    color: "rgb(128, 61, 59)",
+                    fontSize: "18px",
+                    fontWeight: "700",
+                  }}
                 >
-                  حذف
-                </button>
-              </td>
+                  <button
+                    type="button"
+                    onClick={() => handelDelete(item.id)}
+                    className="mx-3 btn btn-danger px-4"
+                  >
+                    حذف
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

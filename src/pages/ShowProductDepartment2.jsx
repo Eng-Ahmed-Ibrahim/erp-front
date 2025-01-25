@@ -73,7 +73,7 @@ const ShowProductDepartment2 = () => {
 
   const fetchData = (parentId) => {
     axios
-      .get(`${API_ENDPOINT}/api/v1/search`, {
+      .get(`${API_ENDPOINT}/api/v1/store/department-recipe-search`, {
         headers: {
           Authorization: `Bearer ${Token}`,
         },
@@ -127,26 +127,26 @@ const ShowProductDepartment2 = () => {
     if (!item?.id) return;
     fetchData(value);
   }, [item?.id]);
+
   const sortedDepartmentStore = useMemo(() => {
     if (!data?.department_store) return [];
 
     const sortedItems = Object.values(data.department_store)
-      .flat()
-      .sort((a, b) => {
-        const parentComparison = a.recipe_category?.parent.localeCompare(
-          b.recipe_category?.parent,
-          "ar",
-          { sensitivity: "base" }
-        );
-        if (parentComparison !== 0) return parentComparison;
-        return a.name.localeCompare(b.name, "ar", { sensitivity: "base" });
-      });
-
+      .flat();
+      // .sort((a, b) => {
+      //   const parentComparison = a.recipe_category?.parent.localeCompare(
+      //     b.recipe_category?.parent,
+      //     "ar",
+      //     { sensitivity: "base" }
+      //   );
+      //   if (parentComparison !== 0) return parentComparison;
+      //   return a.name.localeCompare(b.name, "ar", { sensitivity: "base" });
+      // });
+// console.log('soeterere', sortedItems)
     return sortedItems;
   }, [data]);
 
   const handleSubmit = () => {
-    console.log(`Filtering with parent_id: `, value);
     fetchData(value);
   };
   useEffect(() => {
@@ -155,7 +155,6 @@ const ShowProductDepartment2 = () => {
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredData(filtered);
-      console.log("Filtered Data:", filtered);
     }
   }, [searchTerm, sortedDepartmentStore]);
 
@@ -231,7 +230,6 @@ const ShowProductDepartment2 = () => {
 
   const ItemDetailsModal = ({ visible, onHide, item }) => {
     if (!item) return null;
-    console.log(item);
     return (
       <Modal
         visible={visible}
@@ -313,6 +311,115 @@ const ShowProductDepartment2 = () => {
     pdf.save("تقرير_المخازن.pdf");
   };
 
+  // const handleSavePDF = async () => {
+  //   const pdf = new jsPDF("p", "mm", "a4"); // Create a new PDF document
+  //   const pageWidth = 190; // Width of the content area
+  //   const pageHeight = 297; // Height of an A4 page
+  //   const rows = Array.from(tableRef.current.querySelectorAll("tr")); // Get all rows from the table
+  //   const batchSize = 20; // Number of rows to process in each batch
+  //   let position = 10; // Initial vertical position on the page
+
+  //   console.log('this sisisisisisisisisisisis')
+  //   // Function to calculate the height of a row
+  //   const calculateRowHeight = async (row) => {
+  //     const rowCanvas = await html2canvas(row, { scale: 1 }); // Render the row as an image
+  //     return (rowCanvas.height * pageWidth) / rowCanvas.width; // Calculate the height of the row in mm
+  //   };
+
+  //   // Function to process a batch of rows
+  //   const processBatch = async (startIndex, endIndex) => {
+  //     const batchRows = rows.slice(startIndex, endIndex); // Get the rows in the current batch
+  //     const rowHeights = await Promise.all(batchRows.map(calculateRowHeight)); // Calculate heights for all rows in the batch
+
+  //     for (let i = 0; i < batchRows.length; i++) {
+  //       const row = batchRows[i];
+  //       const rowHeight = rowHeights[i];
+
+  //       // Check if the row fits on the current page
+  //       if (position + rowHeight > pageHeight - 10) {
+  //         pdf.addPage(); // Add a new page if the row doesn't fit
+  //         position = 10; // Reset the vertical position for the new page
+  //       }
+
+  //       // Render the row and add it to the PDF
+  //       const rowCanvas = await html2canvas(row, { scale: 1 });
+  //       const rowImgData = rowCanvas.toDataURL("image/png");
+  //       pdf.addImage(rowImgData, "PNG", 10, position, pageWidth, rowHeight);
+  //       position += rowHeight; // Update the vertical position for the next row
+  //     }
+  //   };
+
+  //   // Function to split and process rows based on available space
+  //   const processRows = async (startIndex, endIndex) => {
+  //     const rowsToProcess = rows.slice(startIndex, endIndex); // Get the rows to process
+  //     let currentBatchStart = 0; // Start index of the current batch
+
+  //     while (currentBatchStart < rowsToProcess.length) {
+  //       let currentBatchEnd = currentBatchStart + batchSize; // End index of the current batch
+  //       if (currentBatchEnd > rowsToProcess.length) {
+  //         currentBatchEnd = rowsToProcess.length; // Adjust the end index if it exceeds the number of rows
+  //       }
+
+  //       // Calculate the total height of the current batch
+  //       const batchHeights = await Promise.all(
+  //         rowsToProcess
+  //           .slice(currentBatchStart, currentBatchEnd)
+  //           .map(calculateRowHeight)
+  //       );
+  //       const totalBatchHeight = batchHeights.reduce(
+  //         (sum, height) => sum + height,
+  //         0
+  //       );
+
+  //       // Check if the entire batch fits on the current page
+  //       if (position + totalBatchHeight > pageHeight - 10) {
+  //         // If not, split the batch into smaller chunks
+  //         let chunkStart = currentBatchStart;
+  //         while (chunkStart < currentBatchEnd) {
+  //           let chunkHeight = 0;
+  //           let chunkEnd = chunkStart;
+
+  //           // Find the largest possible chunk that fits on the current page
+  //           while (chunkEnd < currentBatchEnd) {
+  //             const rowHeight = await calculateRowHeight(
+  //               rowsToProcess[chunkEnd]
+  //             );
+  //             if (position + chunkHeight + rowHeight > pageHeight - 10) {
+  //               break; // Stop if adding the next row exceeds the available space
+  //             }
+  //             chunkHeight += rowHeight;
+  //             chunkEnd++;
+  //           }
+
+  //           // Process the chunk if it contains any rows
+  //           if (chunkStart < chunkEnd) {
+  //             await processBatch(
+  //               startIndex + chunkStart,
+  //               startIndex + chunkEnd
+  //             );
+  //           }
+
+  //           chunkStart = chunkEnd; // Move to the next chunk
+  //         }
+  //       } else {
+  //         // If the entire batch fits, process it as is
+  //         await processBatch(
+  //           startIndex + currentBatchStart,
+  //           startIndex + currentBatchEnd
+  //         );
+  //       }
+
+  //       currentBatchStart = currentBatchEnd; // Move to the next batch
+  //     }
+  //   };
+
+  //   // Process all rows
+  //   await processRows(0, rows.length);
+
+  //   // Save the PDF
+  //   pdf.save("تقرير_المخازن.pdf");
+  // };
+
   if (error) return <p>{error}</p>;
 
   const handleRowClick = (item) => {
@@ -344,7 +451,6 @@ const ShowProductDepartment2 = () => {
  * 
  */
 
-  console.log(filteredData);
   return (
     <div>
       <h2 className="heading text-center">

@@ -29,6 +29,7 @@ const ShowProductDepartment = () => {
     };
     fetchSubCategories();
   }, [id]);
+
   const tableHeaders = [
     // { key: "code", value: "الكود" },
     {
@@ -45,7 +46,7 @@ const ShowProductDepartment = () => {
       placeholder: "إبحث بالقسم الرئيسى",
       id: "القسم الرئيسى",
       options: [{ value: "", label: "" }].concat(
-        subCategories.map((category) => {
+        subCategories?.map((category) => {
           return { value: category.id, label: category.name };
         })
       ),

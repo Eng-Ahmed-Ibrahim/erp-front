@@ -7,8 +7,17 @@ const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
 export async function getOrders(filteredValues, id, setIsLoading) {
   try {
     setIsLoading(true);
-    const { from_date, to_date, department_id, user_id, page, status, code,show_history ,selected_department} =
-      filteredValues;
+    const {
+      from_date,
+      to_date,
+      department_id,
+      user_id,
+      page,
+      status,
+      code,
+      show_history,
+      selected_department,
+    } = filteredValues;
     const default_from = "1970-01-01";
     const default_to = new Date().toISOString().split("T")[0];
     const res = await axios.get(`${domain}/api/v1/orders`, {
@@ -20,9 +29,9 @@ export async function getOrders(filteredValues, id, setIsLoading) {
         status,
         page,
         code,
-        department_id, 
-        show_history, 
-        selected_department
+        department_id,
+        show_history,
+        selected_department,
       },
       headers: {
         Authorization: `Bearer ${Token}`,
@@ -31,7 +40,7 @@ export async function getOrders(filteredValues, id, setIsLoading) {
     setIsLoading(false);
     return res.data;
   } catch (error) {
-   setIsLoading(false);
+    setIsLoading(false);
     message.error("حدث خطأ الرجاء إعادة المحاولة ");
   }
 }
@@ -42,24 +51,25 @@ export async function getOrdersReportes(filteredValues, id, setIsLoading) {
       filteredValues;
     const default_from = "1970-01-01";
     const default_to = new Date().toISOString().split("T")[0];
-    const res = await axios.get(`${domain}/api/v1/store/department/orders/${id}`, {
-      params: {
-        "from": from_date,
-        "to": to_date,
-        user_id,
-        status,
+    const res = await axios.get(
+      `${domain}/api/v1/store/department/orders/${id}`,
+      {
+        params: {
+          from: from_date,
+          to: to_date,
+          user_id,
+          status,
+        },
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
 
-      },
-      headers: {
-        Authorization: `Bearer ${Token}`,
-      },
-    });
-     
     setIsLoading(false);
 
     return res.data;
   } catch (error) {
-     
     setIsLoading(false);
     message.error("حدث خطأ الرجاء إعادة المحاولة ");
   }
@@ -74,8 +84,6 @@ export async function getOrderById(id) {
     return res.data;
   } catch (error) {
     //message.error(error.response.data.error.message);
-
-     
   }
 }
 export async function deleteOrder(id) {
@@ -91,7 +99,6 @@ export async function deleteOrder(id) {
     return res.data;
   } catch (error) {
     message.error(error.response.data.error.message);
-
   }
 }
 export async function checkTableNumber(tableNumber) {
@@ -108,7 +115,7 @@ export async function checkTableNumber(tableNumber) {
   } catch (error) {
     message.error(error.response.data.error.message);
 
-    // //  
+    // //
   }
 }
 export async function updateProductQuantityInOrder(editedData, id) {
@@ -125,7 +132,7 @@ export async function updateProductQuantityInOrder(editedData, id) {
     return res.data;
   } catch (error) {
     message.error(error.response.data.error.message);
-    // //  
+    // //
   }
 }
 export async function deleteProductQuantityInOrder(id) {
@@ -143,26 +150,83 @@ export async function deleteProductQuantityInOrder(id) {
     return res.data;
   } catch (error) {
     message.error(error.response.data.error.message);
-    // //  
+    // //
   }
 }
-export async function changeOrderStatus(id, status) {
+export async function changeOrderStatus(id, status, message = "") {
   try {
     const res = await axios.post(
       `${API_ENDPOINT}/api/v1/orders/update/status/${id}`,
-      { status },
+      { status, message },
       {
         headers: {
           Authorization: `Bearer ${Token}`,
         },
       }
     );
-     
 
     return res.data;
-    
   } catch (error) {
     message.error(`حدث خطأ في الانهاء`);
-     
+  }
+}
+
+export async function getDeletedOrders(filteredValues) {
+  try {
+    const {
+      from_date,
+      to_date,
+      department_id,
+      user_id,
+      page,
+      status,
+      code,
+      selected_department,
+    } = filteredValues;
+
+    const default_from = "1970-01-01";
+    const default_to = new Date().toISOString().split("T")[0];
+
+    const res = await axios.get(`${domain}/api/v1/orders/deleted`, {
+      params: {
+        "date[from]": from_date,
+        "date[to]": to_date,
+        to_department_id: department_id,
+        user_id: user_id,
+        status,
+        page,
+        code,
+        department_id,
+        selected_department,
+      },
+      headers: {
+        Authorization: `Bearer ${Token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    message.error("حدث خطأ الرجاء إعادة المحاولة ");
+  }
+}
+
+export async function changeDeletedOrderStatus(orderId, status) {
+  try {
+    const res = await axios.post(
+      `${API_ENDPOINT}/api/v1/orders/deleted/update/status/${orderId}`,
+      {
+        status,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    message.error("حدث خطأ الرجاء إعادة المحاولة ");
   }
 }

@@ -22,7 +22,7 @@ const SellsPoints = () => {
             clickable: true,
             route: "/warehouse/departments/show-departments/product/:id",
         },
-        { key: "image", value: "الصوره", type: "image" },
+        // { key: "image", value: "الصوره", type: "image" },
     ];
     const filters = [
         { key: "name", type: "text", placeholder: "إبحث باللإسم", id: "الإسم" },

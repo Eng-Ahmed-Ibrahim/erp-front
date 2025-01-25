@@ -5,6 +5,83 @@ import axios from "axios";
 import { API_ENDPOINT } from "../../../../../../../config";
 import { changeOrderStatus, getOrders } from "../../../../../../apis/orders";
 import "./styles.css";
+import { set } from "date-fns";
+
+function DeleteOrderModel({ show, onHide, orderId, status }) {
+  const [deletionNote, setNewDeletionNote] = useState("");
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+
+  const handleDeleteOrder = async () => {
+    if (!deletionNote || deletionNote.length < 10) {
+      message.error("لا يمكن حذف الأوردر بدون توضيح السبب");
+    }
+
+    const data = await changeOrderStatus(orderId, status, deletionNote);
+
+    if (data) {
+      message.success("تم حذف الاورد بنجاح");
+    } else {
+      message.error(" حدث خطأ أثناء الحذف");
+    }
+    setNewDeletionNote("");
+    onHide();
+  };
+
+  return (
+    <Modal
+      // title={"إضافة ملاحظة"}
+      centered
+      open={show}
+      onCancel={onHide}
+      onOk={onHide}
+      width={900}
+      footer={null}
+    >
+      <div
+        className="payable-container"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <div className="mb-4" style={{ textAlign: "center", width: "100%" }}>
+          <h4 className="form-label"> أضف سبب حذف الأوردر </h4>
+          <input
+            type="text"
+            value={deletionNote}
+            onChange={(e) => setNewDeletionNote(e.target.value)}
+            placeholder=" أضف سبب حذف الأوردر"
+            className="form-input"
+            style={{
+              height: "120px",
+              marginTop: "20px",
+              width: "98%",
+            }}
+          />
+        </div>
+
+        <button
+          className="pdf-button"
+          style={{
+            width: "20%",
+            transition: `all 0.3s`,
+            background: "#ef0606",
+            color: "white",
+            alignSelf: "center", 
+            marginTop: "20px", 
+          }}
+          onClick={handleDeleteOrder}
+        >
+          حذف الأوردر
+        </button>
+      </div>
+    </Modal>
+  );
+}
 
 const OrdersReports = () => {
   const [data, setData] = useState(null);
@@ -19,7 +96,6 @@ const OrdersReports = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const [isAdminRole, setIsAdminRole] = useState(false);
-
 
   const [clientTypes, setClientTypes] = useState([]);
   const [clients, setClients] = useState([]);
@@ -37,6 +113,8 @@ const OrdersReports = () => {
   const [selectedClientsName, setSelectedClientsName] = useState("");
   const [isTalaat, setIsTalaat] = useState(false);
   const talaatId = "9d7b0996-857f-4a59-997b-64d605af07c0";
+  const [isDeleteModelVisible, setIsDeleteModelVisible] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(false);
 
   const { user } = useAuth();
   const Token =
@@ -74,7 +152,7 @@ const OrdersReports = () => {
         const timeDiff = toDateObj.getTime() - fromDateObj.getTime();
         const dayDiff = timeDiff / (1000 * 3600 * 24);
 
-        setIsAdminRole(false)
+        setIsAdminRole(false);
 
         if (user.department.type === "reciver") {
           setIsAdmin(false);
@@ -98,14 +176,14 @@ const OrdersReports = () => {
           }
         } else if (user.department.type === "master") {
           setIsAdmin(true);
-          if(user.roleName === 'admin'){
-            setIsAdminRole(true)
+          if (user.roleName === "admin") {
+            setIsAdminRole(true);
           }
         }
 
         await getAllWaiters();
       } else {
-        message.info("يرجى ملئ جميع السبيانات بشكل صحيح");
+        message.info("يرجى ملئ جميع البيانات بشكل صحيح");
       }
     } catch (err) {}
   };
@@ -206,13 +284,10 @@ const OrdersReports = () => {
   };
 
   const handleDeleteOrder = async (id, status) => {
-    const data = await changeOrderStatus(id, status);
-    if (data) {
-      message.success("تم حذف الاورد بنجاح");
-    }else (
-      message.error(' حدث خطأ أثناء الحذف')
-    )
+    setSelectedOrderId(id);
+    setIsDeleteModelVisible(true);
   };
+
   const getAllWaiters = async () => {
     try {
       const Token =
@@ -620,6 +695,7 @@ const OrdersReports = () => {
           </tr>
         </tbody>
       </table>
+
       <table className="table table-hover mt-5">
         <thead>
           <tr>
@@ -630,11 +706,12 @@ const OrdersReports = () => {
             <th scope="col">اسم العميل</th>
             <th scope="col">قيمة الفاتورة</th>
             <th scope="col">نوع العميل</th>
-            {isAdmin  && <th scope="col">المنتجات</th>}
-            {(isAdmin && isAdminRole )&& !isTalaat && <th scope="col"> الاجرائات</th>}
-
+            <th scope="col">ملاحظات</th>
+            {isAdmin && <th scope="col">المنتجات</th>}
+            {isAdmin && !isTalaat && <th scope="col"> الاجرائات</th>}
           </tr>
         </thead>
+
         <tbody>
           {data?.data &&
             Object.keys(data.data).map((key, index) => {
@@ -677,6 +754,15 @@ const OrdersReports = () => {
                     </td>
                     <td style={rowStyle}>{order.client_type}</td>
                     <td style={rowStyle}>
+                      {order?.comment?.split(",")?.map((c) => {
+                        return (
+                          <>
+                            <li>{c}</li>
+                          </>
+                        );
+                      })}
+                    </td>
+                    <td style={rowStyle}>
                       {order.products?.map((product, index) => (
                         <li key={index}>
                           {isAdmin &&
@@ -686,7 +772,7 @@ const OrdersReports = () => {
                         </li>
                       ))}
                     </td>
-                    {(isAdmin  && isAdminRole) && !isTalaat && (
+                    {isAdmin && !isTalaat && (
                       <td style={rowStyle}>
                         <button
                           className="form-cashier-btn"
@@ -705,6 +791,13 @@ const OrdersReports = () => {
             })}
         </tbody>
       </table>
+
+      <DeleteOrderModel
+        show={isDeleteModelVisible}
+        onHide={() => setIsDeleteModelVisible(false)}
+        orderId={selectedOrderId}
+        status={"returned"}
+      />
     </div>
   );
 };

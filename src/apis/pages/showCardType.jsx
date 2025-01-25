@@ -242,7 +242,7 @@ const ShowCardTypeReport = () => {
                             >
                                 <button onClick={() => showModal(item.invoice_image)} className="pdf-button">
                                     {" "}
-                                    عرض صورة فاتورة المورد
+                                    عرض الفاتورة 
                                 </button>
                             </td>
                         </tr>

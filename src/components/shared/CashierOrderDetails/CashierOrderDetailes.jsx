@@ -34,9 +34,8 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
     try {
       const oneProduct = await getProductById(id);
       setSelectedOneProduct(oneProduct);
-    } catch (error) {
-    }
-  }
+    } catch (error) {}
+  };
 
   useEffect(() => {
     fetchOneProduct(selectedProduct);
@@ -102,10 +101,10 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
             label: category.name,
           })) || [],
         required: true,
-        onChange: (value) =>{
-          setSelectedProduct(value)
-          setProductType(value.type)
-        } ,
+        onChange: (value) => {
+          setSelectedProduct(value);
+          setProductType(value.type);
+        },
       },
     ]);
   }, [ProductCategoryParents, ProductCategories]);
@@ -119,7 +118,6 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
       return;
     }
     // Logging for troubleshooting
-   
 
     // Find the selected Product object from the Products array
     const selectedProductObj = ProductCategories.find(
@@ -139,7 +137,7 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
       image: ProductImage,
       ProductId: selectedProduct,
       quantity: parseFloat(quantity),
-      price:  parseFloat(ProductPrice),
+      price: parseFloat(ProductPrice),
       expireDate: epireDate,
       productType: productType,
     };
@@ -150,19 +148,19 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
     setPrice(0);
     setErrorMessage("");
   };
-  useEffect(() => {
-    axios.get(`${API_ENDPOINT}/api/v1/product/subcategory`, {
-      headers: {
-        Authorization: `Bearer ${Token}`,
-      },
-    }).then(res => {
-      setData2(res.data)
-    })
-  }, [])
+  // useEffect(() => {
+  //   axios.get(`${API_ENDPOINT}/api/v1/product/subcategory`, {
+  //     headers: {
+  //       Authorization: `Bearer ${Token}`,
+  //     },
+  //   }).then(res => {
+  //     setData2(res.data)
+  //   })
+  // }, [])
   return (
     <div className="form-cashier-product-category-parent">
       <div className="form-cashier-product-category">
-        {fields?.map((field, index) => (
+        {fields?.map((field, index) =>
           index == 0 ? (
             <div key={index} className="form-cashier-select-wrraper">
               <label className="form-cashier-label">{field.label}</label>
@@ -183,12 +181,13 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
               </select>
             </div>
           ) : null
-        ))}
+        )}
       </div>
-      <div className="d-flex flex-wrap shadow-lg p-3 my-5 bg-light rounded"
+      <div
+        className="d-flex flex-wrap shadow-lg p-3 my-5 bg-light rounded"
         style={{
-          overflowY: 'auto',
-          border: '3px solid #af8260'
+          overflowY: "auto",
+          border: "3px solid #af8260",
         }}
       >
         {ProductCategories?.length == 0 ? (
@@ -197,17 +196,22 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
           <>
             {ProductCategories?.map((item, index) => (
               <button
-                onClick={() => {setSelectedProduct(item.id),setProductType(item.type)}
-                  
-                }
+                onClick={() => {
+                  setSelectedProduct(item.id), setProductType(item.type);
+                }}
                 // value={active}
                 // onChange={() => setActive(!active)}
-                class={`form-check  pe-3 py-3 m-3 shadow rounded shift-hover ${selectedProduct === item.id ? "shifts" : ""} 
+                class={`form-check  pe-3 py-3 m-3 shadow rounded shift-hover ${
+                  selectedProduct === item.id ? "shifts" : ""
+                } 
           `}
                 key={index}
                 style={{ border: "2px solid #803d3b" }}
               >
-                <label className="form-check-label border-success border-3 " htmlFor="defaultCheck1">
+                <label
+                  className="form-check-label border-success border-3 "
+                  htmlFor="defaultCheck1"
+                >
                   {item?.name}
                 </label>
               </button>
@@ -227,9 +231,7 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
           required
         />
       </div>
-      <div
-        className="form-radio-cont"
-      >
+      <div className="form-radio-cont">
         {/* <label htmlFor="">نوع المنتج:</label>
         <label className="form-radio-btn">
           <input
@@ -264,7 +266,6 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
           />
           مطبخ الحلوانى
         </label> */}
-
       </div>
       <button className="form-cashier-btn" onClick={handleAddItem}>
         اضافة عنصر

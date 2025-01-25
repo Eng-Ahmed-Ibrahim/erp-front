@@ -8,9 +8,9 @@ import { API_ENDPOINT } from "../../../../../../config";
 const ShowSuppliers = () => {
   const { user } = useAuth();
   const Token =
-  localStorage.getItem("token") || sessionStorage.getItem("token");
+    localStorage.getItem("token") || sessionStorage.getItem("token");
   const [WarehouseSections, setWarehouseSections] = useState([]);
-  
+
   useEffect(() => {
     const fetchWarehouseSections = async () => {
       try {
@@ -129,6 +129,18 @@ const ShowSuppliers = () => {
         fetchData={(filterValues, currentPage, setIsLoading) =>
           getSuppliers(filterValues, currentPage, setIsLoading)
         }
+        getTotalPrice={async (filterValues, currentPage, setIsLoading) => {
+          const suppliers = await getSuppliers(
+            filterValues,
+            currentPage,
+            setIsLoading
+          );
+          let sum = 0;
+          suppliers?.data?.forEach((element) => {
+            sum += Number(element.total_invoices_price);
+          });
+          return sum;
+        }}
         actions={actions}
         deleteFn={deleteSupplier}
       />

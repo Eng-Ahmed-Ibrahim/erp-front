@@ -79,34 +79,6 @@ function Departments() {
     );
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setIsLoading(true);
-  //   console.log(searchTerm)
-  //   // try {
-
-  //   const response = await fetch(`${API_ENDPOINT}/api/v1/searchItems?search=${searchTerm}`,
-  //     {
-  //       headers: {
-  //         Authorization: `Bearer ${Token}`,
-  //       },
-  //     }
-  //   );
-  //    console.log("resposne", response);
-
-  //       // .then((response) => {
-  //       //   console.log("created success", response);
-  //       //   message.success('تم التعديل بنجاح')
-  //       //   setIsLoading(false);
-  //       // });
-  //   // } catch (err) {
-  //   //   setIsLoading(false);
-
-  //   //   console.log("response" + err);
-  //   // }
-  // };
-
-
   return (
     <>
       <h1 className="heading text-center p-3">اقسام المخزن </h1>

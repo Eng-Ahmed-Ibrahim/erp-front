@@ -2,7 +2,12 @@ import axios from "axios";
 import { API_ENDPOINT } from "../../../config";
 import { message } from "antd";
 const Token =
-  localStorage.getItem("token") || sessionStorage.getItem("token"); export async function getSuppliers(filteredValues, id, setIsLoading) {
+  localStorage.getItem("token") || sessionStorage.getItem("token"); 
+  
+  
+  
+  
+  export async function getSuppliers(filteredValues, id, setIsLoading) {
     try {
       setIsLoading(true);
       const { name, phone, page, type , warehouse_section_id, from_date , to_date} = filteredValues;
@@ -25,6 +30,7 @@ const Token =
       message.error("حدث خطأ الرجاء إعادة المحاولة ");
     }
   }
+
 export async function getSupplierById(id) {
   try {
     const res = await axios.get(`${API_ENDPOINT}/api/v1/store/supplier/${id}`, {

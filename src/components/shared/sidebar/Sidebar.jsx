@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { ThemeContext } from "../../../context/ThemeContext";
 import LogoDAR from "../../../../public/assets/images/Dar_logo.svg";
 import { Pagination, Select, Modal, message } from "antd";
+import axios from "axios";
 
 import {
   MdAssignmentLate,
@@ -47,6 +48,7 @@ import { SidebarContext } from "../../../context/SidebarContext";
 import { useTranslation } from "react-i18next";
 import { RightOutlined } from "@ant-design/icons";
 import { useAuth } from "../../../context/AuthContext";
+import { API_ENDPOINT } from "../../../../config";
 
 function SaveIncentivesModal({ show, onHide, user }) {
   const Token =
@@ -64,6 +66,7 @@ function SaveIncentivesModal({ show, onHide, user }) {
     navigate("/warehouse/cashier/opened-tables");
     onHide();
   };
+
   return (
     <Modal
       centered
@@ -101,7 +104,7 @@ function SaveIncentivesModal({ show, onHide, user }) {
               margin: "15px 0 20px",
               // background: "firebrick",
             }}
-            onClick={handdleLogoutClick}  
+            onClick={handdleLogoutClick}
           >
             تسجيل الخروج
           </button>
@@ -131,7 +134,7 @@ const Sidebar = () => {
   const navbarRef = useRef(null);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [activeLink, setActiveLink] = useState(pathname); // State to track active link
+  const [activeLink, setActiveLink] = useState(pathname);
   const { user } = useAuth();
   const [display, setDisplay] = useState("d-block");
   const [sidebarWidth, setSidebarWidth] = useState("w-defualt");
@@ -148,8 +151,11 @@ const Sidebar = () => {
   const [isIncentives, setIsIncentives] = useState(false);
   const [incentivesCollapsedGroup, setIncentivesCollapsedGroup] =
     useState(false);
-
+  const [linkedDepartment, setLinkedDepartment] = useState("");
+  const [linkedDepartmentName, setLinkedDepartmentName] = useState("");
   const [warehouseCollapsedGroup, setWarehouseCollapsedGroup] = useState(false);
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
 
   const repairId = "9d727355-cad2-48b4-9671-aebbcfdc6771";
   const chemicalId = "9d72735b-c904-4b4b-a613-f5f16ba8ad98";
@@ -188,9 +194,11 @@ const Sidebar = () => {
     if (user.roles[0] == CASHIER_ROLE) {
       setUserRole("cashier");
     }
-
-    // setting if the roel is cachiere
-
+    
+    if (user?.department?.linked_department) {
+      setLinkedDepartment(user?.department?.linked_department);
+      setLinkedDepartmentName(user?.department?.linked_department_name);
+    }
     if (!(user.roles[0] == repairId || user.roles[0] == chemicalId)) {
       setIsMechOrChem(false);
     } else {
@@ -209,6 +217,31 @@ const Sidebar = () => {
     localStorage.removeItem("token");
     sessionStorage.removeItem("token");
     navigate("/login");
+  };
+
+  const changeCahierDepartment = async () => {
+    try {
+      await axios
+        .post(
+          `${API_ENDPOINT}/api/v1/store/user/update-department/${user.id}`,
+          {
+            department_id: linkedDepartment,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+            },
+          }
+        )
+        .then((response) => {
+          message.success("تم تعديل بيانات مستخدم بنجاح");
+        });
+
+      navigate("/warehouse/cashier/create-order", { replace: true });
+      window.location.reload();
+    } catch (err) {
+      message.error(err);
+    }
   };
 
   const handleMenuLinkClick = (link) => {
@@ -286,7 +319,10 @@ const Sidebar = () => {
             <span className="user-rule">{user?.name}</span>
           </div>
           <ul className="menu-list">
-            <li
+           
+           
+           
+          <li
               className="menu-item"
               title="الموردين"
               style={{
@@ -323,6 +359,46 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
+
+            <li
+              className="menu-item"
+              title=" الموردين"
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 88,
+                    name: "view suppliers",
+                  })
+                    ? ""
+                    : "none"
+                }`,
+              }}
+            >
+              <Link
+                to="/warehouse/suppliers/show-suppliers"
+                className={`menu-link ${
+                  activeLink === "/warehouse/suppliers/show-suppliers"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
+                onClick={() => {               
+                  handleMenuLinkClick("/warehouse/suppliers/show-suppliers");
+                }}
+              >
+                <span className="menu-link-icon">
+                  <FaTruckArrowRight size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  الموردين
+                </span>
+              </Link>
+            </li>
+
+
+
             <li
               className="menu-item"
               title="اقسام المخزن"
@@ -631,7 +707,7 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 124,
-                    name: "view orders",
+                    name: "view Kitchen_orders",
                   })
                     ? ""
                     : "none"
@@ -699,6 +775,43 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
+
+            <li
+              className="menu-item"
+              title="الأوردرات المحذوفة"
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 146,
+                    name: "view deleted_orders",
+                  })
+                    ? ""
+                    : "none"
+                }`,
+              }}
+            >
+              <Link
+                to="/warehouse/cashier/deleted-orders"
+                className={`menu-link ${
+                  activeLink === "/warehouse/cashier/deleted-orders"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick("/warehouse/cashier/deleted-orders")
+                }
+              >
+                <span className="menu-link-icon">
+                  <FaKitchenSet size={30} />
+                </span>
+                <span
+                  className={`menu-link-text special-txt ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  الأوردرات المحذوفة
+                </span>
+              </Link>
+            </li>
 
             <li
               className="menu-item"
@@ -1365,6 +1478,16 @@ const Sidebar = () => {
                     <li className="menu-item" title="الحوافز">
                       <Link
                         className="menu-link"
+                        style={{
+                          display: `${
+                            checkMenuItemPermission({
+                              id: 148,
+                              name: "view employees_and_jobs",
+                            })
+                              ? ""
+                              : "none"
+                          }`,
+                        }}
                         onClick={() => handleIncentivesGroupClick()}
                       >
                         <span className="menu-link-icon">
@@ -1544,14 +1667,15 @@ const Sidebar = () => {
                         </span>
                       </Link>
                     </li>
+
                     <li
                       className="menu-item"
                       title="الويتر"
                       style={{
                         display: `${
                           checkMenuItemPermission({
-                            id: 140,
-                            name: "view units",
+                            id: 146,
+                            name: "view products_review",
                           })
                             ? ""
                             : "none"
@@ -1584,6 +1708,29 @@ const Sidebar = () => {
                 )}
               </>
             ) : null}
+
+            {linkedDepartment && (
+              <li className="menu-item" title="كاشير الأنشطة">
+                <Link
+                  to="/warehouse/cashier/create-order"
+                  className={`menu-link ${justifyContent}`}
+                  onClick={() =>
+                    // handleMenuLinkClick("/warehouse/cashier/create-order")
+                    changeCahierDepartment()
+                  }
+                >
+                  <span className="menu-link-icon">
+                    <TbBrandUnity size={30} />
+                  </span>
+                  <span
+                    className={`menu-link-text ${display}`}
+                    style={{ fontSize: "20px" }}
+                  >
+                    كاشير {linkedDepartmentName}
+                  </span>
+                </Link>
+              </li>
+            )}
 
             <li className="menu-item" title="تسجيل خروج">
               <button

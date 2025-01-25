@@ -5,8 +5,14 @@ import "./Cards.scss";
 function Cards(props) {
   // console.log(props)
   return (
-    <button className="custom-card-rest" onClick={props.onClick}>
-      <div className="image-rest">
+    <button className="custom-card-rest" onClick={props.onClick}  style={{
+      Flex:"1 1 30%",
+      // flexBasis: '33.33%', // Makes each item take up one-third of the container width
+      boxSizing: 'border-box', 
+      minWidth:"350px"
+
+    }}>
+      <div className="image-rest" >
         <img
           className="card-img-rest"
           src={`${props.img}`}

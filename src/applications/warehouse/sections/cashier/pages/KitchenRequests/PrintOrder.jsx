@@ -158,12 +158,12 @@ function PrintOrder() {
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan={3}>السعر الكلي</td>
-                <td colSpan={3}>{data.price} ج.م</td>
+                <td colSpan={3}> إجمالي السعر بالخدمة  </td>
+                <td colSpan={3}>{data?.price?.toFixed(2)} ج.م</td>
               </tr>
               <tr>
-                <td colSpan={3}>السعر الكلي بعد الخدمة</td>
-                <td colSpan={3}>{data.total_price} ج.م</td>
+                <td colSpan={3}>إجمالي السعر بعد الخصم</td>
+                <td colSpan={3}>{data?.total_price?.toFixed(2)} ج.م</td>
               </tr>
             </tfoot>
           </table>

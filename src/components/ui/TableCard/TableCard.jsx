@@ -17,11 +17,18 @@ const TableCard = ({ id, number, comment }) => {
         <p className="table-number-title">{number}</p>
       </div>
 
-      {comment && (
-        <div className="comment">
-          <p className="p-title"> ملاحظه: {comment}</p>
-        </div>
-      )}
+      {comment &&
+        comment?.split(",")?.map((c) => {
+          return (
+            <>
+              <li
+                style={{ fontWeight: "500", fontSize: "16px", margin: "5px" }}
+              >
+                {c}
+              </li>
+            </>
+          );
+        })}
     </button>
   );
 };

@@ -49,7 +49,7 @@ const OrdersReports = () => {
                 const isToDateToday = toDateObj.getTime() === today.getTime();
                 if (user.department.type === "reciver") {
                     if (!isFromDateYesterday || !isToDateToday || !selectWatier) {
-                        return message.info("يرجى ملئ جميع السبيانات بشكل صحيح");
+                        return message.info("يرجى ملئ جميع البيانات بشكل صحيح");
                     }
                 }
                 console.log({
@@ -63,7 +63,7 @@ const OrdersReports = () => {
 
                 await getAllWaiters();
             } else {
-                message.info("يرجى ملئ جميع السبيانات بشكل صحيح")
+                message.info("يرجى ملئ جميع البيانات بشكل صحيح")
             }
         } catch (err) {
             console.log({ err });

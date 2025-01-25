@@ -1,5 +1,9 @@
 import Table from "../../../../../../components/shared/table/Table";
-import { changeOrderStatus, getOrders } from "../../../../../../apis/orders";
+import {
+  changeOrderStatus,
+  getDeletedOrders,
+  changeDeletedOrderStatus,
+} from "../../../../../../apis/orders";
 import { API_ENDPOINT } from "../../../../../../../config";
 import { getOrderById, deleteOrder } from "../../../../../../apis/orders";
 import { getAllDepartments } from "../../../../../../apis/departments";
@@ -7,7 +11,7 @@ import "../../../../../../components/shared/table/Table.scss";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../../../context/AuthContext";
 
-const KitchenRequests = () => {
+const DeletedOrders = () => {
   const [departments, setDepartments] = useState([]);
   const { user } = useAuth();
 
@@ -22,16 +26,30 @@ const KitchenRequests = () => {
         )
       );
     };
+
     fetchDepartments();
   }, []);
+
+  const handleChangeDeletedOrderStatus = async (id, status) => {
+    const res = await changeDeletedOrderStatus(id, status);
+    if (res) {
+      message.success("تم التعديل بنجاح");
+    }
+
+    console.log("hellllllllllllllllllllllllllllllllllllll", item, status);
+  };
   const tableHeaders = [
-    { key: "client_type", value: "نوع العميل" },
-    { key: "table_number", value: "رقم الترابيزة" },
-    { key: "status", value: "الحالة" },
     { key: "code", value: "كود الأوردر" },
-    { key: "order_date", value: "التاريخ" },
+    { key: "table_number", value: "رقم الترابيزة" },
+    { key: "date", value: "التاريخ" },
+    { key: "department", value: "القسم" },
+    { key: "client_type", value: "نوع العميل" },
     { key: "client", value: "إسم العميل" },
+    { key: "deleted_by", value: "المسئول" },
+    { key: "deletion_note", value: "سبب الحذف" },
+    { key: "status", value: "الحالة" },
   ];
+
   const filters = [
     { key: "code", type: "text", id: "كود الفاتورة" },
     { key: "from_date", type: "date", id: "من تاريخ" },
@@ -49,20 +67,16 @@ const KitchenRequests = () => {
           label: "",
         },
         {
-          value: "processing",
-          label: "تحت التجهيز",
+          value: "pending",
+          label: "تحت المراجعة",
         },
         {
-          value: "completed",
-          label: "تم التجهيز",
+          value: "approved",
+          label: "تم المراجعة",
         },
         {
-          value: "closed",
-          label: "تم الدفع",
-        },
-        {
-          value: "printed",
-          label: "تم الطباعة",
+          value: "rejected",
+          label: "تم الرفض",
         },
       ],
     },
@@ -77,6 +91,18 @@ const KitchenRequests = () => {
     },
   ];
 
+  // const actions = [
+  //   {
+  //     type: `${
+  //       user?.permissions.some(
+  //         (permission) => permission.name === "view deleted_orders"
+  //       )
+  //         ? "review"
+  //         : ""
+  //     }`,
+  //     label: "مراجعة",
+  //   },
+  // ];
   const actions = [
     // {
     //   type: `${
@@ -91,44 +117,26 @@ const KitchenRequests = () => {
     {
       type: `${
         user?.permissions.some(
-          (permission) =>
-            permission.name === "add order" ||
-            permission.name === "change order status cashier" ||
-            permission.name === "change order status kitchen"
+          (permission) => permission.name === "view deleted_orders"
         )
           ? "show"
           : ""
       }`,
-      label: "تعديل الحالة",
+      label: " مراجعة",
     },
-    
-    {
-      type: `${
-        user?.permissions.some(
-          (permission) => permission.name === "create department"
-        )
-          ? `${"navigate"}`
-          : ""
-      }`,
-      label: "طباعة",
-      route: "/warehouse/cashier/print-order/:id",
-    },
+    // {
+    //   type: `${
+    //     user?.permissions.some(
+    //       (permission) => permission.name === "view deleted_orders"
+    //     )
+    //       ? `${"navigate"}`
+    //       : ""
+    //   }`,
+    //   label: "طباعة",
+    //   route: "/warehouse/cashier/print-order/:id",
+    // },
   ];
-  const ordersRecieveCol = [
-    {
-      type: `${
-        user?.permissions.some(
-          (permission) =>
-            permission.name === "add order" ||
-            permission.name === "change order status cashier" ||
-            permission.name === "change order status kitchen"
-        )
-          ? "print"
-          : ""
-      }`,
-      label: "طباعة نسخة التشغيل",
-    },
-  ];
+
   const detailsHeaders = [
     {
       key: "products",
@@ -147,36 +155,30 @@ const KitchenRequests = () => {
     <div>
       <Table
         headers={tableHeaders}
-        title="الأوردرات"
+        title=" الأوردرات المحذوفة"
         filters={filters}
-        fetchData={(filterValues, id, setIsLoading) =>
-          getOrders(
-            {
-              ...filterValues,
-              user_id: user.id,
-              department_id: user?.department.id,
-            },
-            user?.department.type === "reciver" ? user?.department.id : null,
-            setIsLoading
-          )
+        fetchData={(filterValues) =>
+          getDeletedOrders({
+            ...filterValues,
+            user_id: user.id,
+            department_id: user?.department.id,
+          })
         }
         actions={actions}
-        ordersRecieve={ordersRecieveCol}
-        deleteFn={deleteOrder}
-        changeStatusFn={changeOrderStatus}
+        changeStatusFn={handleChangeDeletedOrderStatus}
         detailsHeaders={detailsHeaders}
-        acceptTitle={
-          user?.permissions.some(
-            (permission) => permission.name === "change order status kitchen"
-          )
-            ? { value: "completed", label: "جهز" }
-            : null
-        }
         rejectTitle={
           user?.permissions.some(
-            (permission) => permission.name === "change order status cashier"
+            (permission) => permission.name === "view deleted_orders"
           )
-            ? { value: "closed", label: "إنهاء الأوردر" }
+            ? { value: "rejected", label: " رفض" }
+            : null
+        }
+        acceptTitle={
+          user?.permissions.some(
+            (permission) => permission.name === "view deleted_orders"
+          )
+            ? { value: "approved", label: " قبول" }
             : null
         }
         isRequests
@@ -185,4 +187,4 @@ const KitchenRequests = () => {
   );
 };
 
-export default KitchenRequests;
+export default DeletedOrders;

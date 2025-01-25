@@ -53,7 +53,7 @@ function Categories(props) {
   const tableHeadersIncoming = [
     { key: "code", value: "  كود الفاتوره" },
     { key: "created_at", value: "تاريخ الإصدار" },
-    { key: "created_by", value: "اسم مدخل البيانات", nestedKey: "name" },
+    { key: "created_by", value: " مدخل البيانات", nestedKey: "name" },
     { key: "supplier", value: "اسم المورد", nestedKey: "name" },
     { key: "status", value: "الحالة" },
     { key: "total_price", value: "السعر" },
@@ -70,7 +70,7 @@ function Categories(props) {
       isInput: user?.department.type === "master" ? true : false,
       type: "date",
     },
-    { key: "created_by", value: "اسم مدخل البيانات", nestedKey: "name" },
+    { key: "created_by", value: " مدخل البيانات", nestedKey: "name" },
     { key: "to", value: "القسم المنصرف اليه", nestedKey: "name" },
     { key: "status", value: "الحالة" },
     { key: "total_price", value: "السعر" },
@@ -89,7 +89,7 @@ function Categories(props) {
     { key: "created_at", value: "تاريخ الإصدار" },
     { key: "from", value: "تحويل من", nestedKey: "name" },
     { key: "to", value: "تحويل الي", nestedKey: "name" },
-    { key: "created_by", value: "اسم مدخل البيانات", nestedKey: "name" },
+    { key: "created_by", value: " مدخل البيانات", nestedKey: "name" },
     { key: "status", value: "الحالة" },
     { key: "total_price", value: "السعر" },
   ];
