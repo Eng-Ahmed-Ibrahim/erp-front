@@ -230,3 +230,35 @@ export async function changeDeletedOrderStatus(orderId, status) {
     message.error("حدث خطأ الرجاء إعادة المحاولة ");
   }
 }
+
+export async function reviewOrderPrice(
+  items,
+  clientType,
+  client,
+  department_id
+) {
+  try {
+    if (items.length == 0) {
+      return;
+    }
+    console.log(items)
+    const res = await axios.post(
+      `${API_ENDPOINT}/api/v1/orders/review-price`,
+      {
+        products: items,
+        client_type_id: clientType,
+        client_id: client,
+        department_id: department_id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    message.error(`حدث خطأ في الانهاء`);
+  }
+}

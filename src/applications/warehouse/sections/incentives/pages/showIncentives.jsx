@@ -102,12 +102,17 @@ function DataModal({ show, onHide, item, itemId, refreshFn }) {
   const [discount, setDiscount] = useState(0);
   const [reward, setReward] = useState(0);
   const [points, setPoints] = useState(0);
+  const [advanceDeduction, setAdvanceDeduction] = useState(0);
+  const [simCardDeduction, setSimCardDeduction] = useState(0);
+  const [otherDeduction, setOtherDeduction] = useState(0);
 
-  // When modal closes or item changes, reset fields to reflect item data
   useEffect(() => {
     setDiscount(item?.discount || 0);
     setReward(item?.reward || 0);
     setPoints(item?.points || 0);
+    setAdvanceDeduction(item?.advance || 0);
+    setSimCardDeduction(item?.sim_card_deduction || 0);
+    setOtherDeduction(item?.other_deductions || 0);
   }, [item]);
 
   const handleEditPoints = async () => {
@@ -117,6 +122,9 @@ function DataModal({ show, onHide, item, itemId, refreshFn }) {
         discount: discount,
         reward: reward,
         points: points,
+        advance: advanceDeduction,
+        sim_card_deduction: simCardDeduction,
+        other_deductions: otherDeduction,
       },
       {
         headers: {
@@ -142,47 +150,103 @@ function DataModal({ show, onHide, item, itemId, refreshFn }) {
       onCancel={onHide}
       width={1000}
     >
-      <div className="mb-3">
-        <label htmlFor="exampleInputPassword" className="form-label">
-          {" "}
-          الاثابه{" "}
-        </label>
-        <input
-          type="number"
-          className="form-control"
-          id="exampleInputEmail1"
-          value={reward}
-          onChange={(e) => setReward(e.target.value)}
-          required
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="exampleInputPassword" className="form-label">
-          {" "}
-          الخصم{" "}
-        </label>
-        <input
-          type="number"
-          className="form-control"
-          id="exampleInputEmail1"
-          value={discount}
-          onChange={(e) => setDiscount(e.target.value)}
-          required
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="exampleInputPassword" className="form-label">
-          {" "}
-          عدد البونط{" "}
-        </label>
-        <input
-          type="number"
-          className="form-control"
-          id="exampleInputEmail1"
-          value={points}
-          onChange={(e) => setPoints(e.target.value)}
-          required
-        />
+      <div
+        style={{
+          padding: " 14px 12px",
+          border: "1px solid #E4C59E",
+          color: "#803D3B",
+          borderRadius: "15px",
+          fontSize: "16px",
+        }}
+      >
+        <div className="mb-3">
+          <label htmlFor="exampleInputPassword" className="form-label">
+            {" "}
+            الاثابه{" "}
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={reward}
+            onChange={(e) => setReward(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="exampleInputPassword" className="form-label">
+            {" "}
+            الخصم{" "}
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={discount}
+            onChange={(e) => setDiscount(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="exampleInputPassword" className="form-label">
+            {" "}
+            عدد البونط{" "}
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={points}
+            onChange={(e) => setPoints(e.target.value)}
+            required
+          />
+        </div>
+
+        <hr style={{ width: "50%", color: "#803D3B", margin: "5px auto" }} />
+        <hr style={{ width: "50%", color: "#803D3B", margin: "5px auto" }} />
+
+        <div className="mb-3">
+          <label htmlFor="exampleInputPassword" className="form-label">
+            {" "}
+            السلفة{" "}
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={advanceDeduction}
+            onChange={(e) => setAdvanceDeduction(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="exampleInputPassword" className="form-label">
+            {" "}
+            رسوم خطوط فودافون{" "}
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={simCardDeduction}
+            onChange={(e) => setSimCardDeduction(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="exampleInputPassword" className="form-label">
+            {" "}
+            إستقطاعات اخرى{" "}
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={otherDeduction}
+            onChange={(e) => setOtherDeduction(e.target.value)}
+            required
+          />
+        </div>
       </div>
     </Modal>
   );
@@ -210,7 +274,7 @@ const ShowInventives = () => {
   const [employeeType, setEmployeeType] = useState([]);
   const [employeeTypes, setEmployeesTypes] = useState([]);
   const tableRef = useRef(null);
-  const [ saveButtonState , changeSaveButtonState] = useState(false);
+  const [saveButtonState, changeSaveButtonState] = useState(false);
 
   const month = new Date().toISOString().split("-")[1] - 1;
 
@@ -285,7 +349,7 @@ const ShowInventives = () => {
       employee_type: employeeType,
     };
 
-    console.log('deleteer ddnfdongfdin')
+    console.log("deleteer ddnfdongfdin");
     await axios
       .get(`${API_ENDPOINT}/api/v1/incentives`, {
         params: filters,
@@ -315,7 +379,7 @@ const ShowInventives = () => {
     nationalId,
     selectedMonth,
     employeeType,
-    saveButtonState
+    saveButtonState,
   ]);
 
   const handelEditPoints = async () => {
@@ -333,7 +397,7 @@ const ShowInventives = () => {
 
     if (res) {
       message.success("تم تعديل الحافز بنجاح");
-      changeSaveButtonState(! saveButtonState)
+      changeSaveButtonState(!saveButtonState);
 
       // onHide();
     }
@@ -629,6 +693,10 @@ const ShowInventives = () => {
             </th>
             <th scope="col" style={{ background: "#edede9" }}>
               {" "}
+              الإستقطاعات
+            </th>
+            <th scope="col" style={{ background: "#edede9" }}>
+              {" "}
               اجمالي الحافز
             </th>
             <th scope="col" style={{ background: "#edede9" }}>
@@ -704,6 +772,19 @@ const ShowInventives = () => {
                 }}
               >
                 {item?.reward}
+              </td>
+              <td
+                style={{
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                }}
+              >
+                {item?.sim_card_deduction +
+                  item?.advance +
+                  item?.other_deductions}
               </td>
               <td
                 style={{

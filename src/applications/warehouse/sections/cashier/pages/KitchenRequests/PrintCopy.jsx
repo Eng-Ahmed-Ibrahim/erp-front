@@ -53,6 +53,8 @@ function PrintCopy({ id }) {
           price: InvoiceData.data.price,
           total_price: InvoiceData.data.total_price,
           waiter_name: InvoiceData.data.waiter.name,
+          payables: InvoiceData?.data?.payables,
+          comment: InvoiceData?.data?.comment,
           total_price_after_discount_and_tax:
             InvoiceData.data.total_price_after_discount_and_tax,
           departmentName: InvoiceData.data.department,
@@ -73,8 +75,8 @@ function PrintCopy({ id }) {
     if (data.total_price !== 0 && data.price !== 0) {
       generatePDF();
     }
+    console.log("rrrrrrrrrrrrrrrrrrrrrrrrrrr", data);
   }, [data]);
-
   return (
     <div
       id="invoice-container"
@@ -95,12 +97,81 @@ function PrintCopy({ id }) {
             />
           </div>
         </div>
-{/* 
-        {data?.payables?.length > 0 && (
-          <div className="cards-container">
-            <span>المدفوعات</span>
-            {payables.map((payable, index) => (
 
+        <div>
+          <p  >نسخة تشغيل لا يتم التحصيل بها</p>
+        </div>
+
+        {data?.payables?.length > 0 && (
+          <>
+            <h5 className="text-center p-3" style={{ background: "#ced4da" }}>
+              المدفوعات:{" "}
+            </h5>
+
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">التاريخ</th>
+                  <th scope="col">القيمة</th>
+                  <th scope="col">رقم الإيصال</th>
+                  <th scope="col"> ملاحظة</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {data?.payables?.map((payable, index) => (
+                  <tr>
+                    <th scope="row">{index + 1}</th>
+                    <td>
+                      {new Date(payable.created_at).toISOString().split("T")[0]}
+                    </td>
+                    <td>{payable?.amount}</td>
+                    <td>{payable?.receipt_number}</td>
+                    <td>{payable?.note}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        <hr />
+
+        {data?.comment?.split(",").length > 0 && (
+          <>
+            <h5 className="text-center p-3" style={{ background: "#ced4da" }}>
+              الملاحظات:{" "}
+            </h5>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col"></th>
+                  <th scope="col"> الملاحظة</th>
+
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {data?.comment?.split(",").map((comment, index) => (
+                  <tr>
+                    <th scope="row">{index + 1}</th>
+                    <td></td>
+                    <td>{comment}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        {/* {data?.payables?.length > 0 && (
+          <div className="cards-container">
+            <h2>المدفوعات</h2>
+
+            {data?.payables?.map((payable, index) => (
               <div className="order-header-card">
                 <div className="created-at">
                   {new Date(payable.created_at).toISOString().split("T")[0]}
@@ -128,9 +199,6 @@ function PrintCopy({ id }) {
           </div>
         )} */}
 
-        <div>
-          <p className="working-copy">نسخة تشغيل لا يتم التحصيل بها</p>
-        </div>
         <div className="invoice-items">
           <h2>محــــــتويات الأوردر</h2>
           <table>

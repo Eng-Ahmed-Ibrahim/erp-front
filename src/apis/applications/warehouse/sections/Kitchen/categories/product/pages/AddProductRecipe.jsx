@@ -15,8 +15,7 @@ import { message } from "antd";
 import { getProductsById } from "../../../../../../../apis/product";
 import { usePDF } from 'react-to-pdf';
 const AddProductRecipe = () => {
-  // const [suppliers, setSuppliers] = useState([]);
-  // const [department, setDepartment] = useState([]);
+
   const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' });
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -26,10 +25,9 @@ const AddProductRecipe = () => {
 
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
-  const [data, setData] = useState(); // Initialize data as null
+  const [data, setData] = useState(); 
 
   const [parentName, setParentName] = useState("");
-  // const [recipeUnit, setRecipeUnit] = useState('')
   const [ProductParentId, setRecipeParentId] = useState("");
   const [ProductCategory_id, setProductCategoryId] = useState("");
 
@@ -67,6 +65,7 @@ const AddProductRecipe = () => {
     };
     fetchData();
   }, [id]);
+
   const [recipePrice, setRecipePrice] = useState([])
   useEffect(() => {
     axios.get(`${API_ENDPOINT}/api/v1/store/products/${id}`, {
@@ -113,18 +112,16 @@ const AddProductRecipe = () => {
           },
         })
       })
-      // console.log(response.data);
-      // // console.log("Invoice created successfully!");
-      // Optionally, you can redirect or show a success message here
     } catch (error) {
       console.error("Error creating invoice:", error);
-      // Handle error condition, show error message, etc.
     }
   };
-  const handelDelete = async (id) => {
+  const handelDelete = async (recipe_id) => {
     // setIsPending(true);
+
+    console.log('id', id );
     await axios
-      .delete(`${API_ENDPOINT}/api/v1/store/products/${recipePrice?.data?.id}/recipe/delete/${id}`, {
+      .delete(`${API_ENDPOINT}/api/v1/store/products/${recipePrice?.data?.id}/recipe/delete/${recipe_id}`, {
         headers: {
           Authorization: `Bearer ${Token}`,
         },

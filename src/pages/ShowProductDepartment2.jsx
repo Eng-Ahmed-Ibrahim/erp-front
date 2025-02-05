@@ -33,14 +33,39 @@ const ShowProductDepartment2 = () => {
 
   const imageurl = "/assets/images/Screenshot (1).png";
   const [recipeCategoryParents, setRecipeCategoryParents] = useState([]);
+  const [recipeCategories, setRecipeCategories] = useState([]);
+  const [selectedRecipeCategory, setSelectedRecipeCategory] = useState([]);
   const [base64Image, setBase64Image] = useState("");
   const tableRef = useRef();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const fetchRecipeCategories = async (value) => {
+      if (!value) return;
+      try {
+        const response = await fetch(
+          `${API_ENDPOINT}/api/v1/store/recipe_category?category_id=${value}`,
+          {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setRecipeCategories(data.data);
+      } catch (error) {
+        console.error("Error fetching recipe category parents:", error);
+      }
+    };
+
+    fetchRecipeCategories(value);
+  }, [value]);
+
+  useEffect(() => {
     if (user.department.type == "master") {
       setIsAdmin(true);
     }
+
     const fetchRecipeCategoryParents = async () => {
       try {
         const response = await fetch(
@@ -57,6 +82,7 @@ const ShowProductDepartment2 = () => {
         console.error("Error fetching recipe category parents:", error);
       }
     };
+
     const fetchImage = async () => {
       const response = await fetch(imageurl);
       const blob = await response.blob();
@@ -71,7 +97,8 @@ const ShowProductDepartment2 = () => {
     fetchRecipeCategoryParents();
   }, [imageurl]);
 
-  const fetchData = (parentId) => {
+  const fetchData = (parentId, category) => {
+
     axios
       .get(`${API_ENDPOINT}/api/v1/store/department-recipe-search`, {
         headers: {
@@ -81,6 +108,7 @@ const ShowProductDepartment2 = () => {
           data: {
             parent_id: parentId,
             department_id: item?.id,
+            category_id : category
           },
         },
       })
@@ -125,29 +153,29 @@ const ShowProductDepartment2 = () => {
 
   useEffect(() => {
     if (!item?.id) return;
-    fetchData(value);
+    fetchData(value, selectedRecipeCategory);
   }, [item?.id]);
 
   const sortedDepartmentStore = useMemo(() => {
     if (!data?.department_store) return [];
 
     const sortedItems = Object.values(data.department_store)
-      .flat();
-      // .sort((a, b) => {
-      //   const parentComparison = a.recipe_category?.parent.localeCompare(
-      //     b.recipe_category?.parent,
-      //     "ar",
-      //     { sensitivity: "base" }
-      //   );
-      //   if (parentComparison !== 0) return parentComparison;
-      //   return a.name.localeCompare(b.name, "ar", { sensitivity: "base" });
-      // });
-// console.log('soeterere', sortedItems)
+      .flat()
+      .sort((a, b) => {
+        const parentComparison = a.recipe_category?.parent.localeCompare(
+          b.recipe_category?.parent,
+          "ar",
+          { sensitivity: "base" }
+        );
+        if (parentComparison !== 0) return parentComparison;
+        return a.name.localeCompare(b.name, "ar", { sensitivity: "base" });
+      });
+    // console.log('soeterere', sortedItems)
     return sortedItems;
   }, [data]);
 
   const handleSubmit = () => {
-    fetchData(value);
+    fetchData(value, selectedRecipeCategory);
   };
   useEffect(() => {
     if (sortedDepartmentStore.length > 0) {
@@ -311,115 +339,6 @@ const ShowProductDepartment2 = () => {
     pdf.save("تقرير_المخازن.pdf");
   };
 
-  // const handleSavePDF = async () => {
-  //   const pdf = new jsPDF("p", "mm", "a4"); // Create a new PDF document
-  //   const pageWidth = 190; // Width of the content area
-  //   const pageHeight = 297; // Height of an A4 page
-  //   const rows = Array.from(tableRef.current.querySelectorAll("tr")); // Get all rows from the table
-  //   const batchSize = 20; // Number of rows to process in each batch
-  //   let position = 10; // Initial vertical position on the page
-
-  //   console.log('this sisisisisisisisisisisis')
-  //   // Function to calculate the height of a row
-  //   const calculateRowHeight = async (row) => {
-  //     const rowCanvas = await html2canvas(row, { scale: 1 }); // Render the row as an image
-  //     return (rowCanvas.height * pageWidth) / rowCanvas.width; // Calculate the height of the row in mm
-  //   };
-
-  //   // Function to process a batch of rows
-  //   const processBatch = async (startIndex, endIndex) => {
-  //     const batchRows = rows.slice(startIndex, endIndex); // Get the rows in the current batch
-  //     const rowHeights = await Promise.all(batchRows.map(calculateRowHeight)); // Calculate heights for all rows in the batch
-
-  //     for (let i = 0; i < batchRows.length; i++) {
-  //       const row = batchRows[i];
-  //       const rowHeight = rowHeights[i];
-
-  //       // Check if the row fits on the current page
-  //       if (position + rowHeight > pageHeight - 10) {
-  //         pdf.addPage(); // Add a new page if the row doesn't fit
-  //         position = 10; // Reset the vertical position for the new page
-  //       }
-
-  //       // Render the row and add it to the PDF
-  //       const rowCanvas = await html2canvas(row, { scale: 1 });
-  //       const rowImgData = rowCanvas.toDataURL("image/png");
-  //       pdf.addImage(rowImgData, "PNG", 10, position, pageWidth, rowHeight);
-  //       position += rowHeight; // Update the vertical position for the next row
-  //     }
-  //   };
-
-  //   // Function to split and process rows based on available space
-  //   const processRows = async (startIndex, endIndex) => {
-  //     const rowsToProcess = rows.slice(startIndex, endIndex); // Get the rows to process
-  //     let currentBatchStart = 0; // Start index of the current batch
-
-  //     while (currentBatchStart < rowsToProcess.length) {
-  //       let currentBatchEnd = currentBatchStart + batchSize; // End index of the current batch
-  //       if (currentBatchEnd > rowsToProcess.length) {
-  //         currentBatchEnd = rowsToProcess.length; // Adjust the end index if it exceeds the number of rows
-  //       }
-
-  //       // Calculate the total height of the current batch
-  //       const batchHeights = await Promise.all(
-  //         rowsToProcess
-  //           .slice(currentBatchStart, currentBatchEnd)
-  //           .map(calculateRowHeight)
-  //       );
-  //       const totalBatchHeight = batchHeights.reduce(
-  //         (sum, height) => sum + height,
-  //         0
-  //       );
-
-  //       // Check if the entire batch fits on the current page
-  //       if (position + totalBatchHeight > pageHeight - 10) {
-  //         // If not, split the batch into smaller chunks
-  //         let chunkStart = currentBatchStart;
-  //         while (chunkStart < currentBatchEnd) {
-  //           let chunkHeight = 0;
-  //           let chunkEnd = chunkStart;
-
-  //           // Find the largest possible chunk that fits on the current page
-  //           while (chunkEnd < currentBatchEnd) {
-  //             const rowHeight = await calculateRowHeight(
-  //               rowsToProcess[chunkEnd]
-  //             );
-  //             if (position + chunkHeight + rowHeight > pageHeight - 10) {
-  //               break; // Stop if adding the next row exceeds the available space
-  //             }
-  //             chunkHeight += rowHeight;
-  //             chunkEnd++;
-  //           }
-
-  //           // Process the chunk if it contains any rows
-  //           if (chunkStart < chunkEnd) {
-  //             await processBatch(
-  //               startIndex + chunkStart,
-  //               startIndex + chunkEnd
-  //             );
-  //           }
-
-  //           chunkStart = chunkEnd; // Move to the next chunk
-  //         }
-  //       } else {
-  //         // If the entire batch fits, process it as is
-  //         await processBatch(
-  //           startIndex + currentBatchStart,
-  //           startIndex + currentBatchEnd
-  //         );
-  //       }
-
-  //       currentBatchStart = currentBatchEnd; // Move to the next batch
-  //     }
-  //   };
-
-  //   // Process all rows
-  //   await processRows(0, rows.length);
-
-  //   // Save the PDF
-  //   pdf.save("تقرير_المخازن.pdf");
-  // };
-
   if (error) return <p>{error}</p>;
 
   const handleRowClick = (item) => {
@@ -458,19 +377,6 @@ const ShowProductDepartment2 = () => {
       </h2>
       <main ref={targetRef}>
         <div id="invoice-container">
-          <div className="headers-wrapper">
-            <div className="header-img">
-              <img
-                src={LogoDAR}
-                alt=""
-                style={{
-                  width: "64px",
-                  marginBottom: "5px",
-                  marginLeft: "5px",
-                }}
-              />
-            </div>
-          </div>
           <div className="invoice-info">
             <div className="invoice-info-item" style={{ width: "100%" }}>
               <h2 className="text-center fw-bold fs-2">
@@ -480,41 +386,82 @@ const ShowProductDepartment2 = () => {
               </h2>
             </div>
           </div>
-          <div className="center" style={{ margin: "20px 0" }}>
-            <input
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="filter-input"
-              type="text"
-              placeholder="إبحث باللإسم"
-              value={searchTerm}
-            />
-          </div>
+
           <div className="mb-3">
-            <label htmlFor="exampleInputEmail1" className="form-label">
-              القسم :
-            </label>
-            <select
-              className="form-select"
-              aria-label="المنفذ"
-              value={value}
-              onChange={(e) => {
-                const selectedText = e.target.selectedOptions[0].text;
-                setValue(e.target.value);
-                setMainCat(selectedText);
-              }}
-            >
-              <option value=""> من فضلك اختر القسم</option>
-              {recipeCategoryParents.map((parent, index) => (
-                <option key={parent.id} value={parent.id}>
-                  {parent.name}
-                </option>
-              ))}
-            </select>
-            <button onClick={handleSubmit} className="pdf-button">
-              {" "}
-              فلتره
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "50px" }}>
+              <div style={{ width: "30%" }}>
+                <label htmlFor="exampleInputEmail1" className="form-label">
+                  القسم :
+                </label>
+
+                <select
+                  className="form-select"
+                  aria-label="المنفذ"
+                  value={value}
+                  onChange={(e) => {
+                    const selectedText = e.target.selectedOptions[0].text;
+                    setValue(e.target.value);
+                    setMainCat(selectedText);
+                  }}
+                >
+                  <option value=""> من فضلك اختر القسم</option>
+                  {recipeCategoryParents.map((parent, index) => (
+                    <option key={parent.id} value={parent.id}>
+                      {parent.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ width: "30%" }}>
+                <label htmlFor="exampleInputEmail1" className="form-label">
+                  التصنيف الرئيسي :
+                </label>
+
+                <select
+                  className="form-select"
+                  aria-label="المنفذ"
+                  value={selectedRecipeCategory}
+                  onChange={(e) => {
+                    setSelectedRecipeCategory(e.target.value);
+                  }}
+                >
+                  <option value=""> من فضلك اختر التصنيف الرئيسي </option>
+                  {recipeCategories.map((parent, index) => (
+                    <option key={parent.id} value={parent.id}>
+                      {parent.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ width: "30%" }}>
+                <label htmlFor="exampleInputEmail1" className="form-label">
+                  ابحث بالاسم
+                </label>
+
+                <input
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="form-input"
+                  type="text"
+                  placeholder="إبحث باللإسم"
+                  value={searchTerm}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "20px" }}>
+              <button onClick={handleSubmit} className="pdf-button">
+                {" "}
+                فلتره
+              </button>
+              <button onClick={handleSavePDF} className="pdf-button">
+                {" "}
+                حفظ PDF
+              </button>
+            </div>
           </div>
+
           <div
             style={{
               display: "flex",
@@ -522,12 +469,7 @@ const ShowProductDepartment2 = () => {
               justifyContent: "start",
               alignItems: "start",
             }}
-          >
-            <button onClick={handleSavePDF} className="pdf-button">
-              {" "}
-              حفظ PDF
-            </button>
-          </div>
+          ></div>
           <ItemDetailsModal
             visible={isModalVisible}
             onHide={() => setIsModalVisible(false)}
@@ -538,7 +480,7 @@ const ShowProductDepartment2 = () => {
             <table ref={tableRef}>
               <thead>
                 <tr>
-                  <th colSpan="8" className="text-center">
+                  <th colSpan="9" className="text-center">
                     <div>
                       <span>مخزن {data?.name} الفرعي</span>
                       <span> || </span>
@@ -547,7 +489,7 @@ const ShowProductDepartment2 = () => {
                   </th>
                 </tr>
                 <tr>
-                  <th colSpan="8" className="text-center">
+                  <th colSpan="9" className="text-center">
                     <div>
                       <span className="fs-5 fw-bold">
                         {new Date().toLocaleDateString()} -{" "}

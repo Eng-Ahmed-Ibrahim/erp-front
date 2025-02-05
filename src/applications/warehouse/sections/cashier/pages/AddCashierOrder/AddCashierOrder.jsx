@@ -6,13 +6,20 @@ import axios from "axios";
 import { API_ENDPOINT } from "../../../../../../../config";
 import { message, Select, Modal } from "antd";
 import { useAuth } from "../../../../../../context/AuthContext";
-import { checkTableNumber } from "../../../../../../apis/orders";
+// import { checkTableNumber } from "../../../../../../apis/orders";
 import CashierOrderDetailes from "../../../../../../components/shared/CashierOrderDetails/CashierOrderDetailes";
 import CashierItemList from "../../../../../../components/shared/CashierItemList/CashierItemList";
 import { getClientTypeById } from "../../../../../../apis/clients/ClientType";
 import Table from "../../../../../../components/shared/oneElementTable/Table";
-import { changeOrderStatus, getOrders } from "../../../../../../apis/orders";
-import { getOrderById, deleteOrder } from "../../../../../../apis/orders";
+import {
+  changeOrderStatus,
+  getOrders,
+  deleteOrder,
+  getOrderById,
+  checkTableNumber,
+  reviewOrderPrice,
+} from "../../../../../../apis/orders";
+// import { getOrderById, deleteOrder } from "../../../../../../apis/orders";
 import { getRoles } from "../../../../../../apis/roles";
 import { useNavigate } from "react-router-dom";
 import { useReactToPrint } from "react-to-print"; // Import the hook
@@ -50,26 +57,26 @@ function PrintAfterFinish({ id, table_no }) {
       try {
         await changeOrderStatus(id, "closed");
 
-        const InvoiceData = await getOrderById(id);
+        const OrderData = await getOrderById(id);
         setData({
-          code: InvoiceData.data.code,
-          cashier: InvoiceData.data.casher,
-          products: InvoiceData.data.products,
-          payment_method: InvoiceData.data.payment_method,
-          order_date: InvoiceData.data.order_date,
-          client: InvoiceData.data.client,
-          payment: InvoiceData.data.payment_method,
-          status: InvoiceData.data.status,
-          invoice_date: InvoiceData.data.order_date,
-          table_number: InvoiceData.data.table_number,
-          client_type: InvoiceData.data.client_type,
-          recipeData: InvoiceData.data.products,
-          price: InvoiceData.data.price,
-          total_price: InvoiceData.data.total_price,
-          waiter_name: InvoiceData.data.waiter.name,
+          code: OrderData.data.code,
+          cashier: OrderData.data.casher,
+          products: OrderData.data.products,
+          payment_method: OrderData.data.payment_method,
+          order_date: OrderData.data.order_date,
+          client: OrderData.data.client,
+          payment: OrderData.data.payment_method,
+          status: OrderData.data.status,
+          invoice_date: OrderData.data.order_date,
+          table_number: OrderData.data.table_number,
+          client_type: OrderData.data.client_type,
+          recipeData: OrderData.data.products,
+          price: OrderData.data.price,
+          total_price: OrderData.data.total_price,
+          waiter_name: OrderData.data.waiter.name,
           total_price_after_discount_and_tax:
-            InvoiceData.data.total_price_after_discount_and_tax,
-          departmentName: InvoiceData.data.department,
+            OrderData.data.total_price_after_discount_and_tax,
+          departmentName: OrderData.data.department,
         });
       } catch (error) {
       } finally {
@@ -175,6 +182,133 @@ function PrintAfterFinish({ id, table_no }) {
   );
 }
 
+function OrderReviewModal({ show, onHide, items, clientType, client }) {
+  const { user } = useAuth();
+
+  const [data, setData] = useState({
+    client: "Guest",
+    products: [],
+    client_type: "",
+    total_price: 0,
+    departmentName: user?.department?.name,
+    cashier: user?.name || "",
+    price: 0,
+  });
+
+  const fetchData = async () => {
+    if (!items.length) return;
+
+    try {
+      const OrderData = await reviewOrderPrice(
+        items,
+        clientType?.id,
+        client?.id,
+        user?.department?.id
+      );
+      setData((prevData) => ({
+        ...prevData,
+        products: items,
+        client: client?.name || "Guest",
+        client_type: clientType?.name || "",
+        price: OrderData?.data?.price || 0,
+        total_price: OrderData?.data?.total_price || 0,
+      }));
+    } catch (error) {
+      console.error("Error fetching order data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [items, client, clientType]);
+  return (
+    <Modal
+      centered
+      open={show}
+      onCancel={onHide}
+      onOk={onHide}
+      width={900}
+      footer={null}
+    >
+      <div className="headers-wrapper">
+        <div className="main-title">
+          <p> أوردر من {data.departmentName}</p>
+        </div>
+        <div className="header-img">
+          <img
+            src={LogoDAR}
+            alt=""
+            style={{
+              width: "64px",
+              marginBottom: "5px",
+              marginLeft: "5px",
+            }}
+          />
+        </div>
+      </div>
+      <div className="invoice-info">
+        <div className="invoice-info-item">
+          <p>تـاريـــخ الأوردر : {new Date().toISOString().split("T")[0]}</p>
+        </div>
+        <div className="invoice-info-item">
+          <p>اسم الكاشير : {data?.cashier}</p>
+          <p>اسم العميل : {data.client === "" ? "Guest" : data.client}</p>
+          <p>الفئة : {data.client_type}</p>
+        </div>
+      </div>
+      <div className="invoice-items">
+        <h2>محــــــتويات الأوردر</h2>
+        <table>
+          <thead>
+            <tr>
+              <th className="text-center">رقم العنصر</th>
+              <th className="text-center">اسم العنصر</th>
+              <th className="text-center">سعر العنصر الواحد</th>
+              <th className="text-right">الكمية</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.products?.map((product, index) => (
+              <tr key={index}>
+                <td className="text-center">{index + 1}</td>
+                <td className="text-center">{product.name}</td>
+                <td className="text-center">{product.price}</td>
+                <td className="text-right">{product.quantity}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td className="text-price" colSpan={2}>
+                السعر الكلي بالخدمة
+              </td>
+              <td className="text-price" colSpan={2}>
+                {data.price?.toFixed(2)} ج.م
+              </td>
+            </tr>
+            <tr>
+              <td className="text-price" colSpan={2}>
+                الخصم
+              </td>
+              <td className="text-price" colSpan={2}>
+                {(data?.price - data?.total_price)?.toFixed(2)} ج.م
+              </td>
+            </tr>
+            <tr>
+              <td className="text-price" colSpan={2}>
+                السعر الكلي بعد الخصم
+              </td>
+              <td className="text-price" colSpan={2}>
+                {data.total_price?.toFixed(2)} ج.م
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </Modal>
+  );
+}
+
 const { Option } = Select;
 
 const AddCashierOrder = () => {
@@ -192,7 +326,7 @@ const AddCashierOrder = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
     "dc2a3eb5-0efd-4bed-a297-8f5b43e8dc13"
   );
-  const [selectedClientName, setSelectedClientName] = useState(`guest`);
+  const [selectedClientTypeName, setselectedClientTypeName] = useState(`guest`);
   const [items, setItems] = useState([]);
   const [showTable, setShowTable] = useState(false); // Controls table display
   const [showDetails, setShowDetails] = useState(false);
@@ -280,7 +414,6 @@ const AddCashierOrder = () => {
 
   const validateForm = () => {
     const errors = {};
-    // && !isguest
 
     if (clients.length > 0 && !newUserValues.client_id && !isguest) {
       setIsDisabled(false);
@@ -302,9 +435,10 @@ const AddCashierOrder = () => {
       }, 4000);
       e;
 
-      rrors.mustChooseClientName = "يجب اختيار اسم العميل";
+      errors.mustChooseClientName = "يجب اختيار اسم العميل";
     }
-    if (selectedClientName == "ظابط مشاه" && !militryIdInputValue) {
+
+    if (selectedClientTypeName == "ظابط مشاه" && !militryIdInputValue) {
       setIsDisabled(false);
       const modal = Modal.error({
         title: "Error",
@@ -323,6 +457,7 @@ const AddCashierOrder = () => {
       }, 4000);
       errors.mustHaveMilitryNumber = "يجب اضافة رقم العضوية";
     }
+
     if (selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j") {
       if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
         setIsDisabled(false);
@@ -343,6 +478,7 @@ const AddCashierOrder = () => {
         return Object.values(errors).every((error) => error === "");
       }
     }
+
     errors.userError = validateUser();
     errors.tableNumber = validateTableNumber(newUserValues["table_number"]);
     errors.selectedClient = validateSelection(newUserValues["client_id"]);
@@ -420,7 +556,7 @@ const AddCashierOrder = () => {
   const handleClientTypeChange = async (value) => {
     const selectedClient = clientTypes.find((ele) => ele.id == value)?.id;
 
-    setSelectedClientName(clientTypes.find((ele) => ele.id == value)?.name);
+    setselectedClientTypeName(clientTypes.find((ele) => ele.id == value)?.name);
 
     if (SUPPORT_MILITARY_ID.includes(selectedClient)) {
       console.log(selectedClient);
@@ -751,6 +887,7 @@ const AddCashierOrder = () => {
         return;
       }
     }
+
     if (selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j") {
       if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
         setIsDisabled(false);
@@ -771,6 +908,7 @@ const AddCashierOrder = () => {
         return;
       }
     }
+
     if (!validateForm()) return;
 
     const formData = new FormData();
@@ -872,7 +1010,7 @@ const AddCashierOrder = () => {
     } catch (error) {
       setIsDisabled(false);
 
-      console.error("Error creating invoice:", error);
+      console.error("Error creating order:", error);
       const modal = Modal.error({
         title: "Error",
         content: (
@@ -894,7 +1032,9 @@ const AddCashierOrder = () => {
   const [militryIdGotClicked, setMilitryIdGotClicked] = useState(false);
   const [timer, setTimer] = useState(null);
   const [messageVisible, setMessageVisible] = useState(false);
-  const debouncedHandleSubmit = useCallback(debounce(handleSubmit, 400), [
+  const [isOrderReviewModalVisible, setIsOrderReviewModalVisible] =
+    useState(false);
+  const debouncedHandleSubmit = useCallback(debounce(handleSubmit, 200), [
     handleSubmit,
   ]);
 
@@ -922,6 +1062,59 @@ const AddCashierOrder = () => {
   //   return () => clearTimeout(newTimer);
   // }, [militryIdInputValue, militryIdGotClicked]);
 
+  const handleOrderPriceReview = () => {
+    if (selectedClientType == "") {
+      const modal = Modal.error({
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            ادخل نوع العميل من فضلك{" "}
+          </div>
+        ),
+        centered: true,
+        width: 400,
+      });
+
+      setTimeout(() => {
+        modal.destroy();
+      }, 5000);
+      return;
+    }
+
+    if (clients.length > 0 && !newUserValues.client_id && !isguest) {
+      const modal = Modal.error({
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            {" "}
+            يجب اختيار اسم العميل{" "}
+          </div>
+        ),
+        centered: true,
+        width: 400,
+      });
+      return;
+    }
+
+    newUserValues["client_name"] = clients.find(
+      (ele) => ele.id == newUserValues.client_id
+    )?.name;
+    if (items.length < 1) {
+      const modal = Modal.error({
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            {" "}
+            برجاء إضافة منتجات للأوردر{" "}
+          </div>
+        ),
+        centered: true,
+        width: 400,
+      });
+      return;
+    }
+    setIsOrderReviewModalVisible(true);
+  };
   const handleInputChange = (e) => {
     const value = e.target.value;
     setMilitryIdInputValue(value);
@@ -934,7 +1127,6 @@ const AddCashierOrder = () => {
   }, [messageVisible]);
 
   useEffect(() => {
-    console.log("dddddddddddddddddddddddddddddddddddddddd", user);
     if (user?.roles[0] == ExternalOrderCashierRole) {
       setCanEndOrder(false);
     }
@@ -960,7 +1152,6 @@ const AddCashierOrder = () => {
           <select
             onChange={(e) => {
               setSelectedWatier(e.target.value);
-              // local storage
               localStorage.setItem("DefaultWaiterId", e.target.value);
             }}
             className="form-cashier-name-input"
@@ -985,7 +1176,6 @@ const AddCashierOrder = () => {
         </div>
       </div>
       <div className="form-cashier-product-category-parent">
-        {/*////////////////////////////// الكاشير //////////////////////////  */}
         <div className="form-cashier-product-category">
           <div className="form-cashier-select-wrraper">
             <label className="form-cashier-label">طرق الدفع</label>
@@ -1073,8 +1263,6 @@ const AddCashierOrder = () => {
           </div>
         </div>
 
-        {/* //////////////////////////////////////////////// */}
-
         {addFormVisible && (
           <div className="form-cashier-details-parent">
             <div>
@@ -1124,13 +1312,26 @@ const AddCashierOrder = () => {
           ></textarea>
         </div>
       </div>
+
       <CashierOrderDetailes
         onAddItem={handleAddItem}
         clientTypePrice={newUserValues["client_type_id"]}
       />
+
       <CashierItemList items={items} onDeleteItem={handleDeleteItem} />
       <TotalAmount total={calculateTotalAmount()} />
+
       <div className="btns">
+        <button
+          className="form-cashier-btn"
+          onClick={handleOrderPriceReview}
+          style={{
+            backgroundColor: "#803D3B",
+          }}
+        >
+          مراجعة سعر الأوردر
+        </button>
+
         {!isTakeAway ? (
           <>
             <button
@@ -1155,9 +1356,10 @@ const AddCashierOrder = () => {
               onClick={() => handleFinish()}
               disabled={isDisabled}
               style={{
-                backgroundColor: isDisabled ? "#d3d3d3" : "#ff0000", // gray for disabled, green otherwise
+                backgroundColor: isDisabled ? "#d3d3d3" : "#b51424",
                 cursor: isDisabled ? "not-allowed" : "pointer",
-                color: isDisabled ? "#a9a9a9" : "white", // adjust text color if needed
+                color: isDisabled ? "#a9a9a9" : "white",
+                height: "45px",
               }}
             >
               إنهاء الأوردر
@@ -1167,6 +1369,20 @@ const AddCashierOrder = () => {
       </div>
 
       {shouldPrint && <PrintAfterFinish id={orderID} />}
+
+      <OrderReviewModal
+        show={isOrderReviewModalVisible}
+        onHide={() => setIsOrderReviewModalVisible(false)}
+        items={items}
+        clientType={{
+          id: selectedClientType,
+          name: selectedClientTypeName,
+        }}
+        client={{
+          id: newUserValues?.client_id,
+          name: newUserValues?.client_name,
+        }}
+      />
     </div>
   );
 };

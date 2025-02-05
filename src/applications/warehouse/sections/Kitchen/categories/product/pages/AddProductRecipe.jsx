@@ -121,10 +121,11 @@ const AddProductRecipe = () => {
     }
   };
 
-  const handelDelete = async (id) => {
+  const handelDelete = async (recipe_id) => {
+    console.log("rcp id ", [recipe_id, id, recipePrice]);
     await axios
       .delete(
-        `${API_ENDPOINT}/api/v1/store/products/${recipePrice?.data?.id}/recipe/delete/${id}`,
+        `${API_ENDPOINT}/api/v1/store/products/${id}/recipe/delete/${recipe_id}`,
         {
           headers: {
             Authorization: `Bearer ${Token}`,

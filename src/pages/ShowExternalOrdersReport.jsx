@@ -30,7 +30,9 @@ function DataModal({ show, onHide, order }) {
               <div className="col-lg-12">
                 <div className="card mb-4">
                   <div className="card-body" style={{ fontSize: "16px" }}>
+                   
                     <div className="row ">
+                      
                       <h5
                         className="text-center p-3"
                         style={{ background: "#b3946f" }}

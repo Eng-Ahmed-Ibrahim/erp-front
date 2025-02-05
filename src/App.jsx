@@ -1242,6 +1242,7 @@ function App() {
                     name: "ترابيزات مفتوحة",
                   }}
                 >
+                  
                   <ShowAllTable />
                 </ProtectedRoute>
               }

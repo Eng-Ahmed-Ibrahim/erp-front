@@ -360,7 +360,7 @@ const Sidebar = () => {
               </Link>
             </li>
 
-            <li
+            {/* <li
               className="menu-item"
               title=" الموردين"
               style={{
@@ -395,7 +395,7 @@ const Sidebar = () => {
                   الموردين
                 </span>
               </Link>
-            </li>
+            </li> */}
 
 
 

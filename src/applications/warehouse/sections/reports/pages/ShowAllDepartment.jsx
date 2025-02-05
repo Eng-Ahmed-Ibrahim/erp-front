@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 
 import React, { useEffect, useState } from "react";
 import { API_ENDPOINT } from "../../../../../../config";
+import { number } from "yup";
 
 const ShowAllDepartments = () => {
   const Token =
@@ -91,10 +92,15 @@ const ShowAllDepartments = () => {
         getTotalPrice={async (filters, currentPage, setIsLoading) => {
           const data = await getDeaprtments(filters, currentPage, setIsLoading);
 
+          // return data?.data?.reduce((sum, obj) => {
+          //   console.log( "sum now ", sum, obj.total_invoices_price, Number(obj.total_invoices_price))
+          //   return sum + Number(obj.total_invoices_price || 0) || 0;
+          // });
           return data?.data?.reduce((sum, obj) => {
-            return Number(sum) + Number(obj.total_invoices_price || 0) || 0;
-          });
-
+            console.log("sum now", sum, obj.total_invoices_price, Number(obj.total_invoices_price));
+            return sum + Number(obj.total_invoices_price || 0);
+          }, 0); // Explicitly set initial sum value
+          
         }}
       />
     </div>
