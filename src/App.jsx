@@ -31,6 +31,7 @@ import {
   AddRecipeCategoryParent,
   EditRecipeCategoryParent,
   ShowRecipesCategoryParent,
+  RecipesReview,
 } from "./applications/warehouse/sections/recipes/recipeCategoryParent/pages";
 import Invoice from "./applications/warehouse/sections/invoices/Invoice";
 import InvoiceCategories from "./applications/warehouse/sections/invoices/InvoiceCategory/InvoiceCategory";
@@ -183,7 +184,7 @@ import ShowInventives from "./applications/warehouse/sections/incentives/pages/s
 import ShowEmployeesDepartments from "./applications/warehouse/sections/incentives/pages/showEmployeesDepartments";
 import ShowAllStaff from "./applications/warehouse/sections/incentives/pages/showAllStaff";
 import ShowAllJobs from "./applications/warehouse/sections/incentives/pages/showAllJobs";
-
+import AccountSetting from "./applications/warehouse/sections/accountSettings/AccountSetting.jsx";
 function App() {
   return (
     <div className="page-wrapper">
@@ -259,7 +260,19 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-
+            <Route
+              path="/warehouse/recipes/review"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 147,
+                    name: "view review-recipes",
+                  }}
+                >
+                  <RecipesReview />
+                </ProtectedRoute>
+              }
+            ></Route>
             <Route
               path="/warehouse/recipes/show-recipes"
               element={
@@ -318,7 +331,6 @@ function App() {
               }
             ></Route>
 
-            
             {/* /////////////////////////// */}
             <Route
               path="/warehouse/returants/show-resturants2"
@@ -333,7 +345,6 @@ function App() {
                 </ProtectedRoute>
               }
             ></Route>
-
 
             <Route
               path="/warehouse/returants/show-resturants2/:id"
@@ -972,7 +983,7 @@ function App() {
                     name: "view orders",
                   }}
                 >
-                  <DeletedOrders/>
+                  <DeletedOrders />
                 </ProtectedRoute>
               }
             ></Route>
@@ -1242,7 +1253,6 @@ function App() {
                     name: "ترابيزات مفتوحة",
                   }}
                 >
-                  
                   <ShowAllTable />
                 </ProtectedRoute>
               }
@@ -1855,7 +1865,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: "view shifts",
                   }}
                 >
                   <ShoowShifts />
@@ -1954,6 +1964,10 @@ function App() {
               }
             ></Route>
           </Route>
+          <Route
+            path="/warehouse/account-settings"
+            element={<AccountSetting />}
+          ></Route>
         </Route>
       </Routes>
     </div>

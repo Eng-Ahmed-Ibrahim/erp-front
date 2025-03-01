@@ -10,6 +10,10 @@ import generatePDF, { Resolution, Margin } from "react-to-pdf";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useAuth } from "../context/AuthContext";
+import "../fonts/Amiri-Regular-normal.js";
+
+// src\pages\ShowProductDepartment2.jsx
+// src\fonts\Amiri-Regular-normal.js
 const ShowProductDepartment2 = () => {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -98,7 +102,6 @@ const ShowProductDepartment2 = () => {
   }, [imageurl]);
 
   const fetchData = (parentId, category) => {
-
     axios
       .get(`${API_ENDPOINT}/api/v1/store/department-recipe-search`, {
         headers: {
@@ -108,7 +111,7 @@ const ShowProductDepartment2 = () => {
           data: {
             parent_id: parentId,
             department_id: item?.id,
-            category_id : category
+            category_id: category,
           },
         },
       })
@@ -323,7 +326,14 @@ const ShowProductDepartment2 = () => {
     const pageWidth = 190;
     const pageHeight = 297;
     const rows = Array.from(tableRef.current.querySelectorAll("tr"));
-    let position = 10;
+
+    // pdf.setFont("Amiri-Regular");
+    // pdf.setFontSize(11);
+
+    // // Title in Arabic (Centered)
+    // pdf.text(["تقرير المخازن", "تقرير المخازن", "تقرير المخازن" ,"تقرير المخازن", "تقرير المخازن", "تقرير المخازن"], 105, 5, { align: "center" });
+
+    let position = 20;
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const rowCanvas = await html2canvas(row, { scale: 2 });
@@ -377,7 +387,7 @@ const ShowProductDepartment2 = () => {
       </h2>
       <main ref={targetRef}>
         <div id="invoice-container">
-          <div className="invoice-info">
+          {/* <div className="invoice-info">
             <div className="invoice-info-item" style={{ width: "100%" }}>
               <h2 className="text-center fw-bold fs-2">
                 {" "}
@@ -385,7 +395,7 @@ const ShowProductDepartment2 = () => {
                 <span className="fs-1 text-danger">{data?.name}</span>
               </h2>
             </div>
-          </div>
+          </div> */}
 
           <div className="mb-3">
             <div style={{ display: "flex", alignItems: "center", gap: "50px" }}>

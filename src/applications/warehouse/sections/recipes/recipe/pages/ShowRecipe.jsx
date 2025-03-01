@@ -11,7 +11,7 @@ import { getAllDeaprtments } from "../../../../../../apis/department";
 const ShowRecipe = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const searchTerm = searchParams.get('searchTerm');
+  const searchTerm = searchParams.get("searchTerm");
 
   const { user } = useAuth();
   const [departments, setDepartments] = useState([]);
@@ -36,54 +36,56 @@ const ShowRecipe = () => {
           type: "selection",
           id: "نوع القسم",
           placeholder: "إختار قسم لإظهار نتائج",
-          options: departments.map(department => ({
+          options: departments.map((department) => ({
             value: department.id,
-            label: department.name
+            label: department.name,
           })),
         }
       : null,
   ].filter(Boolean); // Filter out nulls
 
-
   const { id } = useParams();
 
   const actions = [
-  {
-      type: `${user?.permissions.some(
-        (permission) => permission.name === "edit recipe"
-      )
+    {
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "edit recipe"
+        )
           ? "edit"
           : ""
-        }`,
+      }`,
       label: "تعديل",
       route: "/warehouse/recipes/recipe/:id/edit-recipes",
     },
     {
-      type: `${user?.permissions.some(
-        (permission) => permission.name === "edit recipe"
-      )
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "edit recipe"
+        )
           ? "navigate"
           : ""
-        }`,
+      }`,
       label: "المنتجات المرتبطه",
       route: "/warehouse/recipes/recipe/:id/get-products",
     },
-    
-    
+
     {
-      type: `${user?.permissions.some(
-        (permission) => permission.name === "delete recipe"
-      )
+      type: `${
+        user?.permissions.some(
+          (permission) => permission.name === "delete recipe"
+        )
           ? "delete"
           : ""
-        }`,
+      }`,
       label: "حذف",
     },
     {
-      type: `${user?.permissions.some((permission) => permission.name === "add recipe")
+      type: `${
+        user?.permissions.some((permission) => permission.name === "add recipe")
           ? "add"
           : ""
-        }`,
+      }`,
       label: "إضافة تصنيف فرعى",
       route: `/warehouse/recipes/recipe/add-recipes/${id}`,
     },
@@ -93,21 +95,24 @@ const ShowRecipe = () => {
     { key: "unit", label: "الوحدة", isArray: false },
     { key: "minimum_limit", label: "الحد الأدنى", isArray: false },
   ];
-  
-  const initialFilterValues = filters.reduce((acc, filter) => {
-    acc[filter.key] = ""; // Initialize with empty string or appropriate default
-    return acc;
-  }, { name: searchTerm || "" });
+
+  const initialFilterValues = filters.reduce(
+    (acc, filter) => {
+      acc[filter.key] = ""; // Initialize with empty string or appropriate default
+      return acc;
+    },
+    { name: searchTerm || "" }
+  );
 
   const [filterValues, setFilterValues] = useState({ name: searchTerm || "" });
 
   useEffect(() => {
     // Update filter values when searchTerm changes
-    setFilterValues(prev => ({ ...prev, name: searchTerm || "" }));
+    setFilterValues((prev) => ({ ...prev, name: searchTerm || "" }));
   }, [searchTerm]);
 
   const handleFilterChange = (key, value) => {
-    setFilterValues(prev => ({ ...prev, [key]: value }));
+    setFilterValues((prev) => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -115,9 +120,9 @@ const ShowRecipe = () => {
       <SubCategoryTable
         headers={tableHeaders}
         detailsHeaders={detailsHeaders}
-        filters={filters.map(filter => ({
+        filters={filters.map((filter) => ({
           ...filter,
-          onChange: handleFilterChange // Attach onChange handler
+          onChange: handleFilterChange, // Attach onChange handler
         }))}
         actions={actions}
         deleteFn={deleteRecipe}

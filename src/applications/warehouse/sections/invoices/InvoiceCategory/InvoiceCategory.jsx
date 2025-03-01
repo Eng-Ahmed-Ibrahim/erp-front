@@ -48,8 +48,7 @@ function Categories(props) {
     { value: "pending", label: "تحت المراجعة" },
     { value: "rejected", label: "مرفوضة" },
   ];
-  // user?.department.type != "both"?(
-  //   ):null
+
   const tableHeadersIncoming = [
     { key: "code", value: "  كود الفاتوره" },
     { key: "created_at", value: "تاريخ الإصدار" },
@@ -263,13 +262,11 @@ function Categories(props) {
     },
     {
       type: `${
-        // statusOptions[1]?.value!='approved'?(
         user?.permissions.some(
           (permission) => permission.name === "edit invoice"
         )
           ? "show"
           : ""
-        // ):null
       }`,
       label: "مراجعة",
     },
@@ -363,7 +360,7 @@ function Categories(props) {
     {
       type: `${
         user?.permissions.some(
-          (permission) => permission.name === "edit invoice"
+          (permission) => permission.name === "edit transfare_invoice"
         )
           ? "show"
           : ""
@@ -377,25 +374,8 @@ function Categories(props) {
     },
   ];
 
-  // const CategoriesData = [
-  //   {
-  //     cat: `${user?.department.type === "master"
-  //       ? "فاتورة مورد"
-  //       : ""
-  //       }`, type: `${user?.department.type === "master"
-  //         ? "inComing"
-  //         : ""
-  //         }`
-  //   },
-  //   { cat: "فاتورة صرف القسم", type: "outGoing" },
-  //   { cat: "فاتورة مرتجع من القسم", type: "returnd" },
-  // ];
-
   const CategoriesData = [
-    // ...(user?.department.type === "source" || user?.department.type === "master"
-    // ? [{ cat: "فاتورة مورد", type: "inComing" }]
     { cat: "فاتورة مورد", type: "inComing" },
-    // : []),
     { cat: "فاتورة صرف القسم", type: "outGoing" },
     { cat: "فاتورة مرتجع من القسم", type: "returnd" },
     { cat: "فاتورة تحويل من قسم لقسم", type: "transfare" },
@@ -403,7 +383,6 @@ function Categories(props) {
 
   const handleCategoryClick = (type) => {
     setSelectedCategory(type);
-    // console.log(type);
   };
 
   return (
@@ -493,7 +472,6 @@ function Categories(props) {
                 getOutgoingInvoiceByType(filters, id, setIsLoading)
               }
               detailsHeaders={detailsHeaders}
-
               getTotalPrice={async (filters, id, setIsLoading, status) => {
                 const data = await getOutgoingInvoiceByType(
                   filters,
@@ -503,7 +481,6 @@ function Categories(props) {
                 );
                 return data.total;
               }}
-
               updateFn={
                 user?.permissions.some(
                   (permission) => permission.name === "edit invoice"
@@ -537,11 +514,9 @@ function Categories(props) {
               filters={filtersReturn}
               title="فاتورة مرتجع من القسم"
               actions={actionsReturnd}
-              
               fetchData={(filters, id, setIsLoading) =>
                 getReturndInvoiceByType(filters, id, setIsLoading)
               }
-
               detailsHeaders={detailsHeaders}
               updateFn={
                 user?.permissions.some(
@@ -588,6 +563,7 @@ function Categories(props) {
                 getTransfareInvoiceByType(filters, id, setIsLoading)
               }
               detailsHeaders={detailsHeaders}
+
               updateFn={
                 user?.permissions.some(
                   (permission) => permission.name === "edit invoice"
@@ -599,6 +575,7 @@ function Categories(props) {
                     : null
                   : null
               }
+              
               acceptTitle={
                 user?.permissions.some(
                   (permission) => permission.name === "change invoice status"

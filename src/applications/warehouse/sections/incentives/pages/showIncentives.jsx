@@ -275,7 +275,8 @@ const ShowInventives = () => {
   const [employeeTypes, setEmployeesTypes] = useState([]);
   const tableRef = useRef(null);
   const [saveButtonState, changeSaveButtonState] = useState(false);
-
+  const [incetiveType, setIncentiveType] = useState(1);
+  const [incetiveTypes, setIncentiveTypes] = useState([]);
   const month = new Date().toISOString().split("-")[1] - 1;
 
   const Token =
@@ -310,6 +311,7 @@ const ShowInventives = () => {
   const handleEmplyeeTypChange = (type) => {
     setEmployeeType(type);
   };
+
   useEffect(() => {
     axios
       .get(`${API_ENDPOINT}/api/v1/departments`, {
@@ -339,6 +341,22 @@ const ShowInventives = () => {
         console.error("Error fetching departments:", error);
       });
   }, []);
+
+  useEffect(() => {
+    axios
+      .get(`${API_ENDPOINT}/api/v1/incentives-types`, {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      })
+      .then((response) => {
+        setIncentiveTypes(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching departments:", error);
+      });
+  }, []);
+
   const fetchIncentives = async () => {
     const filters = {
       department: departmentFilter,
@@ -347,6 +365,7 @@ const ShowInventives = () => {
       national_id: nationalId,
       month: selectedMonth,
       employee_type: employeeType,
+      type: incetiveType,
     };
 
     console.log("deleteer ddnfdongfdin");
@@ -380,6 +399,7 @@ const ShowInventives = () => {
     selectedMonth,
     employeeType,
     saveButtonState,
+    incetiveType,
   ]);
 
   const handelEditPoints = async () => {
@@ -404,23 +424,6 @@ const ShowInventives = () => {
   };
   // zerox 6220
   const handelSaveIncentives = async () => {
-    // const res = await axios.post(
-    //   `${API_ENDPOINT}/api/v1/incentives/lock-incentives`,
-    //   {
-    //     month: selectedMonth,
-    //   },
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${Token}`,
-    //     },
-    //   }
-    // );
-
-    // if (true) {
-    //   message.success("تم تعديل الحافز بنجاح");
-    //   onHide;
-    // }
-
     setIsSaveIncentivesModalVisable(true);
   };
 
@@ -464,6 +467,36 @@ const ShowInventives = () => {
             justifyContent: "center",
           }}
         >
+          <div>
+            <label
+              className="form-label"
+              style={{
+                fontWeight: "bold",
+                marginBottom: "8px",
+                display: "block",
+              }}
+            >
+              نوع الحافز
+            </label>
+            <Select
+              className="form-input"
+              value={incetiveType}
+              onChange={(value) => {
+                setIncentiveType(value);
+              }}
+              placeholder="اختر نوع الحافز"
+              style={{ width: "200px", height: "45px" }}
+              dropdownAlign={{ overflow: "auto", align: "bottomCenter" }}
+              // showSearch={true}
+            >
+              {incetiveTypes &&
+                incetiveTypes.map((type) => (
+                  <Select.Option key={type.id} value={type.id}>
+                    {type.name}
+                  </Select.Option>
+                ))}
+            </Select>
+          </div>
           <div>
             <label
               className="form-label"

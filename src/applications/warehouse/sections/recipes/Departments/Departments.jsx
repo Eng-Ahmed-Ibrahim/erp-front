@@ -31,6 +31,9 @@ function Departments() {
   const handleSearchDepartment = () => {
     navigate("/warehouse/recipes/show-recipes");
   };
+  const handleReviewRecipes = () => {
+    navigate("/warehouse/recipes/review");
+  };
   useEffect(() => {
     fetchData();
   }, []);
@@ -78,21 +81,51 @@ function Departments() {
       <h1 className="heading text-center p-3">اقسام المخزن </h1>
       {!(user.roles[0] == repairId || user.roles[0] == chemicalId) ? (
         <>
-          <div className="btn-container">
+          <div
+            className="btn-container"
+            style={{ display: "flex", flexDirection: "center" }}
+          >
+            <div style={{ width: "20%" }}>
+              {user?.permissions.some(
+                (permission) =>
+                  permission.name === "create recipe_category_parent"
+              ) && (
+                <button
+                  className="dept-btn"
+                  onClick={handleAddDepartment}
+                  style={{ width: "100%" }}
+                >
+                  +اضافة قسم
+                </button>
+              )}
+            </div>
+
+            <div style={{ width: "20%" }}>
+              {user?.permissions.some(
+                (permission) => permission.name === "view recipe_categories"
+              ) && (
+                <button
+                  className="dept-btn"
+                  onClick={handleSearchDepartment}
+                  style={{ width: "100%" }}
+                >
+                  + بحث
+                </button>
+              )}
+            </div>
+
             {user?.permissions.some(
-              (permission) =>
-                permission.name === "create recipe_category_parent"
+              (permission) => permission.name === "view review-recipes"
             ) && (
-              <button className="dept-btn" onClick={handleAddDepartment}>
-                +اضافة قسم
-              </button>
-            )}
-            {user?.permissions.some(
-              (permission) => permission.name === "view recipe_categories"
-            ) && (
-              <button className="dept-btn" onClick={handleSearchDepartment}>
-                + بحث
-              </button>
+              <div style={{ width: "20%" }}>
+                <button
+                  className="dept-btn"
+                  onClick={handleReviewRecipes}
+                  style={{ width: "100%" }}
+                >
+                  مراجعة الأصناف
+                </button>
+              </div>
             )}
           </div>
 
@@ -111,17 +144,16 @@ function Departments() {
         </>
       ) : null}
 
-
-
       <div className="cards-container">
-        <div className="row" style={{
-          display:"flex", 
-          flexDirection:"row",
-          
-        }}>
+        <div
+          className="row"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
           {data.map((department, index) => (
             <Cards
-           
               key={index}
               img={department.image}
               department={department.name}

@@ -369,5 +369,22 @@
         "id": 146,
         "value": "view products_review",
         "label": "عرض مراجعة المنتجات"
+    }, {
+        "id": 147,
+        "value": "view review-recipes",
+        "label": "عرض مراجعة الاصناف"
+    },{
+        "id": 148,
+        "value": "view shifts",
+        "label": "عرض الشيفتات"
+    },{
+        "id": 149,
+        "value": "edit transfare_invoice",
+        "label": "تعديل فواتير التحويل"
+    },{
+        "id": 150,
+        "value": "edit transfare_invoice_Quantity",
+        "label": "تعديل كميات فواتير التحويل"
     }
+
 ]

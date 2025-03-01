@@ -209,7 +209,7 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
       required: true,
       onChange: (value) => {
         const [invoiceId, expireyear, expiremonth, expireday] =
-        value.split("-");
+          value.split("-");
         const expireDateConcat = `${expireyear}-${expiremonth}-${expireday}`;
         setInvoiceId(invoiceId);
         const concatValue = `${invoiceId}-${expireDateConcat}`;
@@ -217,7 +217,7 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
       },
     },
   ];
-  if (InvoiceType != "out_going" ) {
+  if (InvoiceType != "out_going") {
     fileds.pop();
   }
   // const expirationOptionsLabel =

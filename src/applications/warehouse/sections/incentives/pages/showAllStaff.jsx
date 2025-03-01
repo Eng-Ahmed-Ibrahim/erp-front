@@ -196,7 +196,7 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
           {employeeTypes &&
             employeeTypes?.map((type) => (
               <Select.Option key={type.id} value={type.id}>
-                {type.name}
+                {type?.name}
               </Select.Option>
             ))}
         </Select>
@@ -371,7 +371,7 @@ const ShowAllStaff = () => {
               {departments &&
                 departments?.data?.map((dept) => (
                   <Select.Option key={dept.id} value={dept.id}>
-                    {dept.name}
+                    {dept?.name}
                   </Select.Option>
                 ))}
             </Select>
@@ -462,7 +462,7 @@ const ShowAllStaff = () => {
               {employeeTypes &&
                 employeeTypes?.map((type) => (
                   <Select.Option key={type.id} value={type.id}>
-                    {type.name}
+                    {type?.name}
                   </Select.Option>
                 ))}
             </Select>
@@ -536,7 +536,7 @@ const ShowAllStaff = () => {
                   fontWeight: "700",
                 }}
               >
-                {item.name}
+                {item?.name}
               </td>
               <td
                 style={{
@@ -547,7 +547,7 @@ const ShowAllStaff = () => {
                   fontWeight: "700",
                 }}
               >
-                {item.department.name}
+                {item.department?.name}
               </td>
               <td
                 style={{
@@ -558,7 +558,7 @@ const ShowAllStaff = () => {
                   fontWeight: "700",
                 }}
               >
-                {item.job.name}
+                {item.job?.name}
               </td>
               <td
                 style={{

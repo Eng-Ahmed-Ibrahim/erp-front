@@ -190,7 +190,6 @@ const OrderDetails = () => {
         if (res?.data?.client_type_id == "01hzf60qrasrm5x2ytvyrsne1j" || user?.department?.id == '3d1e1d26-91ff-40b8-9b2c-139aa79430e9') {
           SetIsExternalOrder(true);
         }
-console.log('ususususususu', user.department)
         if (res.data.comment) {
           setComments(res.data.comment.split(","));
         }

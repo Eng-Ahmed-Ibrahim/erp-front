@@ -125,3 +125,22 @@ export async function deleteRecipeSubCategoryParent(id) {
     message.error(error.response.data.error.message);
   }
 }
+
+export async function getRecipes($data) {
+  try {
+    const res = await axios.get(
+      `${domain}/api/v1/store/recipe_category_parent/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    // console.log(res.data);
+    return res.data.data;
+  } catch (error) {
+    // console.log("Error fetching data:", error);
+    message.error(error.response.data.error.message);
+
+  }
+}

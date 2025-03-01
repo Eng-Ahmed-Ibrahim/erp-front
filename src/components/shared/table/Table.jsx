@@ -15,6 +15,8 @@ import axios from "axios";
 import TotalAmount from "../../shared/totalAmount/TotalAmount";
 import PrintCopy from "../../../applications/warehouse/sections/cashier/pages/KitchenRequests/PrintCopy";
 import jsPDF from "jspdf";
+import "../../../fonts/Amiri-Regular-normal.js";
+
 import html2canvas from "html2canvas";
 const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
@@ -116,7 +118,6 @@ const Table = ({
       }
     );
   }, [filterValues, currentPage]);
-  //174611
   useEffect(() => {
     let intervalId;
     if (isRequests) {
@@ -237,7 +238,6 @@ const Table = ({
   };
 
   const handleShowData = (item) => {
-    console.log("rhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", item);
     setSelectedItem(item);
     setisShowModalVisible(true);
   };
@@ -297,8 +297,30 @@ const Table = ({
     const pageWidth = 190;
     const pageHeight = 297;
 
+    pdf.setFont("Amiri-Regular");
+    pdf.setFontSize(11);
+
+    let pdfFileHeader = [...(pdfHeader || [])];
+
+    pdfFileHeader.splice(1);
+
+    if (filterValues?.from_date) {
+      pdfFileHeader.push(
+        `من ${filterValues?.from_date} إلى ${
+          filterValues?.to_date ?? new Date().toISOString().split("T")[0]
+        }`
+      );
+    }
+    if (totalPrice) {
+      pdfFileHeader.push(`إجمالي السعر ${totalPrice.toFixed(2) ?? 0} جنيه`);
+    }
+
+    pdf.text(pdfFileHeader, 105, 10, { align: "center" });
+
+    pdf.setFont("helvetica");
+    pdf.setFontSize(12);
     const rows = Array.from(tableRef.current.querySelectorAll("tr"));
-    let position = 10;
+    let position = 12 + pdfFileHeader.length * 5;
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -317,53 +339,6 @@ const Table = ({
 
     pdf.save("تقرير المبيعات المفصل.pdf");
   };
-
-  // const handleSavePDF = async () => {
-  //   const pdf = new jsPDF("p", "mm", "a4");
-  //   const pageWidth = 190; // Width for content
-  //   const pageHeight = 297; // A4 height
-  //   const margin = 10; // Margin
-  //   let position = margin;
-  // console.log('hello this is me ', po)
-  //   // Add Arabic table header comment at the beginning
-  //   pdf.setFont("helvetica", "bold");
-  //   pdf.setFontSize(12);
-  //   pdf.text("تقرير المبيعات المفصل", pageWidth / 2, position, { align: "center" });
-  //   position += 10;
-  
-  //   const table = tableRef.current; // Reference to your table
-  //   const canvas = await html2canvas(table, { scale: 2 });
-  //   const tableImage = canvas.toDataURL("image/png");
-  
-  //   const imageHeight = (canvas.height * pageWidth) / canvas.width;
-  
-  //   // Split table into pages if it exceeds the page height
-  //   let remainingHeight = imageHeight;
-  
-  //   while (remainingHeight > 0) {
-  //     const currentHeight = Math.min(remainingHeight, pageHeight - position - margin);
-  
-  //     pdf.addImage(
-  //       tableImage,
-  //       "PNG",
-  //       margin,
-  //       position,
-  //       pageWidth,
-  //       currentHeight
-  //     );
-  
-  //     remainingHeight -= currentHeight;
-  //     position = margin;
-  
-  //     if (remainingHeight > 0) {
-  //       pdf.addPage();
-  //     }
-  //   }
-  
-  //   pdf.save("تقرير المبيعات المفصل.pdf");
-  // };
-
-  
   const generateTableRowHTML = (index, row) => {
     return `
       <tr style="border-bottom:1px solid var(--brown-color); padding:5px;">

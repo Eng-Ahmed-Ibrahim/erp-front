@@ -7,6 +7,7 @@ const domain = API_ENDPOINT;
 
 const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
+    
 export async function getRcipeReports(filteredValues, id, setIsLoading) {
     try {
         setIsLoading(true);

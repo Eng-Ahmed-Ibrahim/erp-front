@@ -459,7 +459,6 @@ export async function updateInvoice(filteredValues, id) {
 
 export async function updateInvoiceQuintity(filteredValues, id) {
   // //  
-  console.log(`idshshssss`,id)
   const formData = new FormData();
   Object.keys(filteredValues.recipes).map((key, index) => {
     

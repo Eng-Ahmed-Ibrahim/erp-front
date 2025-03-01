@@ -333,7 +333,6 @@ const AddCashierOrder = () => {
   const [isTakeAway, setIsTakeAway] = useState(false);
   const [isguest, setIsGuest] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
-  const [canEndOrder, setCanEndOrder] = useState(true);
   const [shouldPrint, setShouldPrint] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [orderID, setOrderID] = useState("");
@@ -1126,12 +1125,6 @@ const AddCashierOrder = () => {
     return () => resetMessageVisibility();
   }, [messageVisible]);
 
-  useEffect(() => {
-    if (user?.roles[0] == ExternalOrderCashierRole) {
-      setCanEndOrder(false);
-    }
-  }, []);
-
   return (
     <div className="form-cashier-container fs-5">
       <h1 className="form-cashier-title"> {user?.department.name}</h1>
@@ -1349,7 +1342,7 @@ const AddCashierOrder = () => {
           </>
         ) : null}
 
-        {!isguest && !isHidden && canEndOrder ? (
+        {!isguest && !isHidden ? (
           <>
             <button
               className="finish-cashier"

@@ -97,7 +97,6 @@ const ShowAllDepartments = () => {
           //   return sum + Number(obj.total_invoices_price || 0) || 0;
           // });
           return data?.data?.reduce((sum, obj) => {
-            console.log("sum now", sum, obj.total_invoices_price, Number(obj.total_invoices_price));
             return sum + Number(obj.total_invoices_price || 0);
           }, 0); // Explicitly set initial sum value
           

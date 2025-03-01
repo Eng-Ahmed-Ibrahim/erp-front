@@ -119,7 +119,6 @@ const ShowSuppliers = () => {
       route: "/warehouse/suppliers/add-supplier",
     },
   ];
-  // console.log('tableHeaders',actions)
   return (
     <div>
       <Table

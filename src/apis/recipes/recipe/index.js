@@ -73,23 +73,26 @@
 
 import axios from "axios";
 import { API_ENDPOINT } from "../../../../config";
-const Token = localStorage.getItem('token') || sessionStorage.getItem('token')
+const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
 const domain = API_ENDPOINT;
 import { message } from "antd";
+
 export async function getRecipes(
-  filteredValues = { name: "", page: "" },
+  filteredValues = { name: "", page: "", status: "", parent_category_id: "" },
   id,
   setIsLoading
 ) {
   try {
     setIsLoading(true);
-    const { name, page } = filteredValues;
-
+    const { name, page, status, category_parent_id } = filteredValues;
+    console.log(filteredValues);
     const res = await axios.get(`${domain}/api/v1/store/recipe`, {
       params: {
         name: name,
         recipe_category_id: id,
         page,
+        status: status,
+        category_parent_id: category_parent_id,
       },
       headers: {
         Authorization: `Bearer ${Token}`,
@@ -190,10 +193,7 @@ export async function eidtRecipes(
     formData.append("category_parent_id", category_parent_id);
     formData.append("recipe_category_id", sub_category_id);
 
-    
     formData.append("_method", "PUT"); // Only send the first image
-
-
 
     const res = await axios.post(
       `${domain}/api/v1/store/recipe/update/${id}`,
@@ -218,13 +218,13 @@ export async function getRecipesById(id, department_id) {
   try {
     const res = await axios.get(`${domain}/api/v1/store/recipe/${id}`, {
       params: {
-        department_id: department_id
+        department_id: department_id,
       },
       headers: {
         Authorization: `Bearer ${Token}`,
       },
     });
-    console.log("reciepe",res.data);
+    console.log("reciepe", res.data);
     return res.data;
   } catch (error) {
     message.error(error.response.data.error.message);
@@ -275,5 +275,26 @@ export async function deleteRecipe(id) {
     message.error(error.response.data.error.message);
 
     // console.log("Error fetching data:", error);
+  }
+}
+
+export async function changeRecipeStatus(id, status) {
+  try {
+    const res = await axios.post(
+      `${domain}/api/v1/store/recipe/change-status/${id}`,
+      {
+        status: status,
+      },
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    message.error(error.response.data.error.message);
+    throw error;
   }
 }

@@ -71,8 +71,8 @@ function DeleteOrderModel({ show, onHide, orderId, status }) {
             transition: `all 0.3s`,
             background: "#ef0606",
             color: "white",
-            alignSelf: "center", 
-            marginTop: "20px", 
+            alignSelf: "center",
+            marginTop: "20px",
           }}
           onClick={handleDeleteOrder}
         >
@@ -419,74 +419,242 @@ const OrdersReports = () => {
         <h3>تقرير المبيعات</h3>
       </div>
       <div className="container text-center text-xl">
-        <div className="row align-items-center">
+        <div
+          className="row align-items-center"
+          style={{
+            display: "flex",
+            gap: "20px",
+            alignItems: "center",
+            justifyContent: "space-evenly",
+          }}
+        >
           {user.department.type === "reciver" ? null : user.department.type ===
             "master" ? (
             <>
-              <div className="col">
-                <div className="mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput1"
-                    className="form-label"
-                  >
-                    الحاله
-                  </label>
-                  <select
-                    className="form-control"
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                  >
-                    <option>اختر نوع الحاله</option>
-                    <option value="processing">تحت النجهيز</option>
-                    <option value="returned">مرتجع</option>
-                    <option value="paid">مدفوع</option>
-                    <option value="completed">تم التجهيز</option>
-                    <option value="closed">منتهية</option>
-                  </select>
-                </div>
+              <div className="col" >
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  الحاله
+                </label>
+                <select
+                  className="form-control"
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                >
+                  <option>اختر نوع الحاله</option>
+                  <option value="processing">تحت النجهيز</option>
+                  <option value="returned">مرتجع</option>
+                  <option value="paid">مدفوع</option>
+                  <option value="completed">تم التجهيز</option>
+                  <option value="closed">منتهية</option>
+                </select>
               </div>
+
               <div className="col">
-                <div className="mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput1"
-                    className="form-label"
-                  >
-                    اسم المنفذ
-                  </label>
-                  <select
-                    className="form-control"
-                    onChange={(e) => {
-                      setSelectId(e.target.value);
-                    }}
-                  >
-                    <option>اختر اسم المنفذ</option>
-                    {department?.data?.map((method) =>
-                      method.type === "reciver" ? (
-                        <option value={method.id} key={method.id}>
-                          {method.name}
-                        </option>
-                      ) : null
-                    )}
-                  </select>
-                </div>
-              </div>
-              <div className="col">
-                <div className="mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput1"
-                    className="form-label"
-                  >
-                    اسم الكاشير
-                  </label>
-                  <select
-                    className="form-control"
-                    onChange={(e) => {
-                      setSelectUser(e.target.value);
-                    }}
-                  >
-                    <option>اختر اسم كاشير</option>
-                    {users?.data?.map((method) => (
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  اسم المنفذ
+                </label>
+                <select
+                  className="form-control"
+                  onChange={(e) => {
+                    setSelectId(e.target.value);
+                  }}
+                >
+                  <option>اختر اسم المنفذ</option>
+                  {department?.data?.map((method) =>
+                    method.type === "reciver" ? (
                       <option value={method.id} key={method.id}>
                         {method.name}
+                      </option>
+                    ) : null
+                  )}
+                </select>
+              </div>
+              <div className="col">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  اسم الكاشير
+                </label>
+                <select
+                  className="form-control"
+                  onChange={(e) => {
+                    setSelectUser(e.target.value);
+                  }}
+                >
+                  <option>اختر اسم كاشير</option>
+                  {users?.data?.map((method) => (
+                    <option value={method.id} key={method.id}>
+                      {method.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          ) : null}
+
+          
+          <div className="col">
+            <label htmlFor="exampleFormControlInput1" className="form-label">
+              اسم الويتر:
+            </label>
+            <select
+              onChange={(e) => {
+                if (e.target.value === "اختر اسم الويتر") {
+                  setSelectedWatier(null);
+                  setData([]);
+                  return;
+                }
+                setSelectedWatier(e.target.value);
+              }}
+              className="form-control"
+              aria-label=".form-select-lg example"
+            >
+              <option>اختر اسم الويتر</option>
+              {waiterName.map((method) => (
+                <option key={method.id} value={method.id}>
+                  {method.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col">
+            <label htmlFor="exampleFormControlInput1" className="form-label">
+              من
+            </label>
+            <input
+              type="date"
+              className="form-control"
+              value={fromDate}
+              onChange={(e) => {
+                setFromDate(e.target.value);
+              }}
+            />
+          </div>
+          <div className="col">
+            <label htmlFor="exampleFormControlInput1" className="form-label">
+              الى
+            </label>
+            <input
+              type="date"
+              className="form-control"
+              value={toDate}
+              onChange={(e) => {
+                setToDate(e.target.value.toString().split("T")[0]);
+              }}
+            />
+          </div>
+
+          <div className="col">
+            <button
+              className="form-cashier-btn"
+              onClick={() => handleGettingReports()}
+              style={{
+                width: "100%",
+                marginTop: `27%`,
+                transition: `all 0.3s`,
+              }}
+            >
+              تأكيد
+            </button>
+          </div>
+          {user.department.type === "master" ? (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "30px",
+                }}
+              >
+                <div className="col">
+                  <label htmlFor="payment-method" className="form-label">
+                    طريقة الدفع
+                  </label>
+                  <select
+                    id="payment-method"
+                    required
+                    className="form-cashier-select"
+                    placeholder="اختر طريقة دفع"
+                    value={selectedPaymentMethodNakdy}
+                    onChange={(e) => handlePaymentMethodChange(e.target.value)}
+                    showSearch
+                    filterOption={(input, option) =>
+                      (option?.children ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    optionFilterProp="children"
+                  >
+                    <option value="">اختر طريقة الدفع</option>
+                    {paymentMethods.map((method) => (
+                      <option key={method.id} value={method.id}>
+                        {method.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col">
+                  <label className="form-cashier-label">نوع العميل</label>
+                  <select
+                    required
+                    className="form-cashier-select"
+                    placeholder="اختر نوع العميل"
+                    value={clientTypes}
+                    onChange={(e) => handleClientTypeChange(e.target.value)}
+                    showSearch
+                    filterOption={(input, option) =>
+                      (option?.children ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    optionFilterProp="children"
+                  >
+                    <option value="">اختر نوع العميل</option>
+                    {clientTypes.map((type) => (
+                      <option key={type.id} value={type.id}>
+                        {type.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col">
+                  <label className="form-cashier-label">العميل</label>
+                  <select
+                    required
+                    className="form-cashier-select"
+                    placeholder="اختر العميل"
+                    value={selectedClients}
+                    onChange={(e) => {
+                      const selectedClient = clients.find(
+                        (client) => client.id === e.target.value
+                      );
+                      const clientName = selectedClient
+                        ? selectedClient.name
+                        : "";
+                      setSelectedClientsName(clientName);
+                      setSelectedClients(e.target.value);
+                    }}
+                    showSearch
+                    filterOption={(input, option) =>
+                      (option?.children ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    optionFilterProp="children"
+                  >
+                    <option value="">اختر اسم العميل</option>
+                    {clients.map((client) => (
+                      <option key={client.id} value={client.id}>
+                        {client.name}
                       </option>
                     ))}
                   </select>
@@ -494,207 +662,35 @@ const OrdersReports = () => {
               </div>
             </>
           ) : null}
-          <div className="col">
-            <div className="mb-3">
-              <label htmlFor="exampleFormControlInput1" className="form-label">
-                اسم الويتر:
-              </label>
-              <select
-                onChange={(e) => {
-                  if (e.target.value === "اختر اسم الويتر") {
-                    setSelectedWatier(null);
-                    setData([]);
-                    return;
-                  }
-                  setSelectedWatier(e.target.value);
-                }}
-                className="form-control"
-                aria-label=".form-select-lg example"
-              >
-                <option>اختر اسم الويتر</option>
-                {waiterName.map((method) => (
-                  <option key={method.id} value={method.id}>
-                    {method.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="col">
-            <div className="mb-3">
-              <label htmlFor="exampleFormControlInput1" className="form-label">
-                من
-              </label>
-              <input
-                type="date"
-                className="form-control"
-                value={fromDate}
-                onChange={(e) => {
-                  setFromDate(e.target.value);
-                }}
-              />
-            </div>
-          </div>
-          <div className="col">
-            <div className="mb-3">
-              <label htmlFor="exampleFormControlInput1" className="form-label">
-                الى
-              </label>
-              <input
-                type="date"
-                className="form-control"
-                value={toDate}
-                onChange={(e) => {
-                  setToDate(e.target.value.toString().split("T")[0]);
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="col">
-            <div className="mb-3">
-              <button
-                className="form-cashier-btn"
-                onClick={() => handleGettingReports()}
-                style={{
-                  width: "100%",
-                  marginTop: `27%`,
-                  transition: `all 0.3s`,
-                }}
-              >
-                تأكيد
-              </button>
-            </div>
-          </div>
-          {user.department.type === "master" ? (
-            <>
-              <div>
-                <div className="col">
-                  <div className="mb-3">
-                    <label htmlFor="payment-method" className="form-label">
-                      طريقة الدفع
-                    </label>
-                    <select
-                      id="payment-method"
-                      required
-                      className="form-cashier-select"
-                      placeholder="اختر طريقة دفع"
-                      value={selectedPaymentMethodNakdy}
-                      onChange={(e) =>
-                        handlePaymentMethodChange(e.target.value)
-                      }
-                      showSearch
-                      filterOption={(input, option) =>
-                        (option?.children ?? "")
-                          .toLowerCase()
-                          .includes(input.toLowerCase())
-                      }
-                      optionFilterProp="children"
-                    >
-                      <option value="">اختر طريقة الدفع</option>
-                      {paymentMethods.map((method) => (
-                        <option key={method.id} value={method.id}>
-                          {method.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Client Type Dropdown */}
-                <div className="col">
-                  <div className="mb-3">
-                    <label className="form-cashier-label">نوع العميل</label>
-                    <select
-                      required
-                      className="form-cashier-select"
-                      placeholder="اختر نوع العميل"
-                      value={clientTypes}
-                      onChange={(e) => handleClientTypeChange(e.target.value)}
-                      showSearch
-                      filterOption={(input, option) =>
-                        (option?.children ?? "")
-                          .toLowerCase()
-                          .includes(input.toLowerCase())
-                      }
-                      optionFilterProp="children"
-                    >
-                      <option value="">اختر نوع العميل</option>
-                      {clientTypes.map((type) => (
-                        <option key={type.id} value={type.id}>
-                          {type.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Client Dropdown */}
-                <div className="col">
-                  <div className="mb-3">
-                    <label className="form-cashier-label">العميل</label>
-                    <select
-                      required
-                      className="form-cashier-select"
-                      placeholder="اختر العميل"
-                      value={selectedClients}
-                      onChange={(e) => {
-                        const selectedClient = clients.find(
-                          (client) => client.id === e.target.value
-                        );
-                        const clientName = selectedClient
-                          ? selectedClient.name
-                          : "";
-                        setSelectedClientsName(clientName);
-                        setSelectedClients(e.target.value);
-                      }}
-                      showSearch
-                      filterOption={(input, option) =>
-                        (option?.children ?? "")
-                          .toLowerCase()
-                          .includes(input.toLowerCase())
-                      }
-                      optionFilterProp="children"
-                    >
-                      <option value="">اختر اسم العميل</option>
-                      {clients.map((client) => (
-                        <option key={client.id} value={client.id}>
-                          {client.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : null}
         </div>
       </div>
 
-      <table className="table table-hover mt-5 mb-20">
-        <thead>
-          <tr>
-            <th scope="col"> مدفوعات الفيزا</th>
-            <th scope="col"> مدفوعات الكاش</th>
-            <th scope="col"> مدفوعات الاجل</th>
-            <th scope="col">اجمالى المدفوعات</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{Math.round(data?.data?.totals.total_visa * 100) / 100}</td>
-            <td scope="row">
-              {Math.round(data?.data?.totals.total_cash * 100) / 100}
-            </td>
-            <td scope="row">
-              {Math.round(data?.data?.totals.total_post_paid * 100) / 100}
-            </td>
-            <td scope="row">
-              {Math.round(data?.data?.totals.total * 100) / 100}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {data?.data && (
+        <table className="table table-hover mt-5 mb-20">
+          <thead>
+            <tr>
+              <th scope="col"> مدفوعات الفيزا</th>
+              <th scope="col"> مدفوعات الكاش</th>
+              <th scope="col"> مدفوعات الاجل</th>
+              <th scope="col">اجمالى المدفوعات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{Math.round(data?.data?.totals.total_visa * 100) / 100}</td>
+              <td scope="row">
+                {Math.round(data?.data?.totals.total_cash * 100) / 100}
+              </td>
+              <td scope="row">
+                {Math.round(data?.data?.totals.total_post_paid * 100) / 100}
+              </td>
+              <td scope="row">
+                {Math.round(data?.data?.totals.total * 100) / 100}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
 
       <table className="table table-hover mt-5">
         <thead>

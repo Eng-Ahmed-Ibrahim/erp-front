@@ -26,7 +26,7 @@ import { BsCashCoin, BsCreditCard2FrontFill } from "react-icons/bs";
 import { HiOutlineOfficeBuilding } from "react-icons/hi";
 import { GiTomato } from "react-icons/gi";
 import { AiOutlineSafetyCertificate } from "react-icons/ai";
-import { MdDelete, MdLogout } from "react-icons/md";
+import { MdDelete, MdLogout, MdSettings } from "react-icons/md";
 import { PiUserSwitchThin } from "react-icons/pi";
 import { CiDiscount1 } from "react-icons/ci";
 import {
@@ -194,7 +194,7 @@ const Sidebar = () => {
     if (user.roles[0] == CASHIER_ROLE) {
       setUserRole("cashier");
     }
-    
+
     if (user?.department?.linked_department) {
       setLinkedDepartment(user?.department?.linked_department);
       setLinkedDepartmentName(user?.department?.linked_department_name);
@@ -319,10 +319,7 @@ const Sidebar = () => {
             <span className="user-rule">{user?.name}</span>
           </div>
           <ul className="menu-list">
-           
-           
-           
-          <li
+            <li
               className="menu-item"
               title="الموردين"
               style={{
@@ -359,7 +356,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             {/* <li
               className="menu-item"
               title=" الموردين"
@@ -396,9 +392,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li> */}
-
-
-
             <li
               className="menu-item"
               title="اقسام المخزن"
@@ -435,7 +428,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             <li
               className="menu-item"
               title="الفواتير"
@@ -468,7 +460,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             <li
               className="menu-item"
               title="الهالك"
@@ -505,7 +496,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             <li
               className="menu-item"
               title="المدفوعات"
@@ -662,7 +652,6 @@ const Sidebar = () => {
                 </Link>
               </li>
             ) : null}
-
             <li
               className="menu-item"
               title="  نقاط البيع"
@@ -699,7 +688,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             <li
               className="menu-item"
               title="طلبات المطبخ"
@@ -736,7 +724,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             {!isTalaat && (
               <li
                 className="menu-item"
@@ -775,7 +762,6 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-
             <li
               className="menu-item"
               title="الأوردرات المحذوفة"
@@ -812,7 +798,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             <li
               className="menu-item"
               title="تقارير المبيعات"
@@ -971,7 +956,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li> */}
-
             <li
               className="menu-item"
               title="المنتجات2"
@@ -1008,7 +992,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             <li
               className="menu-item"
               title="الأدوار"
@@ -1183,7 +1166,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             <li
               className="menu-item"
               title="طرق الدفع"
@@ -1219,7 +1201,6 @@ const Sidebar = () => {
                 </span>
               </Link> */}
             </li>
-
             <li
               className="menu-item"
               title="التقارير"
@@ -1256,7 +1237,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             <li
               className="menu-item"
               title="المنافذ"
@@ -1293,7 +1273,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             {isIncentives && (
               <>
                 {incentivesCollapsedGroup ? (
@@ -1591,123 +1570,38 @@ const Sidebar = () => {
               </>
             )}
 
-            {user?.department.type != "source" ? (
-              <>
-                {!isMechOrChem && (
-                  <>
-                    <li
-                      className="menu-item"
-                      title="الشيفتات"
-                      style={{
-                        display: `${
-                          checkMenuItemPermission({
-                            id: 140,
-                            name: "view units",
-                          })
-                            ? ""
-                            : "none"
-                        }`,
-                      }}
-                    >
-                      <Link
-                        to="/warehouse/reports/show-shifts"
-                        className={`menu-link ${
-                          activeLink === "/warehouse/reports/show-shifts"
-                            ? "active"
-                            : ""
-                        } ${justifyContent}`}
-                        onClick={() =>
-                          handleMenuLinkClick("/warehouse/reports/show-shifts")
-                        }
-                      >
-                        <span className="menu-link-icon">
-                          <TbBrandUnity size={30} />
-                        </span>
-                        <span
-                          className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
-                        >
-                          الشيفتات
-                        </span>
-                      </Link>
-                    </li>
-                    <li
-                      className="menu-item"
-                      title="الويتر"
-                      style={{
-                        display: `${
-                          checkMenuItemPermission({
-                            id: 140,
-                            name: "view units",
-                          })
-                            ? ""
-                            : "none"
-                        }`,
-                      }}
-                    >
-                      <Link
-                        to="/warehouse/reports/witer"
-                        className={`menu-link ${
-                          activeLink === "/warehouse/reports/witer"
-                            ? "active"
-                            : ""
-                        } ${justifyContent}`}
-                        onClick={() =>
-                          handleMenuLinkClick("/warehouse/reports/witer")
-                        }
-                      >
-                        <span className="menu-link-icon">
-                          <TbBrandUnity size={30} />
-                        </span>
-                        <span
-                          className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
-                        >
-                          الويتر
-                        </span>
-                      </Link>
-                    </li>
-
-                    <li
-                      className="menu-item"
-                      title="الويتر"
-                      style={{
-                        display: `${
-                          checkMenuItemPermission({
-                            id: 146,
-                            name: "view products_review",
-                          })
-                            ? ""
-                            : "none"
-                        }`,
-                      }}
-                    >
-                      <Link
-                        to="/warehouse/reports/review"
-                        className={`menu-link ${
-                          activeLink === "/warehouse/reports/review"
-                            ? "active"
-                            : ""
-                        } ${justifyContent}`}
-                        onClick={() =>
-                          handleMenuLinkClick("/warehouse/reports/review")
-                        }
-                      >
-                        <span className="menu-link-icon">
-                          <TbBrandUnity size={30} />
-                        </span>
-                        <span
-                          className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
-                        >
-                          مراجعه المنتجات
-                        </span>
-                      </Link>
-                    </li>
-                  </>
-                )}
-              </>
-            ) : null}
+            <li
+              className="menu-item"
+              title="الويتر"
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 146,
+                    name: "view products_review",
+                  })
+                    ? ""
+                    : "none"
+                }`,
+              }}
+            >
+              <Link
+                to="/warehouse/reports/review"
+                className={`menu-link ${
+                  activeLink === "/warehouse/reports/review" ? "active" : ""
+                } ${justifyContent}`}
+                onClick={() => handleMenuLinkClick("/warehouse/reports/review")}
+              >
+                <span className="menu-link-icon">
+                  <TbBrandUnity size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  مراجعه المنتجات
+                </span>
+              </Link>
+            </li>
 
             {linkedDepartment && (
               <li className="menu-item" title="كاشير الأنشطة">
@@ -1731,6 +1625,64 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
+
+            <li
+              className="menu-item"
+              title="الشيفتات"
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 148,
+                    name: "view shifts",
+                  })
+                    ? ""
+                    : "none"
+                }`,
+              }}
+            >
+              <Link
+                to="/warehouse/reports/show-shifts"
+                className={`menu-link ${
+                  activeLink === "/warehouse/reports/show-shifts"
+                    ? "active"
+                    : ""
+                } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick("/warehouse/reports/show-shifts")
+                }
+              >
+                <span className="menu-link-icon">
+                  <TbBrandUnity size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  الشيفتات
+                </span>
+              </Link>
+            </li>
+            <li className="menu-item" title="الإعدادات">
+              <Link
+                to="/warehouse/account-settings"
+                className={`menu-link ${
+                  activeLink === "/warehouse/account-settings" ? "active" : ""
+                } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick("/warehouse/account-settings")
+                }
+              >
+                <span className="menu-link-icon">
+                  <MdSettings size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  الإعدادات
+                </span>
+              </Link>
+            </li>
 
             <li className="menu-item" title="تسجيل خروج">
               <button
