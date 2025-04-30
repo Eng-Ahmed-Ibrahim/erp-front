@@ -136,7 +136,7 @@ function PrintAfterSubmit({ id,table_no }) {
             </tbody>
             <tfoot>
               <tr>
-                <td className="text-price" colSpan={3}> السعر الكلي بالخدمة</td>
+                <td className="text-price" colSpan={3}> السعر الكلي </td>
                 <td className="text-price" colSpan={3}>{data.price} ج.م</td>
               </tr>
               <tr>

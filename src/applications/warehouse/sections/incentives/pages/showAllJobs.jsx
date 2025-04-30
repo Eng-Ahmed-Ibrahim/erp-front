@@ -35,7 +35,7 @@ function DataModal({ show, onHide, itemId, job }) {
   };
   const handleAddJob = async () => {
     const res = await axios.post(
-      `${API_ENDPOINT}/api/v1/jobs/`,
+      `${API_ENDPOINT}/api/v1/jobs`,
 
       {
         name: name,
@@ -134,7 +134,7 @@ const ShowAllJobs = () => {
     };
 
     axios
-      .get(`${API_ENDPOINT}/api/v1/jobs/`, {
+      .get(`${API_ENDPOINT}/api/v1/jobs`, {
         params: filters,
         headers: {
           Authorization: `Bearer ${Token}`,

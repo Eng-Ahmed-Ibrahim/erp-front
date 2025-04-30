@@ -7,6 +7,7 @@ import { API_ENDPOINT } from "../../../../../../../config";
 import { useEffect, useState } from "react";
 import { BsBorderAll } from "react-icons/bs";
 import { Pagination, Select, message, Modal } from "antd";
+import { use } from "i18next";
 
 const OrderCard = ({ order, actions, changeStatusFn, user, refreshOrders }) => {
   // const [cardStyle, setCardStyle] = useState("");
@@ -136,7 +137,27 @@ const OrderCard = ({ order, actions, changeStatusFn, user, refreshOrders }) => {
         </table>
         <ul></ul>
       </div>
-
+      {user?.roles[0] == "9c1102e-985-4b10-bdf8-25c8469f2" && (
+        <div className="order-products" style={productsStyle(order)}>
+          <h5 style={{ color: "#08489b" }}>الملاحظات :</h5>
+          <table className="table table-hover mt-3">
+            <tbody>
+              {order?.comment &&
+                order?.comment?.split(",")?.map((comment, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      <tr key={index}>
+                        <td scope="row">{index + 1}</td>
+                        <td>{comment}</td>
+                      </tr>
+                    </React.Fragment>
+                  );
+                })}
+            </tbody>
+          </table>
+          <ul></ul>
+        </div>
+      )}
       <div className="actions">
         {actions.map((action) => {
           if (action.type === "show") {

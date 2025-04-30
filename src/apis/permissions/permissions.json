@@ -385,6 +385,18 @@
         "id": 150,
         "value": "edit transfare_invoice_Quantity",
         "label": "تعديل كميات فواتير التحويل"
+    },{
+        "id": 151,
+        "value": "eliminate_over_quantity",
+        "label": "خذف الأوفر"
+    },{
+        "id": 152,
+        "value": "submit_actual_quantities",
+        "label" :"حفظ الجرد الفعلي "
+    },{
+        "id": 153,
+        "value": "cannot_close_order",
+        "label" :"فتح الاوردرات فقط "
     }
-
+    
 ]

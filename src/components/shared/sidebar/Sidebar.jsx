@@ -1489,6 +1489,39 @@ const Sidebar = () => {
               </>
             )}
 
+            <li
+              className="menu-item"
+              title="الويتر"
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 113,
+                    name: "view users",
+                  })
+                    ? ""
+                    : "none"
+                }`,
+              }}
+            >
+              <Link
+                to="/warehouse/reports/witer"
+                className={`menu-link ${
+                  activeLink === "/warehouse/reports/witer" ? "active" : ""
+                } ${justifyContent}`}
+                onClick={() => handleMenuLinkClick("/warehouse/reports/witer")}
+              >
+                <span className="menu-link-icon">
+                  <TbBrandUnity size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  الويتر
+                </span>
+              </Link>
+            </li>
+
             {!isMechOrChem && (
               <>
                 <li

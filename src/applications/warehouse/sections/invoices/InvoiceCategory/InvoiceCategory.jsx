@@ -106,12 +106,26 @@ function Categories(props) {
         {
           key: "quantity",
           label: "الكمية",
-          isInput: user?.department.type === "source" ? true : false,
+          isInput:
+            user?.department.type === "source" ||
+            user?.permissions.some(
+              (permission) =>
+                permission.name === "edit transfare_invoice_Quantity"
+            )
+              ? true
+              : false,
         },
         {
           key: "price",
           label: "السعر",
-          isInput: user?.department.type === "master" ? true : false,
+          isInput:
+            user?.department.type === "master" &&
+            !user?.permissions.some(
+              (permission) =>
+                permission.name === "edit transfare_invoice_Quantity"
+            )
+              ? true
+              : false,
         },
         { key: "expire_date", label: "تاريخ الصلاحية", isInput: false },
       ],
@@ -563,19 +577,22 @@ function Categories(props) {
                 getTransfareInvoiceByType(filters, id, setIsLoading)
               }
               detailsHeaders={detailsHeaders}
-
               updateFn={
                 user?.permissions.some(
                   (permission) => permission.name === "edit invoice"
                 )
-                  ? user?.department.type === "master"
+                  ? user?.permissions.some(
+                      (permission) =>
+                        permission.name === "edit transfare_invoice_Quantity"
+                    )
+                    ? updateInvoiceQuintity
+                    : user?.department.type === "master"
                     ? updateInvoicePrice
                     : user?.department.type === "source"
                     ? updateInvoiceQuintity
                     : null
                   : null
               }
-              
               acceptTitle={
                 user?.permissions.some(
                   (permission) => permission.name === "change invoice status"

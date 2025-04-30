@@ -8,7 +8,7 @@ import { Pagination, Select, Modal, message } from "antd";
 
 import { DownloadTableExcel } from "react-export-table-to-excel";
 
-function SaveIncentivesModal({ show, onHide, month }) {
+function SaveIncentivesModal({ show, onHide, month, type }) {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
 
@@ -17,6 +17,7 @@ function SaveIncentivesModal({ show, onHide, month }) {
       `${API_ENDPOINT}/api/v1/incentives/lock-incentives`,
       {
         month: month,
+        type: type,
       },
       {
         headers: {
@@ -320,6 +321,7 @@ const ShowInventives = () => {
         },
       })
       .then((response) => {
+        response?.data?.unshift({ id: null, name: "اختر قسم" });
         setDepartments(response.data);
       })
       .catch((error) => {
@@ -335,6 +337,7 @@ const ShowInventives = () => {
         },
       })
       .then((response) => {
+        response?.data?.data?.unshift({ id: null, name: "اختر الفئة" });
         setEmployeesTypes(response.data.data);
       })
       .catch((error) => {
@@ -368,7 +371,6 @@ const ShowInventives = () => {
       type: incetiveType,
     };
 
-    console.log("deleteer ddnfdongfdin");
     await axios
       .get(`${API_ENDPOINT}/api/v1/incentives`, {
         params: filters,
@@ -404,7 +406,7 @@ const ShowInventives = () => {
 
   const handelEditPoints = async () => {
     const res = await axios.put(
-      `${API_ENDPOINT}/api/v1/incentives/`,
+      `${API_ENDPOINT}/api/v1/incentives`,
       {
         point_value: editedPointValue,
       },
@@ -598,7 +600,7 @@ const ShowInventives = () => {
               className="form-input"
               value={employeeType}
               onChange={handleEmplyeeTypChange}
-              placeholder="اختر القسم"
+              placeholder="اختر الفئة"
               style={{ width: "200px", height: "45px" }}
               dropdownAlign={{ overflow: "auto", align: "bottomCenter" }}
               // showSearch={true}
@@ -890,6 +892,7 @@ const ShowInventives = () => {
         show={isSaveIncentivesModalVisable}
         onHide={() => setIsSaveIncentivesModalVisable(false)}
         month={selectedMonth}
+        type={incetiveType}
       />
 
       {data?.data?.length > 0 && (

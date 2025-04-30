@@ -19,14 +19,15 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
 
   useEffect(() => {
     setName(item?.name || 0);
-    setJob(item?.job?.name || "");
+    setJob(item?.job?.id || "");
     setNationalID(item?.national_id || 0);
-    setDepartment(item?.department?.name || "");
+    setDepartment(item?.department?.id || "");
+    setemployeeType(item?.employee_type_id)
   }, [item]);
 
   useEffect(() => {
     axios
-      .get(`${API_ENDPOINT}/api/v1/employees/`, {
+      .get(`${API_ENDPOINT}/api/v1/employees`, {
         headers: {
           Authorization: `Bearer ${Token}`,
         },
@@ -40,7 +41,7 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
 
   const handleAddEmployee = async () => {
     const res = await axios.post(
-      `${API_ENDPOINT}/api/v1/employees/`,
+      `${API_ENDPOINT}/api/v1/employees`,
 
       {
         national_id: nationalID,
@@ -72,6 +73,7 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
         job_id: job,
         department_id: department,
         points: null,
+        employee_type_id: employeeType
       },
       {
         headers: {
@@ -87,7 +89,7 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
 
   useEffect(() => {
     axios
-      .get(`${API_ENDPOINT}/api/v1/jobs/`, {
+      .get(`${API_ENDPOINT}/api/v1/jobs`, {
         headers: {
           Authorization: `Bearer ${Token}`,
         },
@@ -302,7 +304,7 @@ const ShowAllStaff = () => {
     };
 
     axios
-      .get(`${API_ENDPOINT}/api/v1/employees/`, {
+      .get(`${API_ENDPOINT}/api/v1/employees`, {
         params: filters,
         headers: {
           Authorization: `Bearer ${Token}`,

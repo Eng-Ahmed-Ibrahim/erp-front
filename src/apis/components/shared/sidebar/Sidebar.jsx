@@ -1052,12 +1052,14 @@ const Sidebar = () => {
                   </Link>
                 </li>
 
+
+{/*  heree      */}
                 <li
                   className="menu-item"
                   title="الويتر"
                   style={{
                     display: `${checkMenuItemPermission({
-                      id: 140,
+                      id: 119,
                       name: "view units",
                     })
                       ? ""
@@ -1084,6 +1086,7 @@ const Sidebar = () => {
                     </span>
                   </Link>
                 </li>
+
                 <li
                   className="menu-item"
                   title="الويتر"
@@ -1118,6 +1121,16 @@ const Sidebar = () => {
                 </li>
               </>
             ) : null}
+
+
+
+
+
+
+
+
+
+
 
             <li className="menu-item" title="تسجيل خروج">
               <button

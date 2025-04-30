@@ -198,7 +198,7 @@ const ShowAllSalesDetails = () => {
     setSelectedDepartmentName(selectedDeptNames);
     try {
       const response = await axios.get(
-        `${API_ENDPOINT}/api/v1/payment_report/`,
+        `${API_ENDPOINT}/api/v1/payment_report`,
         {
           params: {
             data: {

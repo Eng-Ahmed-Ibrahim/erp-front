@@ -6,6 +6,8 @@ import { API_ENDPOINT } from "../../../../../../../config";
 import { changeOrderStatus, getOrders } from "../../../../../../apis/orders";
 import "./styles.css";
 import { set } from "date-fns";
+import { TbBorderRadius } from "react-icons/tb";
+import { ConsoleSqlOutlined } from "@ant-design/icons";
 
 function DeleteOrderModel({ show, onHide, orderId, status }) {
   const [deletionNote, setNewDeletionNote] = useState("");
@@ -138,25 +140,44 @@ const OrdersReports = () => {
     setSelectedWatier();
     setData([]);
   };
-  const handleGettingReports = async () => {
+
+  const isTodayOrYesterday = (dateInput)=>{
+    const formatedInputDate = new Date(dateInput)
+    formatedInputDate.setHours(0,0,0,0);
+    
+    const today =  new Date()
+    today.setHours (0,0,0,0);
+    
+    const yesterday =  new Date()
+    yesterday.setDate(today.getDate() -1 )
+    yesterday.setHours(0,0,0,0);
+
+    return (formatedInputDate.getTime() === today.getTime() ||
+         formatedInputDate.getTime() === yesterday.getTime());
+    
+    }
+    
+    const handleGettingReports = async () => {
     try {
       if (fromDate && toDate) {
-        const fromDateObj = new Date(fromDate + "T00:00:00Z");
-        const toDateObj = new Date(toDate + "T00:00:00Z");
+        // const fromDateObj = new Date(fromDate );
+        // const toDateObj = new Date(toDate );
 
-        const today = new Date();
-        today.setUTCHours(0, 0, 0, 0);
+        // const today = new Date();
+        // today.setUTCHours(0, 0, 0, 0);
 
-        const isFromDateToday = fromDateObj.getTime() === today.getTime();
+        // const isFromDateToday = fromDateObj.getTime() === today.getTime();
 
-        const timeDiff = toDateObj.getTime() - fromDateObj.getTime();
-        const dayDiff = timeDiff / (1000 * 3600 * 24);
+        // const timeDiff = toDateObj.getTime() - fromDateObj.getTime();
+        // const dayDiff = timeDiff / (1000 * 3600 * 24);
 
+        
         setIsAdminRole(false);
 
         if (user.department.type === "reciver") {
           setIsAdmin(false);
-          if (!isFromDateToday || dayDiff !== 1) {
+
+          if ( ! (isTodayOrYesterday(fromDate) && isTodayOrYesterday(toDate))) {
             const modal = Modal.error({
               title: "error",
               content: (
@@ -311,6 +332,7 @@ const OrdersReports = () => {
   useEffect(() => {
     fetchPaymentMethods();
     getAllWaiters();
+
   }, []);
   useEffect(() => {
     axios
@@ -322,12 +344,14 @@ const OrdersReports = () => {
       .then((res) => {
         setDepartments(res?.data);
       });
-    const addOneDay = () => {
-      const currentDate = new Date(toDate);
-      currentDate.setDate(currentDate.getDate() + 1);
-      setToDate(currentDate.toISOString().split("T")[0]);
-    };
-    addOneDay();
+
+    const today = new Date();
+    const year =  today.getFullYear();
+    const month = String(today.getMonth()+1).padStart(2,'0')
+    const day = String(today.getDate()).padStart(2,'0')
+    setToDate(`${year}-${month}-${day}T23:59:59`);
+
+    console.log('ttttttt', today.toISOString())
   }, [selectID]);
 
   useEffect(() => {
@@ -418,10 +442,14 @@ const OrdersReports = () => {
       >
         <h3>تقرير المبيعات</h3>
       </div>
-      <div className="container text-center text-xl">
+      <div
+        className="text-xl"
+        style={{ alignSelf: "center", justifySelf: "center", style: "70%" }}
+      >
         <div
           className="row align-items-center"
           style={{
+            width: "100%",
             display: "flex",
             gap: "20px",
             alignItems: "center",
@@ -431,7 +459,7 @@ const OrdersReports = () => {
           {user.department.type === "reciver" ? null : user.department.type ===
             "master" ? (
             <>
-              <div className="col" >
+              <div className="col">
                 <label
                   htmlFor="exampleFormControlInput1"
                   className="form-label"
@@ -439,7 +467,7 @@ const OrdersReports = () => {
                   الحاله
                 </label>
                 <select
-                  className="form-control"
+                  className="form-cashier-select"
                   onChange={(e) => setSelectedStatus(e.target.value)}
                 >
                   <option>اختر نوع الحاله</option>
@@ -459,7 +487,7 @@ const OrdersReports = () => {
                   اسم المنفذ
                 </label>
                 <select
-                  className="form-control"
+                  className="form-cashier-select"
                   onChange={(e) => {
                     setSelectId(e.target.value);
                   }}
@@ -482,7 +510,7 @@ const OrdersReports = () => {
                   اسم الكاشير
                 </label>
                 <select
-                  className="form-control"
+                  className="form-cashier-select"
                   onChange={(e) => {
                     setSelectUser(e.target.value);
                   }}
@@ -498,7 +526,6 @@ const OrdersReports = () => {
             </>
           ) : null}
 
-          
           <div className="col">
             <label htmlFor="exampleFormControlInput1" className="form-label">
               اسم الويتر:
@@ -512,7 +539,7 @@ const OrdersReports = () => {
                 }
                 setSelectedWatier(e.target.value);
               }}
-              className="form-control"
+              className="form-cashier-select"
               aria-label=".form-select-lg example"
             >
               <option>اختر اسم الويتر</option>
@@ -523,56 +550,48 @@ const OrdersReports = () => {
               ))}
             </select>
           </div>
+
           <div className="col">
             <label htmlFor="exampleFormControlInput1" className="form-label">
               من
             </label>
             <input
-              type="date"
-              className="form-control"
+              type="datetime-local"
+              className="form-cashier-select"
               value={fromDate}
               onChange={(e) => {
                 setFromDate(e.target.value);
               }}
             />
           </div>
+
           <div className="col">
             <label htmlFor="exampleFormControlInput1" className="form-label">
               الى
             </label>
             <input
-              type="date"
-              className="form-control"
+              type="datetime-local"
+              className="form-cashier-select"
               value={toDate}
               onChange={(e) => {
-                setToDate(e.target.value.toString().split("T")[0]);
+                console.log(e.target.value)
+                setToDate(e.target.value);
+                // setToDate(e.target.value.toString().split("T")[0]);
+
               }}
             />
           </div>
-
-          <div className="col">
-            <button
-              className="form-cashier-btn"
-              onClick={() => handleGettingReports()}
-              style={{
-                width: "100%",
-                marginTop: `27%`,
-                transition: `all 0.3s`,
-              }}
-            >
-              تأكيد
-            </button>
-          </div>
-          {user.department.type === "master" ? (
-            <>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: "30px",
-                }}
-              >
+          <div
+            style={{
+              marginTop: "0px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "30px",
+            }}
+          >
+            {user.department.type === "master" ? (
+              <>
                 <div className="col">
                   <label htmlFor="payment-method" className="form-label">
                     طريقة الدفع
@@ -659,135 +678,155 @@ const OrdersReports = () => {
                     ))}
                   </select>
                 </div>
+              </>
+            ) : null}
+            <>
+              <div className="col">
+                <button
+                  className="form-cashier-btn"
+                  onClick={() => handleGettingReports()}
+                  style={{
+                    width: "100%",
+                    marginTop: "50px",
+                    transition: `all 0.3s`,
+                  }}
+                >
+                  تأكيد
+                </button>
               </div>
             </>
-          ) : null}
+          </div>
         </div>
       </div>
 
       {data?.data && (
-        <table className="table table-hover mt-5 mb-20">
-          <thead>
-            <tr>
-              <th scope="col"> مدفوعات الفيزا</th>
-              <th scope="col"> مدفوعات الكاش</th>
-              <th scope="col"> مدفوعات الاجل</th>
-              <th scope="col">اجمالى المدفوعات</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{Math.round(data?.data?.totals.total_visa * 100) / 100}</td>
-              <td scope="row">
-                {Math.round(data?.data?.totals.total_cash * 100) / 100}
-              </td>
-              <td scope="row">
-                {Math.round(data?.data?.totals.total_post_paid * 100) / 100}
-              </td>
-              <td scope="row">
-                {Math.round(data?.data?.totals.total * 100) / 100}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <>
+          <table className="table table-hover mt-5 mb-20">
+            <thead>
+              <tr>
+                <th scope="col"> مدفوعات الفيزا</th>
+                <th scope="col"> مدفوعات الكاش</th>
+                <th scope="col"> مدفوعات الاجل</th>
+                <th scope="col">اجمالى المدفوعات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{Math.round(data?.data?.totals.total_visa * 100) / 100}</td>
+                <td scope="row">
+                  {Math.round(data?.data?.totals.total_cash * 100) / 100}
+                </td>
+                <td scope="row">
+                  {Math.round(data?.data?.totals.total_post_paid * 100) / 100}
+                </td>
+                <td scope="row">
+                  {Math.round(data?.data?.totals.total * 100) / 100}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table className="table table-hover mt-5">
+            <thead>
+              <tr>
+                <th scope="col">الرقم</th>
+                <th scope="col">رقم الطلب</th>
+                <th scope="col">الحالة</th>
+                <th scope="col">تاريخ الطلب</th>
+                <th scope="col">اسم العميل</th>
+                <th scope="col">قيمة الفاتورة</th>
+                <th scope="col">نوع العميل</th>
+                <th scope="col">ملاحظات</th>
+                {isAdmin && <th scope="col">المنتجات</th>}
+                {isAdmin && !isTalaat && isAdminRole && <th scope="col"> الاجرائات</th>}
+              </tr>
+            </thead>
+
+            <tbody>
+              {data?.data &&
+                Object.keys(data.data).map((key, index) => {
+                  const order = data.data[key];
+                  const rowStyle =
+                    order.status === "returned"
+                      ? { background: "#b9aeae" }
+                      : {};
+                  const buttonStyle =
+                    order.status === "returned"
+                      ? {
+                          width: "100%",
+                          marginTop: `27%`,
+                          transition: `all 0.3s`,
+                          background: "#444444",
+                          color: "white",
+                        }
+                      : {
+                          width: "100%",
+                          marginTop: `27%`,
+                          transition: `all 0.3s`,
+                          background: "red",
+                          color: "white",
+                        };
+                  const buttonName =
+                    order.status === "returned" ? "تم الحذف" : "حذف الاوردر";
+
+                  return (
+                    <React.Fragment key={index}>
+                      <tr style={rowStyle}>
+                        <th style={rowStyle} scope="row">
+                          {index + 1}
+                        </th>
+                        <td style={rowStyle}>{order.code}</td>
+                        <td style={rowStyle}>{order.status}</td>
+                        <td style={rowStyle}>{order.order_date}</td>
+                        <td style={rowStyle}>
+                          {order.client == "" ? "Guest" : order.client}
+                        </td>
+                        <td style={rowStyle}>
+                          {Math.round(order.total_price * 100) / 100}
+                        </td>
+                        <td style={rowStyle}>{order.client_type}</td>
+                        <td style={rowStyle}>
+                          {order?.comment?.split(",")?.map((c) => {
+                            return (
+                              <>
+                                <li>{c}</li>
+                              </>
+                            );
+                          })}
+                        </td>
+                        <td style={rowStyle}>
+                          {order.products?.map((product, index) => (
+                            <li key={index}>
+                              {isAdmin &&
+                                `${product.name} - ${product.quantity} × ${
+                                  product.price
+                                } = ${
+                                  Math.round(product.total_price * 100) / 100
+                                }`}
+                            </li>
+                          ))}
+                        </td>
+                        {isAdmin && !isTalaat && isAdminRole &&(
+                          <td style={rowStyle}>
+                            <button
+                              className="form-cashier-btn"
+                              onClick={() =>
+                                handleDeleteOrder(order.id, "returned")
+                              }
+                              style={buttonStyle}
+                            >
+                              {buttonName}
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    </React.Fragment>
+                  );
+                })}
+            </tbody>
+          </table>
+        </>
       )}
-
-      <table className="table table-hover mt-5">
-        <thead>
-          <tr>
-            <th scope="col">الرقم</th>
-            <th scope="col">رقم الطلب</th>
-            <th scope="col">الحالة</th>
-            <th scope="col">تاريخ الطلب</th>
-            <th scope="col">اسم العميل</th>
-            <th scope="col">قيمة الفاتورة</th>
-            <th scope="col">نوع العميل</th>
-            <th scope="col">ملاحظات</th>
-            {isAdmin && <th scope="col">المنتجات</th>}
-            {isAdmin && !isTalaat && <th scope="col"> الاجرائات</th>}
-          </tr>
-        </thead>
-
-        <tbody>
-          {data?.data &&
-            Object.keys(data.data).map((key, index) => {
-              const order = data.data[key];
-              const rowStyle =
-                order.status === "returned" ? { background: "#b9aeae" } : {};
-              const buttonStyle =
-                order.status === "returned"
-                  ? {
-                      width: "100%",
-                      marginTop: `27%`,
-                      transition: `all 0.3s`,
-                      background: "#444444",
-                      color: "white",
-                    }
-                  : {
-                      width: "100%",
-                      marginTop: `27%`,
-                      transition: `all 0.3s`,
-                      background: "red",
-                      color: "white",
-                    };
-              const buttonName =
-                order.status === "returned" ? "تم الحذف" : "حذف الاوردر";
-
-              return (
-                <React.Fragment key={index}>
-                  <tr style={rowStyle}>
-                    <th style={rowStyle} scope="row">
-                      {index + 1}
-                    </th>
-                    <td style={rowStyle}>{order.code}</td>
-                    <td style={rowStyle}>{order.status}</td>
-                    <td style={rowStyle}>{order.order_date}</td>
-                    <td style={rowStyle}>
-                      {order.client == "" ? "Guest" : order.client}
-                    </td>
-                    <td style={rowStyle}>
-                      {Math.round(order.total_price * 100) / 100}
-                    </td>
-                    <td style={rowStyle}>{order.client_type}</td>
-                    <td style={rowStyle}>
-                      {order?.comment?.split(",")?.map((c) => {
-                        return (
-                          <>
-                            <li>{c}</li>
-                          </>
-                        );
-                      })}
-                    </td>
-                    <td style={rowStyle}>
-                      {order.products?.map((product, index) => (
-                        <li key={index}>
-                          {isAdmin &&
-                            `${product.name} - ${product.quantity} × ${
-                              product.price
-                            } = ${Math.round(product.total_price * 100) / 100}`}
-                        </li>
-                      ))}
-                    </td>
-                    {isAdmin && !isTalaat && (
-                      <td style={rowStyle}>
-                        <button
-                          className="form-cashier-btn"
-                          onClick={() =>
-                            handleDeleteOrder(order.id, "returned")
-                          }
-                          style={buttonStyle}
-                        >
-                          {buttonName}
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                </React.Fragment>
-              );
-            })}
-        </tbody>
-      </table>
-
       <DeleteOrderModel
         show={isDeleteModelVisible}
         onHide={() => setIsDeleteModelVisible(false)}

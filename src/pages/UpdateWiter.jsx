@@ -15,7 +15,7 @@ const UpdateWiter = () => {
     try {
       await axios
         .put(
-          `/invest/`,
+          `/invest`,
           {
             name: name,
             places: places,

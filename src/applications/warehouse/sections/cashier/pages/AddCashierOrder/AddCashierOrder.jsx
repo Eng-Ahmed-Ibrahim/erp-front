@@ -102,7 +102,7 @@ function PrintAfterFinish({ id, table_no }) {
   }, [loading, data]);
 
   return (
-    <div
+    <div               
       id="invoice-container"
       ref={componentRef}
       dir="rtl"
@@ -159,7 +159,7 @@ function PrintAfterFinish({ id, table_no }) {
             <tfoot>
               <tr>
                 <td className="text-price" colSpan={2}>
-                  السعر الكلي بالخدمة
+                  السعر الكلي 
                 </td>
                 <td className="text-price" colSpan={2}>
                   {data.price?.toFixed(2)} ج.م
@@ -280,7 +280,7 @@ function OrderReviewModal({ show, onHide, items, clientType, client }) {
           <tfoot>
             <tr>
               <td className="text-price" colSpan={2}>
-                السعر الكلي بالخدمة
+                السعر الكلي 
               </td>
               <td className="text-price" colSpan={2}>
                 {data.price?.toFixed(2)} ج.م
@@ -375,7 +375,7 @@ const AddCashierOrder = () => {
   useEffect(() => {
     const fetchData = async () => {
       await fetchPaymentMethods();
-      await fetchDiscountReasons();
+      // await fetchDiscountReasons();
     };
     fetchData();
   }, []);
@@ -1341,8 +1341,11 @@ const AddCashierOrder = () => {
             </button>
           </>
         ) : null}
-
-        {!isguest && !isHidden ? (
+ 
+        {!isguest && !isHidden  && ( ! user.permissions.some(
+            (permission) =>
+              permission.name === "cannot_close_order"
+          )) ?(
           <>
             <button
               className="finish-cashier"

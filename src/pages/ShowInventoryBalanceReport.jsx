@@ -27,7 +27,7 @@ const ShowInventoryBalanceReport = () => {
 
     setIsPending(true);
     axios
-      ?.get(`${API_ENDPOINT}/api/v1/store/inventory_balance/`, {
+      ?.get(`${API_ENDPOINT}/api/v1/store/inventory_balance`, {
         params: {
           data: {
             from: "2024-11-12",
@@ -72,7 +72,7 @@ const ShowInventoryBalanceReport = () => {
   const handleFilterData = () => {
     setIsPending(true);
     axios
-      ?.get(`${API_ENDPOINT}/api/v1/store/inventory_balance/`, {
+      ?.get(`${API_ENDPOINT}/api/v1/store/inventory_balance`, {
         params: {
           data: {
             from: fromDate,

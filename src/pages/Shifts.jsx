@@ -32,7 +32,7 @@ const Shifts = () => {
     departmentId: null,
   });
 
-  const { data: departments, isError: isDepartmentError } = useDepartments();
+  const { data: departments, isError: isDepartmentError } = useDepartments(1);
   const { createShift, createError, createSuccess } = useShifts();
 
   const { data: cashiers } = useCashiers();
@@ -241,7 +241,7 @@ const Shifts = () => {
                 } 
               `}
                 key={index}
-                style={{ border: "2px solid #803d3b" }}
+                style={{ border: "2px solid #803d3b", minWidth:"150px" }}
               >
                 <label
                   className="form-check-label border-success border-3 "

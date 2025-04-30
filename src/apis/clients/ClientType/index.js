@@ -1,8 +1,7 @@
 import axios from "axios";
 import { API_ENDPOINT } from "../../../../config";
 import { message } from "antd";
-const Token =
-  localStorage.getItem("token") || sessionStorage.getItem("token");
+const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
 export async function getClientTypes(filteredValues, id, setIsLoading) {
   try {
     setIsLoading(true);
@@ -41,6 +40,9 @@ export async function deleteClientType(id) {
   }
 }
 export async function getClientTypeById(id) {
+  if (!id) {
+    return;
+  }
   try {
     const res = await axios.get(
       `${API_ENDPOINT}/api/v1/store/client_type/${id}`,

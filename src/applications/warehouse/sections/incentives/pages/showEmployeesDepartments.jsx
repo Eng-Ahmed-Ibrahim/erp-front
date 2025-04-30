@@ -53,7 +53,7 @@ function DataModal({ show, onHide, itemId, department }) {
         return;
       }
     const res = await axios.post(
-      `${API_ENDPOINT}/api/v1/employee-departments/`,
+      `${API_ENDPOINT}/api/v1/employee-departments`,
 
       {
         name: name,
@@ -156,7 +156,7 @@ const showEmployeesDepartments = () => {
     };
 
     axios
-      .get(`${API_ENDPOINT}/api/v1/employee-departments/`, {
+      .get(`${API_ENDPOINT}/api/v1/employee-departments`, {
         params: filters,
         headers: {
           Authorization: `Bearer ${Token}`,

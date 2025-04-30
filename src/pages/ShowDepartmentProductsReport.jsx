@@ -345,13 +345,13 @@ const ShowDepartmentProductsReport = () => {
                     </div>
                   </th>
                 </tr>
-                <tr>
+                {/* <tr>
                   <th colSpan="8" className="text-center">
                     <div>
                       <span> اجمالي المبيعات {sum}</span>
                     </div>
                   </th>
-                </tr>
+                </tr> */}
                 <tr>
                   <th className="text-center">#</th>
 
@@ -359,7 +359,7 @@ const ShowDepartmentProductsReport = () => {
                   <th className="text-center">التصنيف الرئيسي</th>
                   <th className="text-right">اسم المنتج</th>
                   <th className="text-right">الكمية</th>
-                  <th className="text-right"> السعر الكلي </th>
+                  {/* <th className="text-right"> السعر الكلي </th> */}
                 </tr>
               </thead>
               <tbody>
@@ -379,10 +379,10 @@ const ShowDepartmentProductsReport = () => {
 
                       <td className="text-right"> {item.total_quantity}</td>
 
-                      <td className="text-right">
+                      {/* <td className="text-right">
                         {" "}
                         {Math.round(item.price * 100) / 100} جنيه
-                      </td>
+                      </td> */}
                     </tr>
                   ))
                 ) : (

@@ -292,53 +292,192 @@ const Table = ({
     }
   };
 
+  // const handleSavePDF = async () => {
+  //   const pdf = new jsPDF("p", "mm", "a4");
+  //   const pageWidth = 190;
+  //   const pageHeight = 297;
+
+  //   pdf.setFont("Amiri-Regular");
+  //   pdf.setFontSize(11);
+
+  //   let pdfFileHeader = [...(pdfHeader || [])];
+
+  //   pdfFileHeader.splice(1);
+
+  //   if (filterValues?.from_date) {
+  //     pdfFileHeader.push(
+  //       `من ${filterValues?.from_date} إلى ${
+  //         filterValues?.to_date ?? new Date().toISOString().split("T")[0]
+  //       }`
+  //     );
+  //   }
+  //   if (totalPrice) {
+  //     pdfFileHeader.push(`إجمالي السعر ${totalPrice.toFixed(2) ?? 0} جنيه`);
+  //   }
+
+  //   pdf.text(pdfFileHeader, 105, 10, { align: "center" });
+
+  //   pdf.setFont("helvetica");
+  //   pdf.setFontSize(12);
+  //   // ----------------------------------------------------------------
+
+
+
+  //   const rows = Array.from(tableRef.current.querySelectorAll("tr"));
+  //   let position = 12 + pdfFileHeader.length * 5;
+
+  //   for (let i = 0; i < rows.length; i++) {
+  //     const row = rows[i];
+  //     const rowCanvas = await html2canvas(row, { scale: 2 });
+  //     const rowImgData = rowCanvas.toDataURL("image/png");
+  //     const rowHeight = (rowCanvas.height * pageWidth) / rowCanvas.width;
+
+  //     if (position + rowHeight > pageHeight - 10) {
+  //       pdf.addPage();
+  //       position = 10;
+  //     }
+
+  //     pdf.addImage(rowImgData, "PNG", 10, position, pageWidth, rowHeight);
+  //     position += rowHeight;
+  //   }
+
+  //   pdf.save("تقرير المبيعات المفصل.pdf");
+  // };
+
+
   const handleSavePDF = async () => {
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = 190;
-    const pageHeight = 297;
-
-    pdf.setFont("Amiri-Regular");
-    pdf.setFontSize(11);
-
-    let pdfFileHeader = [...(pdfHeader || [])];
-
-    pdfFileHeader.splice(1);
-
-    if (filterValues?.from_date) {
-      pdfFileHeader.push(
-        `من ${filterValues?.from_date} إلى ${
-          filterValues?.to_date ?? new Date().toISOString().split("T")[0]
-        }`
+    try {
+      const pdf = new jsPDF({
+        orientation: "p",
+        unit: "mm",
+        format: "a4",
+        compress: true,
+      });
+  
+      const pageWidth = 190;
+      const pageHeight = 277; // usable height (not full 297mm because of margins)
+      const leftMargin = 10;
+      const topMargin = 10;
+  
+      const table = tableRef.current;
+  
+      const canvas = await html2canvas(table, {
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        windowHeight: table.scrollHeight,
+      });
+  
+      const imgData = canvas.toDataURL("image/jpeg", 0.85);
+  
+      const imgWidth = pageWidth;
+      const totalHeight = (canvas.height * imgWidth) / canvas.width;
+  
+      let heightLeft = totalHeight;
+      let position = topMargin + 20; // leave space for the header
+      let pageNumber = 1;
+  
+      pdf.setFont("Amiri-Regular");
+      pdf.setFontSize(11);
+  
+      // ======== Build the HEADER ========
+      let pdfFileHeader = [...(pdfHeader || [])];
+      pdfFileHeader.splice(1); // keep only first item?
+  
+      if (filterValues?.from_date) {
+        pdfFileHeader.push(
+          `من ${filterValues?.from_date} إلى ${filterValues?.to_date ?? new Date().toISOString().split("T")[0]}`
+        );
+      }
+      if (totalPrice) {
+        pdfFileHeader.push(`إجمالي السعر ${totalPrice.toFixed(2) ?? 0} جنيه`);
+      }
+  
+      pdf.text(pdfFileHeader, 105, topMargin, { align: "center" });
+  
+      // ========== Render the table ==========
+      pdf.addImage(
+        imgData,
+        "JPEG",
+        leftMargin,
+        position,
+        imgWidth,
+        totalHeight
       );
-    }
-    if (totalPrice) {
-      pdfFileHeader.push(`إجمالي السعر ${totalPrice.toFixed(2) ?? 0} جنيه`);
-    }
-
-    pdf.text(pdfFileHeader, 105, 10, { align: "center" });
-
-    pdf.setFont("helvetica");
-    pdf.setFontSize(12);
-    const rows = Array.from(tableRef.current.querySelectorAll("tr"));
-    let position = 12 + pdfFileHeader.length * 5;
-
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const rowCanvas = await html2canvas(row, { scale: 2 });
-      const rowImgData = rowCanvas.toDataURL("image/png");
-      const rowHeight = (rowCanvas.height * pageWidth) / rowCanvas.width;
-
-      if (position + rowHeight > pageHeight - 10) {
+      heightLeft -= pageHeight - position;
+  
+      while (heightLeft > 0) {
         pdf.addPage();
-        position = 10;
+        pageNumber++;
+        position = -(totalHeight - heightLeft);
+  
+        // Add (continued) header for new pages
+        pdf.setFont("Amiri-Regular");
+        pdf.setFontSize(11);
+        pdf.text("تقرير المخازن (استمرار)", 105, topMargin, { align: "center" });
+  
+        pdf.addImage(
+          imgData,
+          "JPEG",
+          leftMargin,
+          position,
+          imgWidth,
+          totalHeight
+        );
+        heightLeft -= pageHeight;
+      }
+  
+
+      const totalPages = pdf.internal.getNumberOfPages();
+  
+      // for (let i = 1; i <= totalPages; i++) {
+      //   pdf.setPage(i);
+  
+      //   pdf.setFontSize(10);
+      //   const text = `الصفحة ${i} من ${totalPages}`;
+  
+      //   const textY = 290; // Near the bottom
+  
+      //   pdf.text(text, 105, textY, { align: "center" });
+      // }
+
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+
+        pdf.setFontSize(10);
+
+        const text = `الصفحة ${i} من ${totalPages}`;
+        const textWidth = 190;
+        const textHeight = 5;
+
+        const textX = pageWidth + leftMargin - 5;
+        const textY = pageHeight + 12;
+        const bgX = textX - textWidth;
+        const bgY = textY - textHeight;
+
+        pdf.setFillColor(255, 255, 255);
+        pdf.rect(0, bgY, textWidth + 10, textHeight + 15, "F");
+
+        if (i) {
+          pdf.rect(0, 0, textWidth + 10, 5, "F");
+        }
+
+        pdf.text(text, 105, textY, { align: "right" });
       }
 
-      pdf.addImage(rowImgData, "PNG", 10, position, pageWidth, rowHeight);
-      position += rowHeight;
+  
+      pdf.save("تقرير_المخازن.pdf");
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      alert("حدث خطأ أثناء إنشاء ملف PDF");
     }
-
-    pdf.save("تقرير المبيعات المفصل.pdf");
   };
+  
+
+
+
+
   const generateTableRowHTML = (index, row) => {
     return `
       <tr style="border-bottom:1px solid var(--brown-color); padding:5px;">
