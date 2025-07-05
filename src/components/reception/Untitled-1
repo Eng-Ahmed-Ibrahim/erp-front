@@ -1,0 +1,14 @@
+
+problems listed 
+
+    - the booking ticket pdf is not working good , i wanna it to be downloadable  when we confirm the booking  not when activate it ,  and make it downloadable  , andhnece its ui  into one page and enahnc eit with proper encodeing 
+
+- filters in the reception page  is not wokring good 
+
+- enahnce he cashier page alittle bit 
+-  the booking attachments is not working good  int eh frontend  an dint he backedn in
+
+-  the booking products is not working good  in the frontend  and dint he backedn  nto store and not fetched when created a bokking 
+
+in the edit booking the edit form is empty  i wanna it to be filled with the booking data  by default 
+

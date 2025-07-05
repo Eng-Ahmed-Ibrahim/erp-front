@@ -243,7 +243,6 @@ const AddProduct = () => {
       formData.append(`prices[${index}][profit]`, item.id);
       formData.append(`prices[${index}][service]`, item.id);
       // formData.append(`recipes[${index}][expire_date]`, item.expireDate);
-      // console.log("------------------>" + item.ProductId);
     });
 
     formData.append("name", name);

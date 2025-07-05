@@ -49,7 +49,6 @@ export async function getClientById(id) {
     });
     return res.data;
   } catch (error) {
-    // // console.log("Error fetching data:", error);
     message.error("حدث خطأ الرجاء إعادة المحاولة ");
   }
 }

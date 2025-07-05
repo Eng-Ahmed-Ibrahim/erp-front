@@ -1,5 +1,14 @@
-import React from "react";
-import { Card, Badge, Tag, Tooltip, Avatar, Divider, Button } from "antd";
+import React, { useState, useEffect } from 'react';
+import {
+  Card,
+  Badge,
+  Tag,
+  Tooltip,
+  Avatar,
+  Divider,
+  Button,
+  Alert,
+} from 'antd';
 import {
   HomeOutlined,
   UserOutlined,
@@ -12,9 +21,10 @@ import {
   ExclamationCircleOutlined,
   PhoneOutlined,
   IdcardOutlined,
-} from "@ant-design/icons";
-import "./ApartmentCard.scss";
-import moment from "moment";
+} from '@ant-design/icons';
+import './ApartmentCard.scss';
+import moment from 'moment';
+import { getServerTime } from '../../apis/reception/receptionApi';
 
 const ApartmentCard = ({
   apartment,
@@ -24,53 +34,114 @@ const ApartmentCard = ({
   onDelete,
   onCheckout,
 }) => {
-  // Consistent booking data access - prioritize current_booking from API
-  const booking = apartment.current_booking || apartment.booking;
-  const visitor = booking?.visitor;
+  // Handle active, confirmed, and pending bookings
+  // apartment.current_booking contains only the active booking
+  // apartment.pending_bookings contains pending bookings (array)
+  // apartment.confirmed_bookings contains confirmed bookings (array)
+  const currentBooking = apartment.current_booking;
+  const pendingBookings = apartment.pending_bookings || [];
+  const confirmedBookings = apartment.confirmed_bookings || [];
 
-  // Debug logging for booking data
-  React.useEffect(() => {
-    if (booking) {
-      console.log("ApartmentCard - Booking data:", booking);
-      console.log("ApartmentCard - Visitor data:", visitor);
-    }
-  }, [booking, visitor]);
+  // Validate if current booking is actually active based on dates
+  const isBookingActuallyActive = (booking) => {
+    if (!booking) return false;
+
+    const now = moment();
+    const arrivalDate = moment(
+      booking.arrival_datetime || booking.check_in_date
+    );
+    const checkoutDate = moment(
+      booking.checkout_datetime || booking.check_out_date
+    );
+
+    // Check if booking is within the active period
+    const isWithinPeriod =
+      now.isSameOrAfter(arrivalDate, 'day') &&
+      now.isBefore(checkoutDate, 'day');
+
+    // Check if booking has a status that indicates it's completed
+    const isCompleted =
+      booking.status === 'completed' || booking.status === 'checked_out';
+
+    // Booking is active if it's within period and not completed
+    return isWithinPeriod && !isCompleted;
+  };
+
+  // Validate if confirmed booking is for today or future
+  const isConfirmedBookingValid = (booking) => {
+    if (!booking) return false;
+
+    const now = moment();
+    const arrivalDate = moment(
+      booking.arrival_datetime || booking.check_in_date
+    );
+
+    // Confirmed booking is valid if arrival is today or in the future
+    return arrivalDate.isSameOrAfter(now, 'day');
+  };
+
+  // Determine actual booking status
+  const activeBooking = isBookingActuallyActive(currentBooking)
+    ? currentBooking
+    : null;
+
+  // Filter valid confirmed bookings
+  const validConfirmedBookings = confirmedBookings.filter(
+    isConfirmedBookingValid
+  );
+  const hasConfirmedBooking = validConfirmedBookings.length > 0;
+  const confirmedBooking = hasConfirmedBooking
+    ? validConfirmedBookings[0]
+    : null;
+
+  const hasPendingBooking = pendingBookings.length > 0;
+  const pendingBooking = hasPendingBooking ? pendingBookings[0] : null;
+
+  // Determine which booking to display (active > confirmed > pending)
+  const booking = activeBooking || confirmedBooking || pendingBooking;
+  const visitor = booking?.visitor;
+  const bookingStatus = activeBooking
+    ? 'active'
+    : hasConfirmedBooking
+    ? 'confirmed'
+    : hasPendingBooking
+    ? 'pending'
+    : null;
 
   // Enhanced room type configurations with sophisticated business colors
   const getRoomTypeConfig = (roomType) => {
     const configs = {
       single: {
-        icon: "🛏️",
-        label: "فردي",
-        color: "#0EA5E9", // Sky blue - professional and calming
-        bgColor: "#F0F9FF",
-        borderColor: "#7DD3FC",
-        headerBg: "linear-gradient(135deg, #567A88 0%, #90CFEC 100%)",
-        // headerBg: "#BCD4DF",
+        icon: '🛏️',
+        label: 'فردي',
+        color: '#803D3B', // Primary accent
+        bgColor: '#F8F4F2', // Light background
+        borderColor: '#AF8260', // Secondary accent
+        headerBg: 'linear-gradient(135deg, #803D3B 0%, #AF8260 100%)',
       },
       double: {
-        icon: "🏠",
-        label: "مزدوج",
-        color: "#6366F1", // Indigo - sophisticated and trustworthy
-        bgColor: "#F8FAFC",
-        borderColor: "#A5B4FC",
-        headerBg: "linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)",
+        icon: '🏠',
+        label: 'مزدوج',
+        color: '#803D3B',
+        bgColor: '#F8F4F2',
+        borderColor: '#AF8260',
+        headerBg: 'linear-gradient(135deg, #AF8260 0%, #803D3B 100%)',
       },
       suite: {
-        icon: "🏰",
-        label: "جناح",
-        color: "#8B5A2B", // Warm brown - luxury and elegance
-        bgColor: "#FDF6E3",
-        borderColor: "#D4A574",
-        headerBg: "linear-gradient(135deg, #8B5A2B 0%, #6B4423 100%)",
+        icon: '🏰',
+        label: 'جناح',
+        color: '#803D3B',
+        bgColor: '#F8F4F2',
+        borderColor: '#AF8260',
+        headerBg: 'linear-gradient(135deg, #803D3B 0%, #AF8260 100%)',
       },
       family: {
-        icon: "👨‍👩‍👧‍👦",
-        label: "عائلي",
-        color: "#059669", // Forest green - family-friendly and natural
-        bgColor: "#F0FDF4",
-        borderColor: "#6EE7B7",
-        headerBg: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+        icon: '👨‍👩‍👧‍👦',
+        label: 'عائلي',
+        color: '#803D3B',
+        bgColor: '#F8F4F2',
+        borderColor: '#AF8260',
+        headerBg: 'linear-gradient(135deg, #AF8260 0%, #803D3B 100%)',
       },
     };
     return configs[roomType] || configs.single;
@@ -78,35 +149,49 @@ const ApartmentCard = ({
 
   const roomConfig = getRoomTypeConfig(apartment.room_type);
 
+  // Helper to determine if apartment is truly available
+  const isApartmentAvailable = () => {
+    return !activeBooking && !hasConfirmedBooking && !hasPendingBooking;
+  };
+
   // Enhanced apartment card style with softer business colors
   const getCardStyle = () => {
     const baseStyle = {
-      borderWidth: "2px",
-      borderStyle: "solid",
-      position: "relative",
-      borderRadius: "16px",
-      overflow: "hidden",
+      borderWidth: '2px',
+      borderStyle: 'solid',
+      position: 'relative',
+      borderRadius: '16px',
+      overflow: 'hidden',
     };
-
-    // Check both booking and is_occupied status
-    const isOccupied = booking || apartment.is_occupied;
-
-    if (!isOccupied) {
-      // Available apartment - Soft teal/mint theme (welcoming and professional)
+    if (activeBooking) {
       return {
         ...baseStyle,
-        borderColor: "#14B8A6",
-        backgroundColor: "#F0FDFA",
-        boxShadow: "0 4px 20px rgba(20, 184, 166, 0.12)",
+        borderColor: '#803D3B',
+        backgroundColor: '#F8F4F2',
+        boxShadow: '0 4px 20px rgba(128, 61, 59, 0.10)',
       };
     }
-
-    // Occupied apartment - Warm amber theme (professional, not alarming)
+    if (hasConfirmedBooking) {
+      return {
+        ...baseStyle,
+        borderColor: '#AF8260',
+        backgroundColor: '#F8F4F2',
+        boxShadow: '0 4px 20px rgba(175, 130, 96, 0.10)',
+      };
+    }
+    if (hasPendingBooking) {
+      return {
+        ...baseStyle,
+        borderColor: '#AF8260',
+        backgroundColor: '#F8F4F2',
+        boxShadow: '0 4px 20px rgba(175, 130, 96, 0.08)',
+      };
+    }
     return {
       ...baseStyle,
-      borderColor: "#F59E0B",
-      backgroundColor: "#FFFBEB",
-      boxShadow: "0 4px 20px rgba(245, 158, 11, 0.12)",
+      borderColor: '#803D3B',
+      backgroundColor: '#F8F4F2',
+      boxShadow: '0 4px 20px rgba(128, 61, 59, 0.08)',
     };
   };
 
@@ -117,20 +202,42 @@ const ApartmentCard = ({
     const scheduledCheckout = moment(
       booking.checkout_datetime || booking.check_out_date
     );
-    const today = moment().startOf("day");
+    const today = moment().startOf('day');
 
-    return today.isBefore(scheduledCheckout, "day");
+    return today.isBefore(scheduledCheckout, 'day');
+  };
+
+  // Calculate actual stayed days
+  const getActualStayedDays = () => {
+    if (!booking?.arrival_datetime) return null;
+
+    const arrival = moment(booking.arrival_datetime);
+    const now = moment();
+
+    // Calculate actual days stayed (including partial days)
+    return Math.max(1, Math.ceil(now.diff(arrival, 'hours') / 24));
+  };
+
+  // Get adjusted amount for early checkout
+  const getAdjustedAmount = () => {
+    if (!booking?.total_amount || !booking?.duration_days) return null;
+
+    const actualDays = getActualStayedDays();
+    if (!actualDays) return null;
+
+    const dailyRate = booking.total_amount / booking.duration_days;
+    return Math.round(dailyRate * actualDays * 100) / 100;
   };
 
   // Format booking dates
   const formatBookingDate = (date) => {
-    if (!date) return "غير محدد";
-    return moment(date).format("DD/MM/YYYY");
+    if (!date) return 'غير محدد';
+    return moment(date).format('DD/MM/YYYY');
   };
 
   const formatBookingTime = (date) => {
-    if (!date) return "غير محدد";
-    return moment(date).format("HH:mm");
+    if (!date) return 'غير محدد';
+    return moment(date).format('HH:mm');
   };
 
   const getBookingDuration = () => {
@@ -140,44 +247,87 @@ const ApartmentCard = ({
     const checkout = moment(
       booking.checkout_datetime || booking.check_out_date
     );
-    const duration = checkout.diff(arrival, "days");
+    const duration = checkout.diff(arrival, 'days');
 
     return duration;
   };
 
   // Enhanced Status Badge Component with softer colors
   const getStatusBadge = () => {
-    const isOccupied = booking || apartment.is_occupied;
-
-    if (!isOccupied) {
+    if (activeBooking) {
       return (
-        <div className="status-badge-new available">
-          <CheckCircleOutlined className="status-icon" />
-          <span className="status-text">متاحة</span>
+        <div
+          className="status-badge-new occupied"
+          style={{ background: '#803D3B', borderColor: '#AF8260' }}
+        >
+          <ExclamationCircleOutlined
+            className="status-icon"
+            style={{ color: '#fff' }}
+          />
+          <span className="status-text">مشغولة</span>
+          {isEarlyCheckout() && (
+            <div
+              className="early-checkout-tag"
+              style={{ background: '#AF8260' }}
+            >
+              مغادرة مبكرة
+            </div>
+          )}
         </div>
       );
     }
-
+    if (hasConfirmedBooking) {
+      return (
+        <div
+          className="status-badge-new confirmed"
+          style={{ background: '#AF8260', borderColor: '#803D3B' }}
+        >
+          <CheckCircleOutlined
+            className="status-icon"
+            style={{ color: '#fff' }}
+          />
+          <span className="status-text">مؤكد</span>
+        </div>
+      );
+    }
+    if (hasPendingBooking) {
+      return (
+        <div
+          className="status-badge-new pending"
+          style={{ background: '#AF8260', borderColor: '#803D3B' }}
+        >
+          <ClockCircleOutlined
+            className="status-icon"
+            style={{ color: '#fff' }}
+          />
+          <span className="status-text">حجز معلق</span>
+        </div>
+      );
+    }
     return (
-      <div className="status-badge-new occupied">
-        <ExclamationCircleOutlined className="status-icon" />
-        <span className="status-text">مشغولة</span>
-        {isEarlyCheckout() && (
-          <div className="early-checkout-tag">مغادرة مبكرة</div>
-        )}
+      <div
+        className="status-badge-new available"
+        style={{ background: '#803D3B', borderColor: '#AF8260' }}
+      >
+        <CheckCircleOutlined
+          className="status-icon"
+          style={{ color: '#fff' }}
+        />
+        <span className="status-text">متاحة</span>
       </div>
     );
   };
 
-  // Determine if apartment is occupied
-  const isOccupied = booking || apartment.is_occupied;
+  // Determine apartment status class
+  const getStatusClass = () => {
+    if (activeBooking) return 'occupied';
+    if (hasConfirmedBooking) return 'confirmed';
+    if (hasPendingBooking) return 'pending';
+    return 'available';
+  };
 
   return (
-    <div
-      className={`apartment-card-wrapper ${
-        isOccupied ? "occupied" : "available"
-      }`}
-    >
+    <div className={`apartment-card-wrapper ${getStatusClass()}`}>
       <Card
         className={`apartment-card-new ${apartment.room_type}-room`}
         style={getCardStyle()}
@@ -187,30 +337,39 @@ const ApartmentCard = ({
           <div
             className="apartment-header-new"
             style={{
-              background: isOccupied
-                ? "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)" // Warm amber for occupied
-                : roomConfig.headerBg,
-              margin: "-16px -24px 16px -24px",
-              padding: "20px 24px",
-              borderRadius: "14px 14px 0 0",
-              position: "relative",
+              background:
+                // activeBooking
+                // ? 'linear-gradient(135deg, #9B2C2C 0%, #C05621 100%)'          :
+                hasConfirmedBooking
+                  ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
+                  : hasPendingBooking
+                  ? 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)'
+                  : 'linear-gradient(135deg, #AF8260 0%, #803D3B 100%)',
+              margin: '-16px -24px 12px -24px',
+              padding: '16px 24px',
+              borderRadius: '14px 14px 0 0',
+              position: 'relative',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
             }}
           >
             <div className="apartment-info-new">
               <div className="apartment-main-info">
                 <HomeOutlined
                   className="apartment-icon"
-                  style={{ marginRight: "10px" }}
+                  style={{ marginRight: '10px' }}
                 />
                 <div className="apartment-details">
-                  <span className="apartment-number">
-                    {apartment.building?.name} - شقة{" "}
-                    {apartment.apartment_number}
-                  </span>
+                  <div className="apartment-number">
+                    <span className="number">{apartment.apartment_number}</span>
+                    <span className="building-name">
+                      {apartment.building?.name}
+                    </span>
+                  </div>
                   <div className="apartment-tags">
-                    <Tag className="room-type-tag">
+                    {/* <Tag className="room-type-tag">
                       {roomConfig.icon} {roomConfig.label}
-                    </Tag>
+                    </Tag> */}
                     {apartment.max_occupancy && (
                       <Tag className="capacity-tag">
                         👥 {apartment.max_occupancy} أشخاص
@@ -225,47 +384,56 @@ const ApartmentCard = ({
           </div>
         }
         actions={[
-          // ...(showActions
-          //   ? [
-          //       <Tooltip title="تعديل">
-          //         <SettingOutlined
-          //           className="action-icon edit-icon"
-          //           onClick={(e) => {
-          //             e.stopPropagation();
-          //             onEdit(apartment);
-          //           }}
-          //         />
-          //       </Tooltip>,
-          //       <Tooltip title="حذف">
-          //         <span
-          //           className="action-icon delete-icon"
-          //           onClick={(e) => {
-          //             e.stopPropagation();
-          //             onDelete(apartment);
-          //           }}
-          //         >
-          //           🗑️
-          //         </span>
-          //       </Tooltip>,
-          //     ]
-          //   : []),
-          ...(booking && onCheckout
+          ...(showActions && activeBooking && onEdit
             ? [
-                <Tooltip title="تسجيل مغادرة">
-                  <Button
-                    type="primary"
-                    danger
-                    size="small"
-                    icon={<LogoutOutlined />}
-                    className="checkout-button"
+                <Tooltip title="تعديل الحجز">
+                  <SettingOutlined
+                    className="action-icon edit-icon"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onCheckout(apartment, booking);
+                      onEdit(apartment, activeBooking);
                     }}
-                    style={{ padding: "0px" }}
+                  />
+                </Tooltip>,
+              ]
+            : []),
+          ...(activeBooking && onCheckout
+            ? [
+                <Tooltip title="تسجيل مغادرة">
+                  <div
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      padding: '0 16px',
+                    }}
                   >
-                    مغادرة
-                  </Button>
+                    <Button
+                      type="primary"
+                      danger
+                      icon={<LogoutOutlined />}
+                      className="checkout-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onCheckout(apartment, activeBooking);
+                      }}
+                      style={{
+                        background: '#803D3B',
+                        borderColor: '#AF8260',
+                        boxShadow: '0 2px 8px rgba(128, 61, 59, 0.15)',
+                        height: '36px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '0 24px',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                      }}
+                    >
+                      مغادرة
+                    </Button>
+                  </div>
                 </Tooltip>,
               ]
             : []),
@@ -280,17 +448,39 @@ const ApartmentCard = ({
                   icon={<UserOutlined />}
                   className="visitor-avatar"
                   style={{
-                    backgroundColor: "#6366F1", // Sophisticated indigo instead of harsh red
+                    backgroundColor: activeBooking
+                      ? '#52c41a' // Green for active
+                      : hasConfirmedBooking
+                      ? '#1890ff' // Blue for confirmed
+                      : '#8B5CF6', // Purple for pending
                     marginLeft: 16,
                   }}
                 />
                 <div className="visitor-details-new">
-                  <h3 className="visitor-name">
-                    {visitor?.name || "زائر غير محدد"}
-                  </h3>
+                  <div className="visitor-name-with-status">
+                    <h3 className="visitor-name">
+                      {visitor?.name || 'زائر غير محدد'}
+                    </h3>
+                    <Tag
+                      color={
+                        activeBooking
+                          ? 'success'
+                          : hasConfirmedBooking
+                          ? 'processing'
+                          : 'warning'
+                      }
+                      className="booking-status-tag"
+                    >
+                      {activeBooking
+                        ? 'نشط'
+                        : hasConfirmedBooking
+                        ? 'مؤكد'
+                        : 'معلق'}
+                    </Tag>
+                  </div>
                   <div className="visitor-meta-new">
                     <Tag color="#0EA5E9" className="client-type-tag">
-                      {visitor?.client_type?.name || "عميل"}
+                      {visitor?.client_type?.name || 'عميل'}
                     </Tag>
                     {visitor?.nationality && (
                       <Tag color="#6366F1" className="nationality-tag">
@@ -301,7 +491,7 @@ const ApartmentCard = ({
                   {visitor?.phone && (
                     <div className="visitor-contact">
                       <PhoneOutlined
-                        style={{ marginLeft: 8, color: "#059669" }}
+                        style={{ marginLeft: 8, color: '#059669' }}
                       />
                       <span>{visitor.phone}</span>
                     </div>
@@ -309,7 +499,7 @@ const ApartmentCard = ({
                   {visitor?.id_number && (
                     <div className="visitor-contact">
                       <IdcardOutlined
-                        style={{ marginLeft: 8, color: "#0EA5E9" }}
+                        style={{ marginLeft: 8, color: '#0EA5E9' }}
                       />
                       <span>{visitor.id_number}</span>
                     </div>
@@ -358,7 +548,7 @@ const ApartmentCard = ({
                       <span className="detail-value">
                         {booking.duration_days ||
                           getBookingDuration() ||
-                          "غير محدد"}{" "}
+                          'غير محدد'}{' '}
                         أيام
                       </span>
                     </div>
@@ -373,6 +563,7 @@ const ApartmentCard = ({
                       </span>
                     </div>
                   </div>
+
                 </div>
 
                 {booking.payment_method && (
@@ -389,7 +580,7 @@ const ApartmentCard = ({
                     <span className="meals-icon">🍽️</span>
                     <span className="meals-text">
                       {Array.isArray(booking.meals)
-                        ? booking.meals.join(", ")
+                        ? booking.meals.join(', ')
                         : booking.meals}
                     </span>
                   </div>
@@ -397,36 +588,12 @@ const ApartmentCard = ({
               </div>
             </div>
           ) : (
-            // <div className="empty-apartment-new">
-            //   {/* <div className="empty-icon-new">
-            //     <HomeOutlined />
-            //   </div> */}
-            //   {/* <h3 className="empty-title">شقة متاحة</h3> */}
-            //   {/* <p className="empty-text">اضغط لإجراء حجز جديد</p> */}
-            //   <Tag
-            //     color="success"
-            //     className="available-tag"
-            //     style={{
-            //       background: roomConfig.headerBg,
-            //       borderRadius: "100px",
-            //       padding: "40px",
-            //       color: "#fffff",
-            //     }}
-            //   >
-            //     <strong style={{ color: "#fffF" , font}}> {apartment?.apartment_number}</strong>
-            //     <br />
-            //     إضغط للحجز
-            //   </Tag>
-            // </div>
-
             <div className="empty-apartment-new">
               <div className="empty-icon-new">
                 <HomeOutlined />
               </div>
               <h3 className="empty-title">شقة متاحة</h3>
-              <p className="empty-text">اضغط لإجراء حجز جديد</p>
-              
-            
+              <p className="empty-text">اضغط للحجز </p>
             </div>
           )}
         </div>

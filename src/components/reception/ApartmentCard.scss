@@ -1,11 +1,33 @@
+$primary-accent: #803D3B;
+$secondary-accent: #AF8260;
+$light-bg: #F8F4F2;
+
 // Modern ApartmentCard Styles with Sophisticated Business Colors
 .apartment-card-wrapper {
   margin-bottom: 20px;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
 
   &:hover {
     transform: translateY(-4px);
+  }
+
+  &.pending {
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, rgba(175, 130, 96, 0.85), rgba(128, 61, 59, 0.85), rgba(175, 130, 96, 0.85));
+      border-radius: 18px;
+      z-index: -1;
+      animation: gradient-border 3s ease infinite;
+    }
   }
 }
 
@@ -14,10 +36,14 @@
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: none !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(128, 61, 59, 0.08) !important;
+  background: $light-bg;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
   &:hover {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 8px 32px rgba(175, 130, 96, 0.16) !important;
   }
 
   .ant-card-head {
@@ -27,12 +53,15 @@
 
   .ant-card-body {
     padding: 24px !important;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   .ant-card-actions {
-    border-top: 1px solid #f0f0f0;
-    background: #fafafa;
-    padding: 12px 16px;
+    border-top: 1px solid #e8e0d8;
+    background: #f6f1ed;
+    padding: 0px 16px;
 
     .ant-card-actions > li {
       margin: 0 8px;
@@ -45,6 +74,10 @@
   position: relative;
   color: white;
   overflow: hidden;
+  // background: linear-gradient(135deg, rgba(128, 61, 59, 0.85) 0%, rgba(175, 130, 96, 0.85) 100%);
+  background: linear-gradient(135deg, #803D3B 0%, #A0522D 100%);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 
   &::before {
     content: "";
@@ -53,7 +86,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -73,7 +106,8 @@
 
       .apartment-icon {
         font-size: 20px;
-        color: white;
+        color: rgba(255, 255, 255, 0.95);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         margin-top: 2px;
       }
 
@@ -81,13 +115,38 @@
         flex: 1;
 
         .apartment-number {
-          display: block;
-          font-size: 18px;
-          font-weight: 700;
-          color: white;
-          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+          display: flex;
+          align-items: baseline;
           margin-bottom: 12px;
-          line-height: 1.2;
+          
+          .number {
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            line-height: 1;
+          }
+          
+          .building-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.75);
+            margin-right: 12px;
+            position: relative;
+            padding-right: 12px;
+            
+            &:before {
+              content: "";
+              position: absolute;
+              right: 0;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 3px;
+              height: 3px;
+              border-radius: 50%;
+              background-color: rgba(255, 255, 255, 0.5);
+            }
+          }
         }
 
         .apartment-tags {
@@ -97,14 +156,15 @@
 
           .room-type-tag,
           .capacity-tag {
-            background: rgba(255, 255, 255, 0.2) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            color: white !important;
+            background: rgba(255, 255, 255, 0.25) !important;
+            border: 1px solid rgba(255, 255, 255, 0.35) !important;
+            color: rgba(255, 255, 255, 0.95) !important;
             font-weight: 600;
             font-size: 12px;
             border-radius: 12px;
             padding: 4px 12px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
           }
         }
       }
@@ -120,20 +180,20 @@
     align-items: center;
     padding: 12px 16px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.15);
+    background: $primary-accent;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1.5px solid $secondary-accent;
 
     .status-icon {
       font-size: 22px;
-      color: white;
+      color: #fff;
       margin-bottom: 6px;
     }
 
     .status-text {
       font-size: 12px;
       font-weight: 700;
-      color: white;
+      color: #fff;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -141,51 +201,100 @@
 
     .early-checkout-tag {
       margin-top: 6px;
-      background: rgba(251, 146, 60, 0.9); // Softer amber
-      color: white;
+      background: $secondary-accent;
+      color: #fff;
       padding: 2px 8px;
       border-radius: 8px;
       font-size: 10px;
       font-weight: 600;
     }
 
-    &.available .status-icon {
-      animation: bounce-available 2s infinite;
+    &.available {
+      background: $primary-accent;
+      border-color: $secondary-accent;
     }
 
-    &.occupied .status-icon {
-      animation: bounce-occupied 2s infinite;
+    &.occupied {
+      background: $secondary-accent;
+      border-color: $primary-accent;
+    }
+
+    &.confirmed {
+      background: $secondary-accent;
+      border-color: $primary-accent;
+    }
+
+    &.pending {
+      background: $secondary-accent;
+      border-color: $primary-accent;
     }
   }
 }
 
 // Content Styles
 .apartment-content-new {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
   min-height: 200px;
+  background: $light-bg;
 
   .booking-info-new {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+
     .visitor-section {
       display: flex;
       align-items: flex-start;
-      margin-bottom: 20px;
-      padding: 16px;
-      background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+      margin-top: -12px;
+      margin-bottom: 5px;
+      padding: 8px 16px;
+      background: #f6f1ed;
       border-radius: 12px;
-      border: 1px solid #e8e8e8;
+      border: 1px solid #e8e0d8;
 
       .visitor-avatar {
         flex-shrink: 0;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25); // Softer indigo shadow
+        box-shadow: 0 2px 8px rgba(128, 61, 59, 0.18);
+        background: $primary-accent;
+        color: #fff;
       }
 
       .visitor-details-new {
         flex: 1;
 
+        .visitor-name-with-status {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 12px;
+
+          .visitor-name {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: $primary-accent;
+            line-height: 1.3;
+            flex: 1;
+          }
+
+          .booking-status-tag {
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 4px 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+          }
+        }
+
         .visitor-name {
           margin: 0 0 12px 0;
           font-size: 18px;
           font-weight: 700;
-          color: #1a1a1a;
+          color: $primary-accent;
           line-height: 1.3;
         }
 
@@ -197,6 +306,8 @@
 
           .client-type-tag,
           .nationality-tag {
+            background: $secondary-accent;
+            color: #fff;
             border-radius: 8px;
             font-weight: 600;
             font-size: 12px;
@@ -224,8 +335,8 @@
     }
 
     .section-divider {
-      margin: 20px 0;
-      border-color: #e8e8e8;
+      margin: 5px 0;
+      border-color: #e8e0d8;
     }
 
     .booking-details-new {
@@ -244,9 +355,9 @@
           align-items: flex-start;
           gap: 12px;
           padding: 16px;
-          background: white;
+          background: #fff;
           border-radius: 12px;
-          border: 1px solid #e8e8e8;
+          border: 1.5px solid $secondary-accent;
           transition: all 0.2s ease;
 
           &:hover {
@@ -266,7 +377,7 @@
             .detail-label {
               display: block;
               font-size: 12px;
-              color: #8c8c8c;
+              color: $primary-accent;
               font-weight: 600;
               margin-bottom: 4px;
               text-transform: uppercase;
@@ -276,12 +387,12 @@
             .detail-value {
               display: block;
               font-size: 14px;
-              color: #1a1a1a;
+              color: $primary-accent;
               font-weight: 700;
               margin-bottom: 2px;
 
               &.price {
-                color: #8b5a2b; // Warm brown
+                color: $secondary-accent;
                 font-size: 16px;
               }
             }
@@ -318,10 +429,10 @@
         align-items: center;
         gap: 12px;
         padding: 12px 16px;
-        background: #f9f9f9;
+        background: #f6f1ed;
         border-radius: 8px;
         margin-bottom: 12px;
-        border: 1px solid #e8e8e8;
+        border: 1px solid #e8e0d8;
 
         &:last-child {
           margin-bottom: 0;
@@ -335,59 +446,58 @@
         .payment-method,
         .meals-text {
           font-size: 14px;
-          color: #1a1a1a;
+          color: $primary-accent;
           font-weight: 600;
         }
       }
     }
   }
 
+  // ----------  here is the emtpy apartment card styles -----------
   .empty-apartment-new {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 180px;
+    padding: 32px 20px;
     text-align: center;
-    padding: 20px;
+    background: #F8F4F2;
+    border-radius: 12px;
+    border: 2px dashed #AF8260;
+    transition: all 0.3s ease;
+    flex-grow: 1;
 
     .empty-icon-new {
-      width: 64px;
-      height: 64px;
-      background: linear-gradient(135deg, #14b8a6, #0f766e); // Soft teal
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 36px;
+      color: #803D3B;
       margin-bottom: 16px;
-      box-shadow: 0 4px 16px rgba(20, 184, 166, 0.25);
-
+      transition: all 0.3s ease;
       .anticon {
-        font-size: 28px;
-        color: white;
+        filter: drop-shadow(0 2px 4px rgba(128, 61, 59, 0.12));
       }
     }
 
     .empty-title {
-      margin: 0 0 8px 0;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #803D3B;
+      margin-bottom: 8px;
+      text-shadow: 0 1px 2px rgba(128, 61, 59, 0.08);
     }
 
     .empty-text {
-      margin: 0 0 16px 0;
       font-size: 14px;
-      color: #666;
-      font-weight: 500;
+      color: #AF8260;
+      margin: 0;
     }
 
-    .available-tag {
-      border-radius: 100px;
-      font-weight: 600;
-      font-size: 16px;
-      padding: 40px 40px;
-
+    &:hover {
+      border-color: #803D3B;
+      box-shadow: 0 4px 16px rgba(175, 130, 96, 0.10);
+      .empty-icon-new {
+        transform: scale(1.08);
+        color: #AF8260;
+      }
     }
   }
 }
@@ -401,33 +511,44 @@
   border-radius: 8px;
 
   &.edit-icon {
-    color: #3b82f6;
+    color: $primary-accent;
 
     &:hover {
-      color: #2563eb;
-      background: #eff6ff;
+      color: $secondary-accent;
+      background: #f6f1ed;
     }
   }
 
   &.delete-icon {
-    color: #ef4444;
+    color: #b91c1c;
 
     &:hover {
-      color: #dc2626;
-      background: #fef2f2;
+      color: #fff;
+      background: #b91c1c;
     }
   }
 }
 
 .checkout-button {
-  border-radius: 8px !important;
-  font-weight: 600;
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2); // Warm amber shadow
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 
   &:hover {
-    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3) !important;
+    transform: translateY(-2px) !important;
+    background: #9B4744 !important;
+    border-color: #C09980 !important;
+    box-shadow: 0 4px 12px rgba(128, 61, 59, 0.25) !important;
   }
-  padding: 10px;
+
+  &:active {
+    transform: translateY(0) !important;
+    background: #6A2E2C !important;
+    border-color: #8E6A4D !important;
+  }
+
+  .anticon {
+    font-size: 16px !important;
+    margin-left: 4px !important;
+  }
 }
 
 // Animations with softer colors
@@ -484,6 +605,40 @@
   }
   60% {
     transform: translateY(-1px) rotate(5deg);
+  }
+}
+
+@keyframes pulse-confirmed {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulse-pending {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes gradient-border {
+  0%, 100% {
+    background: linear-gradient(45deg, rgba(139, 92, 246, 0.85), rgba(168, 85, 247, 0.85), rgba(192, 132, 252, 0.85));
+  }
+  33% {
+    background: linear-gradient(45deg, rgba(168, 85, 247, 0.85), rgba(192, 132, 252, 0.85), rgba(139, 92, 246, 0.85));
+  }
+  66% {
+    background: linear-gradient(45deg, rgba(192, 132, 252, 0.85), rgba(139, 92, 246, 0.85), rgba(168, 85, 247, 0.85));
   }
 }
 
@@ -606,19 +761,19 @@
 // Room Type Specific Hover Effects with new colors
 .apartment-card-new {
   &.single-room:hover {
-    box-shadow: 0 8px 32px rgba(14, 165, 233, 0.12) !important; // Sky blue
+    box-shadow: 0 8px 32px rgba(128, 61, 59, 0.16) !important;
   }
 
   &.double-room:hover {
-    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.12) !important; // Indigo
+    box-shadow: 0 8px 32px rgba(128, 61, 59, 0.16) !important;
   }
 
   &.suite-room:hover {
-    box-shadow: 0 8px 32px rgba(139, 90, 43, 0.12) !important; // Warm brown
+    box-shadow: 0 8px 32px rgba(128, 61, 59, 0.16) !important;
   }
 
   &.family-room:hover {
-    box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12) !important; // Forest green
+    box-shadow: 0 8px 32px rgba(128, 61, 59, 0.16) !important;
   }
 }
 
@@ -650,4 +805,72 @@
 
 .checkout-button{
   padding: 0px;
+}
+
+.apartment-card-new {
+  &.occupied {
+    .ant-card {
+      border-color: #803D3B !important;
+      background: #F8F4F2 !important;
+      box-shadow: 0 4px 20px rgba(128, 61, 59, 0.10) !important;
+      &:hover {
+        box-shadow: 0 8px 30px rgba(128, 61, 59, 0.18) !important;
+        border-color: #AF8260 !important;
+      }
+      .ant-card-head {
+        .ant-statistic-content-value {
+          color: #803D3B !important;
+        }
+      }
+      .status-badge-new.occupied {
+        background: linear-gradient(135deg, #803D3B 0%, #AF8260 100%);
+        border-color: #AF8260;
+        .status-icon, .status-text {
+          color: #fff;
+        }
+      }
+      .visitor-avatar {
+        background: #803D3B !important;
+        color: #fff !important;
+      }
+      .booking-status-tag {
+        background: rgba(128, 61, 59, 0.10) !important;
+        border-color: rgba(128, 61, 59, 0.18) !important;
+        color: #803D3B !important;
+      }
+    }
+  }
+
+  &.confirmed {
+    .ant-card {
+      border-color: #2563EB !important;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15) !important;
+
+      &:hover {
+        box-shadow: 0 8px 30px rgba(37, 99, 235, 0.25) !important;
+      }
+    }
+  }
+
+  &.pending {
+    .ant-card {
+      border-color: #7C3AED !important;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.15) !important;
+
+      &:hover {
+        box-shadow: 0 8px 30px rgba(124, 58, 237, 0.25) !important;
+      }
+    }
+  }
+
+  &.available {
+    .ant-card {
+      border-color: #AF8260 !important;
+      box-shadow: 0 4px 20px rgba(175, 130, 96, 0.15) !important;
+
+      &:hover {
+        box-shadow: 0 8px 30px rgba(175, 130, 96, 0.25) !important;
+      }
+    }
+  }
 }

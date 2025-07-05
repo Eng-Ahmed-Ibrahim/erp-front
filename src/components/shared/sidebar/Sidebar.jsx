@@ -1845,8 +1845,8 @@ const Sidebar = () => {
                     style={{
                       display: `${
                         checkMenuItemPermission({
-                          id: 201,
-                          name: "manage reception",
+                          id: 200,
+                          name: "view reception cashier",
                         })
                           ? ""
                           : "none"

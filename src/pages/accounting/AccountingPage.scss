@@ -1,5 +1,13 @@
+// Define color variables
+$primary-color: #803D3B;
+$secondary-color: #AF8260;
+$background-color: #F5F5F5;
+$text-color: #333;
+$border-color: #E4C59E;
+
 .accounting-page {
-  background: #f8fafc;
+  background-color: $background-color;
+  color: $text-color;
   min-height: 100vh;
   direction: rtl;
 
@@ -8,54 +16,34 @@
     background: #f8fafc;
     
     .page-header {
-      background: linear-gradient(135deg, #616A6B 0%, #616A6B 100%);
-      color: white;
-      padding: 24px 24px 16px;
-      margin-bottom: 0;
-      border-radius: 0 0 16px 16px;
-      box-shadow: 0 4px 12px rgba(82, 196, 26, 0.15);
+      background-color: $primary-color;
+      color: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
       .page-title {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 16px;
+        justify-content: space-between;
 
         h2 {
-          color: white !important;
+          font-size: 24px;
+          font-weight: bold;
           margin: 0;
-          display: flex;
-          align-items: center;
-          font-weight: 600;
-          font-size: 28px;
+          
         }
 
-        .ant-btn {
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          background: rgba(255, 255, 255, 0.15);
-          color: white;
-          backdrop-filter: blur(10px);
-          transition: all 0.3s ease;
-          border-radius: 8px;
-          font-weight: 500;
+        button {
+          background-color: $secondary-color;
+          border: none;
+          color: #fff;
+          border-radius: 4px;
+          padding: 8px 16px;
+          transition: background-color 0.3s;
 
           &:hover {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.5);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          }
-
-          &.ant-btn-primary {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
-
-            &:hover {
-              background: rgba(255, 255, 255, 0.3);
-              border-color: rgba(255, 255, 255, 0.6);
-            }
+            background-color: darken($secondary-color, 10%);
           }
         }
       }
@@ -84,17 +72,17 @@
             border-radius: 12px 12px 0 0;
             margin: 6px 4px 0;
             transition: all 0.3s ease;
-            color: #64748b;
+            color: $text-color;
             font-size: 15px;
 
             &:hover {
               background: rgba(82, 196, 26, 0.08);
-              color: #52c41a;
+              color: $primary-color;
             }
 
             &.ant-tabs-tab-active {
               background: white;
-              color: #52c41a;
+              color: $primary-color;
               box-shadow: 0 -2px 12px rgba(82, 196, 26, 0.15);
               border: 1px solid #e2e8f0;
               border-bottom: 2px solid white;
@@ -108,6 +96,37 @@
 
         .ant-tabs-content-holder {
           padding: 32px 24px;
+        }
+      }
+
+      .card {
+        background-color: #fff;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 24px;
+
+        .ant-card-head {
+          background-color: $primary-color;
+          color: #fff;
+          border-bottom: 1px solid $border-color;
+          border-radius: 8px 8px 0 0;
+        }
+
+        .ant-card-body {
+          padding: 16px;
+        }
+      }
+
+      .table {
+        .ant-table-thead > tr > th {
+          background-color: $secondary-color;
+          color: #fff;
+          font-weight: bold;
+        }
+
+        .ant-table-tbody > tr > td {
+          border-bottom: 1px solid $border-color;
         }
       }
     }

@@ -31,7 +31,7 @@ const DetailsProduct2 = () => {
         // console.log("error", err);
       });
   }, [currentPage]);
-  // console.log("data from get", data);
+
   const handelDelete = async (id) => {
     setIsPending(true);
     await axios

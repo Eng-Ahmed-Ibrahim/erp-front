@@ -411,13 +411,19 @@ setIsKitchien(true)
                             if (action.type === "add" || action.type === "")
                               return;
                             return (
-
                               <button
-                                className={`button ${action.type}`}
+                                className={`button ${action.type} ${
+                                  action.className ? action.className(item) : ''
+                                }`}
                                 key={index}
                                 onClick={() => {
                                   handleAction(action.type, item);
                                 }}
+                                disabled={
+                                  action.disabled
+                                    ? action.disabled(item)
+                                    : false
+                                }
                               >
                                 {action.label}
                               </button>

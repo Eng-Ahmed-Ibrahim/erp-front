@@ -77,24 +77,6 @@ export const ROOM_TYPE_LABELS = {
   [ROOM_TYPES.SUITE]: 'جناح',
 };
 
-export const MEAL_TYPES = {
-  BREAKFAST: 'breakfast',
-  LUNCH: 'lunch',
-  DINNER: 'dinner',
-};
-
-export const MEAL_LABELS = {
-  [MEAL_TYPES.BREAKFAST]: 'إفطار',
-  [MEAL_TYPES.LUNCH]: 'غداء',
-  [MEAL_TYPES.DINNER]: 'عشاء',
-};
-
-export const MEAL_PRICES = {
-  [MEAL_TYPES.BREAKFAST]: 25,
-  [MEAL_TYPES.LUNCH]: 45,
-  [MEAL_TYPES.DINNER]: 50,
-};
-
 export const ID_TYPES = {
   NATIONAL_ID: 'national_id',
   PASSPORT: 'passport',
@@ -102,22 +84,24 @@ export const ID_TYPES = {
 };
 
 export const ID_TYPE_LABELS = {
-  [ID_TYPES.NATIONAL_ID]: 'هوية وطنية',
+  [ID_TYPES.NATIONAL_ID]: 'بطاقة شخصية',
   [ID_TYPES.PASSPORT]: 'جواز سفر',
   [ID_TYPES.MILITARY_ID]: 'هوية عسكرية',
 };
 
 export const BOOKING_STATUS = {
+  PENDING: 'pending',
   CONFIRMED: 'confirmed',
-  CHECKED_IN: 'checked_in',
-  CHECKED_OUT: 'checked_out',
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
   CANCELLED: 'cancelled',
 };
 
 export const BOOKING_STATUS_LABELS = {
+  [BOOKING_STATUS.PENDING]: 'محجوز (في الانتظار)',
   [BOOKING_STATUS.CONFIRMED]: 'مؤكد',
-  [BOOKING_STATUS.CHECKED_IN]: 'وصل',
-  [BOOKING_STATUS.CHECKED_OUT]: 'غادر',
+  [BOOKING_STATUS.ACTIVE]: 'نشط',
+  [BOOKING_STATUS.COMPLETED]: 'مكتمل',
   [BOOKING_STATUS.CANCELLED]: 'ملغي',
 };
 
@@ -131,6 +115,22 @@ export const PAYMENT_METHOD_LABELS = {
   [PAYMENT_METHODS.CASH]: 'نقدي',
   [PAYMENT_METHODS.CARD]: 'بطاقة',
   [PAYMENT_METHODS.TRANSFER]: 'تحويل',
+};
+
+// Add new additional services constants
+export const ADDITIONAL_SERVICES = {
+  extra_mattress: 'extra_mattress',
+  extra_person: 'extra_person',
+};
+
+export const ADDITIONAL_SERVICE_LABELS = {
+  extra_mattress: 'إضافة مرتبة',
+  extra_person: 'إضافة مرافق',
+};
+
+export const ADDITIONAL_SERVICE_PRICES = {
+  extra_mattress: 200,
+  extra_person: 250,
 };
 
 // Client Type API functions
@@ -506,18 +506,25 @@ export const deleteAttachment = async (id) => {
 };
 
 // Product API functions
-export const getProducts = async (filteredValues = {}, setIsLoading, department_id = null ) => {
+export const getProducts = async (
+  filteredValues = {},
+  setIsLoading,
+  department_id = null
+) => {
   try {
     if (setIsLoading) setIsLoading(true);
     const { name, page, category_id } = filteredValues;
 
-    const res = await api.get(`${domain}/api/v1/store/products/department/${department_id}`, {
-      params: {
-        name,
-        page,
-        recipe_category_id: category_id,
-      },
-    });
+    const res = await api.get(
+      `${domain}/api/v1/store/products/department/${department_id}`,
+      {
+        params: {
+          name,
+          page,
+          recipe_category_id: category_id,
+        },
+      }
+    );
 
     if (setIsLoading) setIsLoading(false);
     return res.data;
@@ -546,6 +553,436 @@ export const getPaymentMethods = async (filteredValues = {}, setIsLoading) => {
     return res.data;
   } catch (error) {
     if (setIsLoading) setIsLoading(false);
+    throw error;
+  }
+};
+
+// Reservation API functions
+export const getAvailableApartments = async (
+  filteredValues = {},
+  setIsLoading
+) => {
+  try {
+    if (setIsLoading) setIsLoading(true);
+    const {
+      building_id,
+      room_type,
+      from_date,
+      to_date,
+      exclude_booking_id,
+      search,
+      include,
+    } = filteredValues;
+
+    const res = await api.get(`${RECEPTION_API_BASE}/apartments/available`, {
+      params: {
+        building_id,
+        room_type,
+        from_date,
+        to_date,
+        exclude_booking_id,
+        search,
+        include,
+      },
+    });
+
+    if (setIsLoading) setIsLoading(false);
+    return res.data;
+  } catch (error) {
+    if (setIsLoading) setIsLoading(false);
+    throw error;
+  }
+};
+
+export const createReservation = async (reservationData) => {
+  try {
+    const res = await api.post(`${RECEPTION_API_BASE}/reservations`, {
+      ...reservationData,
+      status: BOOKING_STATUS.PENDING,
+    });
+    message.success('تم إنشاء الحجز المسبق بنجاح');
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getReservations = async (filteredValues = {}, setIsLoading) => {
+  try {
+    if (setIsLoading) setIsLoading(true);
+    const {
+      status = BOOKING_STATUS.PENDING,
+      from_date,
+      to_date,
+      building_id,
+      apartment_id,
+      visitor_name,
+      page,
+    } = filteredValues;
+
+    const res = await api.get(`${RECEPTION_API_BASE}/reservations`, {
+      params: {
+        status,
+        from_date,
+        to_date,
+        building_id,
+        apartment_id,
+        visitor_name,
+        page,
+        include: 'apartment.building,visitor',
+      },
+    });
+
+    if (setIsLoading) setIsLoading(false);
+    return res.data;
+  } catch (error) {
+    if (setIsLoading) setIsLoading(false);
+    throw error;
+  }
+};
+
+export const confirmReservation = async (reservationId, paymentData = null) => {
+  try {
+    const requestData = paymentData || {};
+    const res = await api.patch(
+      `${RECEPTION_API_BASE}/reservations/${reservationId}/confirm`,
+      requestData
+    );
+    message.success('تم تأكيد الحجز بنجاح');
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const activateReservation = async (reservationId) => {
+  try {
+    const res = await api.patch(
+      `${RECEPTION_API_BASE}/reservations/${reservationId}/activate`
+    );
+    message.success('تم تفعيل الحجز بنجاح');
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// New function to activate reservation and generate PDF
+export const activateReservationWithPDF = async (
+  reservationId,
+  reservationData = null
+) => {
+  try {
+    const res = await api.patch(
+      `${RECEPTION_API_BASE}/reservations/${reservationId}/activate`
+    );
+
+    message.success('تم تفعيل الحجز بنجاح');
+
+    // Return both the result and the reservation data for PDF generation
+    return {
+      success: true,
+      data: res.data,
+      reservationData: reservationData || res.data?.data,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Function to get pending bookings specifically for the dashboard
+export const getPendingBookings = async (filteredValues = {}, setIsLoading) => {
+  try {
+    if (setIsLoading) setIsLoading(true);
+
+    const filters = {
+      ...filteredValues,
+      status: BOOKING_STATUS.PENDING,
+      include: 'apartment.building,visitor,paymentMethod,creator',
+    };
+
+    const res = await getReservations(filters, false);
+
+    if (setIsLoading) setIsLoading(false);
+    return res;
+  } catch (error) {
+    if (setIsLoading) setIsLoading(false);
+    throw error;
+  }
+};
+
+// Function to get confirmed bookings specifically for the dashboard
+export const getConfirmedBookings = async (
+  filteredValues = {},
+  setIsLoading
+) => {
+  try {
+    if (setIsLoading) setIsLoading(true);
+
+    const filters = {
+      ...filteredValues,
+      status: BOOKING_STATUS.CONFIRMED,
+      include: 'apartment.building,visitor,paymentMethod,creator',
+    };
+
+    const res = await getReservations(filters, false);
+
+    if (setIsLoading) setIsLoading(false);
+    return res;
+  } catch (error) {
+    if (setIsLoading) setIsLoading(false);
+    throw error;
+  }
+};
+
+// Function to get both pending and confirmed bookings for management
+export const getPendingAndConfirmedBookings = async (
+  filteredValues = {},
+  setIsLoading
+) => {
+  try {
+    if (setIsLoading) setIsLoading(true);
+
+    // Get both pending and confirmed bookings
+    const [pendingRes, confirmedRes] = await Promise.all([
+      getPendingBookings(filteredValues, false),
+      getConfirmedBookings(filteredValues, false),
+    ]);
+
+    // Combine results
+    const pendingBookings = pendingRes.data?.data || pendingRes.data || [];
+    const confirmedBookings =
+      confirmedRes.data?.data || confirmedRes.data || [];
+
+    const allBookings = [...pendingBookings, ...confirmedBookings].sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
+
+    if (setIsLoading) setIsLoading(false);
+    return { data: allBookings };
+  } catch (error) {
+    if (setIsLoading) setIsLoading(false);
+    throw error;
+  }
+};
+
+export const cancelReservation = async (reservationId, reason = '') => {
+  try {
+    const res = await api.patch(
+      `${RECEPTION_API_BASE}/reservations/${reservationId}/cancel`,
+      {
+        cancellation_reason: reason,
+      }
+    );
+    message.success('تم إلغاء الحجز بنجاح');
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateReservation = async (reservationId, reservationData) => {
+  try {
+    const res = await api.put(
+      `${RECEPTION_API_BASE}/reservations/${reservationId}`,
+      reservationData
+    );
+    message.success('تم تحديث الحجز بنجاح');
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Upload an attachment for a booking
+export const uploadBookingAttachment = async (bookingId, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  try {
+    const res = await api.post(
+      `/api/v1/reception/attachments/booking/${bookingId}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    message.success('تم رفع المرفق بنجاح');
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Get all attachments for a booking
+export const getBookingAttachments = async (bookingId) => {
+  try {
+    const res = await api.get(
+      `/api/v1/reception/attachments/booking/${bookingId}`
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Check if a specific apartment is available for a date range
+ * @param {string} apartmentId
+ * @param {string} fromDate (ISO string)
+ * @param {string} toDate (ISO string)
+ * @returns {Promise<{available: boolean, conflicts?: any[]}>}
+ */
+export const checkApartmentAvailableForDateRange = async (
+  apartmentId,
+  fromDate,
+  toDate,
+  currentBookingId = null
+) => {
+  try {
+    const res = await api.get(
+      `/api/v1/reception/apartments/${apartmentId}/is-available-for-date-range`,
+      {
+        params: {
+          from_date: fromDate,
+          to_date: toDate,
+          current_booking_id: currentBookingId,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    // If the backend returns a 409 or error, treat as not available
+    return {
+      available: false,
+      error: error?.response?.data?.error || error.message,
+    };
+  }
+};
+
+/**
+ * Get current server time
+ */
+export const getServerTime = async () => {
+  try {
+    console.log('Fetching server time...');
+    const response = await api.get(`${RECEPTION_API_BASE}/server-time`, {
+      headers: {
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+    });
+    console.log('Server time response:', response);
+
+    if (response.data && response.data.success) {
+      console.log('Server time data:', response.data.data);
+      return response.data;
+    } else {
+      console.error('Invalid server time response format:', response.data);
+      throw new Error('Invalid server time response format');
+    }
+  } catch (error) {
+    console.error('Error fetching server time:', error.response || error);
+    throw error;
+  }
+};
+
+/**
+ * Search visitors by ID number
+ * @param {string} idNumber - The ID number to search for
+ */
+export const searchVisitorsByIdNumber = async (idNumber) => {
+  try {
+    const response = await api.get(`${RECEPTION_API_BASE}/visitors/search`, {
+      params: {
+        id_number: idNumber,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching visitors:', error);
+    throw error;
+  }
+};
+
+// Additional Services API
+export const getAdditionalServices = async (
+  filteredValues = {},
+  setIsLoading
+) => {
+  try {
+    if (setIsLoading) setIsLoading(true);
+    const { page, search, active_only } = filteredValues;
+
+    console.log('=== FETCHING ADDITIONAL SERVICES ===');
+    console.log('Params:', { page, search, active_only });
+
+    const res = await api.get(`${RECEPTION_API_BASE}/additional-services`, {
+      params: {
+        page,
+        search,
+        active_only: active_only ? 1 : undefined,
+      },
+    });
+
+    console.log('=== ADDITIONAL SERVICES RESPONSE ===');
+    console.log('Raw response:', res);
+    console.log('Data:', res.data);
+
+    if (!res.data.success) {
+      throw new Error('Failed to fetch additional services');
+    }
+
+    if (!Array.isArray(res.data.data)) {
+      console.error('Invalid response format:', res.data);
+      throw new Error('Invalid response format from server');
+    }
+
+    if (setIsLoading) setIsLoading(false);
+    return res.data;
+  } catch (error) {
+    console.error('=== ADDITIONAL SERVICES ERROR ===');
+    console.error('Error:', error);
+    if (setIsLoading) setIsLoading(false);
+    throw error;
+  }
+};
+
+export const createAdditionalService = async (serviceData) => {
+  try {
+    const res = await api.post(
+      `${RECEPTION_API_BASE}/additional-services`,
+      serviceData
+    );
+    message.success('تم إضافة الخدمة بنجاح');
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateAdditionalService = async (id, serviceData) => {
+  try {
+    const res = await api.put(
+      `${RECEPTION_API_BASE}/additional-services/${id}`,
+      serviceData
+    );
+    message.success('تم تحديث الخدمة بنجاح');
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteAdditionalService = async (id) => {
+  try {
+    const res = await api.delete(
+      `${RECEPTION_API_BASE}/additional-services/${id}`
+    );
+    message.success('تم حذف الخدمة بنجاح');
+    return res.data;
+  } catch (error) {
     throw error;
   }
 };

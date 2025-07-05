@@ -28,7 +28,7 @@ const CashierKitchenRequests = () => {
     const formData = new FormData();
 
     items.forEach((item, index) => {
-      formData.append(`products[${index}][product_id]`, item.ProductId);
+      formData.append(`products[${index}][product_id]`, item.productId);
 
       formData.append(`products[${index}][quantity]`, item.quantity);
     });

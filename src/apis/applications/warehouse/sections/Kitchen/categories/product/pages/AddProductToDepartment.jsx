@@ -98,10 +98,9 @@ const AddProductToDepartment = () => {
         const formData = new FormData();
         // formData.append("product_id", id);
         items.forEach((item, index) => {
-            formData.append(`products[${index}][product_id]`, item.ProductId);
-            formData.append(`products[${index}][quantity]`, item.quantity);
-            // formData.append(`recipes[${index}][expire_date]`, item.expireDate);
-            // console.log("------------------>" + item.ProductId)
+          formData.append(`products[${index}][product_id]`, item.productId);
+          formData.append(`products[${index}][quantity]`, item.quantity);
+          // formData.append(`recipes[${index}][expire_date]`, item.expireDate);
         });
 
         formData.append("department_id", ProductCategory_id)
