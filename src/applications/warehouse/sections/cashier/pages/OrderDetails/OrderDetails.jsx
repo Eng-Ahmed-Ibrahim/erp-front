@@ -182,12 +182,15 @@ const OrderDetails = () => {
       try {
         const res = await getTableOrderById(id);
         setOrder(res.data);
-
+        setSelectedPaymentMethod(res?.data?.payment_method_id);
         if (res.data.payables) {
           setPayables(res.data.payables);
         }
 
-        if (res?.data?.client_type_id == "01hzf60qrasrm5x2ytvyrsne1j" || user?.department?.id == '3d1e1d26-91ff-40b8-9b2c-139aa79430e9') {
+        if (
+          res?.data?.client_type_id == "01hzf60qrasrm5x2ytvyrsne1j" ||
+          user?.department?.id == "3d1e1d26-91ff-40b8-9b2c-139aa79430e9"
+        ) {
           SetIsExternalOrder(true);
         }
         if (res.data.comment) {
@@ -219,11 +222,11 @@ const OrderDetails = () => {
   const [printData, setPrintData] = useState();
   const [showAddPayablesModal, setShowAddPayablesModal] = useState(false);
   const [showAddCommentModal, setShowAddCommentModal] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
       await fetchPaymentMethods();
-      // await fetchDiscountReasons();
     };
     fetchData();
   }, []);
@@ -265,6 +268,26 @@ const OrderDetails = () => {
       //
     } catch (error) {
       console.error("Error fetching client types for payment method:", error);
+    }
+  };
+
+  const updateOrderPaymentMethod = async (paymentMethodId) => {
+    try {
+      await axios.post(
+        `${API_ENDPOINT}/api/v1/orders/update/payment-method/${order.id}`,
+        {
+          payment_method_id: paymentMethodId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      message.success("تم تغيير طريقة الدفع بنجاح");
+    } catch (error) {
+      message.error("فشل في تغيير طريقة الدفع");
+      console.error(error);
     }
   };
 
@@ -353,9 +376,41 @@ const OrderDetails = () => {
         <div>
           <h1 className="order-title">
             ترابيزه رقم {order?.table_number} - ({order?.discount_name})
-          </h1>
-
+          </h1>{" "}
           <div className="order-header">
+            <div className="order-header-container">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "20px",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <label className="form-label">طريقة الدفع:</label>
+                <Select
+                  value={selectedPaymentMethod}
+                  style={{ width: 300 }}
+                  onChange={(value) => setSelectedPaymentMethod(value)}
+                >
+                  {paymentMethods.map((method) => (
+                    <Select.Option key={method.id} value={method.id}>
+                      {method.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+
+                <button
+                  className="comment-button"
+                  onClick={() =>
+                    updateOrderPaymentMethod(selectedPaymentMethod)
+                  }
+                >
+                  تعديل
+                </button>
+              </div>
+            </div>{" "}
             <div className="order-header-container">
               <div
                 style={{
@@ -386,22 +441,6 @@ const OrderDetails = () => {
                 </div>
               )}
             </div>
-
-            {/* {order.discount !== null && (
-              <label
-                className="form-label"
-                style={{ textAlign: "center", marginTop: "20px" }}
-              >
-                نوع العميل : {order.discount_name}
-              </label>
-            )} */}
-
-            {/* {order.total_price_after_discount && (
-              <p>
-                اجمالى السعر بعد الخصم:{" "}
-                {order.total_price_after_discount_and_tax}
-              </p>
-            )} */}
             {isExternalorder && (
               <div className="order-header-container">
                 <div
@@ -461,7 +500,6 @@ const OrderDetails = () => {
               </div>
             )}
           </div>
-
           <h2>المنتجات:</h2>
           <button
             className="add-btn"

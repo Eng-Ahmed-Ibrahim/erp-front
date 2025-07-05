@@ -1,0 +1,478 @@
+.visitor-modal {
+    .ant-modal-content {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .ant-modal-header {
+        background: linear-gradient(135deg, #803D3B 0%, #A0522D 100%);
+        border-bottom: none;
+        padding: 20px 24px;
+        
+        .ant-modal-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            
+            .modal-title {
+                display: flex;
+                align-items: center;
+                
+                .anticon {
+                    margin-left: 12px;
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+
+    .ant-modal-close {
+        color: rgba(255, 255, 255, 0.8);
+        
+        &:hover {
+            color: #fff;
+        }
+    }
+
+    .ant-modal-body {
+        padding: 0;
+        background: #fafafa;
+    }
+
+    .modal-content {
+        padding: 24px;
+        
+        // Enhanced Steps Design
+        .booking-steps {
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            
+            .ant-steps-item {
+                &.ant-steps-item-active {
+                    .ant-steps-item-icon {
+                        background: linear-gradient(135deg, #803D3B 0%, #A0522D 100%);
+                        border-color: #803D3B;
+                        
+                        .ant-steps-icon {
+                            color: #fff;
+                        }
+                    }
+                    
+                    .ant-steps-item-title {
+                        color: #803D3B;
+                        font-weight: 600;
+                    }
+                    
+                    .ant-steps-item-description {
+                        color: #8c8c8c;
+                    }
+                }
+                
+                &.ant-steps-item-finish {
+                    .ant-steps-item-icon {
+                        background: #52c41a;
+                        border-color: #52c41a;
+                        
+                        .ant-steps-icon {
+                            color: #fff;
+                        }
+                    }
+                    
+                    .ant-steps-item-title {
+                        color: #52c41a;
+                        font-weight: 600;
+                    }
+                }
+                
+                .ant-steps-item-icon {
+                    width: 40px;
+                    height: 40px;
+                    line-height: 38px;
+                    font-size: 16px;
+                    margin: 0 auto 8px;
+                }
+                
+                .ant-steps-item-title {
+                    font-size: 14px;
+                    font-weight: 500;
+                    margin-bottom: 4px;
+                }
+                
+                .ant-steps-item-description {
+                    font-size: 12px;
+                    color: #8c8c8c;
+                }
+            }
+        }
+        
+        // Enhanced Form Content
+        .form-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            
+            .step-content {
+                min-height: 400px;
+                
+                .ant-typography {
+                    &.ant-typography h4 {
+                        color: #262626;
+                        font-size: 20px;
+                        font-weight: 600;
+                        margin-bottom: 24px;
+                        padding-bottom: 12px;
+                        border-bottom: 2px solid #f0f0f0;
+                        position: relative;
+                        
+                        &::after {
+                            content: '';
+                            position: absolute;
+                            bottom: -2px;
+                            left: 0;
+                            width: 60px;
+                            height: 2px;
+                            background: linear-gradient(135deg, #803D3B 0%, #A0522D 100%);
+                            border-radius: 1px;
+                        }
+                    }
+                }
+                
+                // Enhanced Form Items
+                .form-item {
+                    margin-bottom: 24px;
+                    
+                    label {
+                        display: block;
+                        margin-bottom: 8px;
+                        font-weight: 500;
+                        color: #262626;
+                        font-size: 14px;
+                        
+                        span[style*="color: red"] {
+                            color: #ff4d4f !important;
+                            margin-left: 4px;
+                        }
+                    }
+                    
+                  
+                }
+                
+                // Enhanced Radio Group
+                .ant-radio-group {
+                    .ant-radio-button-wrapper {
+                        border-radius: 8px;
+                        margin-left: 8px;
+                        border: 1px solid #d9d9d9;
+                        transition: all 0.3s;
+                        
+                        &:first-child {
+                            border-radius: 8px;
+                        }
+                        
+                        &:last-child {
+                            border-radius: 8px;
+                        }
+                        
+                        &:hover {
+                            border-color: #803D3B;
+                            color: #803D3B;
+                        }
+                        
+                        &.ant-radio-button-wrapper-checked {
+                            background: linear-gradient(135deg, #803D3B 0%, #A0522D 100%);
+                            border-color: #803D3B;
+                            color: #fff;
+                            
+                            &:hover {
+                                background: linear-gradient(135deg, #A0522D 0%, #803D3B 100%);
+                            }
+                        }
+                    }
+                }
+                
+                // Enhanced Alert
+                .ant-alert {
+                    border-radius: 8px;
+                    border: none;
+                    background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+                    
+                    .ant-alert-icon {
+                        color: #1890ff;
+                    }
+                    
+                    .ant-alert-message {
+                        color: #262626;
+                        font-weight: 500;
+                    }
+                }
+            }
+        }
+        
+        // Enhanced Modal Actions
+        .modal-actions {
+            background: #fff;
+            padding: 20px 32px;
+            border-top: 1px solid #f0f0f0;
+            border-radius: 0 0 12px 12px;
+            margin: 24px -24px -24px;
+            
+            .ant-btn {
+                height: 40px;
+                border-radius: 8px;
+                font-weight: 500;
+                padding: 0 24px;
+                
+                &.ant-btn-primary {
+                    background: linear-gradient(135deg, #803D3B 0%, #A0522D 100%);
+                    border: none;
+                    
+                    &:hover {
+                        background: linear-gradient(135deg, #A0522D 0%, #803D3B 100%);
+                        transform: translateY(-1px);
+                        box-shadow: 0 4px 12px rgba(128, 61, 59, 0.3);
+                    }
+                    
+                    &:active {
+                        transform: translateY(0);
+                    }
+                }
+                
+                &:not(.ant-btn-primary) {
+                    border-color: #d9d9d9;
+                    
+                    &:hover {
+                        border-color: #803D3B;
+                        color: #803D3B;
+                    }
+                }
+            }
+        }
+    }
+
+    // Enhanced Cards for Steps
+    .meal-card {
+        border-radius: 8px;
+        transition: all 0.3s;
+        cursor: pointer;
+        border: 2px solid #f0f0f0;
+        
+        &:hover {
+            border-color: #803D3B;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(128, 61, 59, 0.15);
+        }
+        
+        &.selected {
+            border-color: #803D3B;
+            background: linear-gradient(135deg, rgba(128, 61, 59, 0.05) 0%, rgba(160, 82, 45, 0.05) 100%);
+            
+            .ant-checkbox-wrapper {
+                .ant-checkbox-checked .ant-checkbox-inner {
+                    background-color: #803D3B;
+                    border-color: #803D3B;
+                }
+            }
+        }
+        
+        .ant-card-body {
+            padding: 16px;
+        }
+    }
+    
+    .products-card,
+    .total-card {
+        border-radius: 8px;
+        border: 1px solid #f0f0f0;
+        margin-bottom: 16px;
+        
+        .ant-card-head {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            border-bottom: 1px solid #f0f0f0;
+            border-radius: 8px 8px 0 0;
+            
+            .ant-card-head-title {
+                color: #262626;
+                font-weight: 600;
+            }
+        }
+        
+        .ant-card-body {
+            padding: 20px;
+        }
+    }
+    
+    .total-card {
+        border: 2px solid #52c41a;
+        background: linear-gradient(135deg, #f6ffed 0%, #f0f9f0 100%);
+        
+        .ant-card-head {
+            background: linear-gradient(135deg, #d9f7be 0%, #f6ffed 100%);
+            border-bottom-color: #b7eb8f;
+        }
+        
+        .total-breakdown {
+            .total-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid #f0f0f0;
+                
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+            
+            .total-final {
+                background: rgba(82, 196, 26, 0.1);
+                padding: 16px;
+                border-radius: 8px;
+                margin-top: 16px;
+                text-align: center;
+                
+                .ant-typography {
+                    color: #389e0d;
+                    font-size: 18px;
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+    
+    .selected-products {
+        margin-top: 16px;
+        
+        .ant-tag {
+            border-radius: 6px;
+            padding: 4px 12px;
+            margin: 4px 8px 4px 0;
+            background: linear-gradient(135deg, rgba(128, 61, 59, 0.1) 0%, rgba(160, 82, 45, 0.1) 100%);
+            border-color: #803D3B;
+            color: #803D3B;
+        }
+    }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+    .visitor-modal {
+        .ant-modal {
+            margin: 16px;
+            max-width: calc(100vw - 32px);
+        }
+
+        .modal-content {
+            padding: 16px;
+            
+            .booking-steps {
+                padding: 16px;
+                
+                .ant-steps-item {
+                    .ant-steps-item-icon {
+                        width: 32px;
+                        height: 32px;
+                        line-height: 30px;
+                        font-size: 14px;
+                    }
+                    
+                    .ant-steps-item-title {
+                        font-size: 12px;
+                    }
+                    
+                    .ant-steps-item-description {
+                        font-size: 11px;
+                    }
+                }
+            }
+            
+            .form-content {
+                padding: 20px;
+                
+                .step-content {
+                    min-height: 300px;
+                    
+                    .form-item {
+                        margin-bottom: 20px;
+                    }
+                }
+            }
+            
+            .modal-actions {
+                padding: 16px 20px;
+                margin: 16px -16px -16px;
+                
+                .ant-btn {
+                    height: 36px;
+                    padding: 0 16px;
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}
+
+// Dark theme support
+.dark-theme {
+    .visitor-modal {
+        .ant-modal-content {
+            background-color: #141414;
+        }
+        
+        .ant-modal-header {
+            background: linear-gradient(135deg, #803D3B 0%, #A0522D 100%);
+        }
+        
+        .ant-modal-body {
+            background: #1f1f1f;
+        }
+        
+        .modal-content {
+            .booking-steps {
+                background: #262626;
+            }
+            
+            .form-content {
+                background: #262626;
+                
+                .step-content {
+                    .ant-typography h4 {
+                        color: #fff;
+                        border-bottom-color: #404040;
+                    }
+                    
+                    .form-item {
+                        label {
+                            color: #fff;
+                        }
+                    }
+                }
+            }
+            
+            .modal-actions {
+                background: #262626;
+                border-top-color: #404040;
+            }
+        }
+        
+        .meal-card,
+        .products-card,
+        .total-card {
+            background: #1f1f1f;
+            border-color: #404040;
+            
+            .ant-card-head {
+                background: #262626;
+                border-bottom-color: #404040;
+                
+                .ant-card-head-title {
+                    color: #fff;
+                }
+            }
+        }
+    }
+}

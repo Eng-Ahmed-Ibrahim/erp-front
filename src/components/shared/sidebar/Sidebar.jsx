@@ -11,7 +11,7 @@ import {
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { CgDanger } from "react-icons/cg";
-
+import { FaHotel, FaConciergeBell, FaCalculator } from "react-icons/fa";
 import {
   FaCodePullRequest,
   FaKitchenSet,
@@ -49,8 +49,7 @@ import { useTranslation } from "react-i18next";
 import { RightOutlined } from "@ant-design/icons";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINT } from "../../../../config";
-
-function SaveIncentivesModal({ show, onHide, user }) {
+function OpenedTablesWarning({ show, onHide, user }) {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const navigate = useNavigate();
@@ -129,6 +128,8 @@ function SaveIncentivesModal({ show, onHide, user }) {
 }
 
 const Sidebar = () => {
+  const MalahiDepartment = "01jn3wntk7sh5gsq3d9r0et4yf";
+
   const { theme } = useContext(ThemeContext);
   const { closeSidebar } = useContext(SidebarContext);
   const navbarRef = useRef(null);
@@ -151,6 +152,9 @@ const Sidebar = () => {
   const [isIncentives, setIsIncentives] = useState(false);
   const [incentivesCollapsedGroup, setIncentivesCollapsedGroup] =
     useState(false);
+
+  const [receptionCollapsedGroup, setReceptionCollapsedGroup] = useState(false);
+
   const [linkedDepartment, setLinkedDepartment] = useState("");
   const [linkedDepartmentName, setLinkedDepartmentName] = useState("");
   const [warehouseCollapsedGroup, setWarehouseCollapsedGroup] = useState(false);
@@ -724,7 +728,8 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-            {!isTalaat && (
+
+            {!isTalaat && user?.department?.is_orders_visible ? (
               <li
                 className="menu-item"
                 title="طلبات المطبخ"
@@ -761,7 +766,8 @@ const Sidebar = () => {
                   </span>
                 </Link>
               </li>
-            )}
+            ) : null}
+
             <li
               className="menu-item"
               title="الأوردرات المحذوفة"
@@ -1695,6 +1701,177 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
+
+            {receptionCollapsedGroup ? (
+              <>
+                {" "}
+                <li
+                  className="menu-item"
+                  title="كاشير الاستقبال"
+                  style={{
+                    display: `${
+                      checkMenuItemPermission({
+                        id: 200,
+                        name: "view reception cashier",
+                      })
+                        ? ""
+                        : "none"
+                    }`,
+                  }}
+                >
+                  <Link
+                    to="/warehouse/reception/cashier"
+                    className={`menu-link ${
+                      activeLink === "/warehouse/reception/cashier"
+                        ? "active"
+                        : ""
+                    } ${justifyContent}`}
+                    onClick={() =>
+                      handleMenuLinkClick("/warehouse/reception/cashier")
+                    }
+                  >
+                    <span className="menu-link-icon">
+                      <FaConciergeBell size={30} />
+                    </span>
+                    <span
+                      className={`menu-link-text ${display}`}
+                      style={{ fontSize: "20px" }}
+                    >
+                      كاشير الإسكان
+                    </span>
+                  </Link>
+                </li>
+                <li
+                  className="menu-item"
+                  title="إدارة الاستقبال"
+                  style={{
+                    display: `${
+                      checkMenuItemPermission({
+                        id: 201,
+                        name: "manage reception",
+                      })
+                        ? ""
+                        : "none"
+                    }`,
+                  }}
+                >
+                  <Link
+                    to="/warehouse/reception/management"
+                    className={`menu-link ${
+                      activeLink === "/warehouse/reception/management"
+                        ? "active"
+                        : ""
+                    } ${justifyContent}`}
+                    onClick={() =>
+                      handleMenuLinkClick("/warehouse/reception/management")
+                    }
+                  >
+                    <span className="menu-link-icon">
+                      <FaHotel size={30} />
+                    </span>
+                    <span
+                      className={`menu-link-text ${display}`}
+                      style={{ fontSize: "20px" }}
+                    >
+                      إدارة الإسكان
+                    </span>
+                  </Link>
+                </li>
+                <li
+                  className="menu-item"
+                  title="المحاسبة المالية"
+                  style={{
+                    display: `${
+                      checkMenuItemPermission({
+                        id: 201,
+                        name: "manage reception",
+                      })
+                        ? ""
+                        : "none"
+                    }`,
+                  }}
+                >
+                  <Link
+                    to="/warehouse/accounting"
+                    className={`menu-link ${
+                      activeLink === "/warehouse/accounting" ? "active" : ""
+                    } ${justifyContent}`}
+                    onClick={() => handleMenuLinkClick("/warehouse/accounting")}
+                  >
+                    <span className="menu-link-icon">
+                      <FaCalculator size={30} />
+                    </span>
+                    <span
+                      className={`menu-link-text ${display}`}
+                      style={{ fontSize: "20px" }}
+                    >
+                      تقارير الإسكان
+                    </span>
+                  </Link>
+                </li>
+
+
+                <li
+                      className="menu-item"
+                      style={{
+                        height: "25px",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Link
+                        className="menu-link"
+                        onClick={(e) => {setReceptionCollapsedGroup(!receptionCollapsedGroup)}}
+                        style={{
+                          justifyContent: "center",
+                          height: "20px",
+                        }}
+                      >
+                        <span
+                          className={`menu-link-text ${display}`}
+                          style={{ fontSize: "20px" }}
+                        >
+                          ^
+                        </span>
+                      </Link>
+                    </li>
+
+                
+              </>
+            ) : (
+              <>
+                <li className="menu-item" title="الحوافز">
+                  <Link
+                    className="menu-link"
+                    style={{
+                      display: `${
+                        checkMenuItemPermission({
+                          id: 201,
+                          name: "manage reception",
+                        })
+                          ? ""
+                          : "none"
+                      }`,
+                    }}
+                    onClick={(e) => {setReceptionCollapsedGroup(!receptionCollapsedGroup)} }
+                  >
+                    <span className="menu-link-icon">
+                      <BsCashCoin size={30} />
+                    </span>
+                    <span
+                      className={`menu-link-text ${display}`}
+                      style={{ fontSize: "20px" }}
+                    >
+                      الإسكان
+                      <img
+                        src="../../../../assets/icons/down-arrow.png"
+                        style={{ width: "20px", marginRight: "10px" }}
+                      />
+                    </span>
+                  </Link>
+                </li>
+              </>
+            )}
+
             <li className="menu-item" title="الإعدادات">
               <Link
                 to="/warehouse/account-settings"
@@ -1740,7 +1917,7 @@ const Sidebar = () => {
           </ul>
         </div>
       </div>
-      <SaveIncentivesModal
+      <OpenedTablesWarning
         show={isLogoutModalVisible}
         onHide={() => setLogoutModalVisible(false)}
         user={user}

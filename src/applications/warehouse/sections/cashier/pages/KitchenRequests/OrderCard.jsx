@@ -173,9 +173,13 @@ const OrderCard = ({ order, actions, changeStatusFn, user, refreshOrders }) => {
                     تم الإستلام
                   </button>
                 )}
-                <button onClick={() => handleChangeStatus("completed")}>
-                  جهز
-                </button>
+                {user?.permissions.some(
+                  (permission) => permission.name === "complete-order"
+                ) && (
+                  <button onClick={() => handleChangeStatus("completed")}>
+                    جهز
+                  </button>
+                )}
               </div>
             );
           }

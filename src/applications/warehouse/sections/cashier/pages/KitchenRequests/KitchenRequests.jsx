@@ -10,6 +10,7 @@ import { useAuth } from "../../../../../../context/AuthContext";
 const KitchenRequests = () => {
   const [departments, setDepartments] = useState([]);
   const { user } = useAuth();
+  const MalahiDepartment = "01jn3wntk7sh5gsq3d9r0et4yf";
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -101,7 +102,6 @@ const KitchenRequests = () => {
       }`,
       label: "تعديل الحالة",
     },
-    
     {
       type: `${
         user?.permissions.some(
@@ -114,7 +114,7 @@ const KitchenRequests = () => {
       route: "/warehouse/cashier/print-order/:id",
     },
   ];
-  const ordersRecieveCol = [
+  const ordersRecieveCol = user?.department?.id != MalahiDepartment ?  [
     {
       type: `${
         user?.permissions.some(
@@ -122,13 +122,13 @@ const KitchenRequests = () => {
             permission.name === "add order" ||
             permission.name === "change order status cashier" ||
             permission.name === "change order status kitchen"
-        )
+        ) 
           ? "print"
           : ""
       }`,
       label: "طباعة نسخة التشغيل",
     },
-  ];
+  ] : null ;
   const detailsHeaders = [
     {
       key: "products",

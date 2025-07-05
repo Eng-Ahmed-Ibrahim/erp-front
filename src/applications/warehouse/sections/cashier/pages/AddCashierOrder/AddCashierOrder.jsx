@@ -33,8 +33,10 @@ import {
   render,
 } from "react-thermal-printer";
 import { is } from "date-fns/locale";
+import { use } from "i18next";
 
-function PrintAfterFinish({ id, table_no }) {
+function PrintAfterFinish({ id, table_no, user }) {
+
   const componentRef = useRef();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true); // New loading state
@@ -57,27 +59,35 @@ function PrintAfterFinish({ id, table_no }) {
       try {
         await changeOrderStatus(id, "closed");
 
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         const OrderData = await getOrderById(id);
-        setData({
-          code: OrderData.data.code,
-          cashier: OrderData.data.casher,
-          products: OrderData.data.products,
-          payment_method: OrderData.data.payment_method,
-          order_date: OrderData.data.order_date,
-          client: OrderData.data.client,
-          payment: OrderData.data.payment_method,
-          status: OrderData.data.status,
-          invoice_date: OrderData.data.order_date,
-          table_number: OrderData.data.table_number,
-          client_type: OrderData.data.client_type,
-          recipeData: OrderData.data.products,
-          price: OrderData.data.price,
-          total_price: OrderData.data.total_price,
-          waiter_name: OrderData.data.waiter.name,
-          total_price_after_discount_and_tax:
-            OrderData.data.total_price_after_discount_and_tax,
-          departmentName: OrderData.data.department,
-        });
+
+        if (
+          OrderData.data &&
+          OrderData.data.status === "closed"
+        ) {
+          setData({
+            code: OrderData.data.code,
+            cashier: OrderData.data.casher,
+            products: OrderData.data.products,
+            payment_method: OrderData.data.payment_method,
+            order_date: OrderData.data.order_date,
+            client: OrderData.data.client,
+            payment: OrderData.data.payment_method,
+            status: OrderData.data.status,
+            invoice_date: OrderData.data.order_date,
+            table_number: OrderData.data.table_number,
+            client_type: OrderData.data.client_type,
+            recipeData: OrderData.data.products,
+            price: OrderData.data.price,
+            total_price: OrderData.data.total_price,
+            waiter_name: OrderData.data.waiter.name,
+            total_price_after_discount_and_tax:
+              OrderData.data.total_price_after_discount_and_tax,
+            departmentName: OrderData.data.department,
+          });
+        }
       } catch (error) {
       } finally {
         setLoading(false); // Set loading to false after data is fetched
@@ -102,7 +112,7 @@ function PrintAfterFinish({ id, table_no }) {
   }, [loading, data]);
 
   return (
-    <div               
+    <div
       id="invoice-container"
       ref={componentRef}
       dir="rtl"
@@ -159,7 +169,7 @@ function PrintAfterFinish({ id, table_no }) {
             <tfoot>
               <tr>
                 <td className="text-price" colSpan={2}>
-                  السعر الكلي 
+                  السعر الكلي
                 </td>
                 <td className="text-price" colSpan={2}>
                   {data.price?.toFixed(2)} ج.م
@@ -175,6 +185,33 @@ function PrintAfterFinish({ id, table_no }) {
               </tr>
             </tfoot>
           </table>
+
+          <p></p>
+            <hr/>
+        {user.department?.has_instructions &&  user.department?.instructions.split(",").length > 0 && (
+          <>
+
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">  تعليمات {user?.department?.name} </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                { user.department?.instructions?.split(",").map((instruction, index) => (
+                  <tr>
+                    <th scope="row">{index + 1}</th>
+          
+                    <td>{instruction}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
         </div>
         <Cut />
       </Printer>
@@ -280,7 +317,7 @@ function OrderReviewModal({ show, onHide, items, clientType, client }) {
           <tfoot>
             <tr>
               <td className="text-price" colSpan={2}>
-                السعر الكلي 
+                السعر الكلي
               </td>
               <td className="text-price" colSpan={2}>
                 {data.price?.toFixed(2)} ج.م
@@ -344,6 +381,7 @@ const AddCashierOrder = () => {
   const [selectWaiter, setSelectedWatier] = useState(
     localStorage.getItem("DefaultWaiterId") || ""
   );
+const [hasInstantClosing, setHasInstantClosing] = useState(false)
 
   const SUPPORT_MILITARY_ID = [
     "01j593bhrndb11k7rdhtacz7ht",
@@ -378,7 +416,14 @@ const AddCashierOrder = () => {
       // await fetchDiscountReasons();
     };
     fetchData();
+  }, []); 
+  
+  useEffect(() => {
+    setHasInstantClosing(user?.department?.has_instant_order_closing)
+    handlePaymentMethodChange("dc2a3eb5-0efd-4bed-a297-8f5b43e8dc13")
   }, []);
+
+
 
   const validateSelection = (value) => {
     if (!value && newUserValues["client_id"] !== "") {
@@ -548,6 +593,9 @@ const AddCashierOrder = () => {
         }
       );
       setClientTypes(response.data.data);
+      if (response?.data?.data?.length == 1 ){
+        handleClientTypeChange(response?.data?.data[0]?.id)
+      }
     } catch (error) {
       console.error("Error fetching client types for payment method:", error);
     }
@@ -558,7 +606,6 @@ const AddCashierOrder = () => {
     setselectedClientTypeName(clientTypes.find((ele) => ele.id == value)?.name);
 
     if (SUPPORT_MILITARY_ID.includes(selectedClient)) {
-      console.log(selectedClient);
       setAddFormVisible(true);
     } else {
       setAddFormVisible(false);
@@ -681,6 +728,25 @@ const AddCashierOrder = () => {
         content: (
           <div style={{ fontSize: "24px", textAlign: "center" }}>
             ادخل نوع العميل من فضلك{" "}
+          </div>
+        ),
+        centered: true,
+        width: 400,
+      });
+
+      setTimeout(() => {
+        modal.destroy();
+      }, 5000);
+      return;
+    }
+
+    if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
+      setIsDisabled(false);
+      const modal = Modal.error({
+        title: "Error",
+        content: (
+          <div style={{ fontSize: "24px", textAlign: "center" }}>
+            يجب اختيار اسم الويتر
           </div>
         ),
         centered: true,
@@ -1315,7 +1381,8 @@ const AddCashierOrder = () => {
       <TotalAmount total={calculateTotalAmount()} />
 
       <div className="btns">
-        <button
+     
+     {! hasInstantClosing && (   <button
           className="form-cashier-btn"
           onClick={handleOrderPriceReview}
           style={{
@@ -1324,8 +1391,8 @@ const AddCashierOrder = () => {
         >
           مراجعة سعر الأوردر
         </button>
-
-        {!isTakeAway ? (
+)}
+        {!isTakeAway && !hasInstantClosing ? (
           <>
             <button
               className="form-cashier-btn"
@@ -1341,11 +1408,12 @@ const AddCashierOrder = () => {
             </button>
           </>
         ) : null}
- 
-        {!isguest && !isHidden  && ( ! user.permissions.some(
-            (permission) =>
-              permission.name === "cannot_close_order"
-          )) ?(
+
+        {!isguest &&
+        !isHidden &&
+        !user.permissions.some(
+          (permission) => permission.name === "cannot_close_order"
+        ) ? (
           <>
             <button
               className="finish-cashier"
@@ -1364,7 +1432,7 @@ const AddCashierOrder = () => {
         ) : null}
       </div>
 
-      {shouldPrint && <PrintAfterFinish id={orderID} />}
+      {shouldPrint && <PrintAfterFinish id={orderID}  user = {user}/>}
 
       <OrderReviewModal
         show={isOrderReviewModalVisible}

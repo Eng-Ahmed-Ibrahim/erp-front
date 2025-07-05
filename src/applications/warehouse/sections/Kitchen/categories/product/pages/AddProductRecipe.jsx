@@ -29,6 +29,7 @@ const AddProductRecipe = () => {
   const [parentName, setParentName] = useState("");
   const [ProductParentId, setRecipeParentId] = useState("");
   const [ProductCategory_id, setProductCategoryId] = useState("");
+  const [updatedRecipes, setUpdatedRecipes] = useState([]);
 
   const handleAddItem = (item) => {
     setItems((prevItems) => [...prevItems, item]);
@@ -80,10 +81,11 @@ const AddProductRecipe = () => {
       });
   }, []);
 
-  const handleDownloadPDF = async () => {
+  const handleSaveRecipes = async () => {
     const formData = new FormData();
     formData.append("product_id", id);
     let index = 0;
+
     items.forEach((innerArray, i) => {
       innerArray.forEach((item, innerIndex) => {
         formData.append(`recipes[${index}][recipe_id]`, item.recipeId);
@@ -91,6 +93,14 @@ const AddProductRecipe = () => {
         index++;
       });
     });
+
+    // 2. Updated quantities of existing recipes
+    updatedRecipes.forEach((item) => {
+      formData.append(`recipes[${index}][recipe_id]`, item.recipe_id);
+      formData.append(`recipes[${index}][quantity]`, item.quantity);
+      index++;
+    });
+
 
     try {
       const response = await axios
@@ -103,18 +113,20 @@ const AddProductRecipe = () => {
         .then((res) => {
           message.success("تم اضافة المكون بنجاح");
 
-          navigate(
-            `/warehouse/returants/show-resturants2/${data.sub_category_id}/details-product`
-          );
 
-          axios.get(
-            `${API_ENDPOINT}/api/v1/store/products/${data.sub_category_id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${Token}`,
-              },
-            }
-          );
+          // axios.get(
+          //   `${API_ENDPOINT}/api/v1/store/products/${data.sub_category_id}`,
+          //   {
+          //     headers: {
+          //       Authorization: `Bearer ${Token}`,
+          //     },
+          //   }
+          // );
+
+          // navigate(
+          //   `/warehouse/returants/show-resturants2/updated-product/product/${id}`
+          // );
+
         });
     } catch (error) {
       console.error("Error creating invoice:", error);
@@ -181,7 +193,7 @@ const AddProductRecipe = () => {
         id: 108,
         name: "add recipes to product",
       }) && (
-        <button className="form-btn" onClick={handleDownloadPDF}>
+        <button className="form-btn" onClick={handleSaveRecipes}>
           حفظ البيانات
         </button>
       )}
@@ -242,6 +254,7 @@ const AddProductRecipe = () => {
               >
                 {item?.name}
               </td>
+
               <td
                 className="clickable-cell"
                 style={{
@@ -252,8 +265,40 @@ const AddProductRecipe = () => {
                   fontWeight: "700",
                 }}
               >
-                {item?.quantity} {item?.unit}
+                <input
+                  type="number"
+                  className="form-control form-control-sm"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "600",
+                  }}
+                  value={
+                    updatedRecipes.find((r) => r.recipe_id === item.id)
+                      ?.quantity ?? item.quantity
+                  }
+                  onChange={(e) => {
+                    const newQty = parseFloat(e.target.value);
+                    setUpdatedRecipes((prev) => {
+                      const existing = prev.find(
+                        (r) => r.recipe_id === item.id
+                      );
+                      if (existing) {
+                        return prev.map((r) =>
+                          r.recipe_id === item.id
+                            ? { ...r, quantity: newQty }
+                            : r
+                        );
+                      } else {
+                        return [
+                          ...prev,
+                          { recipe_id: item.id, quantity: newQty },
+                        ];
+                      }
+                    });
+                  }}
+                />
               </td>
+
               <td
                 className="clickable-cell"
                 style={{

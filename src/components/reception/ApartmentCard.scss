@@ -1,0 +1,653 @@
+// Modern ApartmentCard Styles with Sophisticated Business Colors
+.apartment-card-wrapper {
+  margin-bottom: 20px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.apartment-card-new {
+  border-radius: 16px !important;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+
+  &:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  .ant-card-head {
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  .ant-card-body {
+    padding: 24px !important;
+  }
+
+  .ant-card-actions {
+    border-top: 1px solid #f0f0f0;
+    background: #fafafa;
+    padding: 12px 16px;
+
+    .ant-card-actions > li {
+      margin: 0 8px;
+    }
+  }
+}
+
+// Header Styles
+.apartment-header-new {
+  position: relative;
+  color: white;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  .apartment-info-new {
+    position: relative;
+    z-index: 2;
+
+    .apartment-main-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+
+      .apartment-icon {
+        font-size: 20px;
+        color: white;
+        margin-top: 2px;
+      }
+
+      .apartment-details {
+        flex: 1;
+
+        .apartment-number {
+          display: block;
+          font-size: 18px;
+          font-weight: 700;
+          color: white;
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+          margin-bottom: 12px;
+          line-height: 1.2;
+        }
+
+        .apartment-tags {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+
+          .room-type-tag,
+          .capacity-tag {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: white !important;
+            font-weight: 600;
+            font-size: 12px;
+            border-radius: 12px;
+            padding: 4px 12px;
+            backdrop-filter: blur(10px);
+          }
+        }
+      }
+    }
+  }
+
+  .status-badge-new {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .status-icon {
+      font-size: 22px;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .status-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .early-checkout-tag {
+      margin-top: 6px;
+      background: rgba(251, 146, 60, 0.9); // Softer amber
+      color: white;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    &.available .status-icon {
+      animation: bounce-available 2s infinite;
+    }
+
+    &.occupied .status-icon {
+      animation: bounce-occupied 2s infinite;
+    }
+  }
+}
+
+// Content Styles
+.apartment-content-new {
+  min-height: 200px;
+
+  .booking-info-new {
+    .visitor-section {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+      border-radius: 12px;
+      border: 1px solid #e8e8e8;
+
+      .visitor-avatar {
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25); // Softer indigo shadow
+      }
+
+      .visitor-details-new {
+        flex: 1;
+
+        .visitor-name {
+          margin: 0 0 12px 0;
+          font-size: 18px;
+          font-weight: 700;
+          color: #1a1a1a;
+          line-height: 1.3;
+        }
+
+        .visitor-meta-new {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-bottom: 12px;
+
+          .client-type-tag,
+          .nationality-tag {
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+          }
+        }
+
+        .visitor-contact {
+          display: flex;
+          align-items: center;
+          margin-bottom: 6px;
+          font-size: 13px;
+          color: #666;
+          font-weight: 500;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          span {
+            direction: ltr;
+            text-align: left;
+          }
+        }
+      }
+    }
+
+    .section-divider {
+      margin: 20px 0;
+      border-color: #e8e8e8;
+    }
+
+    .booking-details-new {
+      .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+        }
+
+        .detail-card {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 16px;
+          background: white;
+          border-radius: 12px;
+          border: 1px solid #e8e8e8;
+          transition: all 0.2s ease;
+
+          &:hover {
+            border-color: #d9d9d9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+          }
+
+          .detail-icon {
+            font-size: 18px;
+            margin-top: 2px;
+          }
+
+          .detail-content {
+            flex: 1;
+
+            .detail-label {
+              display: block;
+              font-size: 12px;
+              color: #8c8c8c;
+              font-weight: 600;
+              margin-bottom: 4px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .detail-value {
+              display: block;
+              font-size: 14px;
+              color: #1a1a1a;
+              font-weight: 700;
+              margin-bottom: 2px;
+
+              &.price {
+                color: #8b5a2b; // Warm brown
+                font-size: 16px;
+              }
+            }
+
+            .detail-time {
+              display: block;
+              font-size: 12px;
+              color: #666;
+              font-weight: 500;
+            }
+          }
+
+          &.arrival .detail-icon {
+            color: #14b8a6; // Soft teal
+          }
+
+          &.checkout .detail-icon {
+            color: #f59e0b; // Warm amber
+          }
+
+          &.duration .detail-icon {
+            color: #0ea5e9; // Sky blue
+          }
+
+          &.amount .detail-icon {
+            color: #8b5a2b; // Warm brown
+          }
+        }
+      }
+
+      .payment-info,
+      .meals-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border: 1px solid #e8e8e8;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .payment-icon,
+        .meals-icon {
+          font-size: 16px;
+        }
+
+        .payment-method,
+        .meals-text {
+          font-size: 14px;
+          color: #1a1a1a;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .empty-apartment-new {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 180px;
+    text-align: center;
+    padding: 20px;
+
+    .empty-icon-new {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #14b8a6, #0f766e); // Soft teal
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(20, 184, 166, 0.25);
+
+      .anticon {
+        font-size: 28px;
+        color: white;
+      }
+    }
+
+    .empty-title {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .empty-text {
+      margin: 0 0 16px 0;
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .available-tag {
+      border-radius: 100px;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 40px 40px;
+
+    }
+  }
+}
+
+// Action Icons
+.action-icon {
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 8px;
+  border-radius: 8px;
+
+  &.edit-icon {
+    color: #3b82f6;
+
+    &:hover {
+      color: #2563eb;
+      background: #eff6ff;
+    }
+  }
+
+  &.delete-icon {
+    color: #ef4444;
+
+    &:hover {
+      color: #dc2626;
+      background: #fef2f2;
+    }
+  }
+}
+
+.checkout-button {
+  border-radius: 8px !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2); // Warm amber shadow
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3) !important;
+  }
+  padding: 10px;
+}
+
+// Animations with softer colors
+@keyframes pulse-available {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes pulse-occupied {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.9;
+  }
+}
+
+@keyframes bounce-available {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-4px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes bounce-occupied {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  40% {
+    transform: translateY(-3px) rotate(-5deg);
+  }
+  60% {
+    transform: translateY(-1px) rotate(5deg);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .apartment-card-wrapper {
+    margin-bottom: 16px;
+  }
+
+  .apartment-card-new {
+    .ant-card-body {
+      padding: 16px !important;
+    }
+  }
+
+  .apartment-header-new {
+    padding: 16px 20px !important;
+
+    .apartment-info-new {
+      .apartment-main-info {
+        .apartment-details {
+          .apartment-number {
+            font-size: 16px;
+          }
+
+          .apartment-tags {
+            .room-type-tag,
+            .capacity-tag {
+              font-size: 11px;
+              padding: 3px 8px;
+            }
+          }
+        }
+      }
+    }
+
+    .status-badge-new {
+      position: static;
+      margin-top: 12px;
+      align-self: flex-start;
+      padding: 8px 12px;
+
+      .status-icon {
+        font-size: 18px;
+        margin-bottom: 4px;
+      }
+
+      .status-text {
+        font-size: 11px;
+      }
+    }
+  }
+
+  .apartment-content-new {
+    min-height: 160px;
+
+    .booking-info-new {
+      .visitor-section {
+        padding: 12px;
+        margin-bottom: 16px;
+
+        .visitor-details-new {
+          .visitor-name {
+            font-size: 16px;
+          }
+        }
+      }
+
+      .booking-details-new {
+        .details-grid {
+          gap: 12px;
+          margin-bottom: 16px;
+
+          .detail-card {
+            padding: 12px;
+
+            .detail-icon {
+              font-size: 16px;
+            }
+
+            .detail-content {
+              .detail-value {
+                font-size: 13px;
+
+                &.price {
+                  font-size: 14px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .empty-apartment-new {
+      height: 140px;
+      padding: 16px;
+
+      .empty-icon-new {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 12px;
+
+        .anticon {
+          font-size: 24px;
+        }
+      }
+
+      .empty-title {
+        font-size: 16px;
+      }
+
+      .empty-text {
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+// Room Type Specific Hover Effects with new colors
+.apartment-card-new {
+  &.single-room:hover {
+    box-shadow: 0 8px 32px rgba(14, 165, 233, 0.12) !important; // Sky blue
+  }
+
+  &.double-room:hover {
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.12) !important; // Indigo
+  }
+
+  &.suite-room:hover {
+    box-shadow: 0 8px 32px rgba(139, 90, 43, 0.12) !important; // Warm brown
+  }
+
+  &.family-room:hover {
+    box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12) !important; // Forest green
+  }
+}
+
+// Grid Layout for Multiple Cards
+.apartments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px 0;
+  }
+
+  @media (min-width: 1400px) {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  }
+}
+
+.amount {
+  filter: blur(5px);
+  transition: filter 0.3s ease;
+}
+.amount:hover {
+  filter: none;
+}
+
+.checkout-button{
+  padding: 0px;
+}

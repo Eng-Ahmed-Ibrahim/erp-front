@@ -53,6 +53,11 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
       );
       const data = await response.json();
       setProductCategoryParents(data.data);
+      if (data?.data?.length == 1) {
+        
+        handleParentChange(data?.data[0]?.id)
+      }
+      console.log('eeeeeeeeeeeeeeee',data.data) // 444444444444444
     } catch (error) {
       console.error("Error fetching Product category parents:", error);
     }

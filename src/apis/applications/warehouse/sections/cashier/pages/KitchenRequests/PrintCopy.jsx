@@ -88,7 +88,7 @@ function PrintCopy({ id }) {
                     </div>
                 </div>
                 <div>
-                    <p className="working-copy">نسخة تشغيل لا يتم التحصيل بها</p>
+                    <h4 className="working-copy">نسخة تشغيل لا يتم التحصيل بها</h4>
                 </div>
                 <div className="invoice-items">
                     <h2>محــــــتويات الأوردر</h2>

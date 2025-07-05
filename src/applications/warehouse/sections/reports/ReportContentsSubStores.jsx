@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Report2 from "../../../../../public/assets/images/2.jpg";
 import Report1 from "../../../../../public/assets/images/1.jpg";
+import Report5 from "../../../../../public/assets/images/cost5.jpg";
 import Report3 from "../../../../../public/assets/images/5.jpg";
 import { useAuth } from "../../../../context/AuthContext";
 import React, { useEffect, useState } from "react";
@@ -41,6 +42,12 @@ const ReportContentsSubStores = () => {
       name: "تقرير أرباح الأوردرات الخارجية ",
       img: `${Report3}`,
       route: "/warehouse/reports/external-orders/show",
+    },
+    {
+      id: 5,
+      name: "تقارير مراجعة الجرد",
+      img: `${Report5}`,
+      route: "/warehouse/reports/inventory-discrepancy-reviews/show",
     },
   ];
 

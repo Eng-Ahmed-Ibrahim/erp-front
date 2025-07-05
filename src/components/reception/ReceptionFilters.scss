@@ -1,0 +1,317 @@
+.reception-filters {
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    .filter-item {
+        .filter-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #262626;
+            font-size: 14px;
+        }
+    }
+
+    .building-color-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .visitor-type-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    // Enhanced Statistics Section
+    .enhanced-stats-section {
+        margin-top: 24px;
+
+        .stat-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+
+            .ant-statistic {
+                text-align: center;
+                width: 100%;
+
+                .ant-statistic-title {
+                    .stat-title {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: #595959;
+                        margin-bottom: 8px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                }
+
+                .ant-statistic-content {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+
+                    .ant-statistic-content-prefix {
+                        opacity: 0.8;
+                        font-size: 20px;
+                    }
+
+                    .ant-statistic-content-value {
+                        line-height: 1;
+                    }
+
+                    .ant-statistic-content-suffix {
+                        font-size: 18px;
+                        font-weight: 600;
+                    }
+                }
+            }
+
+            // Specific card styling
+            &.total-apartments {
+                background: linear-gradient(135deg, #e6f7ff 0%, #f0f8ff 100%);
+                border-left: 4px solid #1890ff;
+            }
+
+            &.available-apartments {
+                background: linear-gradient(135deg, #f6ffed 0%, #fcffe6 100%);
+                border-left: 4px solid #52c41a;
+            }
+
+            &.occupied-apartments {
+                background: linear-gradient(135deg, #fff2f0 0%, #fff1f0 100%);
+                border-left: 4px solid #ff4d4f;
+            }
+
+            &.active-bookings {
+                background: linear-gradient(135deg, #f9f0ff 0%, #efdbff 100%);
+                border-left: 4px solid #722ed1;
+            }
+
+            &.occupancy-rate {
+                background: linear-gradient(135deg, #fffbe6 0%, #fff7e6 100%);
+                border-left: 4px solid #faad14;
+            }
+        }
+
+        .summary-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+
+            .summary-item {
+                .ant-badge {
+                    .ant-badge-status-dot {
+                        width: 10px;
+                        height: 10px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .reception-filters {
+        .enhanced-stats-section {
+            .stat-card {
+                height: 120px;
+
+                .ant-statistic {
+                    .ant-statistic-title {
+                        .stat-title {
+                            font-size: 12px;
+                        }
+                    }
+
+                    .ant-statistic-content {
+                        .ant-statistic-content-value {
+                            font-size: 24px !important;
+                        }
+
+                        .ant-statistic-content-prefix {
+                            font-size: 18px;
+                        }
+                    }
+                }
+            }
+
+            .summary-card {
+                margin-top: 12px;
+
+                .ant-space {
+                    justify-content: center;
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    .reception-filters {
+        .enhanced-stats-section {
+            .stat-card {
+                height: 100px;
+
+                .ant-statistic {
+                    .ant-statistic-title {
+                        .stat-title {
+                            font-size: 11px;
+                            margin-bottom: 4px;
+                        }
+                    }
+
+                    .ant-statistic-content {
+                        .ant-statistic-content-value {
+                            font-size: 20px !important;
+                        }
+
+                        .ant-statistic-content-prefix {
+                            font-size: 16px;
+                        }
+
+                        .ant-statistic-content-suffix {
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+
+            .summary-card {
+                .ant-space {
+                    flex-direction: column;
+                    gap: 8px !important;
+                }
+
+                .summary-item {
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+        }
+    }
+}
+
+// Select component customizations
+.reception-filters {
+    .ant-select {
+        .ant-select-selector {
+            border-radius: 6px;
+        }
+    }
+
+    .ant-input-search {
+        .ant-input {
+            border-radius: 6px;
+        }
+
+        .ant-input-search-button {
+            border-radius: 0 6px 6px 0;
+        }
+    }
+}
+
+// Loading state
+.reception-filters {
+    &.loading {
+        .filter-item {
+
+            .ant-select,
+            .ant-input-search {
+                opacity: 0.6;
+                pointer-events: none;
+            }
+        }
+    }
+}
+
+// Dark theme support
+.dark-theme {
+    .reception-filters {
+        background-color: #141414;
+        border-color: #303030;
+
+        .filter-label {
+            color: #fff;
+        }
+
+        .enhanced-stats-section {
+            .stat-card {
+                background-color: #1f1f1f !important;
+                border-color: #303030;
+
+                &.total-apartments {
+                    background: linear-gradient(135deg, #001529 0%, #002140 100%) !important;
+                }
+
+                &.available-apartments {
+                    background: linear-gradient(135deg, #162312 0%, #1f3a1f 100%) !important;
+                }
+
+                &.occupied-apartments {
+                    background: linear-gradient(135deg, #2a1215 0%, #3a1419 100%) !important;
+                }
+
+                &.active-bookings {
+                    background: linear-gradient(135deg, #1f0a2e 0%, #2b1040 100%) !important;
+                }
+
+                &.occupancy-rate {
+                    background: linear-gradient(135deg, #2b1d0e 0%, #3d2912 100%) !important;
+                }
+
+                .ant-statistic {
+                    .ant-statistic-title {
+                        .stat-title {
+                            color: #d9d9d9;
+                        }
+                    }
+
+                    .ant-statistic-content {
+                        .ant-statistic-content-value {
+                            color: #fff !important;
+                        }
+
+                        .ant-statistic-content-prefix {
+                            color: #d9d9d9;
+                        }
+                    }
+                }
+            }
+
+            .summary-card {
+                background-color: #1f1f1f;
+                border-color: #303030;
+
+                .summary-item {
+                    span {
+                        color: #d9d9d9 !important;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -14,6 +14,7 @@ import { useAuth } from "../../../../../context/AuthContext";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import ReportContentsSubStores from "../ReportContentsSubStores";
+
 function ShowReports() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -40,7 +41,6 @@ function ShowReports() {
 
     if (tabOneUsers.includes(user.roles[0])) {
       setViewTabOneOnly(true);
-      console.log("dddddddddddddddd");
     }
   }, []);
   const reportData = [

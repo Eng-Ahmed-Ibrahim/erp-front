@@ -99,10 +99,14 @@ function PrintCopy({ id }) {
         </div>
 
         <div>
-          <p  >نسخة تشغيل لا يتم التحصيل بها</p>
+          <h4>
+            {" "}
+            نسخة تشغيل لا يتم التحصيل بها و في حالة التحصيل يرجي التوجة لأمن
+            الدار{" "}
+          </h4>
         </div>
 
-        {data?.payables?.length > 0 && (
+        {/* {data?.payables?.length > 0 && (
           <>
             <h5 className="text-center p-3" style={{ background: "#ced4da" }}>
               المدفوعات:{" "}
@@ -134,9 +138,9 @@ function PrintCopy({ id }) {
               </tbody>
             </table>
           </>
-        )}
+        )} */}
 
-        <hr />
+        {/* <hr /> */}
 
         {data?.comment?.split(",").length > 0 && (
           <>

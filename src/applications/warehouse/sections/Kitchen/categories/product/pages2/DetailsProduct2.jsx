@@ -46,6 +46,8 @@ const DetailsProduct2 = () => {
             product.name.toLowerCase().includes(searchTerm.toLowerCase())
           );
         }
+        products.sort((a,b) => a?.cost_price - b?.cost_price )
+
         setData({
           data: products,
           pagination: res?.data?.pagination || {},

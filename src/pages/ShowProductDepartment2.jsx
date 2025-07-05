@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { API_ENDPOINT } from "../../config";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import { message, Modal } from "antd";
+import { message, Modal, Select } from "antd";
 import LogoDAR from "../../public/assets/images/Dar_logo.svg";
 import { usePDF } from "react-to-pdf";
 import { useMemo } from "react";
@@ -15,11 +15,220 @@ import "../fonts/Amiri-Regular-normal.js";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 
+function SubmitActualQuantitiesModal({
+  show,
+  onHide,
+  department_id,
+  quantities,
+  clearQuantities,
+}) {
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+  const [cashier, setCashier] = useState("");
+  const [cashiers, setCashiers] = useState(0);
+  const [waiter, setWaiter] = useState("");
+  const [waiters, setWaiters] = useState(0);
+  const [items, setChangedItems] = useState([]);
+  const [actualQuantities, setActualQuantities] = useState([]);
+  const [lossAmount, setLossAmount] = useState(0);
+  const [discrepancyNote, setDiscrepancyNote] = useState("");
+
+  useEffect(() => {
+    // setActualQuantities(actualQuantities)
+
+    const fetchWaiters = async () => {
+      const response = await axios.get(
+        `${API_ENDPOINT}/api/v1/store/waiter/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+      setWaiters(response?.data?.data);
+    };
+
+    const fetchCashiers = async () => {
+      const response = await axios.get(
+        `${API_ENDPOINT}/api/v1/shifts/cashiers`,
+        {
+          headers: {
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+      setCashiers(response?.data?.data);
+    };
+
+    fetchWaiters();
+    fetchCashiers();
+  }, []);
+
+  useEffect(() => {
+    if (quantities) {
+      console.log("actula date ", quantities);
+      const changedItems = Object.entries(quantities)
+        .filter(([itemId, value]) => value !== "")
+        .map(([itemId, value]) => ({
+          id: itemId,
+          actual_quantity: Number(value),
+        }));
+
+      setChangedItems(changedItems);
+    }
+  }, [quantities]);
+
+  const handleSubmitActualQuantities = async () => {
+    if (items.length === 0) {
+      message.error("لم يتم إجراء أي تغييرات للحفظ.", 3);
+      onHide();
+      return;
+    }
+
+    const response = await axios.post(
+      `${API_ENDPOINT}/api/v1/store/department/update-actual-quantities`,
+      {
+        items: items,
+        department_id: department_id,
+        waiter_id: waiter,
+        cashier_id: cashier,
+        estimated_loss_amount: lossAmount,
+        discrepancy_note: discrepancyNote,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    if (response.status == 201 || response.success == true) {
+      message.success(" تم حفظ الجرد بنجاح");
+      onHide();
+      clearQuantities()
+    }else{
+      
+    }
+   
+  };
+
+  return (
+    <Modal
+      title=" حفظ جرد الأصناف "
+      centered
+      open={show}
+      onOk={handleSubmitActualQuantities}
+      onCancel={onHide}
+      width={1000}
+    >
+      <div
+        style={{
+          padding: " 14px 12px",
+          border: "1px solid #E4C59E",
+          color: "#803D3B",
+          borderRadius: "15px",
+          fontSize: "16px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div className="mb-3" style={{ width: "45%" }}>
+            <label htmlFor="exampleInputPassword" className="form-label">
+              {" "}
+              الكاشير{" "}
+            </label>
+            <Select
+              className="form-input"
+              value={cashier}
+              onChange={(e) => setCashier(e)}
+              placeholder="اختر الكاشير"
+              style={{ height: "45px" }}
+              dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
+              showSearch={true}
+            >
+              {cashiers &&
+                cashiers?.map((cashier) => (
+                  <Select.Option key={cashier.id} value={cashier.id}>
+                    {cashier.name}
+                  </Select.Option>
+                ))}
+            </Select>
+          </div>
+
+          <div className="mb-3" style={{ width: "45%" }}>
+            <label htmlFor="exampleInputPassword" className="form-label">
+              {" "}
+              الويتر{" "}
+            </label>
+            <Select
+              className="form-input"
+              value={waiter}
+              onChange={(e) => setWaiter(e)}
+              placeholder="اختر الويتر"
+              style={{ height: "45px" }}
+              dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
+              showSearch={true}
+            >
+              {waiters &&
+                waiters?.map((waiter) => (
+                  <Select.Option key={waiter.id} value={waiter.id}>
+                    {waiter.name}
+                  </Select.Option>
+                ))}
+            </Select>
+          </div>
+        </div>
+
+        <div className="mb-3">
+          <label
+            htmlFor="exampleInputPassword"
+            className="form-label"
+            style={{ fontWeight: "bold" }}
+          >
+            {" "}
+            غرامة العجز{" "}
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={lossAmount}
+            onChange={(e) => setLossAmount(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="exampleInputPassword" className="form-label">
+            {" "}
+            ملاحظات{" "}
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={discrepancyNote}
+            onChange={(e) => setDiscrepancyNote(e.target.value)}
+            style={{ height: "150px" }}
+          />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
 const ShowProductDepartment2 = () => {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
   const item = useLocation()?.state?.item;
   const [isDataFetched, setIsDataFetched] = useState(false);
+  const [isActualQuantitiesModalVisible, setActualQuantitiesModalVisible] =
+    useState(false);
+
   const [data, setData] = useState(null);
   const [filteredData, setFilteredData] = useState([]);
   const [newCosts, setNewCosts] = useState({});
@@ -176,7 +385,6 @@ const ShowProductDepartment2 = () => {
         if (parentComparison !== 0) return parentComparison;
         return a.name.localeCompare(b.name, "ar", { sensitivity: "base" });
       });
-    // console.log('soeterere', sortedItems)
     return sortedItems;
   }, [data]);
 
@@ -245,10 +453,10 @@ const ShowProductDepartment2 = () => {
       content: `هل أنت متأكد من حذف الكميات الإضافية للعناصر المحددة (${selectedIdsArray.length})؟`,
       okText: " حذف",
       cancelText: "إلغاء",
-      width:"800",
-      height:"600",
+      width: "800",
+      height: "600",
       centered: true,
-      fontSize:"20px",
+      fontSize: "20px",
       onOk: async () => {
         try {
           const response = await axios.post(
@@ -364,7 +572,6 @@ const ShowProductDepartment2 = () => {
   };
 
   const handleActualQuantityChange = (itemId, value) => {
-    console.log("itititititi", itemId, value);
     const numericValue = value === "" ? "" : Number(value);
 
     if (value !== "" && (isNaN(numericValue) || numericValue < 0)) {
@@ -379,114 +586,8 @@ const ShowProductDepartment2 = () => {
   };
 
   const handleSubmitActualQuantities = async () => {
-    const localToken =
-      localStorage.getItem("token") || sessionStorage.getItem("token");
-    const changedItems = Object.entries(actualQuantities)
-      .filter(([itemId, value]) => value !== "")
-      .map(([itemId, value]) => ({
-        id: itemId,
-        actual_quantity: Number(value),
-      }));
-
-    if (changedItems.length === 0) {
-      message.error("لم يتم إجراء أي تغييرات للحفظ.", 3);
-      return;
-    }
-    Modal.confirm({
-      title: "تأكيد الحفظ",
-      content: `سيتم تحديث الكميات الفعلية لـ ${changedItems.length} عنصر. هل تريد المتابعة؟`,
-      okText: "نعم، حفظ",
-      cancelText: "إلغاء",
-      centered: true,
-      width:"800",
-      height:"600",
-      onOk: async () => {
-        try {
-          const response = await axios.post(
-            `${API_ENDPOINT}/api/v1/store/department/update-actual-quantities`,
-            {
-              items: changedItems,
-              department_id : department_id
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${localToken}`,
-              },
-            }
-          );
-          if (response.status === 200 || response.data?.status === "success") {
-            Modal.success({
-              title: "نجاح",
-              content: "تم حفظ الكميات الفعلية بنجاح.",
-              centered: true,
-              width: 400,
-              onOk: () => {
-                setActualQuantities({}); // Clear the changes state
-                // Refetch data to show updated values (like calculated over_quantity)
-                fetchData(value, selectedRecipeCategory);
-              },
-            });
-            // Auto close modal after delay
-            setTimeout(() => {
-              Modal.destroyAll();
-              setActualQuantities({});
-              fetchData(value, selectedRecipeCategory);
-            }, 2000);
-          } else {
-            throw new Error(response.data?.message || "فشل في حفظ التغييرات");
-          }
-        } catch (error) {
-          console.error("Error saving actual quantities:", error);
-          let errorMessage = "حدث خطأ أثناء حفظ التغييرات.";
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.message
-          ) {
-            errorMessage += ` ${error.response.data.message}`;
-          } else if (error.message) {
-            errorMessage = error.message;
-          }
-          Modal.error({
-            title: "خطأ",
-            content: errorMessage,
-            centered: true,
-            width: 400,
-          });
-          setTimeout(Modal.destroyAll, 4000);
-        }
-      }, // end onOk
-      onCancel() {
-        console.log("Save cancelled");
-      },
-    }); // end Modal.confirm
+    setActualQuantitiesModalVisible(true);
   };
-
-  // const handleSavePDF = async () => {
-  //   const pdf = new jsPDF("p", "mm", "a4");
-  //   const pageWidth = 190;
-  //   const pageHeight = 297;
-  //   const rows = Array.from(tableRef?.current?.querySelectorAll("tr"));
-
-  //   let position = 20;
-  //   for (let i = 0; i < rows.length; i++) {
-  //     const row = rows[i];
-  //     const rowCanvas = await html2canvas(row, { scale: 2 });
-
-  //     const rowImgData = rowCanvas.toDataURL("image/png");
-  //     const rowHeight = (rowCanvas.height * pageWidth) / rowCanvas.width;
-
-  //     if (position + rowHeight > pageHeight - 10) {
-  //       pdf.addPage();
-  //       position = 10;
-  //     }
-  //     pdf.addImage(rowImgData, "PNG", 10, position, pageWidth, rowHeight);
-  //     position += rowHeight;
-  //   }
-  //   pdf.save("تقرير_المخازن.pdf");
-  // };
-
-  // 001
 
   const handleSavePDF = async () => {
     try {
@@ -590,6 +691,10 @@ const ShowProductDepartment2 = () => {
     setSelectedItem(item);
     setIsModalVisible(true);
   };
+  const clearSavedQuantities = () => {
+    setActualQuantities({});
+    fetchData(value, selectedRecipeCategory);
+  };
 
   return (
     <div>
@@ -687,7 +792,7 @@ const ShowProductDepartment2 = () => {
                   className="pdf-button"
                   // disabled={Object.keys(actualQuantities).length === 0}
                 >
-                  حفظ الجرد 
+                  حفظ الجرد
                 </button>
               )}
               <button onClick={handleSavePDF} className="pdf-button">
@@ -736,7 +841,6 @@ const ShowProductDepartment2 = () => {
                   </th>
                 </tr>
                 <tr>
-
                   <th className="text-center">#</th>
                   <th className="text-center">القسم الرئيسي</th>
                   <th className="text-center">التصنيف الرئيسي</th>
@@ -773,7 +877,6 @@ const ShowProductDepartment2 = () => {
                       style={{ cursor: "pointer" }}
                       onClick={() => handleRowClick(item)}
                     >
-                     
                       <td className="text-center">{index + 1}</td>
                       <td className="text-center">
                         {" "}
@@ -807,7 +910,7 @@ const ShowProductDepartment2 = () => {
                       <td className="text-right">
                         {item.over_quantity ?? "لا يوجد"}
                       </td>
-                      
+
                       <td className="text-right">
                         {item.under_quantity ?? "لا يوجد"}
                       </td>
@@ -868,6 +971,14 @@ const ShowProductDepartment2 = () => {
           </div>
         </div>
       </main>
+
+      <SubmitActualQuantitiesModal
+        show={isActualQuantitiesModalVisible}
+        onHide={() => setActualQuantitiesModalVisible(false)}
+        department_id={data?.id}
+        quantities={actualQuantities}
+        clearQuantities={clearSavedQuantities}
+      />
     </div>
   );
 };

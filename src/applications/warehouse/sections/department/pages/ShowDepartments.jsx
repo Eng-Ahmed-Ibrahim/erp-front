@@ -7,34 +7,57 @@ import {
 import { Pagination } from "antd";
 import { useAuth } from "../../../../../context/AuthContext";
 import { useState, useEffect } from "react";
-import axios from 'axios'
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { API_ENDPOINT } from "../../../../../../config";
 const ShowDepartment = () => {
-  const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
-  const { user } = useAuth()
-  const [data, setData] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const Token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+  const { user } = useAuth();
+  const [data, setData] = useState([]);
+  const [name, setName] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
-    axios.get(`${API_ENDPOINT}/api/v1/store/department?page=${currentPage}`, {
-      headers: {
-        Authorization: `Bearer ${Token}`,
-      },
-    }
-    )
-      .then(res => {
-        setData(res?.data)
+    axios
+      .get(`${API_ENDPOINT}/api/v1/store/department?page=${currentPage}`, {
+        params: {
+          name: name,
+          include_invoices: false
+        },
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
       })
-  }, [currentPage])
+      .then((res) => {
+        setData(res?.data);
+      });
+  }, [currentPage, name]);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-   
 
   return (
     <div>
       <h2 className="heading text-center">المخازن الفرعية</h2>
-      
+      <div
+        style={{
+          alignItems: "center",
+ 
+          justifyContent: "center",
+          display: "flex",
+        }}
+      >
+        <input
+          className="form-input"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+          placeholder="ابحث باسم القسم"
+          style={{ width: "250px", alignSelf: "center" }}
+        />
+      </div>{" "}
       <table
         // className="table table  table-bordered table-hover mt-5"
         className="table table table-hover mt-5"
@@ -55,7 +78,6 @@ const ShowDepartment = () => {
             <th scope="col" style={{ background: "#edede9" }}>
               الاسم
             </th>
-  
           </tr>
         </thead>
         <tbody style={{ borderColor: "#af8260" }}>
@@ -88,7 +110,6 @@ const ShowDepartment = () => {
               <th
                 className="clickable-cell"
                 style={{
-                  
                   border: "1px solid #E4C59E",
                   color: "#803D3B",
                   fontSize: "18px",
@@ -101,9 +122,9 @@ const ShowDepartment = () => {
                   className="text-decoration-none text-dark"
                   style={{
                     padding: " 14px 12px",
-                    width:"100%",
-                    height:"100%",
-                    display:"block"
+                    width: "100%",
+                    height: "100%",
+                    display: "block",
                   }}
                 >
                   {item?.name}

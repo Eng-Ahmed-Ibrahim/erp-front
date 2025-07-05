@@ -397,6 +397,19 @@
         "id": 153,
         "value": "cannot_close_order",
         "label" :"فتح الاوردرات فقط "
-    }
+    },{
+        "id": 154,
+        "value": "view external-orders-reports",
+        "label" :"عرض تقرير ارباح الاوردرات الخارجية"
+    },{
+        "id": 156,
+        "value": "view reception cashier",
+        "label" :"عرض كاشير الإسكان"
+      }, {
+        "id": 157,
+        "value": "manage reception",
+        "label" :" أدارة الإسكان"
+      }
+ 
     
 ]

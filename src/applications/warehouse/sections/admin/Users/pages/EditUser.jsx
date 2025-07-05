@@ -28,6 +28,8 @@ const EditUser = () => {
   const [selectedRole, setSelectedRole] = useState(null);
   const [userDepartment, setUserDepartment] = useState("");
   const [isSource, setIsSource] = useState(false);
+  const [isMaster, setIsMaster] = useState(false);
+  
   const [selectedDepatrment, setSelectedDepartment] = useState(null);
   const [selectedRolePermissions, setSelectedRolePermissions] = useState([]);
   const [form] = Form.useForm();
@@ -65,6 +67,8 @@ const EditUser = () => {
         setIsWaiter(true);
       } else if (res.data.department.type == "source") {
         setIsSource(true);
+      } else if (res.data.department.type == "master") {
+        setIsMaster(true);
       } else {
         setIsWaiter(false);
         setIsSource(false);
@@ -521,11 +525,11 @@ const EditUser = () => {
           </form>
         </>
       ) : null}
-      {isSource && (
+      {(isSource  || isMaster )&& (
         <>
-          <h1 className="form-title" style={{ marginBottom: "20px" }}>
+          <h3 className="form-title" style={{ margin: "20px 0px" }}>
             تعديل اسم المراجع
-          </h1>
+          </h3>
           <form onSubmit={onAccountantFinish}>
             <p>اسم المراجع الحالي : {accountantname}</p>
             <div
@@ -540,6 +544,7 @@ const EditUser = () => {
                   handleAccNameSelect(e.target.value);
                 }}
                 style={{ width: "100%" }}
+                className="form-select"
               >
                 <option key="" value="">
                   اختر اسم المراجع{" "}
