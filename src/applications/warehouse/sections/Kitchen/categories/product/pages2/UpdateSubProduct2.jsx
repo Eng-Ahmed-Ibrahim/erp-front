@@ -1,23 +1,71 @@
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { API_ENDPOINT } from "../../../../../../../../config";
-import axios from "axios";
-import { useAuth } from "../../../../../../../context/AuthContext";
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { API_ENDPOINT } from '../../../../../../../../config';
+import axios from 'axios';
+import { useAuth } from '../../../../../../../context/AuthContext';
 
-import { message } from "antd";
+import { message } from 'antd';
 const UpdateSubProduct2 = () => {
   const Token =
-    localStorage.getItem("token") || sessionStorage.getItem("token");
+    localStorage.getItem('token') || sessionStorage.getItem('token');
   const [isPending, setIsPending] = useState(false);
   const item = useLocation()?.state?.item;
-  // console.log('item', item);
+  console.log('Product Data:', item);
   const [name, setName] = useState(item?.name);
   const [description, setDescription] = useState(item?.description);
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState('');
   const [price, setPrice] = useState(item?.price);
   const [priceCost, setPriceCost] = useState(item?.cost_price);
   const [type, setType] = useState(item?.type);
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINT}/api/v1/store/products/${item?.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+            },
+          }
+        );
+        const productData = response.data.data;
+        if (productData?.sub_category_id) {
+          setSelectedSubcategory(productData.sub_category_id);
+        }
+      } catch (error) {
+        message.error('Failed to fetch product details');
+      }
+    };
+
+    if (item?.id) {
+      fetchProductDetails();
+    }
+  }, [item?.id, Token]);
+
+  useEffect(() => {
+    const fetchSubcategories = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINT}/api/v1/store/sub_categories/all`,
+          {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+            },
+          }
+        );
+        setSubcategories(response.data.data || []);
+      } catch (error) {
+        console.error('Error fetching subcategories:', error);
+        message.error('Failed to fetch subcategories');
+      }
+    };
+
+    fetchSubcategories();
+  }, [Token]);
 
   const checkMenuItemPermission = (requiredPermission) => {
     if (!user?.permissions) return;
@@ -32,35 +80,38 @@ const UpdateSubProduct2 = () => {
     e.preventDefault();
     setIsPending(true);
     try {
+      const formData = {
+        name: name,
+        category_id: item?.id,
+        sub_category_id: selectedSubcategory,
+        offer: 2,
+        image: image,
+        description: description,
+        price: price,
+        type: type,
+        _method: 'PUT',
+      };
+      console.log('Submitting data:', formData);
+
       await axios
         .post(
           `${API_ENDPOINT}/api/v1/store/products/update/${item?.id}`,
-          {
-            name: name,
-            category_id: item?.id,
-            sub_category_id: "",
-            offer: 2,
-            image: image,
-            description: description,
-            price: price,
-            type: type,
-            _method: "PUT",
-          },
+          formData,
           {
             headers: {
               Authorization: `Bearer ${Token}`,
-              "Content-Type": "multipart/form-data",
+              'Content-Type': 'multipart/form-data',
             },
           }
         )
         .then((response) => {
-          // console.log("created success", response);
-          message.success("تم التعديل بنجاح");
+          message.success('تم التعديل بنجاح');
           setIsPending(false);
         });
     } catch (err) {
+      console.error('Update error:', err);
       setIsPending(false);
-      // console.log("response" + err);
+      message.error('حدث خطأ أثناء التحديث');
     }
   };
   const handelDelete = (id) => {
@@ -72,11 +123,11 @@ const UpdateSubProduct2 = () => {
       })
       .then((res) => {
         // console.log(res.data)
-        message.success("تم الحذف بنجاح");
+        message.success('تم الحذف بنجاح');
       })
       .catch((err) => {
         // console.log(err)
-        message.error("حدث خطا ما");
+        message.error('حدث خطا ما');
       });
   };
   // const pricesObject = item?.prices.reduce((acc, current, index) => {
@@ -174,6 +225,24 @@ const UpdateSubProduct2 = () => {
           />
         </div>
         <div className="mb-3">
+          <label htmlFor="subcategory" className="form-label">
+            القسم الفرعي:
+          </label>
+          <select
+            className="form-select"
+            id="subcategory"
+            value={selectedSubcategory}
+            onChange={(e) => setSelectedSubcategory(e.target.value)}
+          >
+            <option value="">اختر القسم الفرعي</option>
+            {subcategories.map((subcategory) => (
+              <option key={subcategory.id} value={subcategory.id}>
+                {subcategory.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
             نوع المنتج:
           </label>
@@ -201,15 +270,15 @@ const UpdateSubProduct2 = () => {
           />
           <img
             src={item?.image}
-            width={"70px"}
-            height={"70px"}
+            width={'70px'}
+            height={'70px'}
             alt={item?.name}
-            style={{ marginTop: "1rem" }}
+            style={{ marginTop: '1rem' }}
           />
         </div>
         {checkMenuItemPermission({
           id: 103,
-          name: "edit product",
+          name: 'edit product',
         }) && (
           <div className="d-grid gap-2">
             <button className="btn btn-primary" type="submit">

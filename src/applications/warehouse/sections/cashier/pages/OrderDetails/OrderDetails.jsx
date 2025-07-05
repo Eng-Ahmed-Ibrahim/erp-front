@@ -6,21 +6,22 @@ import ShowDataModal from "../../../../../../components/ui/ShowDataModal/ShowDat
 import {
   updateProductQuantityInOrder,
   deleteProductQuantityInOrder,
-} from "../../../../../../apis/orders";
-import { message, Select } from "antd";
-import { useNavigate } from "react-router-dom";
-import { API_ENDPOINT } from "../../../../../../../config";
-import { useAuth } from "../../../../../../context/AuthContext";
-import axios from "axios";
-import PrintAfterSubmit from "../KitchenRequests/PrintAfterSubmit";
-import { Modal } from "antd";
+  reviewOrderPrice,
+} from '../../../../../../apis/orders';
+import { message, Select, Modal } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { API_ENDPOINT } from '../../../../../../../config';
+import { useAuth } from '../../../../../../context/AuthContext';
+import axios from 'axios';
+import PrintAfterSubmit from '../KitchenRequests/PrintAfterSubmit';
+import LogoDAR from '../../../../../../../public/assets/images/Dar_logo.svg';
 
 function AddPayablesModal({ show, onHide, orderId }) {
   const Token =
-    localStorage.getItem("token") || sessionStorage.getItem("token");
+    localStorage.getItem('token') || sessionStorage.getItem('token');
   const [amount, setAmount] = useState(0);
-  const [note, setNote] = useState("");
-  const [receiptNumber, setReceiptNumber] = useState("");
+  const [note, setNote] = useState('');
+  const [receiptNumber, setReceiptNumber] = useState('');
   const handleAddPayable = async () => {
     const res = await axios.post(
       `${API_ENDPOINT}/api/v1/orders/add-payable/${orderId}`,
@@ -37,14 +38,14 @@ function AddPayablesModal({ show, onHide, orderId }) {
     );
 
     if (res) {
-      message.success("تم إضافة المدفوعة بنجاح");
+      message.success('تم إضافة المدفوعة بنجاح');
       onHide();
     }
   };
 
   return (
     <Modal
-      title={"إضافة مدفوعة"}
+      title={'إضافة مدفوعة'}
       centered
       open={show}
       onCancel={onHide}
@@ -99,15 +100,15 @@ function AddPayablesModal({ show, onHide, orderId }) {
 }
 
 function AddCommentModal({ show, onHide, comments, orderId }) {
-  const [newComment, setNewComment] = useState("");
+  const [newComment, setNewComment] = useState('');
   const Token =
-    localStorage.getItem("token") || sessionStorage.getItem("token");
+    localStorage.getItem('token') || sessionStorage.getItem('token');
 
   const handleAddComment = async () => {
     if (newComment.trim()) {
       const updatedComments = [...comments, newComment.trim()];
 
-      const commentString = updatedComments.join(",");
+      const commentString = updatedComments.join(',');
 
       await axios
         .post(
@@ -118,16 +119,16 @@ function AddCommentModal({ show, onHide, comments, orderId }) {
           {
             headers: {
               Authorization: `Bearer ${Token}`,
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           }
         )
         .then((response) => {
-          message.success("تم إضافة الملاحظة بنجاح");
+          message.success('تم إضافة الملاحظة بنجاح');
           onHide();
         })
         .catch((error) => {
-          message.error("حدث خطأ");
+          message.error('حدث خطأ');
           onHide();
         });
     }
@@ -135,7 +136,7 @@ function AddCommentModal({ show, onHide, comments, orderId }) {
 
   return (
     <Modal
-      title={"إضافة ملاحظة"}
+      title={'إضافة ملاحظة'}
       centered
       open={show}
       onCancel={onHide}
@@ -153,7 +154,7 @@ function AddCommentModal({ show, onHide, comments, orderId }) {
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="أضف ملاحظة جديدة"
             className="form-input"
-            style={{ height: "100px" }}
+            style={{ height: '100px' }}
           />
         </div>
         <button className="comment-button" onClick={handleAddComment}>
@@ -164,9 +165,138 @@ function AddCommentModal({ show, onHide, comments, orderId }) {
   );
 }
 
+function OrderReviewModal({ show, onHide, order }) {
+  const { user } = useAuth();
+
+  const [data, setData] = useState({
+    client: 'Guest',
+    products: [],
+    client_type: '',
+    total_price: 0,
+    departmentName: user?.department?.name,
+    cashier: user?.name || '',
+    price: 0,
+  });
+
+  const fetchData = async () => {
+    if (!order?.products?.length) return;
+
+    try {
+      const OrderData = await reviewOrderPrice(
+        order.products,
+        order.client_type_id,
+        order.client_id ,
+        user?.department?.id
+      );
+      setData((prevData) => ({
+        ...prevData,
+        products: order.products,
+        client: order.client?.name || 'Guest',
+        client_type: order.client_type?.name || '',
+        price: OrderData?.data?.price || 0,
+        total_price: OrderData?.data?.total_price || 0,
+      }));
+    } catch (error) {
+      console.error('Error fetching order data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [order]);
+
+  return (
+    <Modal
+      title={'مراجعة سعر الأوردر'}
+      centered
+      open={show}
+      onCancel={onHide}
+      onOk={onHide}
+      width={900}
+      footer={null}
+    >
+      <div className="headers-wrapper">
+        <div className="main-title">
+          <p> أوردر من {data.departmentName}</p>
+        </div>
+        <div className="header-img">
+          <img
+            src={LogoDAR}
+            alt=""
+            style={{
+              width: '64px',
+              marginBottom: '5px',
+              marginLeft: '5px',
+            }}
+          />
+        </div>
+      </div>
+      <div className="invoice-info">
+        <div className="invoice-info-item">
+          <p>تـاريـــخ الأوردر : {new Date().toISOString().split('T')[0]}</p>
+        </div>
+        <div className="invoice-info-item">
+          <p>اسم الكاشير : {data?.cashier}</p>
+          <p>اسم العميل : {data.client === '' ? 'Guest' : data.client}</p>
+          <p>الفئة : {data.client_type}</p>
+        </div>
+      </div>
+      <div className="invoice-items">
+        <h2>محــــــتويات الأوردر</h2>
+        <table>
+          <thead>
+            <tr>
+              <th className="text-center">رقم العنصر</th>
+              <th className="text-center">اسم العنصر</th>
+              <th className="text-center">سعر العنصر الواحد</th>
+              <th className="text-right">الكمية</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.products?.map((product, index) => (
+              <tr key={index}>
+                <td className="text-center">{index + 1}</td>
+                <td className="text-center">{product.name}</td>
+                <td className="text-center">{product.price}</td>
+                <td className="text-right">{product.quantity}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td className="text-price" colSpan={2}>
+                السعر الكلي
+              </td>
+              <td className="text-price" colSpan={2}>
+                {data.price?.toFixed(2)} ج.م
+              </td>
+            </tr>
+            <tr>
+              <td className="text-price" colSpan={2}>
+                الخصم
+              </td>
+              <td className="text-price" colSpan={2}>
+                {(data?.price - data?.total_price)?.toFixed(2)} ج.م
+              </td>
+            </tr>
+            <tr>
+              <td className="text-price" colSpan={2}>
+                السعر الكلي بعد الخصم
+              </td>
+              <td className="text-price" colSpan={2}>
+                {data.total_price?.toFixed(2)} ج.م
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </Modal>
+  );
+}
+
 const OrderDetails = () => {
   const { user } = useAuth();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const { id } = useParams();
   const [order, setOrder] = useState({});
   const [currentProduct, setCurrentProduct] = useState(null);
@@ -176,6 +306,8 @@ const OrderDetails = () => {
   const [payables, setPayables] = useState([]);
   const navigate = useNavigate();
   const [isExternalorder, SetIsExternalOrder] = useState(false);
+  const [isOrderReviewModalVisible, setIsOrderReviewModalVisible] =
+    useState(false);
 
   useEffect(() => {
     const getOrderByID = async () => {
@@ -188,16 +320,16 @@ const OrderDetails = () => {
         }
 
         if (
-          res?.data?.client_type_id == "01hzf60qrasrm5x2ytvyrsne1j" ||
-          user?.department?.id == "3d1e1d26-91ff-40b8-9b2c-139aa79430e9"
+          res?.data?.client_type_id == '01hzf60qrasrm5x2ytvyrsne1j' ||
+          user?.department?.id == '3d1e1d26-91ff-40b8-9b2c-139aa79430e9'
         ) {
           SetIsExternalOrder(true);
         }
         if (res.data.comment) {
-          setComments(res.data.comment.split(","));
+          setComments(res.data.comment.split(','));
         }
       } catch (error) {
-        console.error("Error fetching order details:", error);
+        console.error('Error fetching order details:', error);
       }
     };
     getOrderByID();
@@ -205,8 +337,8 @@ const OrderDetails = () => {
 
   const detailsHeaders = [
     {
-      key: "quantity",
-      label: "الكمية",
+      key: 'quantity',
+      label: 'الكمية',
       isInput: true,
     },
   ];
@@ -244,7 +376,7 @@ const OrderDetails = () => {
       const data = await response.json();
       setPaymentMethods(data.data);
     } catch (error) {
-      console.error("Error fetching payment methods:", error);
+      console.error('Error fetching payment methods:', error);
     }
   };
 
@@ -255,7 +387,7 @@ const OrderDetails = () => {
     }));
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(
         `${API_ENDPOINT}/api/v1/store/client_type/payment_method/${value}`,
         {
@@ -267,7 +399,7 @@ const OrderDetails = () => {
       setClientTypes(response.data.data);
       //
     } catch (error) {
-      console.error("Error fetching client types for payment method:", error);
+      console.error('Error fetching client types for payment method:', error);
     }
   };
 
@@ -284,9 +416,9 @@ const OrderDetails = () => {
           },
         }
       );
-      message.success("تم تغيير طريقة الدفع بنجاح");
+      message.success('تم تغيير طريقة الدفع بنجاح');
     } catch (error) {
-      message.error("فشل في تغيير طريقة الدفع");
+      message.error('فشل في تغيير طريقة الدفع');
       console.error(error);
     }
   };
@@ -298,7 +430,7 @@ const OrderDetails = () => {
     }));
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(
         `${API_ENDPOINT}/api/v1/orders/clients/${value}`,
         {
@@ -308,34 +440,34 @@ const OrderDetails = () => {
         }
       );
       setClients(response.data.data);
-      fetchClientType(newUserValues["client_type_id"]);
+      fetchClientType(newUserValues['client_type_id']);
     } catch (error) {
-      console.error("Error fetching clients for client type:", error);
+      console.error('Error fetching clients for client type:', error);
     }
   };
   const handlePrintCompletion = () => {
-    navigate("/warehouse/cashier/create-order");
+    navigate('/warehouse/cashier/create-order');
   };
   const handelDelete = async (id) => {
     await axios
       .post(
         `${API_ENDPOINT}/api/v1/orders/update/status/${id}`,
         {
-          status: "closed",
+          status: 'closed',
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       )
       .then((response) => {
-        message.success("تم الإنهاء بنجاح");
+        message.success('تم الإنهاء بنجاح');
         setFlag(true);
       })
       .catch((error) => {
-        message.error("حدث خطأ");
+        message.error('حدث خطأ');
       });
   };
 
@@ -348,7 +480,7 @@ const OrderDetails = () => {
   };
 
   const storeComment = async (updatedComments) => {
-    const commentString = updatedComments.join(",");
+    const commentString = updatedComments.join(',');
     await axios
       .post(
         `${API_ENDPOINT}/api/v1/orders/update/comment/${id}`,
@@ -358,15 +490,15 @@ const OrderDetails = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       )
       .then((response) => {
-        message.success("تم إضافة الملاحظة بنجاح");
+        message.success('تم إضافة الملاحظة بنجاح');
       })
       .catch((error) => {
-        message.error("حدث خطأ");
+        message.error('حدث خطأ');
       });
   };
 
@@ -376,16 +508,16 @@ const OrderDetails = () => {
         <div>
           <h1 className="order-title">
             ترابيزه رقم {order?.table_number} - ({order?.discount_name})
-          </h1>{" "}
+          </h1>
           <div className="order-header">
             <div className="order-header-container">
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "20px",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '20px',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
                 <label className="form-label">طريقة الدفع:</label>
@@ -410,19 +542,19 @@ const OrderDetails = () => {
                   تعديل
                 </button>
               </div>
-            </div>{" "}
+            </div>
             <div className="order-header-container">
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "20px",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '20px',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
-                <label style={{ textAlign: "center" }} className="form-label">
-                  الملاحظات:{" "}
+                <label style={{ textAlign: 'center' }} className="form-label">
+                  الملاحظات:{' '}
                 </label>
                 <button className="comment-button" onClick={handleAddComment}>
                   أضف
@@ -435,7 +567,7 @@ const OrderDetails = () => {
                     <div className="order-header-card">
                       <div className="payable-content">
                         <label className="comment">{comment}</label>
-                      </div>{" "}
+                      </div>{' '}
                     </div>
                   ))}
                 </div>
@@ -445,16 +577,16 @@ const OrderDetails = () => {
               <div className="order-header-container">
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "gap",
-                    gap: "30px",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'gap',
+                    gap: '30px',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
-                  <label style={{ textAlign: "center" }} className="form-label">
-                    المدفوعات:{" "}
+                  <label style={{ textAlign: 'center' }} className="form-label">
+                    المدفوعات:{' '}
                   </label>
 
                   <button className="comment-button" onClick={handleAddPayable}>
@@ -470,26 +602,26 @@ const OrderDetails = () => {
                           {
                             new Date(payable.created_at)
                               .toISOString()
-                              .split("T")[0]
+                              .split('T')[0]
                           }
                         </div>
 
                         <div className="payable-content">
                           <div className="amount">
                             <label className="card-title">رقم الإيصال : </label>
-                            {"  "}
+                            {'  '}
                             {payable?.receipt_number}
                           </div>
                           <div className="amount">
                             <label className="card-title">
-                              قيمة المدفوعة:{" "}
+                              قيمة المدفوعة:{' '}
                             </label>
-                            {"  "}
+                            {'  '}
                             {payable.amount}
                           </div>
                           <div className="note">
                             <label className="card-title">ملاحظات :</label>
-                            {"  "}
+                            {'  '}
                             {payable.note}
                           </div>
                         </div>
@@ -501,18 +633,34 @@ const OrderDetails = () => {
             )}
           </div>
           <h2>المنتجات:</h2>
-          <button
-            className="add-btn"
-            onClick={() => {
-              navigate(`/warehouse/cashier/${id}/add-products-to-order`);
+          <div
+            className="buttons-container"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '20px',
             }}
           >
-            إضافة منتجات
-          </button>
+            <button
+              className="add-btn"
+              onClick={() => {
+                navigate(`/warehouse/cashier/${id}/add-products-to-order`);
+              }}
+            >
+              إضافة منتجات
+            </button>
+
+            <button
+              className="add-btn"
+              onClick={() => setIsOrderReviewModalVisible(true)}
+            >
+              مراجعة سعر الاوردر
+            </button>
+          </div>
+
           <ul className="order-details-container">
             {order.products &&
               order.products.map((product, index) => {
-                //
                 return (
                   <li key={index} className="order">
                     <div className="img-container">
@@ -528,7 +676,7 @@ const OrderDetails = () => {
                       <p>الكمية: {product.quantity}</p>
                     </div>
                     <div className="product-buttons">
-                      {user?.department?.type != "reciver" ? (
+                      {user?.department?.type != 'reciver' ? (
                         <button
                           className="product-button edit"
                           onClick={async () => {
@@ -540,17 +688,6 @@ const OrderDetails = () => {
                           تعديل
                         </button>
                       ) : null}
-                      {/* <button
-                        className="product-button delete"
-                        onClick={async () => {
-                          await deleteProductQuantityInOrder(
-                            product.product_id_in_order
-                          );
-                          window.location.reload();
-                        }}
-                      >
-                        حذف
-                      </button> */}
                     </div>
                   </li>
                 );
@@ -562,7 +699,7 @@ const OrderDetails = () => {
             hidden={
               user?.permissions.some(
                 (permission) =>
-                  permission.name === "change order status cashier"
+                  permission.name === 'change order status cashier'
               )
                 ? false
                 : true
@@ -584,6 +721,11 @@ const OrderDetails = () => {
         onHide={() => setShowAddCommentModal(false)}
         orderId={order.id}
         comments={comments}
+      />
+      <OrderReviewModal
+        show={isOrderReviewModalVisible}
+        onHide={() => setIsOrderReviewModalVisible(false)}
+        order={order}
       />
     </div>
   );

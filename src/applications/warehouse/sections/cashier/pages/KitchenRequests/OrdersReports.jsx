@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../../../../../../context/AuthContext";
-import { message, Modal } from "antd";
-import axios from "axios";
-import { API_ENDPOINT } from "../../../../../../../config";
-import { changeOrderStatus, getOrders } from "../../../../../../apis/orders";
-import "./styles.css";
-import { set } from "date-fns";
-import { TbBorderRadius } from "react-icons/tb";
-import { ConsoleSqlOutlined } from "@ant-design/icons";
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../../../context/AuthContext';
+import { message, Modal } from 'antd';
+import axios from 'axios';
+import { API_ENDPOINT } from '../../../../../../../config';
+import { changeOrderStatus, getOrders } from '../../../../../../apis/orders';
+import './styles.css';
+import { set } from 'date-fns';
+import { TbBorderRadius } from 'react-icons/tb';
+import { ConsoleSqlOutlined } from '@ant-design/icons';
 
 function DeleteOrderModel({ show, onHide, orderId, status }) {
-  const [deletionNote, setNewDeletionNote] = useState("");
+  const [deletionNote, setNewDeletionNote] = useState('');
   const Token =
-    localStorage.getItem("token") || sessionStorage.getItem("token");
+    localStorage.getItem('token') || sessionStorage.getItem('token');
 
   const handleDeleteOrder = async () => {
     if (!deletionNote || deletionNote.length < 10) {
-      message.error("لا يمكن حذف الأوردر بدون توضيح السبب");
+      message.error('لا يمكن حذف الأوردر بدون توضيح السبب');
     }
 
     const data = await changeOrderStatus(orderId, status, deletionNote);
 
     if (data) {
-      message.success("تم حذف الاورد بنجاح");
+      message.success('تم حذف الاورد بنجاح');
     } else {
-      message.error(" حدث خطأ أثناء الحذف");
+      message.error(' حدث خطأ أثناء الحذف');
     }
-    setNewDeletionNote("");
+    setNewDeletionNote('');
     onHide();
   };
 
@@ -43,14 +43,14 @@ function DeleteOrderModel({ show, onHide, orderId, status }) {
       <div
         className="payable-container"
         style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100%",
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
         }}
       >
-        <div className="mb-4" style={{ textAlign: "center", width: "100%" }}>
+        <div className="mb-4" style={{ textAlign: 'center', width: '100%' }}>
           <h4 className="form-label"> أضف سبب حذف الأوردر </h4>
           <input
             type="text"
@@ -59,9 +59,9 @@ function DeleteOrderModel({ show, onHide, orderId, status }) {
             placeholder=" أضف سبب حذف الأوردر"
             className="form-input"
             style={{
-              height: "120px",
-              marginTop: "20px",
-              width: "98%",
+              height: '120px',
+              marginTop: '20px',
+              width: '98%',
             }}
           />
         </div>
@@ -69,12 +69,12 @@ function DeleteOrderModel({ show, onHide, orderId, status }) {
         <button
           className="pdf-button"
           style={{
-            width: "20%",
+            width: '20%',
             transition: `all 0.3s`,
-            background: "#ef0606",
-            color: "white",
-            alignSelf: "center",
-            marginTop: "20px",
+            background: '#ef0606',
+            color: 'white',
+            alignSelf: 'center',
+            marginTop: '20px',
           }}
           onClick={handleDeleteOrder}
         >
@@ -87,8 +87,8 @@ function DeleteOrderModel({ show, onHide, orderId, status }) {
 
 const OrdersReports = () => {
   const [data, setData] = useState(null);
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState(new Date().toISOString().split("T")[0]);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectID, setSelectId] = useState();
   const [selectedUser, setSelectUser] = useState();
   const [selectStats, setSelectedStatus] = useState();
@@ -101,39 +101,39 @@ const OrdersReports = () => {
 
   const [clientTypes, setClientTypes] = useState([]);
   const [clients, setClients] = useState([]);
-  const [selectedClients, setSelectedClients] = useState("");
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [selectedClients, setSelectedClients] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [selectedPaymentMethodName, setSelectedPaymentMethodName] =
-    useState("");
+    useState('');
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [waiterName, setWaiterName] = useState([]);
   const [selectedPaymentMethodNakdy, setSelectedPaymentMethodNakdy] =
-    useState("");
-  const [selectedClientType, setSelectedClientType] = useState("");
+    useState('');
+  const [selectedClientType, setSelectedClientType] = useState('');
   const [selectedClientName, setSelectedClientName] = useState(`guest`);
   const [clientData, setClientData] = useState();
-  const [selectedClientsName, setSelectedClientsName] = useState("");
+  const [selectedClientsName, setSelectedClientsName] = useState('');
   const [isTalaat, setIsTalaat] = useState(false);
-  const talaatId = "9d7b0996-857f-4a59-997b-64d605af07c0";
+  const talaatId = '9d7b0996-857f-4a59-997b-64d605af07c0';
   const [isDeleteModelVisible, setIsDeleteModelVisible] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(false);
 
   const { user } = useAuth();
   const Token =
-    localStorage.getItem("token") || sessionStorage.getItem("token");
+    localStorage.getItem('token') || sessionStorage.getItem('token');
   const domain = API_ENDPOINT;
   const [newUserValues, setNewUserValues] = useState({
-    deleviery_type: "kitchen",
-    name: "",
-    phone: "",
-    military_number: "",
-    client_type_id: "",
-    discount_reason_id: "",
-    payment_method_id: "",
-    table_number: "",
-    comment: "",
-    client_id: "",
-    waiter_id: "",
+    deleviery_type: 'kitchen',
+    name: '',
+    phone: '',
+    military_number: '',
+    client_type_id: '',
+    discount_reason_id: '',
+    payment_method_id: '',
+    table_number: '',
+    comment: '',
+    client_id: '',
+    waiter_id: '',
   });
   const reInitializeStates = () => {
     setWaiterName([]);
@@ -141,23 +141,24 @@ const OrdersReports = () => {
     setData([]);
   };
 
-  const isTodayOrYesterday = (dateInput)=>{
-    const formatedInputDate = new Date(dateInput)
-    formatedInputDate.setHours(0,0,0,0);
-    
-    const today =  new Date()
-    today.setHours (0,0,0,0);
-    
-    const yesterday =  new Date()
-    yesterday.setDate(today.getDate() -1 )
-    yesterday.setHours(0,0,0,0);
+  const isTodayOrYesterday = (dateInput) => {
+    const formatedInputDate = new Date(dateInput);
+    formatedInputDate.setHours(0, 0, 0, 0);
 
-    return (formatedInputDate.getTime() === today.getTime() ||
-         formatedInputDate.getTime() === yesterday.getTime());
-    
-    }
-    
-    const handleGettingReports = async () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+
+    return (
+      formatedInputDate.getTime() === today.getTime() ||
+      formatedInputDate.getTime() === yesterday.getTime()
+    );
+  };
+
+  const handleGettingReports = async () => {
     try {
       if (fromDate && toDate) {
         // const fromDateObj = new Date(fromDate );
@@ -171,17 +172,16 @@ const OrdersReports = () => {
         // const timeDiff = toDateObj.getTime() - fromDateObj.getTime();
         // const dayDiff = timeDiff / (1000 * 3600 * 24);
 
-        
         setIsAdminRole(false);
 
-        if (user.department.type === "reciver") {
+        if (user.department.type === 'reciver') {
           setIsAdmin(false);
 
-          if ( ! (isTodayOrYesterday(fromDate) && isTodayOrYesterday(toDate))) {
+          if (!(isTodayOrYesterday(fromDate) && isTodayOrYesterday(toDate))) {
             const modal = Modal.error({
-              title: "error",
+              title: 'error',
               content: (
-                <div style={{ fontSize: "24px", textAlign: "center" }}>
+                <div style={{ fontSize: '24px', textAlign: 'center' }}>
                   يرجى ملئ جميع البيانات بشكل صحيح. يجب أن تكون الفترة بين
                   التاريخين يوم واحد
                 </div>
@@ -195,16 +195,16 @@ const OrdersReports = () => {
             }, 4000);
             return;
           }
-        } else if (user.department.type === "master") {
+        } else if (user.department.type === 'master') {
           setIsAdmin(true);
-          if (user.roleName === "admin") {
+          if (user.roleName === 'admin') {
             setIsAdminRole(true);
           }
         }
 
         await getAllWaiters();
       } else {
-        message.info("يرجى ملئ جميع البيانات بشكل صحيح");
+        message.info('يرجى ملئ جميع البيانات بشكل صحيح');
       }
     } catch (err) {}
   };
@@ -212,7 +212,7 @@ const OrdersReports = () => {
   const fetchPaymentMethods = async () => {
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await fetch(
         `${API_ENDPOINT}/api/v1/store/payment_method`,
         {
@@ -224,7 +224,7 @@ const OrdersReports = () => {
       const data = await response.json();
       setPaymentMethods(data.data);
     } catch (error) {
-      console.error("Error fetching payment methods:", error);
+      console.error('Error fetching payment methods:', error);
     }
   };
 
@@ -234,7 +234,7 @@ const OrdersReports = () => {
     );
     const PaymentMethodName = selectedPaymentMethod
       ? selectedPaymentMethod.name
-      : "";
+      : '';
     setSelectedPaymentMethodName(PaymentMethodName);
     setSelectedPaymentMethodNakdy(value);
     setNewUserValues((prevState) => ({
@@ -243,7 +243,7 @@ const OrdersReports = () => {
     }));
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(
         `${API_ENDPOINT}/api/v1/store/client_type/payment_method/${value}`,
         {
@@ -254,7 +254,7 @@ const OrdersReports = () => {
       );
       setClientTypes(response.data.data);
     } catch (error) {
-      console.error("Error fetching client types for payment method:", error);
+      console.error('Error fetching client types for payment method:', error);
     }
   };
 
@@ -265,11 +265,11 @@ const OrdersReports = () => {
     }));
   };
   useEffect(() => {
-    fetchClientType(newUserValues["client_type_id"]);
+    fetchClientType(newUserValues['client_type_id']);
     if (user.roles[0] == talaatId) {
       setIsTalaat(true);
     }
-  }, [newUserValues["client_type_id"]]);
+  }, [newUserValues['client_type_id']]);
   const handleClientTypeChange = async (value) => {
     const selectedClient = clientTypes.find((ele) => ele.id == value)?.name;
     setSelectedClientsName(selectedClient);
@@ -278,10 +278,10 @@ const OrdersReports = () => {
       ...prevState,
       client_type_id: value,
     }));
-    handleNewUserFormChange("client_id", ``);
+    handleNewUserFormChange('client_id', ``);
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(
         `${API_ENDPOINT}/api/v1/orders/clients/${value}`,
         {
@@ -291,9 +291,9 @@ const OrdersReports = () => {
         }
       );
       setClients(response.data.data);
-      fetchClientType(newUserValues["client_type_id"]);
+      fetchClientType(newUserValues['client_type_id']);
     } catch (error) {
-      console.error("Error fetching clients for client type:", error);
+      console.error('Error fetching clients for client type:', error);
     }
   };
   const fetchClientType = async (id) => {
@@ -312,7 +312,7 @@ const OrdersReports = () => {
   const getAllWaiters = async () => {
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(
         `${API_ENDPOINT}/api/v1/store/waiter/all`,
         {
@@ -326,13 +326,12 @@ const OrdersReports = () => {
         getOrdersReportes();
       }
     } catch (error) {
-      message.error("لايوجد واتر");
+      message.error('لايوجد واتر');
     }
   };
   useEffect(() => {
     fetchPaymentMethods();
     getAllWaiters();
-
   }, []);
   useEffect(() => {
     axios
@@ -346,12 +345,12 @@ const OrdersReports = () => {
       });
 
     const today = new Date();
-    const year =  today.getFullYear();
-    const month = String(today.getMonth()+1).padStart(2,'0')
-    const day = String(today.getDate()).padStart(2,'0')
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
     setToDate(`${year}-${month}-${day}T23:59:59`);
 
-    console.log('ttttttt', today.toISOString())
+    console.log('ttttttt', today.toISOString());
   }, [selectID]);
 
   useEffect(() => {
@@ -368,7 +367,7 @@ const OrdersReports = () => {
 
   async function getOrdersReportes() {
     try {
-      if (user.department.type === "reciver") {
+      if (user.department.type === 'reciver') {
         const res = await axios.get(
           `${domain}/api/v1/store/department/orders/${user.department.id}`,
           {
@@ -391,7 +390,7 @@ const OrdersReports = () => {
         }
         setData(res.data);
       }
-      if (user.department.type === "master") {
+      if (user.department.type === 'master') {
         const res = await axios.get(
           `${domain}/api/v1/store/department/orders/${selectID}`,
           {
@@ -415,10 +414,10 @@ const OrdersReports = () => {
       }
     } catch (error) {
       const modal = Modal.error({
-        title: "error",
+        title: 'error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
-            {" "}
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
+            {' '}
             {error.response.data.error.message}
           </div>
         ),
@@ -438,26 +437,26 @@ const OrdersReports = () => {
     <div>
       <div
         className="shadow p-3 my-5 text-light text-center rounded"
-        style={{ backgroundColor: "rgb(128, 61, 59)" }}
+        style={{ backgroundColor: 'rgb(128, 61, 59)' }}
       >
         <h3>تقرير المبيعات</h3>
       </div>
       <div
         className="text-xl"
-        style={{ alignSelf: "center", justifySelf: "center", style: "70%" }}
+        style={{ alignSelf: 'center', justifySelf: 'center', style: '70%' }}
       >
         <div
           className="row align-items-center"
           style={{
-            width: "100%",
-            display: "flex",
-            gap: "20px",
-            alignItems: "center",
-            justifyContent: "space-evenly",
+            width: '100%',
+            display: 'flex',
+            gap: '20px',
+            alignItems: 'center',
+            justifyContent: 'space-evenly',
           }}
         >
-          {user.department.type === "reciver" ? null : user.department.type ===
-            "master" ? (
+          {user.department.type === 'reciver' ? null : user.department.type ===
+            'master' ? (
             <>
               <div className="col">
                 <label
@@ -494,7 +493,7 @@ const OrdersReports = () => {
                 >
                   <option>اختر اسم المنفذ</option>
                   {department?.data?.map((method) =>
-                    method.type === "reciver" ? (
+                    method.type === 'reciver' ? (
                       <option value={method.id} key={method.id}>
                         {method.name}
                       </option>
@@ -532,7 +531,7 @@ const OrdersReports = () => {
             </label>
             <select
               onChange={(e) => {
-                if (e.target.value === "اختر اسم الويتر") {
+                if (e.target.value === 'اختر اسم الويتر') {
                   setSelectedWatier(null);
                   setData([]);
                   return;
@@ -574,23 +573,22 @@ const OrdersReports = () => {
               className="form-cashier-select"
               value={toDate}
               onChange={(e) => {
-                console.log(e.target.value)
+                console.log(e.target.value);
                 setToDate(e.target.value);
                 // setToDate(e.target.value.toString().split("T")[0]);
-
               }}
             />
           </div>
           <div
             style={{
-              marginTop: "0px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "30px",
+              marginTop: '0px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '30px',
             }}
           >
-            {user.department.type === "master" ? (
+            {user.department.type === 'master' ? (
               <>
                 <div className="col">
                   <label htmlFor="payment-method" className="form-label">
@@ -605,7 +603,7 @@ const OrdersReports = () => {
                     onChange={(e) => handlePaymentMethodChange(e.target.value)}
                     showSearch
                     filterOption={(input, option) =>
-                      (option?.children ?? "")
+                      (option?.children ?? '')
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
@@ -630,7 +628,7 @@ const OrdersReports = () => {
                     onChange={(e) => handleClientTypeChange(e.target.value)}
                     showSearch
                     filterOption={(input, option) =>
-                      (option?.children ?? "")
+                      (option?.children ?? '')
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
@@ -658,13 +656,13 @@ const OrdersReports = () => {
                       );
                       const clientName = selectedClient
                         ? selectedClient.name
-                        : "";
+                        : '';
                       setSelectedClientsName(clientName);
                       setSelectedClients(e.target.value);
                     }}
                     showSearch
                     filterOption={(input, option) =>
-                      (option?.children ?? "")
+                      (option?.children ?? '')
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
@@ -686,8 +684,8 @@ const OrdersReports = () => {
                   className="form-cashier-btn"
                   onClick={() => handleGettingReports()}
                   style={{
-                    width: "100%",
-                    marginTop: "50px",
+                    width: '100%',
+                    marginTop: '50px',
                     transition: `all 0.3s`,
                   }}
                 >
@@ -734,11 +732,16 @@ const OrdersReports = () => {
                 <th scope="col">الحالة</th>
                 <th scope="col">تاريخ الطلب</th>
                 <th scope="col">اسم العميل</th>
+                {isAdmin && !isTalaat && isAdminRole && (
+                  <th scope="col">سعر تكلفة الفاتورة</th>
+                )}
                 <th scope="col">قيمة الفاتورة</th>
                 <th scope="col">نوع العميل</th>
                 <th scope="col">ملاحظات</th>
                 {isAdmin && <th scope="col">المنتجات</th>}
-                {isAdmin && !isTalaat && isAdminRole && <th scope="col"> الاجرائات</th>}
+                {isAdmin && !isTalaat && isAdminRole && (
+                  <th scope="col"> الاجرائات</th>
+                )}
               </tr>
             </thead>
 
@@ -747,27 +750,27 @@ const OrdersReports = () => {
                 Object.keys(data.data).map((key, index) => {
                   const order = data.data[key];
                   const rowStyle =
-                    order.status === "returned"
-                      ? { background: "#b9aeae" }
+                    order.status === 'returned'
+                      ? { background: '#b9aeae' }
                       : {};
                   const buttonStyle =
-                    order.status === "returned"
+                    order.status === 'returned'
                       ? {
-                          width: "100%",
+                          width: '100%',
                           marginTop: `27%`,
                           transition: `all 0.3s`,
-                          background: "#444444",
-                          color: "white",
+                          background: '#444444',
+                          color: 'white',
                         }
                       : {
-                          width: "100%",
+                          width: '100%',
                           marginTop: `27%`,
                           transition: `all 0.3s`,
-                          background: "red",
-                          color: "white",
+                          background: 'red',
+                          color: 'white',
                         };
                   const buttonName =
-                    order.status === "returned" ? "تم الحذف" : "حذف الاوردر";
+                    order.status === 'returned' ? 'تم الحذف' : 'حذف الاوردر';
 
                   return (
                     <React.Fragment key={index}>
@@ -779,14 +782,20 @@ const OrdersReports = () => {
                         <td style={rowStyle}>{order.status}</td>
                         <td style={rowStyle}>{order.order_date}</td>
                         <td style={rowStyle}>
-                          {order.client == "" ? "Guest" : order.client}
+                          {order.client == '' ? 'Guest' : order.client}
                         </td>
+
+                        {isAdmin && !isTalaat && isAdminRole && (
+                          <td style={rowStyle}>
+                            {Math.round(order.cost_price * 100) / 100}
+                          </td>
+                        )}
                         <td style={rowStyle}>
                           {Math.round(order.total_price * 100) / 100}
                         </td>
                         <td style={rowStyle}>{order.client_type}</td>
                         <td style={rowStyle}>
-                          {order?.comment?.split(",")?.map((c) => {
+                          {order?.comment?.split(',')?.map((c) => {
                             return (
                               <>
                                 <li>{c}</li>
@@ -806,12 +815,12 @@ const OrdersReports = () => {
                             </li>
                           ))}
                         </td>
-                        {isAdmin && !isTalaat && isAdminRole &&(
+                        {isAdmin && !isTalaat && isAdminRole && (
                           <td style={rowStyle}>
                             <button
                               className="form-cashier-btn"
                               onClick={() =>
-                                handleDeleteOrder(order.id, "returned")
+                                handleDeleteOrder(order.id, 'returned')
                               }
                               style={buttonStyle}
                             >
@@ -831,7 +840,7 @@ const OrdersReports = () => {
         show={isDeleteModelVisible}
         onHide={() => setIsDeleteModelVisible(false)}
         orderId={selectedOrderId}
-        status={"returned"}
+        status={'returned'}
       />
     </div>
   );
