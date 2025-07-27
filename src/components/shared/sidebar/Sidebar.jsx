@@ -1809,33 +1809,31 @@ const Sidebar = () => {
                     </span>
                   </Link>
                 </li>
-
-
                 <li
-                      className="menu-item"
-                      style={{
-                        height: "25px",
-                        alignItems: "center",
-                      }}
+                  className="menu-item"
+                  style={{
+                    height: "25px",
+                    alignItems: "center",
+                  }}
+                >
+                  <Link
+                    className="menu-link"
+                    onClick={(e) => {
+                      setReceptionCollapsedGroup(!receptionCollapsedGroup);
+                    }}
+                    style={{
+                      justifyContent: "center",
+                      height: "20px",
+                    }}
+                  >
+                    <span
+                      className={`menu-link-text ${display}`}
+                      style={{ fontSize: "20px" }}
                     >
-                      <Link
-                        className="menu-link"
-                        onClick={(e) => {setReceptionCollapsedGroup(!receptionCollapsedGroup)}}
-                        style={{
-                          justifyContent: "center",
-                          height: "20px",
-                        }}
-                      >
-                        <span
-                          className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
-                        >
-                          ^
-                        </span>
-                      </Link>
-                    </li>
-
-                
+                      ^
+                    </span>
+                  </Link>
+                </li>
               </>
             ) : (
               <>
@@ -1852,7 +1850,9 @@ const Sidebar = () => {
                           : "none"
                       }`,
                     }}
-                    onClick={(e) => {setReceptionCollapsedGroup(!receptionCollapsedGroup)} }
+                    onClick={(e) => {
+                      setReceptionCollapsedGroup(!receptionCollapsedGroup);
+                    }}
                   >
                     <span className="menu-link-icon">
                       <BsCashCoin size={30} />
@@ -1871,6 +1871,39 @@ const Sidebar = () => {
                 </li>
               </>
             )}
+
+            <li
+              className="menu-item"
+              title="نظام نقاط البيع"
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 205,
+                    name: "add order v2",
+                  })
+                    ? ""
+                    : "none"
+                }`,
+              }}
+            >
+              <Link
+                to="/warehouse/pos"
+                className={`menu-link ${
+                  activeLink === "/warehouse/pos" ? "active" : ""
+                } ${justifyContent}`}
+                onClick={() => handleMenuLinkClick("/warehouse/pos")}
+              >
+                <span className="menu-link-icon">
+                  <FaCashRegister size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  الكاشير
+                </span>
+              </Link>
+            </li>
 
             <li className="menu-item" title="الإعدادات">
               <Link

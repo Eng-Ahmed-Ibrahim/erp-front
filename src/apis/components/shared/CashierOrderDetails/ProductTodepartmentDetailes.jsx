@@ -148,7 +148,7 @@ const ProductTodepartmentDetailes = ({ onAddItem, onDeleteItem }) => {
     const newItem = {
       name: ProductName,
       image: ProductImage,
-      ProductId: selectedProduct, // Accessing selectedProduct directly
+      productId: selectedProduct, // Accessing selectedProduct directly
       quantity: parseInt(quantity),
       price: parseFloat(ProductPrice),
       expireDate: epireDate,

@@ -137,7 +137,7 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
     const newItem = {
       name: ProductName,
       image: ProductImage,
-      ProductId: selectedProduct,
+      productId: selectedProduct,
       quantity: parseInt(quantity),
       price:  parseFloat(ProductPrice),
       expireDate: epireDate,

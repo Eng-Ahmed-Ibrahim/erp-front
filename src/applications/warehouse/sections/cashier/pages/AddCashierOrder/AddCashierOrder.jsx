@@ -763,12 +763,12 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     const formData = new FormData();
     const productQuantities = new Map();
     items.forEach((item) => {
-      const { ProductId, productType, quantity } = item;
-      if (productQuantities.has(ProductId)) {
-        const existingItem = productQuantities.get(ProductId);
+      const { productId, productType, quantity } = item;
+      if (productQuantities.has(productId)) {
+        const existingItem = productQuantities.get(productId);
         existingItem.quantity += quantity;
       } else {
-        productQuantities.set(ProductId, {
+        productQuantities.set(productId, {
           productType,
           quantity,
         });
@@ -980,12 +980,12 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     const productQuantities = new Map();
 
     items.forEach((item) => {
-      const { ProductId, productType, quantity } = item;
-      if (productQuantities.has(ProductId)) {
-        const existingItem = productQuantities.get(ProductId);
+      const { productId, productType, quantity } = item;
+      if (productQuantities.has(productId)) {
+        const existingItem = productQuantities.get(productId);
         existingItem.quantity += quantity; // Sum the quantities
       } else {
-        productQuantities.set(ProductId, {
+        productQuantities.set(productId, {
           productType,
           quantity,
         });

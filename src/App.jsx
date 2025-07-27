@@ -190,6 +190,7 @@ import ShowEmployeesDepartments from "./applications/warehouse/sections/incentiv
 import ShowAllStaff from "./applications/warehouse/sections/incentives/pages/showAllStaff";
 import ShowAllJobs from "./applications/warehouse/sections/incentives/pages/showAllJobs";
 import AccountSetting from "./applications/warehouse/sections/accountSettings/AccountSetting.jsx";
+import POSPage from "./pages/pos/POSPage.jsx";
 function App() {
   return (
     <div className="page-wrapper">
@@ -2014,6 +2015,16 @@ function App() {
           >
             {" "}
           </Route>
+          <Route
+            path="/warehouse/pos"
+            element={
+              <ProtectedRoute
+                requiredPermission={{ id: 205, name: "add order v2" }}
+              >
+                <POSPage />
+              </ProtectedRoute>
+            }
+          ></Route>
           <Route
             path="/warehouse/account-settings"
             element={<AccountSetting />}
