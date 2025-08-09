@@ -47,7 +47,7 @@ const OrdersReports = () => {
                 // Check if fromDate is exactly yesterday and toDate is exactly today
                 const isFromDateYesterday = fromDateObj.getTime() === yesterday.getTime();
                 const isToDateToday = toDateObj.getTime() === today.getTime();
-                if (user.department.type === "reciver") {
+                if (user.department?.type === "reciver") {
                     if (!isFromDateYesterday || !isToDateToday || !selectWatier) {
                         return message.info("يرجى ملئ جميع البيانات بشكل صحيح");
                     }
@@ -121,7 +121,7 @@ const OrdersReports = () => {
 
     async function getOrdersReportes() {
         try {
-            if (user.department.type === "reciver") {
+            if (user.department?.type === "reciver") {
                 const res = await axios.get(`${domain}/api/v1/store/department/orders/${user.department.id}`, {
                     params: {
                         "from": fromDate,
@@ -145,7 +145,7 @@ const OrdersReports = () => {
 
 
             }
-            else if (user.department.type === "master") {
+            else if (user.department?.type === "master") {
                 console.log("master ")
                 const res = await axios.get(`${domain}/api/v1/store/department/orders/${selectID}`, {
                     params: {
@@ -177,7 +177,7 @@ const OrdersReports = () => {
             <div className="container text-center text-xl">
                 <div className="row align-items-center">
                     {
-                        user.department.type === 'reciver' ? null : user.department.type === "master" ?
+                        user.department?.type === 'reciver' ? null : user.department?.type === "master" ?
                             <>
 
                                 <div className="col">
@@ -210,7 +210,7 @@ const OrdersReports = () => {
                                         <select className="form-control" onChange={(e) => { setSelectId(e.target.value) }}>
                                             <option>اختر اسم المنفذ</option>
                                             {department?.data?.map((method) => (
-                                                method.type === "reciver" ? <option value={method.id} key={method.id}>{method.name}</option> : null
+                                                method?.type === "reciver" ? <option value={method.id} key={method.id}>{method.name}</option> : null
                                             ))}
                                         </select>
                                     </div>

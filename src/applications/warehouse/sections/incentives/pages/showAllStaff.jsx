@@ -5,6 +5,7 @@ import axios from "axios";
 import { API_ENDPOINT } from "../../../../../../config";
 import { Pagination, Select, Modal, message } from "antd";
 import { DownloadTableExcel } from "react-export-table-to-excel";
+import { useAuth } from "../../../../../context/AuthContext";
 
 function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
   const Token =
@@ -22,7 +23,7 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
     setJob(item?.job?.id || "");
     setNationalID(item?.national_id || 0);
     setDepartment(item?.department?.id || "");
-    setemployeeType(item?.employee_type_id)
+    setemployeeType(item?.employee_type_id);
   }, [item]);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
         job_id: job,
         department_id: department,
         points: null,
-        employee_type_id:employeeType
+        employee_type_id: employeeType,
       },
       {
         headers: {
@@ -73,7 +74,7 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
         job_id: job,
         department_id: department,
         points: null,
-        employee_type_id: employeeType
+        employee_type_id: employeeType,
       },
       {
         headers: {
@@ -180,15 +181,15 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
       </div>
 
       <div>
-      <label for="exampleInputPassword" className="form-label">
+        <label for="exampleInputPassword" className="form-label">
           {" "}
           اختر فئة الموظف
         </label>
         <Select
           className="form-select"
           value={employeeType}
-          onChange={(e)=> {
-            setemployeeType(e)
+          onChange={(e) => {
+            setemployeeType(e);
           }}
           placeholder="اختر القسم"
           style={{ height: "45px" }}
@@ -228,6 +229,7 @@ const ShowAllStaff = () => {
   const [nationalId, setNationalId] = useState("");
 
   const tableRef = useRef(null);
+  const { user } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
   const handlePageChange = (page) => {
@@ -521,9 +523,14 @@ const ShowAllStaff = () => {
             <th scope="col" style={{ background: "#edede9" }}>
               الرقم القومي
             </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              ألاجرائات
-            </th>
+
+            {user.permissions.some(
+              (permission) => permission.name === "edit-employees-departments"
+            ) && (
+              <th scope="col" style={{ background: "#edede9" }}>
+                الاجرائات
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -584,36 +591,44 @@ const ShowAllStaff = () => {
               >
                 {item.national_id}
               </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                <div
-                  style={{ display: "flex", flexDirection: "row", gap: "7px" }}
+              {user.permissions.some(
+                (permission) => permission.name === "edit-employees-departments"
+              ) && (
+                <td
+                  style={{
+                    padding: " 14px 12px",
+                    border: "1px solid #E4C59E",
+                    color: "#803D3B",
+                    fontSize: "18px",
+                    fontWeight: "700",
+                  }}
                 >
-                  <button
-                    type="button"
-                    className="btn text-light fs-bold px-3"
-                    style={{ backgroundColor: "#AF8260" }}
-                    onClick={() => handelEdit(item)}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: "7px",
+                    }}
                   >
-                    تعديل{" "}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn text-light fs-bold px-3"
-                    style={{ backgroundColor: "red" }}
-                    onClick={() => handelDelete(item.id)}
-                  >
-                    خذف{" "}
-                  </button>
-                </div>
-              </td>
+                    <button
+                      type="button"
+                      className="btn text-light fs-bold px-3"
+                      style={{ backgroundColor: "#AF8260" }}
+                      onClick={() => handelEdit(item)}
+                    >
+                      تعديل{" "}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn text-light fs-bold px-3"
+                      style={{ backgroundColor: "red" }}
+                      onClick={() => handelDelete(item.id)}
+                    >
+                      خذف{" "}
+                    </button>
+                  </div>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

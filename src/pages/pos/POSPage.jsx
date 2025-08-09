@@ -407,7 +407,7 @@ const POSPage = () => {
   //       name: customer.name,
   //       phone: customer.phone || '',
   //       email: customer.email || '',
-  //       type: customer.type || 'regular',
+  //       type: customer?.type || 'regular',
   //       points: customer.points || 0,
   //       discount: customer.discount || 0,
   //     }));
@@ -544,7 +544,7 @@ const POSPage = () => {
     0
   );
   const discountAmount =
-    discount.type === 'percentage'
+    discount?.type === 'percentage'
       ? (subtotal * discount.value) / 100
       : discount.value;
   const tax = (subtotal - discountAmount) * 0.14; // 14% tax
@@ -1545,8 +1545,8 @@ const POSPage = () => {
                       <br />
                       <Text type="secondary">{customer.email}</Text>
                       <div style={{ marginTop: 8 }}>
-                        <Tag color={customer.type === 'vip' ? 'gold' : 'blue'}>
-                          {customer.type === 'vip' ? 'VIP' : 'عادي'}
+                        <Tag color={customer?.type === 'vip' ? 'gold' : 'blue'}>
+                          {customer?.type === 'vip' ? 'VIP' : 'عادي'}
                         </Tag>
                         {customer.discount > 0 && (
                           <Tag color="green">خصم {customer.discount}%</Tag>
@@ -1581,7 +1581,7 @@ const POSPage = () => {
           <div className="discount-type">
             <Title level={5}>نوع الخصم</Title>
             <Select
-              value={discount.type}
+              value={discount?.type}
               onChange={(value) => setDiscount({ ...discount, type: value })}
               style={{ width: '100%', marginBottom: 16 }}
             >
@@ -1592,20 +1592,20 @@ const POSPage = () => {
 
           <div className="discount-value">
             <Title level={5}>
-              {discount.type === 'percentage' ? 'النسبة المئوية' : 'المبلغ'}
+              {discount?.type === 'percentage' ? 'النسبة المئوية' : 'المبلغ'}
             </Title>
             <InputNumber
               value={discount.value}
               onChange={(value) => setDiscount({ ...discount, value })}
               min={0}
-              max={discount.type === 'percentage' ? 100 : subtotal}
+              max={discount?.type === 'percentage' ? 100 : subtotal}
               precision={2}
               size="large"
               style={{ width: '100%' }}
               placeholder={
-                discount.type === 'percentage' ? 'أدخل النسبة' : 'أدخل المبلغ'
+                discount?.type === 'percentage' ? 'أدخل النسبة' : 'أدخل المبلغ'
               }
-              suffix={discount.type === 'percentage' ? '%' : 'ج.م'}
+              suffix={discount?.type === 'percentage' ? '%' : 'ج.م'}
             />
           </div>
 
@@ -1620,7 +1620,7 @@ const POSPage = () => {
                 <Text>الخصم:</Text>
                 <Text type="success">
                   -
-                  {(discount.type === 'percentage'
+                  {(discount?.type === 'percentage'
                     ? (subtotal * discount.value) / 100
                     : discount.value
                   ).toFixed(2)}{' '}
@@ -1632,7 +1632,7 @@ const POSPage = () => {
                 <Text strong type="success">
                   {(
                     subtotal -
-                    (discount.type === 'percentage'
+                    (discount?.type === 'percentage'
                       ? (subtotal * discount.value) / 100
                       : discount.value)
                   ).toFixed(2)}{' '}

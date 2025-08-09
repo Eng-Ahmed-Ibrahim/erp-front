@@ -73,7 +73,7 @@ const SubCategoryTable = ({
 
   
   useEffect(() => {
-    if(user.department.type=="both"){
+    if(user.department?.type=="both"){
       console.log("kit")
 setIsKitchien(true)
     }
@@ -174,7 +174,7 @@ setIsKitchien(true)
   const handleNavigate = (item) => {
     navigate(
       actions
-        .find((action) => action.type === "navigate")
+        .find((action) => action?.type === "navigate")
         .route.replace(":id", item.id)
     );
   };
@@ -183,12 +183,12 @@ setIsKitchien(true)
     setSelectedItem(item);
     navigate(
       actions
-        .find((action) => action.type === "edit")
+        .find((action) => action?.type === "edit")
         .route.replace(":id", item.id)
     );
   };
   const handleAdd = () => {
-    const addAction = actions.find((action) => action.type === "add");
+    const addAction = actions.find((action) => action?.type === "add");
     if (addAction) {
       navigate(addAction.route);
     }
@@ -327,9 +327,9 @@ setIsKitchien(true)
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: `flex`, flexWrap: `nowrap`, gap: 10, alignItems: "center" }}>
-            {actions && actions.some((action) => action.type === "add") && (
+            {actions && actions.some((action) => action?.type === "add") && (
               <button className="add-btn white-space-nowrap" onClick={handleAdd}>
-                {"+ "} {actions.find((action) => action.type === "add").label}
+                {"+ "} {actions.find((action) => action?.type === "add").label}
               </button>
             )}
             <DownloadTableExcel
@@ -382,7 +382,7 @@ setIsKitchien(true)
                         }
                         className={header.clickable ? "clickable-cell" : ""}
                       >
-                        {header.type === "image" ? (
+                        {header?.type === "image" ? (
                           <img
                             src={`${item.image}`}
                             alt={`alt-${item.name}`}
@@ -408,16 +408,16 @@ setIsKitchien(true)
                       <td>
                         <div className="buttons">
                           {actions.map((action, index) => {
-                            if (action.type === "add" || action.type === "")
+                            if (action?.type === "add" || action?.type === "")
                               return;
                             return (
                               <button
-                                className={`button ${action.type} ${
+                                className={`button ${action?.type} ${
                                   action.className ? action.className(item) : ''
                                 }`}
                                 key={index}
                                 onClick={() => {
-                                  handleAction(action.type, item);
+                                  handleAction(action?.type, item);
                                 }}
                                 disabled={
                                   action.disabled

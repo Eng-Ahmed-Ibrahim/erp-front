@@ -278,7 +278,7 @@ const ShowProductDepartment2 = () => {
   }, [value]);
 
   useEffect(() => {
-    if (user.department.type == "master") {
+    if (user.department?.type == "master") {
       setIsAdmin(true);
     }
 
