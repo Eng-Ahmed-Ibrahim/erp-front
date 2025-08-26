@@ -2,10 +2,10 @@ import axios from "axios";
 import { API_ENDPOINT } from "../../../config";
 const domain = API_ENDPOINT;
 const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
-export async function getUderLimit(filteredValues = { name: "", page: "", category_id : "" }, department_id) {
+export async function getUderLimit(filteredValues = { name: "", page: "" }, department_id) {
 
     try {
-        const { name, page } = filteredValues;
+        const { name, page , category_id } = filteredValues;
         const res = await axios.get(
             `${domain}/api/v1/store/recipe/get_repices/under_limt`,
             {
