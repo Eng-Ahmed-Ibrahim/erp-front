@@ -25,13 +25,14 @@
     border-style: solid;
     border-color: #d9d9d9;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     color: var(--brown-color);
     outline: 0;
     font-weight: 700;
     font-family: "Cairo";
     padding: 10px 5px;
     border-radius: 5px;
+    height: 45px;
 
     &:hover,
     &:focus {

@@ -148,7 +148,7 @@ function Categories(props) {
       key: "supplier_id",
       type: "selection",
       id: "اختر المورد",
-      placeholder: "المورد",
+      placeholder: "اختر المورد",
       options: supplier,
     },
     user?.department.type === "master"
@@ -166,7 +166,7 @@ function Categories(props) {
       key: "status",
       type: "selection",
       id: "اختر الحالة",
-      placeholder: "الحالة",
+      placeholder: "اختر الحالة",
       options: statusOptions,
     },
     { key: "from_date", type: "date", id: "من تاريخ" },
@@ -184,11 +184,10 @@ function Categories(props) {
       key: "status",
       type: "selection",
       id: "اختر الحالة",
-      placeholder: "الحالة",
+      placeholder: "اختر الحالة",
       options: statusOptions,
     },
-    user?.department.type === "master"
-      ? {
+{
           key: "department_id",
           type: "selection",
           id: "نوع القسم",
@@ -196,8 +195,7 @@ function Categories(props) {
           options: departments.map((department) => {
             return { value: department.id, label: department.name };
           }),
-        }
-      : null,
+        },
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },
   ];
@@ -225,7 +223,7 @@ function Categories(props) {
       key: "status",
       type: "selection",
       id: "اختر الحالة",
-      placeholder: "الحالة",
+      placeholder: "اختر الحالة",
       options: statusOptions,
     },
     { key: "from_date", type: "date", id: "من تاريخ" },
@@ -255,7 +253,7 @@ function Categories(props) {
       key: "status",
       type: "selection",
       id: "اختر الحالة",
-      placeholder: "الحالة",
+      placeholder: "اختر الحالة",
       options: statusOptions,
     },
     { key: "from_date", type: "date", id: "من تاريخ" },

@@ -55,29 +55,22 @@ const InvoiceDetails = ({ onAddItem, onDeleteItem, InvoiceType }) => {
       departmentId = departmentId ? departmentId : user.department.id;
       const oneRecipe = await getRecipesById(id, departmentId);
       setSelectedOneRecipe(oneRecipe);
+
       if (InvoiceType === "out_going") {
         setQuantity(oneRecipe.total_quantity);
         setPrice(oneRecipe.price);
         setUnit(oneRecipe.unit.name);
-        // console.log(expirationOptions)
-        // if (expirationOptions){add
-        //   // setNewPrice()
-        // }
         setNewPrice(oneRecipe.price / oneRecipe.total_quantity);
-
-        console.log(
-          oneRecipe.price,
-          oneRecipe.total_quantity,
-          oneRecipe.price / oneRecipe.total_quantity
-        );
-
         const expirationOptions = oneRecipe.quantitesDetails.map((detail) => ({
           value: `${detail.invoice_id}-${detail.expire_date}`, // Create a unique value
           label: `${
+            " كود الفاتورة:   " +
+            `${detail.invoice_code}` +
+            "   --   " +
             "  السعر:   " +
             `${detail.price}` +
             "   --   " +
-            "  التاريخ:    " +
+            "    تاريخ الصلاحية:    " +
             `${detail.expire_date}` +
             "   --   " +
             "  الكميه:    " +

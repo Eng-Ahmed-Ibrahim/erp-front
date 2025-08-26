@@ -98,7 +98,7 @@ const ShowDepartment = () => {
         }}
       >
         <thead>
-          <tr className="fw-bold fs-5 my-3">
+          <tr className="fw-bold fs-5 my-3" style={{color : "803D3B"}}>
             <th scope="col" style={{ background: '#edede9' }}>
               الرقم
             </th>

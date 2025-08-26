@@ -59,7 +59,7 @@ const RecipesReview = () => {
       key: "status",
       type: "selection",
       id: "اختر الحالة",
-      placeholder: "الحالة",
+      placeholder: "اختر الحالة",
       options: statusOptions,
     },
     { key: "from_date", type: "date", id: "من تاريخ" },

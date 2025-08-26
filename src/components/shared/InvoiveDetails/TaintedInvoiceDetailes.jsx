@@ -87,7 +87,6 @@ const TaintedInvoiceDetailes = ({ onAddItem, onDeleteItem, InvoiceType, departme
 
     const fetchOneRecipe = async (id) => {
         try {
-            //  
             const oneRecipe = await getRecipesById(id, departmentId);
             setSelectedRecipe(oneRecipe.id);
             setQuantity(oneRecipe.total_quantity);

@@ -116,7 +116,7 @@ const CreateNewProduct2 = () => {
         </div>
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
-            سعر التكلفة :
+            سعر البيع :
           </label>
           <input
             type="text"

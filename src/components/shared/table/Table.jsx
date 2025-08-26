@@ -56,6 +56,7 @@ const Table = ({
   pdfHeader,
 }) => {
   const tableRef = useRef();
+  const tableContainerRef = useRef();
   const { user } = useAuth();
   const timeoutRef = useRef(null); // Ref to store the timeout ID
 
@@ -80,11 +81,28 @@ const Table = ({
   const [editedCell, setEditedCell] = useState({});
   const [cellValue, setCellValue] = useState("");
   const [editedItems, setEditedItems] = useState([]);
+  const [isHeaderSticky, setIsHeaderSticky] = useState(false);
 
   const KITCHEN_DEPARTMENTS = [
     "3d1e1d26-91ff-40b8-9b2c-139aa79430e9",
     "01j45gtesjz0mm3qf0sz6bzvn9",
   ];
+
+  // Handle scroll for sticky header
+  useEffect(() => {
+    const handleScroll = () => {
+      if (tableContainerRef.current) {
+        const scrollTop = tableContainerRef.current.scrollTop;
+        setIsHeaderSticky(scrollTop > 0);
+      }
+    };
+
+    const container = tableContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
   useEffect(() => {
     if (
@@ -592,7 +610,7 @@ const Table = ({
     if (type === "number") {
       return (
         <input
-          className="filter-input"
+          className="form-input"
           type="number"
           placeholder={placeholder}
           value={filterValues[key] || ""}
@@ -602,7 +620,7 @@ const Table = ({
     } else if (type === "date") {
       return (
         <input
-          className="filter-input"
+          className="form-input"
           type="date"
           value={filterValues[key] || ""}
           onChange={(e) => handleFilterChange(key, e.target.value)}
@@ -611,7 +629,7 @@ const Table = ({
     } else if (type === "selection") {
       return (
         <Select
-          className="selection-input"
+          className="form-input"
           showSearch
           placeholder={placeholder}
           optionFilterProp="children"
@@ -625,7 +643,7 @@ const Table = ({
     } else {
       return (
         <input
-          className="filter-input"
+          className="form-input"
           type="text"
           placeholder={placeholder}
           value={filterValues[key] || ""}
@@ -711,7 +729,8 @@ const Table = ({
         </div>
         <div></div>
         <div className="data-table-diagram" ref={targetRef}>
-          <table className="data-table" ref={tableRef}>
+          <div className="table-container" ref={tableContainerRef}>
+            <table className={`data-table ${isHeaderSticky ? 'sticky-header' : ''}`} ref={tableRef}>
             <thead>
               <tr>
                 <th>الرقم</th>
@@ -864,6 +883,7 @@ const Table = ({
               )}
             </tbody>
           </table>
+            </div>
         </div>
 
         {data?.data?.length > 0 && !isLoading && (

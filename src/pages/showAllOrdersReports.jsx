@@ -579,7 +579,7 @@ const ShowAllOrderReports = () => {
         </button>
       </div> */}
 
-      <table
+      {/* <table
         className="table table-hover mt-5"
         style={{ fontSize: "24px" }}
         ref={tableRef}
@@ -588,19 +588,20 @@ const ShowAllOrderReports = () => {
           <tr>
             <th colSpan="8" className="text-center">
               <div>
-                <span>الفلتر </span>
-                <span> || </span>
-                <span> ({selectedPaymentMethodName})</span>
-                <span> || </span>
-                <span>({selectedClientTypeName})</span>
-                <span> || </span>
-                <span>({selectedClientsName})</span>
+               
+                <span> {selectedPaymentMethodName}</span>
+                <span>  |   </span>
+                <span>{selectedClientTypeName}</span>
+                <span> |  </span>
+                <span>{selectedClientsName}</span> 
+                <span> |  </span>
+                <span>{new Date().toISOString().split("T")[0]}</span>
               </div>
             </th>
           </tr>
           <tr>
             <th scope="col">المنفذ</th>
-            <th scope="col">الاجمالي</th>
+            <th scope="col">الاجمالي :  </th>
           </tr>
         </thead>
         <tbody>
@@ -634,7 +635,78 @@ const ShowAllOrderReports = () => {
             </td>
           </tr>
         </tfoot>
+      </table> */}
+
+      <table
+        className="table table-bordered table-striped mt-5"
+        style={{ fontSize: "20px", textAlign: "center" }}
+        ref={tableRef}
+      >
+        <thead style={{ backgroundColor: "#80403b", color: "white" }}>
+          <tr>
+            <th colSpan="2" className="text-center p-3">
+              <div style={{ fontSize: "18px", fontWeight: "bold" }}>
+                <span>طريقة الدفع: {selectedPaymentMethodName || "الكل"}</span>
+                <span style={{ margin: "0 10px" }}>|</span>
+                <span>نوع العميل: {selectedClientTypeName || "الكل"}</span>
+                <span style={{ margin: "0 10px" }}>|</span>
+                <span>العميل: {selectedClientsName || "الكل"}</span>
+                <span style={{ margin: "0 10px" }}>|</span>
+                <span>
+                  من {fromDate || "—"} إلى {toDate || "—"}
+                </span>
+              </div>
+            </th>
+          </tr>
+          <tr style={{ backgroundColor: "#e8e8e8" }}>
+            <th scope="col" style={{ width: "70%", textAlign: "right" }}>
+              المنفذ
+            </th>
+            <th scope="col" style={{ width: "30%", textAlign: "center" }}>
+              الإجمالي
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {data?.data &&
+            Object.keys(data.data).map((key, index) => {
+              const order = data.data[key];
+              return (
+                <tr
+                  key={index}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleClick(order.department_id)}
+                >
+                  <td style={{ textAlign: "right" }}>
+                    {order.department_name}
+                  </td>
+                  <td style={{ textAlign: "center", fontWeight: "bold" }}>
+                    {Math.round(order.total_order_price * 100) / 100} ج.م
+                  </td>
+                </tr>
+              );
+            })}
+        </tbody>
+
+        <tfoot>
+          <tr style={{ backgroundColor: "#d4edda", fontWeight: "bold" }}>
+            <td style={{ textAlign: "right" }}>الإجمالي الكلي</td>
+            <td style={{ textAlign: "center" }}>
+              {data?.data
+                ? Object.values(data.data)
+                    .reduce(
+                      (acc, item) => acc + (item.total_order_price || 0),
+                      0
+                    )
+                    .toFixed(2)
+                : 0}{" "}
+              ج.م
+            </td>
+          </tr>
+        </tfoot>
       </table>
+
       <DataModal
         show={isModalVisable}
         onHide={() => setIsModalVisable(false)}

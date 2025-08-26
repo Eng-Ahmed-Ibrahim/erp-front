@@ -10,6 +10,7 @@ export async function getRecipeCategoryParent(
 ) {
   try {
     setIsLoading(true);
+    
     const { name, page } = filteredValues;
     const res = await axios.get(
       `${domain}/api/v1/store/recipe_category_parent`,

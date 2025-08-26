@@ -2,7 +2,7 @@ import axios from "axios";
 import { API_ENDPOINT } from "../../../config";
 const domain = API_ENDPOINT;
 const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
-export async function getUderLimit(filteredValues = { name: "", page: "" }, department_id) {
+export async function getUderLimit(filteredValues = { name: "", page: "", category_id : "" }, department_id) {
 
     try {
         const { name, page } = filteredValues;
@@ -13,6 +13,7 @@ export async function getUderLimit(filteredValues = { name: "", page: "" }, depa
                     name,
                     page,
                     department_id: department_id,
+                    category_id :category_id
 
 
                 },
