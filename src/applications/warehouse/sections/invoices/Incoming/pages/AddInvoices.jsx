@@ -385,9 +385,9 @@ const AddInvoices = () => {
         </div>
       )}
 
-      {lastItem === "in_coming" ? (
+      {lastItem === "in_coming" || lastItem == "returned" ? (
         <div>
-          <label className="form-label">كود فاتوره</label>
+          <label className="form-label">كود الفاتوره</label>
           <input
             className="form-input"
             type="text"

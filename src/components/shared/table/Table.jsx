@@ -232,8 +232,8 @@ const Table = ({
         title: "Success",
         content: (
           <div style={{ fontSize: "24px", textAlign: "center" }}>
-            Data updated successfully!
-          </div>
+            تم التعديل بنجاح
+            </div>
         ),
         centered: true,
         width: 400,

@@ -50,7 +50,15 @@ function Categories(props) {
   ];
 
   const tableHeadersIncoming = [
-    { key: "code", value: "  كود الفاتوره" },
+    {
+      key: "code",
+      value: "  كود الفاتوره",
+      isInput: user?.permissions.some(
+        (permission) => permission.name === "edit invoice_code"
+      )
+        ? true
+        : false,
+    },
     { key: "created_at", value: "تاريخ الإصدار" },
     { key: "created_by", value: " مدخل البيانات", nestedKey: "name" },
     { key: "supplier", value: "اسم المورد", nestedKey: "name" },
@@ -61,7 +69,11 @@ function Categories(props) {
     {
       key: "code",
       value: "  كود الفاتوره",
-      isInput: user?.department.type === "master" ? true : false,
+      isInput: user?.permissions.some(
+        (permission) => permission.name === "edit invoice_code"
+      )
+        ? true
+        : false,
     },
     {
       key: "created_at",
@@ -76,7 +88,15 @@ function Categories(props) {
   ];
 
   const tableHeadersReterned = [
-    { key: "code", value: "  كود الفاتوره" },
+    {
+      key: "code",
+      value: "  كود الفاتوره",
+      isInput: user?.permissions.some(
+        (permission) => permission.name === "edit invoice_code"
+      )
+        ? true
+        : false,
+    },
     { key: "created_at", value: "تاريخ الإصدار" },
     { key: "from", value: "مرتجع من", nestedKey: "name" },
     { key: "status", value: "الحالة" },
@@ -84,7 +104,15 @@ function Categories(props) {
   ];
 
   const tableHeadersTransfare = [
-    { key: "code", value: "  كود الفاتوره" },
+    {
+      key: "code",
+      value: "  كود الفاتوره",
+      isInput: user?.permissions.some(
+        (permission) => permission.name === "edit invoice_code"
+      )
+        ? true
+        : false,
+    },
     { key: "created_at", value: "تاريخ الإصدار" },
     { key: "from", value: "تحويل من", nestedKey: "name" },
     { key: "to", value: "تحويل الي", nestedKey: "name" },
@@ -187,15 +215,15 @@ function Categories(props) {
       placeholder: "اختر الحالة",
       options: statusOptions,
     },
-{
-          key: "department_id",
-          type: "selection",
-          id: "نوع القسم",
-          placeholder: "إختار قسم لإظهار نتائج",
-          options: departments.map((department) => {
-            return { value: department.id, label: department.name };
-          }),
-        },
+    {
+      key: "department_id",
+      type: "selection",
+      id: "نوع القسم",
+      placeholder: "إختار قسم لإظهار نتائج",
+      options: departments.map((department) => {
+        return { value: department.id, label: department.name };
+      }),
+    },
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },
   ];
@@ -293,6 +321,10 @@ function Categories(props) {
       label: " طباعه",
       route: "/warehouse/invoices/print/:id",
     },
+    {
+      type: "edit-inv",
+      label: " حفظ",
+    },
   ];
 
   const actionsOutComing = [
@@ -356,6 +388,10 @@ function Categories(props) {
       label: " طباعه",
       route: "/warehouse/invoices/print/:id",
     },
+    {
+      type: "edit-inv",
+      label: " حفظ",
+    },
   ];
   const actionTransfare = [
     {
@@ -383,6 +419,11 @@ function Categories(props) {
       type: "navigate",
       label: " طباعه",
       route: "/warehouse/invoices/print/:id",
+    },
+
+    {
+      type: "edit-inv",
+      label: " حفظ",
     },
   ];
 
