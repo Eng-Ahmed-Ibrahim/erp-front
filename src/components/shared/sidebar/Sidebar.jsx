@@ -728,7 +728,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             {!isTalaat && user?.department?.is_orders_visible ? (
               <li
                 className="menu-item"
@@ -767,7 +766,6 @@ const Sidebar = () => {
                 </Link>
               </li>
             ) : null}
-
             <li
               className="menu-item"
               title="الأوردرات المحذوفة"
@@ -1494,7 +1492,6 @@ const Sidebar = () => {
                 )}
               </>
             )}
-
             <li
               className="menu-item"
               title="الويتر"
@@ -1527,7 +1524,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             {!isMechOrChem && (
               <>
                 <li
@@ -1608,7 +1604,6 @@ const Sidebar = () => {
                 </li>
               </>
             )}
-
             <li
               className="menu-item"
               title="الويتر"
@@ -1641,7 +1636,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             {linkedDepartment && (
               <li className="menu-item" title="كاشير الأنشطة">
                 <Link
@@ -1664,7 +1658,6 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-
             <li
               className="menu-item"
               title="الشيفتات"
@@ -1701,7 +1694,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             {receptionCollapsedGroup ? (
               <>
                 {" "}
@@ -1871,7 +1863,6 @@ const Sidebar = () => {
                 </li>
               </>
             )}
-
             <li
               className="menu-item"
               title="نظام نقاط البيع"
@@ -1904,7 +1895,6 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-
             <li className="menu-item" title="الإعدادات">
               <Link
                 to="/warehouse/account-settings"
@@ -1926,6 +1916,41 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
+
+
+            <li
+              className="menu-item"
+              title=" سجلات المراجعة"
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 205,
+                    name: "view audit",
+                  })
+                    ? ""
+                    : "none"
+                }`,
+              }}
+            >
+              <Link
+                to="/warehouse/reports/audit-dashboard"
+                className={`menu-link ${
+                  activeLink === "/warehouse/reports/audit-dashboard" ? "active" : ""
+                } ${justifyContent}`}
+                onClick={() => handleMenuLinkClick("/warehouse/reports/audit-dashboard")}
+              >
+                <span className="menu-link-icon">
+                  <FaCashRegister size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: "20px" }}
+                >
+                  سجلات المراجعة
+                </span>
+              </Link>
+            </li>
+
 
             <li className="menu-item" title="تسجيل خروج">
               <button

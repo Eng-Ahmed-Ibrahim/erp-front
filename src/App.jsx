@@ -182,6 +182,7 @@ import ExternalOrdersReport from "./pages/ShowExternalOrdersReport";
 import CashierPage from "./pages/reception/CashierPage";
 import AccountingPage from "./pages/accounting/AccountingPage";
 import ReceptionPage from "./pages/reception/ReceptionPage";
+import AuditDashboard from "./pages/AuditDashboard";
 
 import InventoryDiscrepancyReviews from "./pages/InventoryDiscrepancyReviews";
 import ShowDepartmentsForBalance from "./applications/warehouse/sections/reports/pages/ShowDepartmentsForBalance";
@@ -488,6 +489,20 @@ function App() {
             ></Route>
           </Route>
         </Route>
+
+        <Route
+          path="/warehouse/reports/audit-dashboard"
+          element={
+            <ProtectedRoute
+              requiredPermission={{
+                id: 206,
+                name: "view audit",
+              }}
+            >
+              <AuditDashboard />
+            </ProtectedRoute>
+          }
+        ></Route>
 
         <Route path="/warehouse" element={<Warehouse />}>
           <Route path="/warehouse/returants/subcategory" element={<Product />}>
@@ -1987,7 +2002,7 @@ function App() {
             }
           >
             {" "}
-          </Route> 
+          </Route>
           <Route
             path="/warehouse/accounting"
             element={

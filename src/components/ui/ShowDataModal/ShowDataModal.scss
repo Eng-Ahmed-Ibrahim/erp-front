@@ -1,3 +1,28 @@
+// Global styles for Ant Design modals to ensure proper z-index
+.ant-modal-mask {
+  z-index: 10001 !important;
+}
+
+.ant-modal-wrap {
+  z-index: 10002 !important;
+}
+
+.ant-modal {
+  z-index: 10003 !important;
+}
+
+.ant-confirm-modal-mask {
+  z-index: 10001 !important;
+}
+
+.ant-confirm-modal-wrap {
+  z-index: 10002 !important;
+}
+
+.ant-confirm-modal {
+  z-index: 10003 !important;
+}
+
 .show-data-modal {
   position: fixed;
   top: 0;
@@ -45,6 +70,7 @@
 .show-data-modal .modal-content .data-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px; // Added font size for better readability
 }
 
 .xd {
@@ -67,7 +93,6 @@
   max-width: 100%;
   height: auto;
 }
-
 
 .show-data-modal-btn {
   background-color: var(--beige-color);
@@ -98,24 +123,149 @@
   color: white;
   padding: 5px 10px;
   font-weight: 700;
-  font-size: 14px;
-  margin-top: 10px;
   border-radius: 6px;
-  margin-left: 5px;
-
-  &:hover {
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
-  }
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
   &.edit {
-    background-color: #3498db;
+    background-color: #007bff;
+    &:hover {
+      background-color: #0056b3;
+    }
   }
 
   &.delete {
-    background-color: #e74c3c;
+    background-color: #dc3545;
+    &:hover {
+      background-color: #c82333;
+    }
   }
 
   &.show {
-    background-color: #53a86e;
+    background-color: #28a745;
+    &:hover {
+      background-color: #218838;
+    }
+  }
+}
+
+// New styles for recipe management
+.header-with-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+
+  .data-table-title {
+    margin: 0;
+    flex: 1;
+    font-size: 1.3rem; // Increased font size
+    font-weight: 600;
+  }
+
+  .add-recipe-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 20px; // Increased padding
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px; // Added font size
+    transition: all 0.3s ease;
+    min-width: 140px; // Added min-width
+
+    &:hover {
+      background-color: #218838;
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .anticon {
+      font-size: 16px; // Increased icon size
+    }
+  }
+}
+
+.remove-recipe-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px; // Increased padding
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  min-width: 36px; // Increased min-width
+  height: 36px; // Increased height
+
+  &:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .anticon {
+    font-size: 16px; // Increased icon size
+  }
+}
+
+// Enhanced table styles
+.data-table {
+  th, td {
+    padding: 12px 16px; // Increased padding
+    font-size: 14px; // Added font size
+  }
+
+  th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+  }
+
+  tr:hover {
+    background-color: #f8f9fa;
+  }
+}
+
+// Responsive design improvements
+@media (max-width: 1200px) {
+  .show-data-modal .modal-content {
+    min-width: 90%;
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 768px) {
+  .show-data-modal .modal-content {
+    min-width: 95%;
+    padding: 1.5rem;
+    
+    .header-with-actions {
+      flex-direction: column;
+      gap: 15px;
+      align-items: stretch;
+      
+      .add-recipe-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   }
 }

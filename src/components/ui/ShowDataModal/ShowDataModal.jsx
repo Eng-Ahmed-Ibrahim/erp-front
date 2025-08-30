@@ -2,6 +2,13 @@ import React, { useState, useEffect } from "react";
 import "./ShowDataModal.scss";
 import { getOrderById, deleteOrder } from "../../../apis/orders";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import {
+  addRecipeToInvoice,
+  removeRecipeFromInvoice,
+} from "../../../apis/invoices";
+import AddRecipeToInvoice from "../../shared/AddRecipeToInvoice/AddRecipeToInvoice";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { message, Modal } from "antd";
 
 import PrintAfterSubmit from "../../../applications/warehouse/sections/cashier/pages/KitchenRequests/PrintAfterSubmit";
 const ShowDataModal = ({
@@ -18,6 +25,8 @@ const ShowDataModal = ({
   const [editedData, setEditedData] = useState(null);
   const [shouldPrint, setShouldPrint] = useState(false);
   const [table_noo, setTable_noo] = useState("");
+  const [showAddRecipeModal, setShowAddRecipeModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchorderData = async () => {
@@ -120,9 +129,71 @@ const ShowDataModal = ({
     changeStatusFn(responseData.id, acceptTitle.value);
     handleModalVisible(false);
   };
+
   const handleCloseClick = () => {
     handleModalVisible(false);
   };
+
+  // New functions for recipe management
+  const handleAddRecipe = async (recipeData) => {
+    try {
+      setIsLoading(true);
+      await addRecipeToInvoice(responseData.id, recipeData);
+      // Refresh the modal data or close it
+      handleModalVisible(false);
+      if (closeAfterEdit) {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error adding recipe:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRemoveRecipe = async (recipeId) => {
+    Modal.confirm({
+      title: "تأكيد الحذف",
+      content: "هل أنت متأكد من حذف هذا المكون من الفاتورة؟",
+      okText: "نعم",
+      cancelText: "لا",
+      centered: true,
+      width: 500,
+      zIndex: 10001, // Higher than AddRecipeToInvoice modal
+      okButtonProps: {
+        style: {
+          backgroundColor: "#dc3545",
+          borderColor: "#dc3545",
+          fontSize: "16px",
+          padding: "8px 24px",
+          height: "auto",
+        },
+      },
+      cancelButtonProps: {
+        style: {
+          fontSize: "16px",
+          padding: "8px 24px",
+          height: "auto",
+        },
+      },
+      onOk: async () => {
+        try {
+          setIsLoading(true);
+          await removeRecipeFromInvoice(responseData.id, recipeId);
+          // Refresh the modal data or close it
+          handleModalVisible(false);
+          if (closeAfterEdit) {
+            window.location.reload();
+          }
+        } catch (error) {
+          console.error("Error removing recipe:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      },
+    });
+  };
+
   const renderInputField = (header, value, index, subKey) => {
     if (!editedData) return;
     const inputValue = subKey
@@ -143,6 +214,17 @@ const ShowDataModal = ({
 
   const nonArrayHeaders = detailsHeaders.filter((header) => !header.isArray);
   const arrayHeaders = detailsHeaders.filter((header) => header.isArray);
+
+  // Check if this is an invoice and if it's not approved
+  const isInvoice =
+    responseData.type &&
+    ["in_coming", "out_going", "returned", "transfare"].includes(
+      responseData.type
+    );
+  const isNotApproved =
+    responseData.status && responseData.status !== "approved";
+  const canManageRecipes = isInvoice && isNotApproved;
+
   return (
     <div className="show-data-modal">
       <div className="modal-content">
@@ -201,7 +283,18 @@ const ShowDataModal = ({
         </div>
         {arrayHeaders.map((header, index) => (
           <div key={header.key}>
-            <h4 className="data-table-title">{header.label}</h4>
+            <div className="header-with-actions">
+              <h4 className="data-table-title">{header.label}</h4>
+              {canManageRecipes && header.key === "recipes" && (
+                <button
+                  className="pdf-button"
+                  onClick={() => setShowAddRecipeModal(true)}
+                  disabled={isLoading}
+                >
+                  <PlusOutlined /> إضافة مكون
+                </button>
+              )}
+            </div>
             <div className="data-table-container">
               <div className="data-table-diagram">
                 <table className="data-table">
@@ -210,6 +303,9 @@ const ShowDataModal = ({
                       {header.details.map((detail) => (
                         <th key={detail.key}>{detail.label}</th>
                       ))}
+                      {canManageRecipes && header.key === "recipes" && (
+                        <th>الإجراءات</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -227,6 +323,32 @@ const ShowDataModal = ({
                               : item[detail.key]}
                           </td>
                         ))}
+                        {canManageRecipes && header.key === "recipes" && (
+                          <td>
+                            <button
+                              className="remove-recipe-btn"
+                              onClick={() =>
+                                handleRemoveRecipe(item.id || item.recipe_id)
+                              }
+                              disabled={isLoading}
+                              title="حذف المكون"
+                            >
+                              <>
+                                <DeleteOutlined />
+                                <span
+                                  style={{
+                                    marginRight: "10px",
+                                    alignItems: "center",
+                                    alignContent: "center",
+                                    borderRadius: "5px",
+                                  }}
+                                >
+                                  حذف{" "}
+                                </span>
+                              </>
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -269,6 +391,15 @@ const ShowDataModal = ({
         )}{" "}
         {/* Conditional rendering */}
       </div>
+
+      {/* Add Recipe Modal */}
+      {showAddRecipeModal && (
+        <AddRecipeToInvoice
+          onAddRecipe={handleAddRecipe}
+          onClose={() => setShowAddRecipeModal(false)}
+          invoiceType={responseData.type}
+        />
+      )}
     </div>
   );
 };

@@ -595,3 +595,50 @@ export async function changeInvoiceStatus(id, status) {
     // //  
   }
 }
+
+export async function addRecipeToInvoice(invoiceId, recipeData) {
+  try {
+    const formData = new FormData();
+    formData.append('recipe_id', recipeData.recipe_id);
+    formData.append('quantity', recipeData.quantity);
+    formData.append('price', recipeData.price);
+    formData.append('expire_date', recipeData.expire_date);
+
+    const res = await axios.post(
+      `${domain}/api/v1/store/invoice/${invoiceId}/add-recipe`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    message.success('تم إضافة المكون بنجاح');
+    return res.data;
+  } catch (error) {
+    message.error(
+      error.response?.data?.error?.message || 'حدث خطأ أثناء إضافة المكون'
+    );
+    throw error;
+  }
+}
+
+export async function removeRecipeFromInvoice(invoiceId, recipeId) {
+  try {
+    const res = await axios.delete(
+      `${domain}/api/v1/store/invoice/${invoiceId}/remove-recipe/${recipeId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    message.success('تم حذف المكون بنجاح');
+    return res.data;
+  } catch (error) {
+    message.error(
+      error.response?.data?.error?.message || 'حدث خطأ أثناء حذف المكون'
+    );
+    throw error;
+  }
+}

@@ -1,0 +1,291 @@
+.add-recipe-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); // Darker background
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000; // Higher than ShowDataModal
+
+  .modal-content {
+    background: white;
+    border-radius: 12px; // Increased border radius
+    padding: 30px; // Increased padding
+    width: 95%;
+    max-width: 800px; // Increased from 600px
+    max-height: 95vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); // Enhanced shadow
+    position: relative;
+    border: 1px solid #e0e0e0; // Added border
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px; // Increased margin
+      padding-bottom: 20px; // Increased padding
+      border-bottom: 2px solid #eee; // Thicker border
+
+      h3 {
+        margin: 0;
+        color: #333;
+        font-size: 1.8rem; // Increased font size
+        font-weight: 700;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 28px; // Increased font size
+        cursor: pointer;
+        color: #666;
+        padding: 0;
+        width: 36px; // Increased size
+        height: 36px; // Increased size
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: #f5f5f5;
+          color: #333;
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    .form-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 25px; // Increased gap
+      margin-bottom: 30px; // Increased margin
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; // Increased gap
+
+        label {
+          font-weight: 700; // Increased font weight
+          color: #333;
+          font-size: 1.1rem; // Increased font size
+        }
+
+        input, select {
+          padding: 16px; // Increased padding
+          border: 2px solid #ddd; // Thicker border
+          border-radius: 8px; // Increased border radius
+          font-size: 1.1rem; // Increased font size
+          transition: all 0.3s ease;
+          background-color: #fafafa; // Light background
+
+          &:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); // Enhanced focus shadow
+            background-color: white;
+          }
+
+          &.disabled-input {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+          }
+        }
+
+        .ant-select {
+          .ant-select-selector {
+            padding: 16px; // Increased padding
+            border: 2px solid #ddd; // Thicker border
+            border-radius: 8px; // Increased border radius
+            font-size: 1.1rem; // Increased font size
+            background-color: #fafafa; // Light background
+            
+            &:hover {
+              border-color: #007bff;
+            }
+          }
+          
+          &.ant-select-focused .ant-select-selector {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            background-color: white;
+          }
+
+          &.ant-select-disabled .ant-select-selector {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+            border-color: #dee2e6;
+          }
+
+          &.ant-select-status-warning .ant-select-selector {
+            border-color: #ffc107;
+            background-color: #fff8e1;
+          }
+        }
+
+        // Enhanced input states
+        input:required {
+          border-left: 4px solid #007bff;
+        }
+
+        input:invalid {
+          border-color: #dc3545;
+          background-color: #fff5f5;
+        }
+
+        input:focus:invalid {
+          box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+        }
+
+        // Form field animations
+        .form-field {
+          transition: all 0.3s ease;
+          
+          &:focus-within {
+            transform: translateY(-2px);
+          }
+        }
+
+        // Required field indicator
+        label span[style*="red"] {
+          font-weight: bold;
+          margin-left: 4px;
+        }
+      }
+    }
+
+    .error-message {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 16px; // Increased padding
+      border-radius: 8px; // Increased border radius
+      margin-bottom: 25px; // Increased margin
+      border: 2px solid #f5c6cb; // Thicker border
+      text-align: center;
+      font-weight: 600; // Increased font weight
+      font-size: 1rem; // Added font size
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 20px; // Increased gap
+      justify-content: flex-end;
+
+      button {
+        padding: 16px 32px; // Increased padding
+        border: none;
+        border-radius: 8px; // Increased border radius
+        font-size: 1.1rem; // Increased font size
+        font-weight: 700; // Increased font weight
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 120px; // Added min-width
+
+        &.btn-cancel {
+          background-color: #6c757d;
+          color: white;
+
+          &:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+          }
+        }
+
+        &.btn-add {
+          background-color: #28a745;
+          color: white;
+
+          &:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+          }
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 900px) {
+  .add-recipe-modal {
+    .modal-content {
+      width: 98%;
+      max-width: 95%;
+      padding: 20px;
+      
+      .modal-header {
+        h3 {
+          font-size: 1.5rem;
+        }
+      }
+      
+      .form-fields {
+        gap: 20px;
+        
+        .form-field {
+          input, select, .ant-select .ant-select-selector {
+            padding: 14px;
+            font-size: 1rem;
+          }
+        }
+      }
+      
+      .modal-actions {
+        flex-direction: column;
+        
+        button {
+          width: 100%;
+          padding: 18px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .add-recipe-modal {
+    .modal-content {
+      padding: 15px;
+      
+      .modal-header {
+        margin-bottom: 20px;
+        
+        h3 {
+          font-size: 1.3rem;
+        }
+      }
+      
+      .form-fields {
+        gap: 15px;
+        
+        .form-field {
+          label {
+            font-size: 1rem;
+          }
+          
+          input, select, .ant-select .ant-select-selector {
+            padding: 12px;
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+  }
+}
