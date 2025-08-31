@@ -262,7 +262,7 @@ const AddRecipeToInvoice = ({ onAddRecipe, onClose, invoiceType }) => {
       <div
         className="modal-content"
         onClick={handleContentClick}
-        style={{ width: '600px', maxWidth: '90vw' }}
+        style={{ width: '600px', maxWidth: '90vw', height:"auto" }}
       >
         <div className="modal-header">
           <h3>إضافة مكون جديد</h3>
