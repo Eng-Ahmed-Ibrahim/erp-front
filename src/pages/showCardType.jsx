@@ -67,6 +67,23 @@ const ShowCardTypeReport = () => {
     handleFilterData(); // Fetch initial data
   }, []);
 
+  const mapInvoiceType = (type) => {
+    switch (type) {
+      case "in_coming":
+        return "فاتورة مورد";
+      case "out_going":
+        return "مستند صرف";
+      case "returned":
+        return "مرتجع";
+      case "transfare":
+        return "تحويل";
+      case "tainted":
+        return "هالك";
+        tainted;
+      default:
+        return type;
+    }
+  };
   useEffect(() => {
     setIsPending(true);
     axios
@@ -113,28 +130,30 @@ const ShowCardTypeReport = () => {
       <div className="my-5 ">
         <h1 className="heading text-center p-3">كارت الصنف</h1>
       </div>
-      <div className="mb-3">
-        <label htmlFor="exampleInputEmail1" className="form-label">
-          الصنف :
-        </label>
-        <div className="center" style={{ margin: "20px 0" }}>
-          <input
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="filter-input"
-            type="text"
-            placeholder="إبحث بأسم الصنف"
-            value={searchTerm}
-          />
-        </div>
-      </div>
+
       <div className="row-display">
+        <div className="mb-3">
+          <label htmlFor="exampleInputEmail1" className="form-label">
+            الصنف :
+          </label>
+          <div className="center">
+            <input
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="form-input"
+              type="text"
+              placeholder="إبحث بأسم الصنف"
+              value={searchTerm}
+            />
+          </div>
+        </div>
+
         <div className="mb-3">
           <label htmlFor="exampleFormControlInput1" className="form-label">
             من
           </label>
           <input
             type="date"
-            className="form-control"
+            className="form-input"
             value={fromDate}
             onChange={(e) => {
               setFromDate(e.target.value);
@@ -147,23 +166,25 @@ const ShowCardTypeReport = () => {
           </label>
           <input
             type="date"
-            className="form-control"
+            className="form-input"
             value={toDate}
             onChange={(e) => {
               setToDate(e.target.value.toString().split("T")[0]);
             }}
           />
         </div>
+
+        <div className="center">
+          <button
+            onClick={handleFilterData}
+            className="pdf-button white-space-nowrap"
+          >
+            {" "}
+            فلتره
+          </button>
+        </div>
       </div>
-      <div className="center" style={{ margin: "20px 0" }}>
-        <button
-          onClick={handleFilterData}
-          className="pdf-button white-space-nowrap"
-        >
-          {" "}
-          فلتره
-        </button>
-      </div>
+
       <table
         className="table table table-hover mt-5"
         style={{
@@ -179,6 +200,10 @@ const ShowCardTypeReport = () => {
             </th>
             <th scope="col" style={{ background: "#edede9" }}>
               الصنف
+            </th>
+            <th scope="col" style={{ background: "#edede9" }}>
+              {" "}
+              نوع الفاتوره
             </th>
             <th scope="col" style={{ background: "#edede9" }}>
               {" "}
@@ -228,6 +253,19 @@ const ShowCardTypeReport = () => {
                 }}
               >
                 {item.recipe?.name}
+              </td>
+
+              <td
+                className="clickable-cell"
+                style={{
+                  padding: "14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
+                }}
+              >
+                {mapInvoiceType(item.type)}
               </td>
               <td
                 className="clickable-cell"

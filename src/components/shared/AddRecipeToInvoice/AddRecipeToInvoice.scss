@@ -8,19 +8,48 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10000; // Higher than ShowDataModal
+  z-index: 99999; // Much higher than ShowDataModal
+  backdrop-filter: blur(4px); // Add blur effect for better focus
 
-  .modal-content {
-    background: white;
-    border-radius: 12px; // Increased border radius
-    padding: 30px; // Increased padding
-    width: 95%;
-    max-width: 800px; // Increased from 600px
-    max-height: 95vh;
-    overflow-y: auto;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); // Enhanced shadow
-    position: relative;
-    border: 1px solid #e0e0e0; // Added border
+      .modal-content {
+      background: white;
+      border-radius: 12px; // Increased border radius
+      padding: 30px; // Increased padding
+      width: 95%;
+      max-width: 800px; // Increased from 600px
+      max-height: 95vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); // Enhanced shadow
+      position: relative;
+      border: 1px solid #e0e0e0; // Added border
+
+      .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        border-radius: 12px;
+
+        .loading-spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px solid #f3f3f3;
+          border-top: 4px solid #007bff;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
 
     .modal-header {
       display: flex;

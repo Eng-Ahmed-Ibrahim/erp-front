@@ -88,6 +88,7 @@ function ShowReports() {
     {
       image: `${Report3}`,
       name: "كارت الصنف ",
+      
       route: "/warehouse/reports/show-reports/type-card",
     },
   ];

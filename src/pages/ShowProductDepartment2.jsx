@@ -24,10 +24,12 @@ function SubmitActualQuantitiesModal({
 }) {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
-  const [cashier, setCashier] = useState("");
-  const [cashiers, setCashiers] = useState(0);
-  const [waiter, setWaiter] = useState("");
-  const [waiters, setWaiters] = useState(0);
+  const [cashier, setCashier] = useState(null);
+  const [waiter, setWaiter] = useState(null);
+
+  const [cashiers, setCashiers] = useState([]);
+  const [waiters, setWaiters] = useState([]);
+
   const [items, setChangedItems] = useState([]);
   const [actualQuantities, setActualQuantities] = useState([]);
   const [lossAmount, setLossAmount] = useState(0);
@@ -104,11 +106,9 @@ function SubmitActualQuantitiesModal({
     if (response.status == 201 || response.success == true) {
       message.success(" تم حفظ الجرد بنجاح");
       onHide();
-      clearQuantities()
-    }else{
-      
+      clearQuantities();
+    } else {
     }
-   
   };
 
   return (
@@ -141,22 +141,26 @@ function SubmitActualQuantitiesModal({
               {" "}
               الكاشير{" "}
             </label>
-            <Select
+            <select
               className="form-input"
               value={cashier}
-              onChange={(e) => setCashier(e)}
-              placeholder="اختر الكاشير"
+              onChange={(e) => setCashier(e.target.value)}
               style={{ height: "45px" }}
-              dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
-              showSearch={true}
             >
-              {cashiers &&
-                cashiers?.map((cashier) => (
-                  <Select.Option key={cashier.id} value={cashier.id}>
-                    {cashier.name}
-                  </Select.Option>
-                ))}
-            </Select>
+              <option value="">اختر الكاشير</option>
+              {cashiers && Array.isArray(cashiers) && cashiers.length > 0 ? (
+                cashiers.map((cashierItem) => (
+                  <option key={cashierItem.id} value={cashierItem.id}>
+                    {cashierItem.name || cashierItem.title || "Unnamed"}
+                  </option>
+                ))
+              ) : (
+                <option disabled>
+                  لا يوجد كاشير - Type: {typeof cashiers}, Length:{" "}
+                  {cashiers?.length || "undefined"}
+                </option>
+              )}
+            </select>
           </div>
 
           <div className="mb-3" style={{ width: "45%" }}>
@@ -164,22 +168,26 @@ function SubmitActualQuantitiesModal({
               {" "}
               الويتر{" "}
             </label>
-            <Select
+            <select
               className="form-input"
               value={waiter}
-              onChange={(e) => setWaiter(e)}
-              placeholder="اختر الويتر"
+              onChange={(e) => setWaiter(e.target.value)}
               style={{ height: "45px" }}
-              dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
-              showSearch={true}
             >
-              {waiters &&
-                waiters?.map((waiter) => (
-                  <Select.Option key={waiter.id} value={waiter.id}>
-                    {waiter.name}
-                  </Select.Option>
-                ))}
-            </Select>
+              <option value="">اختر الويتر</option>
+              {waiters && Array.isArray(waiters) && waiters.length > 0 ? (
+                waiters.map((waiterItem) => (
+                  <option key={waiterItem.id} value={waiterItem.id}>
+                    {waiterItem.name || waiterItem.title || "Unnamed"}
+                  </option>
+                ))
+              ) : (
+                <option disabled>
+                  لا يوجد ويتر - Type: {typeof waiters}, Length:{" "}
+                  {waiters?.length || "undefined"}
+                </option>
+              )}
+            </select>
           </div>
         </div>
 
@@ -816,158 +824,341 @@ const ShowProductDepartment2 = () => {
             item={selectedItem}
           />
 
-          <div className="invoice-items">
-            <table ref={tableRef}>
-              <thead>
-                <tr>
-                  <th colSpan="11" className="text-center">
-                    <div>
-                      <span>مخزن {data?.name} الفرعي</span>
-                      <span> || </span>
-                      <span> القسم الرئيسي : {mainCat}</span>
-                    </div>
-                  </th>
-                </tr>
-                <tr>
-                  <th colSpan="11" className="text-center">
-                    <div>
-                      <span className="fs-5 fw-bold">
-                        {new Date().toLocaleDateString()} -{" "}
-                        {new Date().toLocaleTimeString()}
-                      </span>{" "}
-                      -<span> || </span>
-                      <span>سعر الفاتوره الكلي {sum}</span>
-                    </div>
-                  </th>
-                </tr>
-                <tr>
-                  <th className="text-center">#</th>
-                  <th className="text-center">القسم الرئيسي</th>
-                  <th className="text-center">التصنيف الرئيسي</th>
-                  <th className="text-right">اسم المنتج</th>
-                  <th className="text-right">الكمية</th>
-                  <th
-                    className="text-center align-middle"
-                    style={{ width: "40px" }}
-                  >
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      onChange={handleSelectAllChange}
-                      checked={
-                        filteredData.length > 0 &&
-                        selectedRows.size === filteredData.length
-                      }
-                      aria-label="Select all items"
-                    />
-                  </th>
-                  <th className="text-right"> الأوفر</th>
-                  <th className="text-right"> العجز</th>
-                  <th className="text-right">الجرد الفعلي</th>
-                  <th className="text-right">سعر الوحده</th>
-                  <th className="text-right"> السعر الكلي </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.length > 0 ? (
-                  filteredData.map((item, index) => (
-                    <tr
-                      className="fw-bold fs-4"
-                      key={index}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => handleRowClick(item)}
+          <div
+            className="invoice-items"
+            style={{
+              height: "100vh",
+              overflow: "hidden",
+              padding: "20px",
+              backgroundColor: "#f8f9fa",
+            }}
+          >
+            <div
+              style={{
+                height: "calc(100vh - 40px)",
+                overflow: "auto",
+                backgroundColor: "#ffffff",
+                borderRadius: "12px",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                border: "1px solid #e9ecef",
+                position: "relative",
+              }}
+            >
+              <table
+                ref={tableRef}
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  minHeight: "calc(100vh - 40px)",
+                  margin: 0,
+                }}
+              >
+                <thead
+                  style={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 10,
+                    backgroundColor: "#ffffff",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  }}
+                >
+                  <tr>
+                    <th
+                      colSpan="11"
+                      className="text-center"
+                      style={{ padding: "10px" }}
                     >
-                      <td className="text-center">{index + 1}</td>
-                      <td className="text-center">
-                        {" "}
-                        {item.recipe_category?.parent}
-                      </td>
-                      <td className="text-center">
-                        {" "}
-                        {item.recipe_category?.name}
-                      </td>
-                      <td className="text-right"> {item.name}</td>
-                      <td className="text-right">
-                        {" "}
-                        {item.quantity} {item.unit}
-                      </td>
-                      <td
-                        className="text-center align-middle"
-                        onClick={(e) => e.stopPropagation()}
+                      <div>
+                        <span>مخزن {data?.name} الفرعي</span>
+                        <span> || </span>
+                        <span> القسم الرئيسي : {mainCat}</span>
+                      </div>
+                    </th>
+                  </tr>
+                  <tr>
+                    <th
+                      colSpan="11"
+                      className="text-center"
+                      style={{ padding: "10px" }}
+                    >
+                      <div>
+                        <span className="fs-5 fw-bold">
+                          {new Date().toLocaleDateString()} -{" "}
+                          {new Date().toLocaleTimeString()}
+                        </span>{" "}
+                        -<span> || </span>
+                        <span>سعر الفاتوره الكلي {sum}</span>
+                      </div>
+                    </th>
+                  </tr>
+                  <tr
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+                      borderBottom: "3px solid #007bff",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    <th
+                      className="text-center"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      #
+                    </th>
+                    <th
+                      className="text-center"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      القسم الرئيسي
+                    </th>
+                    <th
+                      className="text-center"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      التصنيف الرئيسي
+                    </th>
+                    <th
+                      className="text-right"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      اسم المنتج
+                    </th>
+                    <th
+                      className="text-right"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      الكمية
+                    </th>
+                    <th
+                      className="text-center align-middle"
+                      style={{
+                        width: "40px",
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        onChange={handleSelectAllChange}
+                        checked={
+                          filteredData.length > 0 &&
+                          selectedRows.size === filteredData.length
+                        }
+                        aria-label="Select all items"
+                      />
+                    </th>
+                    <th
+                      className="text-right"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      {" "}
+                      الأوفر
+                    </th>
+                    <th
+                      className="text-right"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      {" "}
+                      العجز
+                    </th>
+                    <th
+                      className="text-right"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      الجرد الفعلي
+                    </th>
+                    <th
+                      className="text-right"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      سعر الوحده
+                    </th>
+                    <th
+                      className="text-right"
+                      style={{
+                        padding: "15px 8px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      {" "}
+                      السعر الكلي{" "}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredData.length > 0 ? (
+                    filteredData.map((item, index) => (
+                      <tr
+                        className="fw-bold fs-4"
+                        key={index}
+                        style={{
+                          cursor: "pointer",
+                          backgroundColor:
+                            index % 2 === 0 ? "#ffffff" : "#f8f9fa",
+                          transition: "background-color 0.2s ease",
+                          borderBottom: "1px solid #e9ecef",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.target.closest("tr").style.backgroundColor =
+                            "#e3f2fd")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.target.closest("tr").style.backgroundColor =
+                            index % 2 === 0 ? "#ffffff" : "#f8f9fa")
+                        }
+                        onClick={() => handleRowClick(item)}
                       >
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          checked={selectedRows.has(item.department_store_id)}
-                          onChange={() =>
-                            handleCheckboxChange(item.department_store_id)
-                          }
-                          style={{ cursor: "pointer" }}
-                          aria-label={`Select item ${item.name}`}
-                        />
-                      </td>
-
-                      <td className="text-right">
-                        {item.over_quantity ?? "لا يوجد"}
-                      </td>
-
-                      <td className="text-right">
-                        {item.under_quantity ?? "لا يوجد"}
-                      </td>
-                      <td
-                        className="text-right"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <input
-                          type="number"
-                          min="0"
-                          className="form-control form-control-sm"
-                          style={{
-                            fontSize: "20px",
-                            fontWeight: "600",
-                          }}
-                          value={
-                            actualQuantities[item.department_store_id] ?? ""
-                          }
-                          onChange={(e) =>
-                            handleActualQuantityChange(
-                              item.department_store_id,
-                              e.target.value
-                            )
-                          }
+                        <td
+                          className="text-center"
+                          style={{ padding: "12px 8px" }}
+                        >
+                          {index + 1}
+                        </td>
+                        <td
+                          className="text-center"
+                          style={{ padding: "12px 8px" }}
+                        >
+                          {" "}
+                          {item.recipe_category?.parent}
+                        </td>
+                        <td
+                          className="text-center"
+                          style={{ padding: "12px 8px" }}
+                        >
+                          {" "}
+                          {item.recipe_category?.name}
+                        </td>
+                        <td
+                          className="text-right"
+                          style={{ padding: "12px 8px" }}
+                        >
+                          {" "}
+                          {item.name}
+                        </td>
+                        <td
+                          className="text-right"
+                          style={{ padding: "12px 8px" }}
+                        >
+                          {" "}
+                          {item.quantity} {item.unit}
+                        </td>
+                        <td
+                          className="text-center align-middle"
                           onClick={(e) => e.stopPropagation()}
-                        />
-                      </td>
-                      <td className="text-right">
-                        {" "}
-                        {Math.round((item.price / item.quantity) * 100) /
-                          100}{" "}
-                        جنيه
-                      </td>
-                      <td className="text-right">
-                        {" "}
-                        {Math.round(item.price * 100) / 100} جنيه
+                        >
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            checked={selectedRows.has(item.department_store_id)}
+                            onChange={() =>
+                              handleCheckboxChange(item.department_store_id)
+                            }
+                            style={{ cursor: "pointer" }}
+                            aria-label={`Select item ${item.name}`}
+                          />
+                        </td>
+
+                        <td className="text-right">
+                          {item.over_quantity ?? "لا يوجد"}
+                        </td>
+
+                        <td className="text-right">
+                          {item.under_quantity ?? "لا يوجد"}
+                        </td>
+                        <td
+                          className="text-right"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <input
+                            type="number"
+                            min="0"
+                            className="form-control form-control-sm"
+                            style={{
+                              fontSize: "20px",
+                              fontWeight: "600",
+                            }}
+                            value={
+                              actualQuantities[item.department_store_id] ?? ""
+                            }
+                            onChange={(e) =>
+                              handleActualQuantityChange(
+                                item.department_store_id,
+                                e.target.value
+                              )
+                            }
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </td>
+                        <td className="text-right">
+                          {" "}
+                          {Math.round((item.price / item.quantity) * 100) /
+                            100}{" "}
+                          جنيه
+                        </td>
+                        <td className="text-right">
+                          {" "}
+                          {Math.round(item.price * 100) / 100} جنيه
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td className="text-center fw-bold fs-4" colSpan="11">
+                        لا توجد مواد مصروفة للمخزن
                       </td>
                     </tr>
-                  ))
-                ) : (
+                  )}
+                </tbody>
+                <tfoot>
                   <tr>
-                    <td className="text-center fw-bold fs-4" colSpan="11">
-                      لا توجد مواد مصروفة للمخزن
+                    <td colSpan="11" className="text-center">
+                      <div>
+                        <img src={base64Image} alt="Product" width={"100%"} />
+                      </div>
                     </td>
                   </tr>
-                )}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colSpan="11" className="text-center">
-                    <div>
-                      <img src={base64Image} alt="Product" width={"100%"} />
-                    </div>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+                </tfoot>
+              </table>
+            </div>
           </div>
         </div>
       </main>

@@ -35,27 +35,32 @@ const ShowDataModal = ({
     };
 
     const handleClickOutside = (event) => {
-      const modalContent = document.querySelector(".modal-content");
+      // Don't close if the AddRecipeToInvoice modal is open
+      if (showAddRecipeModal) {
+        return;
+      }
+
+      const modalContent = document.querySelector('.modal-content');
       if (modalContent && !modalContent.contains(event.target)) {
         handleModalVisible(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     fetchorderData();
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [handleModalVisible]);
+  }, [handleModalVisible, showAddRecipeModal]);
 
   useEffect(() => {
     const initialEditedData = {};
     detailsHeaders.forEach((header) => {
       initialEditedData[header.key] = responseData[header.key];
-      initialEditedData["id"] = responseData["id"];
-      initialEditedData["product_id_in_order"] =
-        responseData["product_id_in_order"];
+      initialEditedData['id'] = responseData['id'];
+      initialEditedData['product_id_in_order'] =
+        responseData['product_id_in_order'];
     });
 
     setEditedData(initialEditedData);
@@ -68,7 +73,7 @@ const ShowDataModal = ({
     console.log(`index`, index);
     console.log(`subKey`, subKey);
 
-    if (header === "recipes") {
+    if (header === 'recipes') {
       setEditedData((prevState) => {
         const updatedRecipes = [...prevState.recipes];
         if (subKey) {
@@ -91,7 +96,7 @@ const ShowDataModal = ({
   };
 
   const handleEditClick = async () => {
-    console.log("entered");
+    console.log('entered');
 
     const modifiedRecipes = editedData.recipes.filter((editedRecipe, index) => {
       const originalRecipe = responseData.recipes[index];
@@ -114,11 +119,11 @@ const ShowDataModal = ({
   };
 
   const handleRejectClick = () => {
-    console.log("ressssssssssssssss data", responseData);
+    console.log('ressssssssssssssss data', responseData);
     changeStatusFn(responseData.id, rejectTitle.value);
 
     if (
-      !responseData.hasOwnProperty("deleted_by") ||
+      !responseData.hasOwnProperty('deleted_by') ||
       !responseData.deleted_by
     ) {
       setShouldPrint(true);
@@ -145,7 +150,7 @@ const ShowDataModal = ({
         window.location.reload();
       }
     } catch (error) {
-      console.error("Error adding recipe:", error);
+      console.error('Error adding recipe:', error);
     } finally {
       setIsLoading(false);
     }
@@ -153,27 +158,27 @@ const ShowDataModal = ({
 
   const handleRemoveRecipe = async (recipeId) => {
     Modal.confirm({
-      title: "تأكيد الحذف",
-      content: "هل أنت متأكد من حذف هذا المكون من الفاتورة؟",
-      okText: "نعم",
-      cancelText: "لا",
+      title: 'تأكيد الحذف',
+      content: 'هل أنت متأكد من حذف هذا المكون من الفاتورة؟',
+      okText: 'نعم',
+      cancelText: 'لا',
       centered: true,
       width: 500,
       zIndex: 10001, // Higher than AddRecipeToInvoice modal
       okButtonProps: {
         style: {
-          backgroundColor: "#dc3545",
-          borderColor: "#dc3545",
-          fontSize: "16px",
-          padding: "8px 24px",
-          height: "auto",
+          backgroundColor: '#dc3545',
+          borderColor: '#dc3545',
+          fontSize: '16px',
+          padding: '8px 24px',
+          height: 'auto',
         },
       },
       cancelButtonProps: {
         style: {
-          fontSize: "16px",
-          padding: "8px 24px",
-          height: "auto",
+          fontSize: '16px',
+          padding: '8px 24px',
+          height: 'auto',
         },
       },
       onOk: async () => {
@@ -186,7 +191,7 @@ const ShowDataModal = ({
             window.location.reload();
           }
         } catch (error) {
-          console.error("Error removing recipe:", error);
+          console.error('Error removing recipe:', error);
         } finally {
           setIsLoading(false);
         }
@@ -218,11 +223,11 @@ const ShowDataModal = ({
   // Check if this is an invoice and if it's not approved
   const isInvoice =
     responseData.type &&
-    ["in_coming", "out_going", "returned", "transfare"].includes(
+    ['in_coming', 'out_going', 'returned', 'transfare'].includes(
       responseData.type
     );
   const isNotApproved =
-    responseData.status && responseData.status !== "approved";
+    responseData.status && responseData.status !== 'approved';
   const canManageRecipes = isInvoice && isNotApproved;
 
   return (
@@ -231,16 +236,16 @@ const ShowDataModal = ({
         <button
           onClick={handleCloseClick}
           style={{
-            background: "red",
-            width: "65px",
-            color: "white",
-            borderRadius: "5px",
-            display: "flex",
-            justifyContent: "center", // This centers horizontally
-            alignItems: "center", // This centers vertically
-            textAlign: "center", // Ensures the text itself is centered
-            height: "30px", // Optional: Set height for better vertical centering
-            padding: "0", // Optional: Remove extra padding if needed
+            background: 'red',
+            width: '65px',
+            color: 'white',
+            borderRadius: '5px',
+            display: 'flex',
+            justifyContent: 'center', // This centers horizontally
+            alignItems: 'center', // This centers vertically
+            textAlign: 'center', // Ensures the text itself is centered
+            height: '30px', // Optional: Set height for better vertical centering
+            padding: '0', // Optional: Remove extra padding if needed
           }}
         >
           رجوع
@@ -266,13 +271,13 @@ const ShowDataModal = ({
                             null,
                             null
                           )
-                        : header.key === "quantity"
+                        : header.key === 'quantity'
                         ? renderInputField(
                             header.key,
                             responseData[header.key],
                             null,
                             null
-                          )` ${responseData.unit?.name || ""}`
+                          )` ${responseData.unit?.name || ''}`
                         : responseData[header.key]}
                     </td>
                   ))}
@@ -285,7 +290,7 @@ const ShowDataModal = ({
           <div key={header.key}>
             <div className="header-with-actions">
               <h4 className="data-table-title">{header.label}</h4>
-              {canManageRecipes && header.key === "recipes" && (
+              {canManageRecipes && header.key === 'recipes' && (
                 <button
                   className="pdf-button"
                   onClick={() => setShowAddRecipeModal(true)}
@@ -303,7 +308,7 @@ const ShowDataModal = ({
                       {header.details.map((detail) => (
                         <th key={detail.key}>{detail.label}</th>
                       ))}
-                      {canManageRecipes && header.key === "recipes" && (
+                      {canManageRecipes && header.key === 'recipes' && (
                         <th>الإجراءات</th>
                       )}
                     </tr>
@@ -323,7 +328,7 @@ const ShowDataModal = ({
                               : item[detail.key]}
                           </td>
                         ))}
-                        {canManageRecipes && header.key === "recipes" && (
+                        {canManageRecipes && header.key === 'recipes' && (
                           <td>
                             <button
                               className="remove-recipe-btn"
@@ -363,7 +368,7 @@ const ShowDataModal = ({
               تعديل
             </button>
           )}
-          {changeStatusFn && rejectTitle && responseData.status === "closed" ? (
+          {changeStatusFn && rejectTitle && responseData.status === 'closed' ? (
             <p className="status done">تم الدفع</p>
           ) : (
             <>
@@ -372,8 +377,8 @@ const ShowDataModal = ({
                   className="data-modal-btn delete"
                   onClick={handleRejectClick}
                 >
-                  {responseData.status === "closed"
-                    ? "تم الدفع"
+                  {responseData.status === 'closed'
+                    ? 'تم الدفع'
                     : rejectTitle.label}
                 </button>
               )}
@@ -388,7 +393,7 @@ const ShowDataModal = ({
         </div>
         {shouldPrint && (
           <PrintAfterSubmit id={responseData.id} table_no={table_noo} />
-        )}{" "}
+        )}{' '}
         {/* Conditional rendering */}
       </div>
 
