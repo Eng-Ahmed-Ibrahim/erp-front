@@ -441,7 +441,7 @@ function AuditDashboard() {
       title: "التاريخ والوقت",
       dataIndex: "created_at",
       key: "created_at",
-      width: 180,
+      width: 100,
       fixed: "right",
       render: (date) => (
         <Space direction="vertical" size={0}>
@@ -449,7 +449,7 @@ function AuditDashboard() {
             {new Date(date).toISOString().split('T')[0]}
           </div>
           <div style={{ fontSize: "12px", color: "#666" }}>
-            <ClockCircleOutlined /> {new Date(date).toLocaleTimeString("ar-SA")}
+            <ClockCircleOutlined /> {new Date(date).toISOString().split('T')[0]}
           </div>
         </Space>
       ),
@@ -478,7 +478,7 @@ function AuditDashboard() {
   return (
     <div className="advanced-audit-dashboard">
       {/* Header Section */}
-      <div className="dashboard-header-section">
+      <div className="">
         <Row gutter={[24, 24]} align="middle">
           <Col xs={24} lg={12}>
             <Title level={2} className="dashboard-title">
@@ -835,9 +835,7 @@ function AuditDashboard() {
                 <Card size="small" className="info-summary-card">
                   <Statistic
                     title="التاريخ والوقت"
-                    value={new Date(selectedLog.created_at).toLocaleString(
-                      "ar-SA"
-                    )}
+                    value={new Date(selectedLog.created_at).toISOString().split('T')[0]}
                     prefix={<ClockCircleOutlined />}
                     valueStyle={{ color: "#666", fontSize: "12px" }}
                   />
@@ -885,12 +883,12 @@ function AuditDashboard() {
                     dataIndex: "auditable_type",
                     key: "auditable_type",
                     width: 200,
-                    render: (field) => (
+                    render: (auditable_type) => (
                       <Tag
                         color="blue"
                         style={{ fontFamily: "monospace", fontWeight: 600 }}
                       >
-                        {field}
+                        {auditable_type}
                       </Tag>
                     ),
                   },
@@ -990,10 +988,10 @@ function AuditDashboard() {
                     render: (time) => (
                       <Space direction="vertical" size={0}>
                         <div style={{ fontWeight: 600, fontSize: "12px" }}>
-                          {new Date(time).toLocaleDateString("ar-SA")}
+                          {new Date(time).toISOString().split('T')[0]}
                         </div>
                         <div style={{ fontSize: "11px", color: "#666" }}>
-                          {new Date(time).toLocaleTimeString("ar-SA")}
+                          {new Date(time).toISOString().split('T')[0]}
                         </div>
                       </Space>
                     ),
