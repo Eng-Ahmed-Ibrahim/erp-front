@@ -435,7 +435,7 @@ const AddRecipeToInvoice = ({ onAddRecipe, onClose, invoiceType }) => {
           <button className="btn-cancel" onClick={handleClose} type="button">
             إلغاء
           </button>
-          <button className="btn-add" onClick={handleAddRecipe} type="button">
+          <button className="pdf-button" onClick={handleAddRecipe} type="button">
             إضافة
           </button>
         </div>

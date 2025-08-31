@@ -22,7 +22,11 @@
 .ant-confirm-modal {
   z-index: 10003 !important;
 }
-
+.recipe-remove-confirm-modal .ant-modal-confirm-btns {
+  display: flex;
+  justify-content: flex-start; /* Aligns buttons to the left */
+  gap: 10px; /* Provides space between the buttons */
+}
 .show-data-modal {
   position: fixed;
   top: 0;
@@ -50,7 +54,6 @@
   flex: 1;
   overflow-y: auto;
   max-height: 700px;
-
 }
 
 .data-table-container {
@@ -75,7 +78,6 @@
 
 .xd {
   margin-bottom: 0;
-
 }
 
 .show-data-modal .modal-content .data-table .info-key,
@@ -103,12 +105,15 @@
   font-weight: 700;
   margin: 15px 0 20px;
   // box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em,
+    rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em,
+    rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
 
   &:hover {
     background-color: var(--light-beige-color);
     color: var(--brown-color);
-    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px,
+      rgba(0, 0, 0, 0.23) 0px 6px 6px;
   }
 }
 
@@ -228,7 +233,8 @@
 
 // Enhanced table styles
 .data-table {
-  th, td {
+  th,
+  td {
     padding: 12px 16px; // Increased padding
     font-size: 14px; // Added font size
   }
@@ -256,12 +262,12 @@
   .show-data-modal .modal-content {
     min-width: 95%;
     padding: 1.5rem;
-    
+
     .header-with-actions {
       flex-direction: column;
       gap: 15px;
       align-items: stretch;
-      
+
       .add-recipe-btn {
         width: 100%;
         justify-content: center;
