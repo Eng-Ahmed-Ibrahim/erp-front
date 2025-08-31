@@ -28,19 +28,6 @@ const AddRecipeToInvoice = ({ onAddRecipe, onClose, invoiceType }) => {
     fetchRecipeCategoryParents();
   }, []);
 
-  // Prevent modal from closing when clicking inside
-  const handleModalClick = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
-
-  // Handle backdrop click to close modal
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   // Prevent any clicks inside the modal from bubbling up
   const handleContentClick = (e) => {
     e.stopPropagation();
@@ -258,11 +245,17 @@ const AddRecipeToInvoice = ({ onAddRecipe, onClose, invoiceType }) => {
   }, [onAddRecipe, onClose, invoiceType]);
 
   return (
-    <div className="add-recipe-modal" onClick={handleBackdropClick}>
+    <div className="add-recipe-modal">
       <div
         className="modal-content"
         onClick={handleContentClick}
-        style={{ width: '600px', maxWidth: '90vw', height:"auto" }}
+        style={{
+          width: '600px',
+          maxWidth: '90vw',
+          height: 'auto',
+          maxHeight: 'none',
+          overflow: 'visible',
+        }}
       >
         <div className="modal-header">
           <h3>إضافة مكون جديد</h3>
@@ -278,17 +271,28 @@ const AddRecipeToInvoice = ({ onAddRecipe, onClose, invoiceType }) => {
               className="form-input"
               value={selectedParent}
               onChange={(e) => handleParentChange(e.target.value)}
-              style={{ height: '45px' }}
             >
               <option value="">اختر قسم من المخزن</option>
               {recipeCategoryParents &&
               Array.isArray(recipeCategoryParents) &&
               recipeCategoryParents.length > 0 ? (
-                recipeCategoryParents.map((parent) => (
-                  <option key={parent.id} value={parent.id}>
-                    {parent.name || 'Unnamed'}
-                  </option>
-                ))
+                recipeCategoryParents.map((parent) => {
+                  const label =
+                    parent.name ||
+                    parent.title ||
+                    parent.label ||
+                    `Item ${parent.id}`;
+                  console.log('Parent option:', {
+                    id: parent.id,
+                    label,
+                    fullItem: parent,
+                  });
+                  return (
+                    <option key={parent.id} value={parent.id}>
+                      {label}
+                    </option>
+                  );
+                })
               ) : (
                 <option value="" disabled>
                   لا توجد أقسام متاحة
@@ -303,18 +307,24 @@ const AddRecipeToInvoice = ({ onAddRecipe, onClose, invoiceType }) => {
               className="form-input"
               value={selectedCategory}
               onChange={(e) => handleCategoryChange(e.target.value)}
-              style={{ height: '45px' }}
               disabled={!selectedParent}
             >
               <option value="">اختر تصنيف رئيسي</option>
               {recipeCategories &&
               Array.isArray(recipeCategories) &&
               recipeCategories.length > 0 ? (
-                recipeCategories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name || 'Unnamed'}
-                  </option>
-                ))
+                recipeCategories.map((category) => {
+                  const label =
+                    category.name ||
+                    category.title ||
+                    category.label ||
+                    `Item ${category.id}`;
+                  return (
+                    <option key={category.id} value={category.id}>
+                      {label}
+                    </option>
+                  );
+                })
               ) : (
                 <option value="" disabled>
                   {!selectedParent
@@ -331,16 +341,22 @@ const AddRecipeToInvoice = ({ onAddRecipe, onClose, invoiceType }) => {
               className="form-input"
               value={selectedRecipe}
               onChange={(e) => handleRecipeChange(e.target.value)}
-              style={{ height: '45px' }}
               disabled={!selectedCategory}
             >
               <option value="">اختر تصنيف فرعي</option>
               {recipes && Array.isArray(recipes) && recipes.length > 0 ? (
-                recipes.map((recipe) => (
-                  <option key={recipe.id} value={recipe.id}>
-                    {recipe.name || 'Unnamed'}
-                  </option>
-                ))
+                recipes.map((recipe) => {
+                  const label =
+                    recipe.name ||
+                    recipe.title ||
+                    recipe.label ||
+                    `Item ${recipe.id}`;
+                  return (
+                    <option key={recipe.id} value={recipe.id}>
+                      {label}
+                    </option>
+                  );
+                })
               ) : (
                 <option value="" disabled>
                   {!selectedCategory
@@ -358,7 +374,6 @@ const AddRecipeToInvoice = ({ onAddRecipe, onClose, invoiceType }) => {
                 className="form-input"
                 value={expireDate}
                 onChange={(e) => setExpireDate(e.target.value)}
-                style={{ height: '45px' }}
                 disabled={!selectedRecipe}
               >
                 <option value="">اختر تاريخ انتهاء الصلاحية</option>
