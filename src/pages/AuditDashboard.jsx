@@ -37,6 +37,7 @@ import {
   FileTextOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  CloseOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
@@ -80,7 +81,7 @@ function AuditDashboard() {
   const [users, setUsers] = useState([]);
   const [modelTypes, setModelTypes] = useState([]);
   const [actions, setActions] = useState([]);
-  const [advancedFiltersVisible, setAdvancedFiltersVisible] = useState(false);
+  const [advancedFiltersVisible, setAdvancedFiltersVisible] = useState(true);
   const [statistics, setStatistics] = useState({
     total_logs: 0,
     today_logs: 0,
@@ -446,10 +447,10 @@ function AuditDashboard() {
       render: (date) => (
         <Space direction="vertical" size={0}>
           <div style={{ fontWeight: 600 }}>
-            {new Date(date).toISOString().split('T')[0]}
+            {new Date(date).toISOString().split("T")[0]}
           </div>
           <div style={{ fontSize: "12px", color: "#666" }}>
-            <ClockCircleOutlined /> {new Date(date).toISOString().split('T')[0]}
+            <ClockCircleOutlined /> {new Date(date).toISOString().split("T")[0]}
           </div>
         </Space>
       ),
@@ -565,14 +566,46 @@ function AuditDashboard() {
       <Card
         className="advanced-filters-card"
         title={
-          <Space>
-            <FilterOutlined />
-            مرشحات البحث المتقدمة
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <Space>
+              <FilterOutlined />
+              مرشحات البحث المتقدمة
+            </Space>
             <Button
               type="text"
               onClick={() => setAdvancedFiltersVisible(!advancedFiltersVisible)}
               size="small"
-            />
+              icon={
+                advancedFiltersVisible ? <CloseOutlined /> : <FilterOutlined />
+              }
+            >
+              {advancedFiltersVisible ? "إخفاء المرشحات" : "إظهار المرشحات"}
+            </Button>
+          </div>
+        }
+        extra={
+          <Space>
+            <Badge
+              count={
+                Object.values(filters).filter(
+                  (value) =>
+                    value !== "" &&
+                    value !== null &&
+                    value !== undefined &&
+                    !(Array.isArray(value) && value.length === 0)
+                ).length
+              }
+              size="small"
+            >
+              <Tag color="blue">فلاتر نشطة</Tag>
+            </Badge>
           </Space>
         }
       >
@@ -835,7 +868,11 @@ function AuditDashboard() {
                 <Card size="small" className="info-summary-card">
                   <Statistic
                     title="التاريخ والوقت"
-                    value={new Date(selectedLog.created_at).toISOString().split('T')[0]}
+                    value={
+                      new Date(selectedLog.created_at)
+                        .toISOString()
+                        .split("T")[0]
+                    }
                     prefix={<ClockCircleOutlined />}
                     valueStyle={{ color: "#666", fontSize: "12px" }}
                   />
@@ -878,7 +915,7 @@ function AuditDashboard() {
                     : []),
                 ]}
                 columns={[
-                             {
+                  {
                     title: "النموذج",
                     dataIndex: "auditable_type",
                     key: "auditable_type",
@@ -988,10 +1025,10 @@ function AuditDashboard() {
                     render: (time) => (
                       <Space direction="vertical" size={0}>
                         <div style={{ fontWeight: 600, fontSize: "12px" }}>
-                          {new Date(time).toISOString().split('T')[0]}
+                          {new Date(time).toISOString().split("T")[0]}
                         </div>
                         <div style={{ fontSize: "11px", color: "#666" }}>
-                          {new Date(time).toISOString().split('T')[0]}
+                          {new Date(time).toISOString().split("T")[0]}
                         </div>
                       </Space>
                     ),
