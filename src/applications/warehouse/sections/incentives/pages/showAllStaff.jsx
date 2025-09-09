@@ -41,6 +41,8 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
   }, []);
 
   const handleAddEmployee = async () => {
+    // console.log('ggggggggggggggggggggg')
+
     const res = await axios.post(
       `${API_ENDPOINT}/api/v1/employees`,
 
@@ -185,24 +187,31 @@ function DataModal({ show, onHide, itemId, departments, item, employeeTypes }) {
           {" "}
           اختر فئة الموظف
         </label>
-        <Select
+        <select
           className="form-select"
           value={employeeType}
           onChange={(e) => {
-            setemployeeType(e);
+            setemployeeType(e.target.value);
           }}
           placeholder="اختر القسم"
           style={{ height: "45px" }}
           dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
           // showSearch={true}
         >
-          {employeeTypes &&
+
+
+          {employeeTypes && Array.isArray(employeeTypes) && employeeTypes.length > 0 ? ( 
             employeeTypes?.map((type) => (
-              <Select.Option key={type.id} value={type.id}>
+              <option key={type.id} value={type.id}>
                 {type?.name}
-              </Select.Option>
-            ))}
-        </Select>
+              </option>
+            ))
+          ) : (
+            <option disabled>
+                  لا يوجد فئات 
+                </option>
+          )}
+        </select>
       </div>
     </Modal>
   );
@@ -370,7 +379,7 @@ const ShowAllStaff = () => {
               onChange={handleDepartmentChange}
               placeholder="اختر القسم"
               style={{ width: "200px", height: "42px" }}
-              dropdownAlign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
+              dropdownalign={{ overflow: "auto", align: "bottomCenter" }} // Ensures dropdown opens downwards
             >
               {departments &&
                 departments?.data?.map((dept) => (

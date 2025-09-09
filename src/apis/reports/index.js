@@ -218,3 +218,60 @@ export async function getSupplierInvoicesReport(
     message.error("حدث خطأ الرجاء إعادة المحاولة");
   }
 }
+
+export async function getInventoryArchiveReport(
+  filteredValues,
+  id,
+  setIsLoading
+) {
+  try {
+    setIsLoading(true);
+    const {
+      department_id,
+      parent_category_id,
+      recipe_category_id,
+      recipe_id,
+      capture_date,
+      page,
+    } = filteredValues;
+
+    const res = await axios.get(
+      `${domain}/api/v1/store/inventory_archive/report`,
+      {
+        params: {
+          department_id,
+          parent_category_id,
+          recipe_category_id,
+          recipe_id,
+          capture_date,
+          page,
+        },
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    setIsLoading(false);
+    return res.data;
+  } catch (error) {
+    setIsLoading(false);
+    message.error('حدث خطأ الرجاء إعادة المحاولة');
+  }
+}
+
+export async function getAvailableCaptureDates() {
+  try {
+    const res = await axios.get(
+      `${domain}/api/v1/store/inventory_archive/capture-dates`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    message.error('حدث خطأ في جلب التواريخ المتاحة');
+    return { data: [] };
+  }
+}

@@ -1,20 +1,20 @@
-import { useEffect, useState, useRef } from "react";
-import { API_ENDPOINT } from "../../config";
-import { useLocation, useParams } from "react-router-dom";
+import { useEffect, useState, useRef } from 'react';
+import { API_ENDPOINT } from '../../config';
+import { useLocation, useParams } from 'react-router-dom';
 
-import axios from "axios";
-import { message, Modal } from "antd";
-import LogoDAR from "../../public/assets/images/Dar_logo.svg";
-import { usePDF } from "react-to-pdf";
-import { useMemo } from "react";
-import generatePDF, { Resolution, Margin } from "react-to-pdf";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-import { useAuth } from "../context/AuthContext";
+import axios from 'axios';
+import { message, Modal } from 'antd';
+import LogoDAR from '../../public/assets/images/Dar_logo.svg';
+import { usePDF } from 'react-to-pdf';
+import { useMemo } from 'react';
+import generatePDF, { Resolution, Margin } from 'react-to-pdf';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { useAuth } from '../context/AuthContext';
 
 const ShowDepartmentProductsReport = () => {
   const Token =
-    localStorage.getItem("token") || sessionStorage.getItem("token");
+    localStorage.getItem('token') || sessionStorage.getItem('token');
   const item = useLocation()?.state?.item;
 
   const [isDataFetched, setIsDataFetched] = useState(false);
@@ -25,24 +25,25 @@ const ShowDepartmentProductsReport = () => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   const [error, setError] = useState(null);
-  const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
-  const [searchTerm, setSearchTerm] = useState("");
-  const [value, setValue] = useState("");
-  const [mainCat, setMainCat] = useState("");
+  const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [value, setValue] = useState('');
+  const [mainCat, setMainCat] = useState('');
   const [sum, setSum] = useState(0);
   const { user } = useAuth();
 
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState(new Date().toISOString().split("T")[0]);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]);
   const [newPrices, setNewPrices] = useState({});
   const [categoryParents, setCategoryParents] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const tableRef = useRef();
   const [isAdmin, setIsAdmin] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
-    console.log(id);
-    if (user.department.type == "master") {
+    if (user.department.type == 'master') {
       setIsAdmin(true);
     }
 
@@ -58,14 +59,43 @@ const ShowDepartmentProductsReport = () => {
         );
         const data = await response.json();
         console.log(data);
-        setCategoryParents(data.data);
+        setCategoryParents(data.data || []);
       } catch (error) {
-        console.error("Error fetching recipe category parents:", error);
+        console.error('Error fetching category parents:', error);
+        setCategoryParents([]);
       }
     };
 
     fetchCategoryParents();
   }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (!value) {
+        setCategories([]);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${API_ENDPOINT}/api/v1/store/sub_categories/filter_by_category/${value}`,
+          {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+        setCategories(data.data || []);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        setCategories([]);
+      }
+    };
+
+    fetchCategories();
+  }, [value]);
 
   const fetchData = async (parentId) => {
     await axios
@@ -79,6 +109,7 @@ const ShowDepartmentProductsReport = () => {
             from: fromDate,
             to: toDate,
             category_id: value,
+            sub_category_id: selectedCategory,
             name: searchTerm,
           },
         },
@@ -91,9 +122,9 @@ const ShowDepartmentProductsReport = () => {
         setIsDataFetched(true);
 
         const modal = Modal.success({
-          title: "success",
+          title: 'success',
           content: (
-            <div style={{ fontSize: "24px", textAlign: "center" }}>
+            <div style={{ fontSize: '24px', textAlign: 'center' }}>
               تم عرض المنتجات بنجاح
             </div>
           ),
@@ -106,12 +137,12 @@ const ShowDepartmentProductsReport = () => {
         }, 2000);
       })
       .catch((err) => {
-        setError("Failed to load data");
+        setError('Failed to load data');
         const modal = Modal.error({
-          title: "success",
+          title: 'success',
           content: (
-            <div style={{ fontSize: "24px", textAlign: "center" }}>
-              {" "}
+            <div style={{ fontSize: '24px', textAlign: 'center' }}>
+              {' '}
               حدث خطا ما
             </div>
           ),
@@ -129,7 +160,7 @@ const ShowDepartmentProductsReport = () => {
   useEffect(() => {
     if (!id) return;
     fetchData(value);
-  }, [id, fromDate, toDate, value, searchTerm]);
+  }, [id, fromDate, toDate, value, searchTerm, selectedCategory]);
 
   const sortedDepartmentStore = useMemo(() => {
     if (!data?.department_store) return [];
@@ -139,11 +170,11 @@ const ShowDepartmentProductsReport = () => {
       .sort((a, b) => {
         const parentComparison = a.recipe_category?.parent.localeCompare(
           b.recipe_category?.parent,
-          "ar",
-          { sensitivity: "base" }
+          'ar',
+          { sensitivity: 'base' }
         );
         if (parentComparison !== 0) return parentComparison;
-        return a.name.localeCompare(b.name, "ar", { sensitivity: "base" });
+        return a.name.localeCompare(b.name, 'ar', { sensitivity: 'base' });
       });
 
     return sortedItems;
@@ -178,24 +209,24 @@ const ShowDepartmentProductsReport = () => {
   }, [calculateSum]);
 
   const handleSavePDF = async () => {
-    const pdf = new jsPDF("p", "mm", "a4");
+    const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = 190;
     const pageHeight = 297;
-    const rows = Array.from(tableRef.current.querySelectorAll("tr"));
+    const rows = Array.from(tableRef.current.querySelectorAll('tr'));
     let position = 10;
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const rowCanvas = await html2canvas(row, { scale: 2 });
-      const rowImgData = rowCanvas.toDataURL("image/png");
+      const rowImgData = rowCanvas.toDataURL('image/png');
       const rowHeight = (rowCanvas.height * pageWidth) / rowCanvas.width;
       if (position + rowHeight > pageHeight - 10) {
         pdf.addPage();
         position = 10;
       }
-      pdf.addImage(rowImgData, "PNG", 10, position, pageWidth, rowHeight);
+      pdf.addImage(rowImgData, 'PNG', 10, position, pageWidth, rowHeight);
       position += rowHeight;
     }
-    pdf.save("تقرير_مبيعات.pdf");
+    pdf.save('تقرير_مبيعات.pdf');
   };
 
   if (error) return <p>{error}</p>;
@@ -209,12 +240,95 @@ const ShowDepartmentProductsReport = () => {
   return (
     <div>
       <h2 className="heading text-center">
-        تقرير مبيعات المنتجات المفصل{" "}
+        تقرير مبيعات المنتجات المفصل{' '}
         <span className="text-danger">{data?.name}</span>
       </h2>
       <main ref={targetRef}>
         <div id="invoice-container">
           <div className="row align-items-center">
+            <div className="col-md-2">
+              <label
+                htmlFor="exampleInputEmail1"
+                className="form-label"
+                style={{
+                  marginTop: '5px',
+                }}
+              >
+                التصنيف الرئيسي :
+              </label>
+              <select
+                className="form-select"
+                aria-label="المنفذ"
+                value={value}
+                onChange={(e) => {
+                  const selectedText = e.target.selectedOptions[0].text;
+                  setValue(e.target.value);
+                  setMainCat(selectedText);
+                }}
+              >
+                <option value=""> من فضلك اختر القسم</option>
+                {categoryParents && Array.isArray(categoryParents)
+                  ? categoryParents.map((parent, index) => (
+                      <option key={parent.id} value={parent.id}>
+                        {parent.name}
+                      </option>
+                    ))
+                  : null}
+              </select>
+            </div>
+
+            <div className="col-md-2">
+              <label
+                htmlFor="exampleInputEmail1"
+                className="form-label"
+                style={{
+                  marginTop: '5px',
+                }}
+              >
+                التصنيف الفرعي :
+              </label>
+              <select
+                className="form-select"
+                aria-label="المنفذ"
+                value={selectedCategory}
+                disabled={!value}
+                onChange={(e) => {
+                  const selectedText = e.target.selectedOptions[0].text;
+                  setSelectedCategory(e.target.value);
+                  // setSelectedSubCategory(selectedText);
+                }}
+              >
+                <option value=""> من فضلك اختر القسم</option>
+                {categories && Array.isArray(categories)
+                  ? categories.map((category, index) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))
+                  : null}
+              </select>
+            </div>
+
+            <div className="col-md-2">
+              <div className="mb-3 d-flex text-center flex-column gap-small">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label ps-3 "
+                >
+                  اسم المنتج
+                </label>
+                <input
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  // className="filter-input"
+                  type="text"
+                  placeholder="إبحث بالاسم"
+                  className="form-control"
+                  id="exampleFormControlInput1"
+                  value={searchTerm}
+                />
+              </div>
+            </div>
+
             <div className="col-md-2">
               <div className="mb-3 d-flex text-center flex-column gap-small">
                 <label
@@ -258,70 +372,21 @@ const ShowDepartmentProductsReport = () => {
                 />
               </div>
             </div>
-
-            <div className="col-md-2">
-              <div className="mb-3 d-flex text-center flex-column gap-small">
-                <label
-                  htmlFor="exampleFormControlInput1"
-                  className="form-label ps-3 "
-                >
-                  الاسم
-                </label>
-                <input
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  // className="filter-input"
-                  type="text"
-                  placeholder="إبحث باللإسم"
-                  className="form-control"
-                  id="exampleFormControlInput1"
-                  value={searchTerm}
-                />
-              </div>
-            </div>
-
-            <div className="col-md-2">
-              <label
-                htmlFor="exampleInputEmail1"
-                className="form-label"
-                style={{
-                  marginTop: "5px",
-                }}
-              >
-                القسم :
-              </label>
-              <select
-                className="form-select"
-                aria-label="المنفذ"
-                value={value}
-                onChange={(e) => {
-                  const selectedText = e.target.selectedOptions[0].text;
-                  setValue(e.target.value);
-                  setMainCat(selectedText);
-                }}
-              >
-                <option value=""> من فضلك اختر القسم</option>
-                {categoryParents.map((parent, index) => (
-                  <option key={parent.id} value={parent.id}>
-                    {parent.name}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
           <div
             style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "start",
-              gap: "50px",
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'start',
+              gap: '50px',
             }}
           >
             <button onClick={handleSubmit} className="pdf-button">
-              {" "}
+              {' '}
               فلتره
             </button>
             <button onClick={handleSavePDF} className="pdf-button">
-              {" "}
+              {' '}
               حفظ PDF
             </button>
           </div>
@@ -341,7 +406,7 @@ const ShowDepartmentProductsReport = () => {
                     <div>
                       {/* <span>مخزن {data?.name} الفرعي</span>
                       <span> || </span>
-                      <span> القسم الرئيسي : {mainCat}</span> */}
+                      <span> التصنيف الرئيسي : {mainCat}</span> */}
                     </div>
                   </th>
                 </tr>
@@ -355,11 +420,11 @@ const ShowDepartmentProductsReport = () => {
                 <tr>
                   <th className="text-center">#</th>
 
-                  <th className="text-center">القسم الرئيسي</th>
+                  <th className="text-center">التصنيف الرئيسي</th>
                   <th className="text-center">التصنيف الرئيسي</th>
                   <th className="text-right">اسم المنتج</th>
                   <th className="text-right">الكمية</th>
-                  {/* <th className="text-right"> السعر الكلي </th> */}
+                  <th className="text-right"> السعر الكلي </th>
                 </tr>
               </thead>
               <tbody>
@@ -368,7 +433,7 @@ const ShowDepartmentProductsReport = () => {
                     <tr
                       className="fw-bold fs-4"
                       key={index}
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                       onClick={() => handleRowClick(item)}
                     >
                       <td className="text-center">{index + 1}</td>
@@ -379,10 +444,10 @@ const ShowDepartmentProductsReport = () => {
 
                       <td className="text-right"> {item.total_quantity}</td>
 
-                      {/* <td className="text-right">
-                        {" "}
+                      <td className="text-right">
+                        {' '}
                         {Math.round(item.price * 100) / 100} جنيه
-                      </td> */}
+                      </td>
                     </tr>
                   ))
                 ) : (

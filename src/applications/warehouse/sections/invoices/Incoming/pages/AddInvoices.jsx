@@ -281,18 +281,18 @@ const AddInvoices = () => {
   return (
     <div className="form-container">
       <h1 className="form-title">
-        {lastItem === "in_coming"
-          ? "اضافة فاتورة مورد"
-          : lastItem === "out_going"
-          ? "اضافه فاتورة اذن صرف"
-          : lastItem === "returned"
-          ? "اضافة فاتورة مرتجع"
-          : "اضافة فاتورة تحويل "}
+        {lastItem === 'in_coming'
+          ? 'اضافة فاتورة مورد'
+          : lastItem === 'out_going'
+          ? 'اضافه فاتورة اذن صرف'
+          : lastItem === 'returned'
+          ? 'اضافة فاتورة مرتجع'
+          : 'اضافة فاتورة تحويل '}
       </h1>
 
-      {lastItem === "out_going" ||
-      lastItem === "returned" ||
-      lastItem === "transfare" ? null : (
+      {lastItem === 'out_going' ||
+      lastItem === 'returned' ||
+      lastItem === 'transfare' ? null : (
         <div>
           {/** MOWARED */}
           <label className="form-label" htmlFor="supplierSelect">
@@ -313,12 +313,12 @@ const AddInvoices = () => {
         </div>
       )}
 
-      {lastItem === "out_going" ||
-      lastItem === "returned" ||
-      lastItem === "transfare" ? (
+      {lastItem === 'out_going' ||
+      lastItem === 'returned' ||
+      lastItem === 'transfare' ? (
         <div>
           <label className="form-label" htmlFor="supplierSelect">
-            {lastItem === "transfare" ? " تحويل من" : "اختر قسم:"}
+            {lastItem === 'transfare' ? ' تحويل من' : 'اختر قسم:'}
           </label>
           <select
             className="form-select"
@@ -335,7 +335,7 @@ const AddInvoices = () => {
         </div>
       ) : null}
 
-      {lastItem === "transfare" ? (
+      {lastItem === 'transfare' ? (
         <div>
           <label className="form-label" htmlFor="supplierSelect">
             إلي
@@ -355,7 +355,7 @@ const AddInvoices = () => {
         </div>
       ) : null}
 
-      {lastItem === "out_going" ? (
+      {lastItem === 'out_going' ? (
         <>
           <label className="form-label">
             هل تريد ارسال فاتورة كامله ام مكونات منفصله:
@@ -373,7 +373,7 @@ const AddInvoices = () => {
         <></>
       )}
 
-      {selectedType === "MoveInoice" ? null : (
+      {selectedType === 'MoveInoice' ? null : (
         <div>
           <label className="form-label">اختر تاريخ الفاتورة:</label>
           <input
@@ -385,7 +385,7 @@ const AddInvoices = () => {
         </div>
       )}
 
-      {lastItem === "in_coming" || lastItem == "returned" ? (
+      {lastItem === 'in_coming' || lastItem == 'returned' ? (
         <div>
           <label className="form-label">كود الفاتوره</label>
           <input
@@ -398,9 +398,9 @@ const AddInvoices = () => {
         </div>
       ) : null}
 
-      {lastItem === "in_coming" ||
-      lastItem === "returned" ||
-      lastItem === "transfare" ? (
+      {lastItem === 'in_coming' ||
+      lastItem === 'returned' ||
+      lastItem === 'transfare' ? (
         <>
           <div>
             <label className="form-label">صورة الفاتورة:</label>
@@ -414,7 +414,7 @@ const AddInvoices = () => {
         </>
       ) : null}
 
-      {lastItem === "in_coming" ? (
+      {lastItem === 'in_coming' ? (
         <>
           <div>
             <label className="form-label"> خصم على الفاتورة:</label>
@@ -428,7 +428,7 @@ const AddInvoices = () => {
           </div>
           <div>
             <label className="form-label">
-              {" "}
+              {' '}
               مصروفات نثرية (نقل، مشال، ...) :
             </label>
             <input
@@ -442,7 +442,7 @@ const AddInvoices = () => {
         </>
       ) : null}
 
-      {selectedType === "MoveInoice" ? null : (
+      {selectedType === 'MoveInoice' ? null : (
         <div>
           <label className="form-label"> اضافة تعليق:</label>
           <input
@@ -454,7 +454,7 @@ const AddInvoices = () => {
         </div>
       )}
 
-      {selectedType === "InvoiceRecipe" ? (
+      {selectedType === 'InvoiceRecipe' ? (
         <div>
           <label className="form-label">كود فاتورة الصرف</label>
           <input
@@ -467,7 +467,7 @@ const AddInvoices = () => {
         </div>
       ) : null}
 
-      {selectedType === "MoveInoice" ? (
+      {selectedType === 'MoveInoice' ? (
         <div>
           <label className="form-label">كود فاتوره المورد:</label>
           <input
@@ -480,34 +480,37 @@ const AddInvoices = () => {
         </div>
       ) : null}
 
-      {lastItem === "in_coming" ? (
+      {lastItem === 'in_coming' ? (
         <>
           <InvoiceDetails
             onAddItem={handleAddItem}
             selectedSupplier={selectedSupplier}
             InvoiceType={lastItem}
+            addedItems={items}
           />
         </>
-      ) : lastItem === "out_going" && selectedType === "InvoiceRecipe" ? (
+      ) : lastItem === 'out_going' && selectedType === 'InvoiceRecipe' ? (
         <>
           <InvoiceDetails
             onAddItem={handleAddItem}
             selectedSupplier={selectedSupplier}
             InvoiceType={lastItem}
+            addedItems={items}
           />
         </>
-      ) : lastItem === "returned" || lastItem === "transfare" ? (
+      ) : lastItem === 'returned' || lastItem === 'transfare' ? (
         <>
           <TaintedInvoiceDetailes
             onAddItem={handleAddItem}
             selectedSupplier={selectedSupplier}
             departmentId={selectedDepartment}
-            InvoiceType={"tainted"}
+            InvoiceType={'tainted'}
+            addedItems={items}
           />
         </>
       ) : null}
 
-      {selectedType === "MoveInoice" ? null : (
+      {selectedType === 'MoveInoice' ? null : (
         <ItemList
           items={items}
           onDeleteItem={handleDeleteItem}
@@ -515,11 +518,11 @@ const AddInvoices = () => {
         />
       )}
 
-      {lastItem === "returned" || selectedType === "MoveInoice" ? null : (
+      {lastItem === 'returned' || selectedType === 'MoveInoice' ? null : (
         <TotalAmount total={calculateTotalAmount()} />
       )}
 
-      {selectedType === "MoveInoice" ? (
+      {selectedType === 'MoveInoice' ? (
         <button className="form-btn" onClick={MoveInvoiceToDepartment}>
           نقل جميع مكونات الفاتورة
         </button>
@@ -529,9 +532,9 @@ const AddInvoices = () => {
           onClick={handleDownloadPDF}
           disabled={isDisabled}
           style={{
-            backgroundColor: isDisabled ? "#d3d3d3" : "#AF842444460", // gray for disabled, green otherwise
-            cursor: isDisabled ? "not-allowed" : "pointer",
-            color: isDisabled ? "#a9a9a9" : "white", // adjust text color if needed
+            backgroundColor: isDisabled ? '#d3d3d3' : '#AF842444460', // gray for disabled, green otherwise
+            cursor: isDisabled ? 'not-allowed' : 'pointer',
+            color: isDisabled ? '#a9a9a9' : 'white', // adjust text color if needed
           }}
         >
           حفظ البيانات
