@@ -318,8 +318,6 @@ const InvoiceDetails = ({
       return;
     }
 
-    console.log("🔥 Selected Recipe Object:", selectedRecipeObj);
-
     // If the selected recipe is found, extract its name
     const recipeName = selectedRecipeObj ? selectedRecipeObj.name : "";
     const recipeImage = selectedRecipeObj ? selectedRecipeObj.image : "";

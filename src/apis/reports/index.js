@@ -159,18 +159,18 @@ export async function getReportOfRecipe(
 }
 
 export async function getAllRicipes(
-  filteredValues = { name: "", page: "" },
+  filteredValues = { name: "", page: "", category_parent_id: "" },
   id,
   setIsLoading
 ) {
   try {
     setIsLoading(true);
-    const { name, page } = filteredValues;
+    const { name, page, category_parent_id } = filteredValues;
 
     const res = await axios.get(`${domain}/api/v1/store/recipe/all/paginated`, {
       params: {
         name: name,
-
+        category_parent_id:category_parent_id,
         page,
       },
       headers: {

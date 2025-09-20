@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./ShowDataModal.scss";
 import { getOrderById, deleteOrder } from "../../../apis/orders";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useAuth } from "../../../context/AuthContext";
+
 import {
   addRecipeToInvoice,
   removeRecipeFromInvoice,
@@ -22,6 +24,7 @@ const ShowDataModal = ({
   rejectTitle,
   acceptTitle,
 }) => {
+  const { user } = useAuth();
   const [editedData, setEditedData] = useState(null);
   const [shouldPrint, setShouldPrint] = useState(false);
   const [table_noo, setTable_noo] = useState("");
@@ -235,7 +238,10 @@ const ShowDataModal = ({
     );
   const isNotApproved =
     responseData.status && responseData.status !== "approved";
-  const canManageRecipes = isInvoice && isNotApproved;
+  const canManageRecipes =
+    isInvoice &&
+    isNotApproved &&
+    user?.permissions.some((permission) => permission.name === "add-remove invoice_recipes");
 
   return (
     <div className="show-data-modal">
