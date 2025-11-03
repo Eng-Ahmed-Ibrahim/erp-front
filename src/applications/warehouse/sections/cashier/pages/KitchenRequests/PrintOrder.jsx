@@ -22,7 +22,8 @@ function PrintOrder() {
     total_price_after_discount_and_tax: 0,
     departmentName: "",
     cashier: "",
-    payment: ""
+    payment: "",
+    secondary_currency: null,
   });
 
   useEffect(() => {
@@ -50,6 +51,7 @@ function PrintOrder() {
           total_price_after_discount_and_tax:
             InvoiceData.data.total_price_after_discount_and_tax,
           departmentName: InvoiceData.data.department,
+          secondary_currency: InvoiceData.data.secondary_currency,
         });
       } catch (error) {
         //  
@@ -159,11 +161,21 @@ function PrintOrder() {
             <tfoot>
               <tr>
                 <td colSpan={3}> إجمالي السعر بالخدمة  </td>
-                <td colSpan={3}>{data?.price?.toFixed(2)} ج.م</td>
+                <td colSpan={3}>
+                  {data?.secondary_currency 
+                    ? `${data.secondary_currency.price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                    : `${data?.price?.toFixed(2)} ج.م`
+                  }
+                </td>
               </tr>
               <tr>
                 <td colSpan={3}>إجمالي السعر بعد الخصم</td>
-                <td colSpan={3}>{data?.total_price?.toFixed(2)} ج.م</td>
+                <td colSpan={3}>
+                  {data?.secondary_currency 
+                    ? `${data.secondary_currency.total_price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                    : `${data?.total_price?.toFixed(2)} ج.م`
+                  }
+                </td>
               </tr>
             </tfoot>
           </table>

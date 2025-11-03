@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import TotalAmount from "../../../../../../components/shared/totalAmount/TotalAmount";
-import LogoDAR from "../../../../../../../public/assets/images/Dar_logo.svg";
-import "./AddCashierOrder.scss";
-import axios from "axios";
-import { API_ENDPOINT } from "../../../../../../../config";
-import { message, Select, Modal } from "antd";
-import { useAuth } from "../../../../../../context/AuthContext";
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import TotalAmount from '../../../../../../components/shared/totalAmount/TotalAmount';
+import LogoDAR from '../../../../../../../public/assets/images/Dar_logo.svg';
+import './AddCashierOrder.scss';
+import axios from 'axios';
+import { API_ENDPOINT } from '../../../../../../../config';
+import { message, Select, Modal } from 'antd';
+import { useAuth } from '../../../../../../context/AuthContext';
 // import { checkTableNumber } from "../../../../../../apis/orders";
-import CashierOrderDetailes from "../../../../../../components/shared/CashierOrderDetails/CashierOrderDetailes";
-import CashierItemList from "../../../../../../components/shared/CashierItemList/CashierItemList";
-import { getClientTypeById } from "../../../../../../apis/clients/ClientType";
-import Table from "../../../../../../components/shared/oneElementTable/Table";
+import CashierOrderDetailes from '../../../../../../components/shared/CashierOrderDetails/CashierOrderDetailes';
+import CashierItemList from '../../../../../../components/shared/CashierItemList/CashierItemList';
+import { getClientTypeById } from '../../../../../../apis/clients/ClientType';
+import Table from '../../../../../../components/shared/oneElementTable/Table';
 import {
   changeOrderStatus,
   getOrders,
@@ -18,11 +18,11 @@ import {
   getOrderById,
   checkTableNumber,
   reviewOrderPrice,
-} from "../../../../../../apis/orders";
+} from '../../../../../../apis/orders';
 // import { getOrderById, deleteOrder } from "../../../../../../apis/orders";
-import { getRoles } from "../../../../../../apis/roles";
-import { useNavigate } from "react-router-dom";
-import { useReactToPrint } from "react-to-print"; // Import the hook
+import { getRoles } from '../../../../../../apis/roles';
+import { useNavigate } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print'; // Import the hook
 import {
   Br,
   Cut,
@@ -31,42 +31,39 @@ import {
   Text,
   Row,
   render,
-} from "react-thermal-printer";
-import { is } from "date-fns/locale";
-import { use } from "i18next";
+} from 'react-thermal-printer';
+import { is } from 'date-fns/locale';
+import { use } from 'i18next';
 
 function PrintAfterFinish({ id, table_no, user }) {
-
   const componentRef = useRef();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true); // New loading state
   const [data, setData] = useState({
-    code: "",
-    status: "",
-    client: "",
-    invoice_date: "",
-    client_type: "",
+    code: '',
+    status: '',
+    client: '',
+    invoice_date: '',
+    client_type: '',
     recipeData: [],
     total_price: 0,
     total_price_after_discount_and_tax: 0,
-    departmentName: "",
-    cashier: "",
-    payment: "",
+    departmentName: '',
+    cashier: '',
+    payment: '',
+    secondary_currency: null,
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await changeOrderStatus(id, "closed");
+        await changeOrderStatus(id, 'closed');
 
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         const OrderData = await getOrderById(id);
 
-        if (
-          OrderData.data &&
-          OrderData.data.status === "closed"
-        ) {
+        if (OrderData.data && OrderData.data.status === 'closed') {
           setData({
             code: OrderData.data.code,
             cashier: OrderData.data.casher,
@@ -86,6 +83,7 @@ function PrintAfterFinish({ id, table_no, user }) {
             total_price_after_discount_and_tax:
               OrderData.data.total_price_after_discount_and_tax,
             departmentName: OrderData.data.department,
+            secondary_currency: OrderData.data.secondary_currency,
           });
         }
       } catch (error) {
@@ -99,7 +97,7 @@ function PrintAfterFinish({ id, table_no, user }) {
 
   const generatePDF = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: `${data.code + "-" + "أوردر كود"}`,
+    documentTitle: `${data.code + '-' + 'أوردر كود'}`,
     onAfterPrint: () => {
       window.location.reload();
     },
@@ -116,7 +114,7 @@ function PrintAfterFinish({ id, table_no, user }) {
       id="invoice-container"
       ref={componentRef}
       dir="rtl"
-      style={{ display: "flex", justifyContent: "center" }}
+      style={{ display: 'flex', justifyContent: 'center' }}
     >
       <Printer ref={componentRef} className="main">
         <div className="headers-wrapper">
@@ -127,7 +125,7 @@ function PrintAfterFinish({ id, table_no, user }) {
             <img
               src={LogoDAR}
               alt=""
-              style={{ width: "64px", marginBottom: "5px", marginLeft: "5px" }}
+              style={{ width: '64px', marginBottom: '5px', marginLeft: '5px' }}
             />
           </div>
         </div>
@@ -140,7 +138,7 @@ function PrintAfterFinish({ id, table_no, user }) {
           <div className="invoice-info-item">
             <p>اسم الكاشير : {data.cashier}</p>
             <p>اسم الويتر : {data.waiter_name}</p>
-            <p>اسم العميل : {data.client === "" ? "Guest" : data.client}</p>
+            <p>اسم العميل : {data.client === '' ? 'Guest' : data.client}</p>
             <p>الفئة : {data.client_type}</p>
             <p>طريقة الدفع : {data.payment_method}</p>
           </div>
@@ -172,7 +170,10 @@ function PrintAfterFinish({ id, table_no, user }) {
                   السعر الكلي
                 </td>
                 <td className="text-price" colSpan={2}>
-                  {data.price?.toFixed(2)} ج.م
+                  {data.secondary_currency 
+                    ? `${data.secondary_currency.price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                    : `${data.price?.toFixed(2)} ج.م`
+                  }
                 </td>
               </tr>
               <tr>
@@ -180,38 +181,42 @@ function PrintAfterFinish({ id, table_no, user }) {
                   السعر الكلي بعد الخصم
                 </td>
                 <td className="text-price" colSpan={2}>
-                  {data.total_price?.toFixed(2)} ج.م
+                  {data.secondary_currency 
+                    ? `${data.secondary_currency.total_price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                    : `${data.total_price?.toFixed(2)} ج.م`
+                  }
                 </td>
               </tr>
             </tfoot>
           </table>
 
           <p></p>
-            <hr/>
-        {user.department?.has_instructions &&  user.department?.instructions.split(",").length > 0 && (
-          <>
+          <hr />
+          {user.department?.has_instructions &&
+            user.department?.instructions.split(',').length > 0 && (
+              <>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col"> تعليمات {user?.department?.name} </th>
+                    </tr>
+                  </thead>
 
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">  تعليمات {user?.department?.name} </th>
-                </tr>
-              </thead>
+                  <tbody>
+                    {user.department?.instructions
+                      ?.split(',')
+                      .map((instruction, index) => (
+                        <tr>
+                          <th scope="row">{index + 1}</th>
 
-              <tbody>
-                { user.department?.instructions?.split(",").map((instruction, index) => (
-                  <tr>
-                    <th scope="row">{index + 1}</th>
-          
-                    <td>{instruction}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
-
+                          <td>{instruction}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </>
+            )}
         </div>
         <Cut />
       </Printer>
@@ -219,16 +224,686 @@ function PrintAfterFinish({ id, table_no, user }) {
   );
 }
 
+// Scanner Modal Component for Subscription Attendance
+function SubscriptionScannerModal({ show, onHide }) {
+  const [scannedData, setScannedData] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+  const [autoSubmit, setAutoSubmit] = useState(false);
+  const [subscriberInfo, setSubscriberInfo] = useState(null);
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+
+  const fetchSubscriberInfo = async (scannedData) => {
+    try {
+      setVerificationLoading(true);
+      setError('');
+
+      const Token =
+        localStorage.getItem('token') || sessionStorage.getItem('token');
+
+      const response = await axios.post(
+        `${API_ENDPOINT}/api/v1/activities-subscriptions/subscriptions/verify`,
+        {
+          scanned_data: scannedData,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setSubscriberInfo(response.data);
+        setShowVerification(true);
+      }
+    } catch (error) {
+      console.error('Error fetching subscriber info:', error);
+      const errorMessage =
+        error.response?.data?.message || 'حدث خطأ في جلب بيانات المشترك';
+      setError(errorMessage);
+      message.error(errorMessage);
+    } finally {
+      setVerificationLoading(false);
+    }
+  };
+
+  const handleScan = async () => {
+    if (!scannedData.trim()) {
+      setError('يرجى إدخال بيانات الباركود');
+      return;
+    }
+
+    if (autoSubmit) {
+      // Auto-submit mode: directly submit attendance
+      await submitAttendance();
+    } else {
+      // Verification mode: fetch subscriber info first
+      await fetchSubscriberInfo(scannedData);
+    }
+  };
+
+  const submitAttendance = async () => {
+    setLoading(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const Token =
+        localStorage.getItem('token') || sessionStorage.getItem('token');
+
+      const response = await axios.post(
+        `${API_ENDPOINT}/api/v1/activities-subscriptions/subscriptions/attendance`,
+        {
+          scanned_data: scannedData,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setResult({
+          success: true,
+          message: response.data.message,
+          subscription: response.data.subscription,
+          remaining_classes: response.data.remaining_classes,
+          remaining_hours: response.data.remaining_hours,
+        });
+
+        message.success('تم تسجيل الحضور بنجاح!');
+        setScannedData('');
+        setShowVerification(false);
+        setSubscriberInfo(null);
+      }
+    } catch (error) {
+      console.error('Error scanning subscription:', error);
+      const errorMessage =
+        error.response?.data?.message || 'حدث خطأ في مسح الباركود';
+      setError(errorMessage);
+      setResult({
+        success: false,
+        message: errorMessage,
+      });
+
+      message.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setScannedData('');
+    setResult(null);
+    setError('');
+    setSubscriberInfo(null);
+    setShowVerification(false);
+    setVerificationLoading(false);
+    onHide();
+  };
+
+  return (
+    <Modal
+      title="مسح باركود الاشتراك"
+      open={show}
+      onCancel={handleClose}
+      onOk={handleClose}
+      width={600}
+      centered
+      className="subscription-scanner-modal"
+      footer={[
+        // Show scan button when not in verification mode
+        !showVerification && (
+          <button
+            key="scan"
+            onClick={handleScan}
+            disabled={loading || verificationLoading || !scannedData.trim()}
+            className="btn btn-primary scanner-button"
+            style={{
+              backgroundColor: '#803D3B',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              cursor:
+                loading || verificationLoading ? 'not-allowed' : 'pointer',
+              fontFamily: 'Cairo, sans-serif',
+            }}
+          >
+            {loading
+              ? 'جاري المعالجة...'
+              : verificationLoading
+              ? 'جاري التحقق...'
+              : 'مسح الباركود'}
+          </button>
+        ),
+        // Show confirm button when in verification mode
+        showVerification && (
+          <button
+            key="confirm"
+            onClick={submitAttendance}
+            disabled={loading}
+            className="btn btn-success scanner-button"
+            style={{
+              backgroundColor: '#803D3B',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              cursor:
+                loading || verificationLoading ? 'not-allowed' : 'pointer',
+              fontFamily: 'Cairo, sans-serif',
+            }}
+          >
+            {loading ? 'جاري التسجيل...' : 'تأكيد وتسجيل الحضور'}
+          </button>
+        ),
+        // Show cancel button when in verification mode
+        showVerification && (
+          <button
+            key="cancel"
+            onClick={() => {
+              setShowVerification(false);
+              setSubscriberInfo(null);
+              setScannedData('');
+            }}
+            className="btn btn-secondary scanner-button"
+            style={{
+              backgroundColor: '#6c757d',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              marginRight: '8px',
+              fontFamily: 'Cairo, sans-serif',
+            }}
+          >
+            إلغاء
+          </button>
+        ),
+        // Show close button when not in verification mode
+        !showVerification && (
+          <button
+            key="close"
+            onClick={handleClose}
+            className="btn btn-secondary scanner-button"
+            style={{
+              backgroundColor: '#6c757d',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              marginRight: '8px',
+              fontFamily: 'Cairo, sans-serif',
+            }}
+          >
+            إغلاق
+          </button>
+        ),
+      ]}
+    >
+      <div style={{ padding: '20px 0', fontFamily: 'Cairo, sans-serif' }}>
+        {/* Auto-submit toggle */}
+        <div
+          style={{
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          <input
+            type="checkbox"
+            id="autoSubmit"
+            checked={autoSubmit}
+            onChange={(e) => setAutoSubmit(e.target.checked)}
+            style={{ transform: 'scale(1.2)' }}
+          />
+          <label
+            htmlFor="autoSubmit"
+            style={{
+              fontWeight: 'bold',
+              fontFamily: 'Cairo, sans-serif',
+              cursor: 'pointer',
+            }}
+          >
+            تلقائي (تسجيل الحضور مباشرة)
+          </label>
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <label
+            className="scanner-label"
+            style={{
+              display: 'block',
+              marginBottom: '8px',
+              fontWeight: 'bold',
+              fontFamily: 'Cairo, sans-serif',
+            }}
+          >
+            بيانات الباركود:
+          </label>
+          <input
+            type="text"
+            value={scannedData}
+            onChange={(e) => setScannedData(e.target.value)}
+            placeholder="أدخل بيانات الباركود الممسوح"
+            className="scanner-input"
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              fontSize: '16px',
+              fontFamily: 'Cairo, sans-serif',
+            }}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleScan();
+              }
+            }}
+          />
+        </div>
+
+        {error && (
+          <div
+            className="scanner-error"
+            style={{
+              backgroundColor: '#f8d7da',
+              color: '#721c24',
+              padding: '12px',
+              borderRadius: '4px',
+              marginBottom: '20px',
+              border: '1px solid #f5c6cb',
+              fontFamily: 'Cairo, sans-serif',
+            }}
+          >
+            <strong>خطأ:</strong> {error}
+          </div>
+        )}
+
+        {/* Verification UI */}
+        {verificationLoading && (
+          <div
+            style={{
+              backgroundColor: '#e3f2fd',
+              color: '#1565c0',
+              padding: '12px',
+              borderRadius: '4px',
+              marginBottom: '20px',
+              border: '1px solid #bbdefb',
+              fontFamily: 'Cairo, sans-serif',
+              textAlign: 'center',
+            }}
+          >
+            <strong>جاري التحقق من بيانات المشترك...</strong>
+          </div>
+        )}
+
+        {showVerification && subscriberInfo && (
+          <div
+            className="verification-info"
+            style={{
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              border: '2px solid #803D3B',
+              borderRadius: '12px',
+              marginBottom: '20px',
+              fontFamily: 'Cairo, sans-serif',
+              boxShadow: '0 4px 12px rgba(128, 61, 59, 0.15)',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #803D3B 0%, #6B2D2B 100%)',
+                color: 'white',
+                padding: '16px 20px',
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  style={{ color: 'white' }}
+                >
+                  <path
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <h4
+                style={{
+                  margin: 0,
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  fontFamily: 'Cairo, sans-serif',
+                }}
+              >
+                تأكيد بيانات المشترك
+              </h4>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: '20px' }}>
+              {/* Subscriber Info Card */}
+              <div
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  marginBottom: '16px',
+                  border: '1px solid #e9ecef',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      backgroundColor: '#803D3B',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginLeft: '8px',
+                    }}
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      style={{ color: 'white' }}
+                    >
+                      <path
+                        d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <circle
+                        cx="12"
+                        cy="7"
+                        r="4"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: '15px',
+                      color: '#495057',
+                      fontFamily: 'Cairo, sans-serif',
+                      lineHeight: '1.6',
+                    }}
+                  >
+                    <strong>اسم المشترك:</strong>
+                    {'     '}
+                    <span
+                      style={{
+                        color: '#803D3B',
+                        fontWeight: '600',
+                        marginRight: '10px',
+                      }}
+                    >
+                      {subscriberInfo.subscription?.subscriber_name ||
+                        'غير محدد'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Academy & Offer Info Card */}
+              <div
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  marginBottom: '16px',
+                  border: '1px solid #e9ecef',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      backgroundColor: '#803D3B',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginLeft: '8px',
+                    }}
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      style={{ color: 'white' }}
+                    >
+                      <path
+                        d="M22 12h-4l-3 9L9 3l-3 9H2"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '12px',
+                    fontSize: '15px',
+                    color: '#495057',
+                    fontFamily: 'Cairo, sans-serif',
+                    lineHeight: '1.6',
+                  }}
+                >
+                  <div>
+                    <strong>الأكاديمية:</strong>{' '}
+                    <span style={{ color: '#803D3B', fontWeight: '600' }}>
+                      {subscriberInfo.subscription?.academy_name || 'غير محدد'}
+                    </span>
+                  </div>
+                  <div>
+                    <strong>العرض:</strong>{' '}
+                    <span style={{ color: '#803D3B', fontWeight: '600' }}>
+                      {subscriberInfo.subscription?.offer_name || 'غير محدد'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Remaining Balance Card */}
+              <div
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  border: '1px solid #e9ecef',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginBottom: '12px',
+                  }}
+                ></div>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '12px',
+                    fontSize: '15px',
+                    color: '#495057',
+                    fontFamily: 'Cairo, sans-serif',
+                    lineHeight: '1.6',
+                  }}
+                >
+                  {subscriberInfo.remaining_classes !== undefined && (
+                    <div
+                      style={{
+                        backgroundColor: '#f8f9fa',
+                        padding: '12px',
+                        borderRadius: '6px',
+                        border: '1px solid #e9ecef',
+                        textAlign: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '24px',
+                          fontWeight: '700',
+                          color: '#803D3B',
+                          marginBottom: '4px',
+                        }}
+                      >
+                        {subscriberInfo.remaining_classes}
+                      </div>
+                      <div style={{ fontSize: '13px', color: '#6c757d' }}>
+                        الحصص المتبقية
+                      </div>
+                    </div>
+                  )}
+                  {subscriberInfo.remaining_hours !== undefined && (
+                    <div
+                      style={{
+                        backgroundColor: '#f8f9fa',
+                        padding: '12px',
+                        borderRadius: '6px',
+                        border: '1px solid #e9ecef',
+                        textAlign: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '24px',
+                          fontWeight: '700',
+                            color: '#803D3B',
+                          marginBottom: '4px',
+                        }}
+                      >
+                        {subscriberInfo.remaining_hours}
+                      </div>
+                      <div style={{ fontSize: '13px', color: '#6c757d' }}>
+                        الساعات المتبقية
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {result && (
+          <div
+            className="scanner-result"
+            style={{
+              backgroundColor: result.success ? '#d4edda' : '#f8d7da',
+              color: result.success ? '#155724' : '#721c24',
+              padding: '12px',
+              borderRadius: '4px',
+              marginBottom: '20px',
+              border: `1px solid ${result.success ? '#c3e6cb' : '#f5c6cb'}`,
+              fontFamily: 'Cairo, sans-serif',
+            }}
+          >
+            <strong>{result.success ? 'نجح:' : 'فشل:'}</strong> {result.message}
+            {result.success && result.subscription && (
+              <div
+                style={{ marginTop: '10px', fontFamily: 'Cairo, sans-serif' }}
+              >
+                <p>
+                  <strong>اسم المشترك:</strong>{' '}
+                  {result.subscription.subscriber_name}
+                </p>
+                <p>
+                  <strong>اسم الأكاديمية:</strong>{' '}
+                  {result.subscription.academy_name}
+                </p>
+                {result.remaining_classes !== undefined && (
+                  <p>
+                    <strong>الحصص المتبقية:</strong> {result.remaining_classes}
+                  </p>
+                )}
+                {result.remaining_hours !== undefined && (
+                  <p>
+                    <strong>الساعات المتبقية:</strong> {result.remaining_hours}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
+}
+
 function OrderReviewModal({ show, onHide, items, clientType, client }) {
   const { user } = useAuth();
 
   const [data, setData] = useState({
-    client: "Guest",
+    client: 'Guest',
     products: [],
-    client_type: "",
+    client_type: '',
     total_price: 0,
     departmentName: user?.department?.name,
-    cashier: user?.name || "",
+    cashier: user?.name || '',
     price: 0,
   });
 
@@ -245,13 +920,13 @@ function OrderReviewModal({ show, onHide, items, clientType, client }) {
       setData((prevData) => ({
         ...prevData,
         products: items,
-        client: client?.name || "Guest",
-        client_type: clientType?.name || "",
+        client: client?.name || 'Guest',
+        client_type: clientType?.name || '',
         price: OrderData?.data?.price || 0,
         total_price: OrderData?.data?.total_price || 0,
       }));
     } catch (error) {
-      console.error("Error fetching order data:", error);
+      console.error('Error fetching order data:', error);
     }
   };
 
@@ -276,20 +951,20 @@ function OrderReviewModal({ show, onHide, items, clientType, client }) {
             src={LogoDAR}
             alt=""
             style={{
-              width: "64px",
-              marginBottom: "5px",
-              marginLeft: "5px",
+              width: '64px',
+              marginBottom: '5px',
+              marginLeft: '5px',
             }}
           />
         </div>
       </div>
       <div className="invoice-info">
         <div className="invoice-info-item">
-          <p>تـاريـــخ الأوردر : {new Date().toISOString().split("T")[0]}</p>
+          <p>تـاريـــخ الأوردر : {new Date().toISOString().split('T')[0]}</p>
         </div>
         <div className="invoice-info-item">
           <p>اسم الكاشير : {data?.cashier}</p>
-          <p>اسم العميل : {data.client === "" ? "Guest" : data.client}</p>
+          <p>اسم العميل : {data.client === '' ? 'Guest' : data.client}</p>
           <p>الفئة : {data.client_type}</p>
         </div>
       </div>
@@ -359,9 +1034,9 @@ const AddCashierOrder = () => {
   const [flag, setFlag] = useState(false);
   const [printData, setPrintData] = useState();
   const [selectedPaymentMethodNakdy, setSelectedPaymentMethodNakdy] =
-    useState("");
+    useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
-    "dc2a3eb5-0efd-4bed-a297-8f5b43e8dc13"
+    'dc2a3eb5-0efd-4bed-a297-8f5b43e8dc13'
   );
   const [selectedClientTypeName, setselectedClientTypeName] = useState(`guest`);
   const [items, setItems] = useState([]);
@@ -372,43 +1047,44 @@ const AddCashierOrder = () => {
   const [isHidden, setIsHidden] = useState(false);
   const [shouldPrint, setShouldPrint] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [orderID, setOrderID] = useState("");
-  const [selectedClientType, setSelectedClientType] = useState("");
+  const [orderID, setOrderID] = useState('');
+  const [selectedClientType, setSelectedClientType] = useState('');
   const [waiterName, setWaiterName] = useState([]);
   const [clientData, setClientData] = useState();
   const [discount, setDiscount] = useState();
   const [reseditType, setResedent] = useState();
   const [selectWaiter, setSelectedWatier] = useState(
-    localStorage.getItem("DefaultWaiterId") || ""
+    localStorage.getItem('DefaultWaiterId') || ''
   );
-const [hasInstantClosing, setHasInstantClosing] = useState(false)
+  const [hasInstantClosing, setHasInstantClosing] = useState(false);
+  const [showScannerModal, setShowScannerModal] = useState(false);
 
   const SUPPORT_MILITARY_ID = [
-    "01j593bhrndb11k7rdhtacz7ht",
-    "01jat25db9xbgfbskk9zygj5kq",
-    "01jepaexvvm7s2zv7d9970nf5p",
-    "",
+    '01j593bhrndb11k7rdhtacz7ht',
+    '01jat25db9xbgfbskk9zygj5kq',
+    '01jepaexvvm7s2zv7d9970nf5p',
+    '',
   ];
 
   message.config({
     duration: 3,
-    top: "50%",
+    top: '50%',
     maxCount: 3,
   });
   const [newUserValues, setNewUserValues] = useState({
-    deleviery_type: "kitchen",
-    name: "",
-    phone: "",
-    military_number: "",
-    client_type_id: "",
-    discount_reason_id: "",
-    payment_method_id: "",
-    table_number: "",
-    comment: "",
-    client_id: "",
-    waiter_id: "",
+    deleviery_type: 'kitchen',
+    name: '',
+    phone: '',
+    military_number: '',
+    client_type_id: '',
+    discount_reason_id: '',
+    payment_method_id: '',
+    table_number: '',
+    comment: '',
+    client_id: '',
+    waiter_id: '',
   });
-  const ExternalOrderCashierRole = "9db56bb2-7a34-4aad-8fbd-3f9b26a93e35";
+  const ExternalOrderCashierRole = '9db56bb2-7a34-4aad-8fbd-3f9b26a93e35';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -416,43 +1092,41 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       // await fetchDiscountReasons();
     };
     fetchData();
-  }, []); 
-  
-  useEffect(() => {
-    setHasInstantClosing(user?.department?.has_instant_order_closing)
-    handlePaymentMethodChange("dc2a3eb5-0efd-4bed-a297-8f5b43e8dc13")
   }, []);
 
-
+  useEffect(() => {
+    setHasInstantClosing(user?.department?.has_instant_order_closing);
+    handlePaymentMethodChange('dc2a3eb5-0efd-4bed-a297-8f5b43e8dc13');
+  }, []);
 
   const validateSelection = (value) => {
-    if (!value && newUserValues["client_id"] !== "") {
-      return "يجب اختيار قيمة";
+    if (!value && newUserValues['client_id'] !== '') {
+      return 'يجب اختيار قيمة';
     }
-    return "";
+    return '';
   };
   const validateTableNumber = (value) => {
     if (!isTakeAway) {
       if (value <= 0 || !value) {
-        return "رقم التربيزة يجب أن يكون أكبر من صفر";
+        return 'رقم التربيزة يجب أن يكون أكبر من صفر';
       }
     }
-    return "";
+    return '';
   };
   const validateUser = () => {
-    if (newUserValues["client_id"] === "add-new") {
+    if (newUserValues['client_id'] === 'add-new') {
       if (
-        !newUserValues["name"] ||
-        !newUserValues["phone"] ||
-        !newUserValues["military_number"] ||
-        !newUserValues["client_type_id"] ||
-        !newUserValues["waiter_id"] ||
-        !newUserValues["discount_reason_id"] ||
-        !newUserValues["payment_method_id"]
+        !newUserValues['name'] ||
+        !newUserValues['phone'] ||
+        !newUserValues['military_number'] ||
+        !newUserValues['client_type_id'] ||
+        !newUserValues['waiter_id'] ||
+        !newUserValues['discount_reason_id'] ||
+        !newUserValues['payment_method_id']
       )
-        return "يجب اختيار قيم للمستخدم الجديد";
+        return 'يجب اختيار قيم للمستخدم الجديد';
     } else {
-      return "";
+      return '';
     }
   };
 
@@ -463,11 +1137,11 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       setIsDisabled(false);
 
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
-            {" "}
-            يجب اختيار اسم العميل{" "}
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
+            {' '}
+            يجب اختيار اسم العميل{' '}
           </div>
         ),
         centered: true,
@@ -479,16 +1153,16 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       }, 4000);
       e;
 
-      errors.mustChooseClientName = "يجب اختيار اسم العميل";
+      errors.mustChooseClientName = 'يجب اختيار اسم العميل';
     }
 
-    if (selectedClientTypeName == "ظابط مشاه" && !militryIdInputValue) {
+    if (selectedClientTypeName == 'ظابط مشاه' && !militryIdInputValue) {
       setIsDisabled(false);
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
-            {" "}
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
+            {' '}
             يجب اضافة رقم العضوية
           </div>
         ),
@@ -499,16 +1173,16 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       setTimeout(() => {
         modal.destroy();
       }, 4000);
-      errors.mustHaveMilitryNumber = "يجب اضافة رقم العضوية";
+      errors.mustHaveMilitryNumber = 'يجب اضافة رقم العضوية';
     }
 
-    if (selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j") {
-      if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
+    if (selectedClientType != '01hzf60qrasrm5x2ytvyrsne1j') {
+      if (selectWaiter == 'اختر اسم الويتر' || selectWaiter == '') {
         setIsDisabled(false);
         const modal = Modal.error({
-          title: "Error",
+          title: 'Error',
           content: (
-            <div style={{ fontSize: "24px", textAlign: "center" }}>
+            <div style={{ fontSize: '24px', textAlign: 'center' }}>
               يجب اختيار اسم الويتر
             </div>
           ),
@@ -519,26 +1193,26 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
         setTimeout(() => {
           modal.destroy();
         }, 4000);
-        return Object.values(errors).every((error) => error === "");
+        return Object.values(errors).every((error) => error === '');
       }
     }
 
     errors.userError = validateUser();
-    errors.tableNumber = validateTableNumber(newUserValues["table_number"]);
-    errors.selectedClient = validateSelection(newUserValues["client_id"]);
-    errors.clientType = validateSelection(newUserValues["client_type_id"]);
-    errors.deliveryType = validateSelection(newUserValues["deleviery_type"]);
+    errors.tableNumber = validateTableNumber(newUserValues['table_number']);
+    errors.selectedClient = validateSelection(newUserValues['client_id']);
+    errors.clientType = validateSelection(newUserValues['client_type_id']);
+    errors.deliveryType = validateSelection(newUserValues['deleviery_type']);
     errors.paymentMethod = validateSelection(
-      newUserValues["payment_method_id"]
+      newUserValues['payment_method_id']
     );
     setErrors(errors);
-    return Object.values(errors).every((error) => error === "");
+    return Object.values(errors).every((error) => error === '');
   };
 
   const fetchDiscountReasons = async () => {
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await fetch(
         `${API_ENDPOINT}/api/v1/orders/discount/reasons`,
         {
@@ -550,14 +1224,14 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       const data = await response.json();
       setDiscountReasons(data.data);
     } catch (error) {
-      console.error("Error fetching Product categories:", error);
+      console.error('Error fetching Product categories:', error);
     }
   };
 
   const fetchPaymentMethods = async () => {
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await fetch(
         `${API_ENDPOINT}/api/v1/store/payment_method`,
         {
@@ -569,7 +1243,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       const data = await response.json();
       setPaymentMethods(data.data);
     } catch (error) {
-      console.error("Error fetching payment methods:", error);
+      console.error('Error fetching payment methods:', error);
     }
   };
   const handlePaymentMethodChange = async (value) => {
@@ -580,7 +1254,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     }));
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(
         `${API_ENDPOINT}/api/v1/store/client_type/payment_method/${value}`,
         {
@@ -593,11 +1267,11 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
         }
       );
       setClientTypes(response.data.data);
-      if (response?.data?.data?.length == 1 ){
-        handleClientTypeChange(response?.data?.data[0]?.id)
+      if (response?.data?.data?.length == 1) {
+        handleClientTypeChange(response?.data?.data[0]?.id);
       }
     } catch (error) {
-      console.error("Error fetching client types for payment method:", error);
+      console.error('Error fetching client types for payment method:', error);
     }
   };
   const handleClientTypeChange = async (value) => {
@@ -613,18 +1287,18 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     }
     setSelectedClientType(value);
 
-    if (selectedClient == "01j593a427a3kfrrxj8bkn115k") {
+    if (selectedClient == '01j593a427a3kfrrxj8bkn115k') {
       setIsTakeAway(true);
     } else {
       setIsTakeAway(false);
     }
-    if (selectedClient == "01j49hpdjbqher813xrp68ejz1") {
+    if (selectedClient == '01j49hpdjbqher813xrp68ejz1') {
       setIsGuest(true);
     } else {
       setIsGuest(false);
     }
 
-    if (selectedClient == "01jedx6za4e8ra7b5777qwzs45") {
+    if (selectedClient == '01jedx6za4e8ra7b5777qwzs45') {
       setIsHidden(true);
     } else {
       setIsHidden(false);
@@ -634,10 +1308,10 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       client_type_id: value,
     }));
 
-    handleNewUserFormChange("client_id", ``);
+    handleNewUserFormChange('client_id', ``);
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(
         `${API_ENDPOINT}/api/v1/orders/clients/${value}`,
         {
@@ -647,9 +1321,9 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
         }
       );
       setClients(response.data.data);
-      fetchClientType(newUserValues["client_type_id"]);
+      fetchClientType(newUserValues['client_type_id']);
     } catch (error) {
-      console.error("Error fetching clients for client type:", error);
+      console.error('Error fetching clients for client type:', error);
     }
   };
   const handleNewUserFormChange = (key, value) => {
@@ -661,7 +1335,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
   const getAllWaiters = async () => {
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(
         `${API_ENDPOINT}/api/v1/store/waiter/all`,
         {
@@ -673,9 +1347,9 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       setWaiterName(response.data.data);
     } catch (error) {
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
             لايوجد ويتر
           </div>
         ),
@@ -699,10 +1373,10 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
   };
   useEffect(
     () => {
-      fetchClientType(newUserValues["client_type_id"]);
+      fetchClientType(newUserValues['client_type_id']);
       getAllWaiters();
     },
-    [newUserValues["client_type_id"]],
+    [newUserValues['client_type_id']],
     selectWaiter
   );
 
@@ -722,12 +1396,12 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
   };
 
   const handleFinish = async () => {
-    if (selectedClientType == "") {
+    if (selectedClientType == '') {
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
-            ادخل نوع العميل من فضلك{" "}
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
+            ادخل نوع العميل من فضلك{' '}
           </div>
         ),
         centered: true,
@@ -740,12 +1414,12 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       return;
     }
 
-    if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
+    if (selectWaiter == 'اختر اسم الويتر' || selectWaiter == '') {
       setIsDisabled(false);
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
             يجب اختيار اسم الويتر
           </div>
         ),
@@ -784,41 +1458,41 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     const date = new Date();
     const datetype = new Date(date.toLocaleString());
     const year = datetype.getFullYear();
-    const month = String(datetype.getMonth() + 1).padStart(2, "0");
-    const day = String(datetype.getDate()).padStart(2, "0");
-    const hours = String(datetype.getHours()).padStart(2, "0");
-    const minutes = String(datetype.getMinutes()).padStart(2, "0");
-    const seconds = String(datetype.getSeconds()).padStart(2, "0");
+    const month = String(datetype.getMonth() + 1).padStart(2, '0');
+    const day = String(datetype.getDate()).padStart(2, '0');
+    const hours = String(datetype.getHours()).padStart(2, '0');
+    const minutes = String(datetype.getMinutes()).padStart(2, '0');
+    const seconds = String(datetype.getSeconds()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    formData.append("order_date", formattedDate);
-    formData.append("discount", discount);
-    formData.append("table_number", "");
-    formData.append("comment", newUserValues["comment"]);
-    formData.append("deleviery_type", newUserValues["deleviery_type"]);
-    formData.append("payment_method_id", newUserValues["payment_method_id"]);
+    formData.append('order_date', formattedDate);
+    formData.append('discount', discount);
+    formData.append('table_number', '');
+    formData.append('comment', newUserValues['comment']);
+    formData.append('deleviery_type', newUserValues['deleviery_type']);
+    formData.append('payment_method_id', newUserValues['payment_method_id']);
     formData.append(
-      "client_id",
-      newUserValues["client_id"] === "add-new" ? "" : newUserValues["client_id"]
+      'client_id',
+      newUserValues['client_id'] === 'add-new' ? '' : newUserValues['client_id']
     );
-    formData.append("client_type_id", newUserValues["client_type_id"]);
-    formData.append("military_number", newUserValues["military_number"]);
-    formData.append("department_id", user?.department.id);
+    formData.append('client_type_id', newUserValues['client_type_id']);
+    formData.append('military_number', newUserValues['military_number']);
+    formData.append('department_id', user?.department.id);
     {
-      selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j" &&
-        formData.append("waiter_id", selectWaiter);
+      selectedClientType != '01hzf60qrasrm5x2ytvyrsne1j' &&
+        formData.append('waiter_id', selectWaiter);
     }
-    formData.append("name", newUserValues["name"]);
-    formData.append("phone", newUserValues["phone"]);
-    formData.append("tax", 0);
+    formData.append('name', newUserValues['name']);
+    formData.append('phone', newUserValues['phone']);
+    formData.append('tax', 0);
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.post(
         `${API_ENDPOINT}/api/v1/orders/create`,
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-cashier-data",
+            'Content-Type': 'multipart/form-cashier-data',
             Authorization: `Bearer ${Token}`,
           },
         }
@@ -826,9 +1500,9 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       if (response.data) {
         setPrintData(response.data.data);
         const modal = Modal.success({
-          title: "success",
+          title: 'success',
           content: (
-            <div style={{ fontSize: "24px", textAlign: "center" }}>
+            <div style={{ fontSize: '24px', textAlign: 'center' }}>
               لقد تم اضافة الاوردر بنجاح
             </div>
           ),
@@ -845,16 +1519,16 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
           .then((datsss) => {})
           .catch((error) => {
             setIsDisabled(false);
-            console.error("Error fetching order by ID:", error);
+            console.error('Error fetching order by ID:', error);
           });
         setShouldPrint(true);
       }
     } catch (error) {
-      console.error("Error creating invoice:", error);
+      console.error('Error creating invoice:', error);
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
             {error.response.data.error.message}
           </div>
         ),
@@ -870,14 +1544,14 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
 
   const detailsHeaders = [
     {
-      key: "products",
-      label: "المنتجات",
+      key: 'products',
+      label: 'المنتجات',
       isArray: true,
       isInput: true,
       details: [
-        { key: "name", label: "الإسم", isInput: false },
-        { key: "price", label: "السعر", isInput: false },
-        { key: "quantity", label: "الكمية", isInput: false },
+        { key: 'name', label: 'الإسم', isInput: false },
+        { key: 'price', label: 'السعر', isInput: false },
+        { key: 'quantity', label: 'الكمية', isInput: false },
       ],
     },
   ];
@@ -893,11 +1567,11 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     };
   };
   const handleSubmit = async () => {
-    if (newUserValues["table_number"] == "") {
+    if (newUserValues['table_number'] == '') {
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
             لقد نسيت رقم الترابيزه
           </div>
         ),
@@ -911,12 +1585,12 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       return;
     }
 
-    if (selectedClientType == "") {
+    if (selectedClientType == '') {
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
-            ادخل نوع العميل من فضلك{" "}
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
+            ادخل نوع العميل من فضلك{' '}
           </div>
         ),
         centered: true,
@@ -930,14 +1604,14 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     }
     setIsDisabled(true);
 
-    if (newUserValues["client_type_id"] != "01j593a427a3kfrrxj8bkn115k") {
-      const resMessage = await checkTableNumber(newUserValues["table_number"]);
+    if (newUserValues['client_type_id'] != '01j593a427a3kfrrxj8bkn115k') {
+      const resMessage = await checkTableNumber(newUserValues['table_number']);
       if (resMessage === false) {
         setIsDisabled(false);
         const modal = Modal.error({
-          title: "Error",
+          title: 'Error',
           content: (
-            <div style={{ fontSize: "24px", textAlign: "center" }}>
+            <div style={{ fontSize: '24px', textAlign: 'center' }}>
               هذه الترابيزة مشغولة
             </div>
           ),
@@ -953,13 +1627,13 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       }
     }
 
-    if (selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j") {
-      if (selectWaiter == "اختر اسم الويتر" || selectWaiter == "") {
+    if (selectedClientType != '01hzf60qrasrm5x2ytvyrsne1j') {
+      if (selectWaiter == 'اختر اسم الويتر' || selectWaiter == '') {
         setIsDisabled(false);
         const modal = Modal.error({
-          title: "Error",
+          title: 'Error',
           content: (
-            <div style={{ fontSize: "24px", textAlign: "center" }}>
+            <div style={{ fontSize: '24px', textAlign: 'center' }}>
               يجب اختيار اسم الويتر
             </div>
           ),
@@ -1003,52 +1677,52 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     const date = new Date();
     const datetype = new Date(date.toLocaleString());
     const year = datetype.getFullYear();
-    const month = String(datetype.getMonth() + 1).padStart(2, "0");
-    const day = String(datetype.getDate()).padStart(2, "0");
-    const hours = String(datetype.getHours()).padStart(2, "0");
-    const minutes = String(datetype.getMinutes()).padStart(2, "0");
-    const seconds = String(datetype.getSeconds()).padStart(2, "0");
+    const month = String(datetype.getMonth() + 1).padStart(2, '0');
+    const day = String(datetype.getDate()).padStart(2, '0');
+    const hours = String(datetype.getHours()).padStart(2, '0');
+    const minutes = String(datetype.getMinutes()).padStart(2, '0');
+    const seconds = String(datetype.getSeconds()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-    formData.append("order_date", formattedDate);
+    formData.append('order_date', formattedDate);
 
-    formData.append("discount", discount);
-    if (newUserValues["client_type_id"] == "01j593a427a3kfrrxj8bkn115k") {
-      formData.append("table_number", "");
+    formData.append('discount', discount);
+    if (newUserValues['client_type_id'] == '01j593a427a3kfrrxj8bkn115k') {
+      formData.append('table_number', '');
     } else {
-      formData.append("table_number", newUserValues["table_number"]);
+      formData.append('table_number', newUserValues['table_number']);
     }
     //  formData.append("table_number", newUserValues["table_number"]);
-    formData.append("comment", newUserValues["comment"]);
-    formData.append("deleviery_type", newUserValues["deleviery_type"]);
-    formData.append("payment_method_id", newUserValues["payment_method_id"]);
+    formData.append('comment', newUserValues['comment']);
+    formData.append('deleviery_type', newUserValues['deleviery_type']);
+    formData.append('payment_method_id', newUserValues['payment_method_id']);
     formData.append(
-      "client_id",
-      newUserValues["client_id"] === "add-new" ? "" : newUserValues["client_id"]
+      'client_id',
+      newUserValues['client_id'] === 'add-new' ? '' : newUserValues['client_id']
     );
-    formData.append("client_type_id", newUserValues["client_type_id"]);
-    formData.append("military_number", militryIdInputValue);
-    formData.append("department_id", user?.department.id);
+    formData.append('client_type_id', newUserValues['client_type_id']);
+    formData.append('military_number', militryIdInputValue);
+    formData.append('department_id', user?.department.id);
 
     {
-      selectedClientType != "01hzf60qrasrm5x2ytvyrsne1j" &&
-        formData.append("waiter_id", selectWaiter);
+      selectedClientType != '01hzf60qrasrm5x2ytvyrsne1j' &&
+        formData.append('waiter_id', selectWaiter);
     }
 
-    formData.append("name", newUserValues["name"]);
-    formData.append("phone", newUserValues["phone"]);
-    formData.append("tax", 0);
+    formData.append('name', newUserValues['name']);
+    formData.append('phone', newUserValues['phone']);
+    formData.append('tax', 0);
 
     try {
       const Token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.post(
         `${API_ENDPOINT}/api/v1/orders/create`,
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-cashier-data",
+            'Content-Type': 'multipart/form-cashier-data',
             Authorization: `Bearer ${Token}`,
           },
         }
@@ -1057,9 +1731,9 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       setFlag(true);
       setPrintData(response.data.data);
       const modal = Modal.success({
-        title: "success",
+        title: 'success',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
             لقد تم اضافة الاوردر بنجاح
           </div>
         ),
@@ -1075,11 +1749,11 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     } catch (error) {
       setIsDisabled(false);
 
-      console.error("Error creating order:", error);
+      console.error('Error creating order:', error);
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
             {error.response.data.error.message}
           </div>
         ),
@@ -1093,7 +1767,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
     }
   };
 
-  const [militryIdInputValue, setMilitryIdInputValue] = useState("");
+  const [militryIdInputValue, setMilitryIdInputValue] = useState('');
   const [militryIdGotClicked, setMilitryIdGotClicked] = useState(false);
   const [timer, setTimer] = useState(null);
   const [messageVisible, setMessageVisible] = useState(false);
@@ -1128,12 +1802,12 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
   // }, [militryIdInputValue, militryIdGotClicked]);
 
   const handleOrderPriceReview = () => {
-    if (selectedClientType == "") {
+    if (selectedClientType == '') {
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
-            ادخل نوع العميل من فضلك{" "}
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
+            ادخل نوع العميل من فضلك{' '}
           </div>
         ),
         centered: true,
@@ -1148,11 +1822,11 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
 
     if (clients.length > 0 && !newUserValues.client_id && !isguest) {
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
-            {" "}
-            يجب اختيار اسم العميل{" "}
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
+            {' '}
+            يجب اختيار اسم العميل{' '}
           </div>
         ),
         centered: true,
@@ -1161,16 +1835,16 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
       return;
     }
 
-    newUserValues["client_name"] = clients.find(
+    newUserValues['client_name'] = clients.find(
       (ele) => ele.id == newUserValues.client_id
     )?.name;
     if (items.length < 1) {
       const modal = Modal.error({
-        title: "Error",
+        title: 'Error',
         content: (
-          <div style={{ fontSize: "24px", textAlign: "center" }}>
-            {" "}
-            برجاء إضافة منتجات للأوردر{" "}
+          <div style={{ fontSize: '24px', textAlign: 'center' }}>
+            {' '}
+            برجاء إضافة منتجات للأوردر{' '}
           </div>
         ),
         centered: true,
@@ -1194,24 +1868,24 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
   return (
     <div className="form-cashier-container fs-5">
       <h1 className="form-cashier-title"> {user?.department.name}</h1>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={{ width: "100%" }}>
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <div style={{ width: '100%' }}>
           <label className="form-cashier-label fw-bold">اسم الكاشير:</label>
           <input
             className="form-cashier-name-input"
             type="text"
             disabled={true}
-            style={{ cursor: "not-allowed" }}
+            style={{ cursor: 'not-allowed' }}
             value={user?.name}
           />
         </div>
 
-        <div style={{ width: "100%" }}>
+        <div style={{ width: '100%' }}>
           <label className="form-cashier-label">اسم الويتر:</label>
           <select
             onChange={(e) => {
               setSelectedWatier(e.target.value);
-              localStorage.setItem("DefaultWaiterId", e.target.value);
+              localStorage.setItem('DefaultWaiterId', e.target.value);
             }}
             className="form-cashier-name-input"
             aria-label=".form-select-lg example"
@@ -1246,7 +1920,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
               value={selectedPaymentMethodNakdy}
               onChange={handlePaymentMethodChange}
               filterOption={(input, option) => {
-                return (option?.children ?? "")
+                return (option?.children ?? '')
                   .toLowerCase()
                   .includes(input.toLowerCase());
               }}
@@ -1256,7 +1930,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
                 <Option
                   key={method.id}
                   value={method.id}
-                  style={{ fontSize: "22px", weight: "800" }}
+                  style={{ fontSize: '22px', weight: '800' }}
                 >
                   {method.name}
                 </Option>
@@ -1273,7 +1947,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
               value={selectedClientType}
               onChange={handleClientTypeChange}
               filterOption={(input, option) => {
-                return (option?.children ?? "")
+                return (option?.children ?? '')
                   .toLowerCase()
                   .includes(input.toLowerCase());
               }}
@@ -1283,7 +1957,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
                 <Option
                   key={type.id}
                   value={type.id}
-                  style={{ fontSize: "22px", weight: "800" }}
+                  style={{ fontSize: '22px', weight: '800' }}
                 >
                   {type.name}
                 </Option>
@@ -1298,10 +1972,10 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
               className="form-cashier-select"
               placeholder="اختر العميل"
               onChange={(value) => {
-                handleNewUserFormChange("client_id", value);
+                handleNewUserFormChange('client_id', value);
               }}
               filterOption={(input, option) => {
-                return (option?.children ?? "")
+                return (option?.children ?? '')
                   .toLowerCase()
                   .includes(input.toLowerCase());
               }}
@@ -1313,7 +1987,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
                 <Option
                   key={client.id}
                   value={client.id}
-                  style={{ fontSize: "22px", weight: "800" }}
+                  style={{ fontSize: '22px', weight: '800' }}
                 >
                   {client.name}
                 </Option>
@@ -1349,9 +2023,9 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
                 className="form-cashier-input"
                 type="number"
                 min={1}
-                value={newUserValues["table_number"]}
+                value={newUserValues['table_number']}
                 onChange={(e) =>
-                  handleNewUserFormChange("table_number", e.target.value)
+                  handleNewUserFormChange('table_number', e.target.value)
                 }
                 onWheel={(event) => event.currentTarget.blur()}
               />
@@ -1367,31 +2041,31 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
           <label className="form-cashier-label">ملاحظة : </label>
           <textarea
             className="form-cashier-txt-area"
-            onChange={(e) => handleNewUserFormChange("comment", e.target.value)}
+            onChange={(e) => handleNewUserFormChange('comment', e.target.value)}
           ></textarea>
         </div>
       </div>
 
       <CashierOrderDetailes
         onAddItem={handleAddItem}
-        clientTypePrice={newUserValues["client_type_id"]}
+        clientTypePrice={newUserValues['client_type_id']}
       />
 
       <CashierItemList items={items} onDeleteItem={handleDeleteItem} />
       <TotalAmount total={calculateTotalAmount()} />
 
       <div className="btns">
-     
-     {! hasInstantClosing && (   <button
-          className="form-cashier-btn"
-          onClick={handleOrderPriceReview}
-          style={{
-            backgroundColor: "#803D3B",
-          }}
-        >
-          مراجعة سعر الأوردر
-        </button>
-)}
+        {!hasInstantClosing && (
+          <button
+            className="form-cashier-btn"
+            onClick={handleOrderPriceReview}
+            style={{
+              backgroundColor: '#803D3B',
+            }}
+          >
+            مراجعة سعر الأوردر
+          </button>
+        )}
         {!isTakeAway && !hasInstantClosing ? (
           <>
             <button
@@ -1399,9 +2073,9 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
               onClick={debouncedHandleSubmit}
               disabled={isDisabled}
               style={{
-                backgroundColor: isDisabled ? "#d3d3d3" : "#AF8260",
-                cursor: isDisabled ? "not-allowed" : "pointer",
-                color: isDisabled ? "#a9a9a9" : "white",
+                backgroundColor: isDisabled ? '#d3d3d3' : '#AF8260',
+                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                color: isDisabled ? '#a9a9a9' : 'white',
               }}
             >
               حفظ البيانات
@@ -1412,7 +2086,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
         {!isguest &&
         !isHidden &&
         !user.permissions.some(
-          (permission) => permission.name === "cannot_close_order"
+          (permission) => permission.name === 'cannot_close_order'
         ) ? (
           <>
             <button
@@ -1420,10 +2094,10 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
               onClick={() => handleFinish()}
               disabled={isDisabled}
               style={{
-                backgroundColor: isDisabled ? "#d3d3d3" : "#b51424",
-                cursor: isDisabled ? "not-allowed" : "pointer",
-                color: isDisabled ? "#a9a9a9" : "white",
-                height: "45px",
+                backgroundColor: isDisabled ? '#d3d3d3' : '#b51424',
+                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                color: isDisabled ? '#a9a9a9' : 'white',
+                height: '45px',
               }}
             >
               إنهاء الأوردر
@@ -1432,7 +2106,7 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
         ) : null}
       </div>
 
-      {shouldPrint && <PrintAfterFinish id={orderID}  user = {user}/>}
+      {shouldPrint && <PrintAfterFinish id={orderID} user={user} />}
 
       <OrderReviewModal
         show={isOrderReviewModalVisible}
@@ -1446,6 +2120,109 @@ const [hasInstantClosing, setHasInstantClosing] = useState(false)
           id: newUserValues?.client_id,
           name: newUserValues?.client_name,
         }}
+      />
+
+      {/* Floating Scanner Icon */}
+      <div
+        onClick={() => setShowScannerModal(true)}
+        className="floating-scanner-icon"
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: '20px',
+          width: '60px',
+          height: '60px',
+          backgroundColor: '#803D3B',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+          zIndex: 1000,
+          transition: 'all 0.3s ease',
+          fontFamily: 'Cairo, sans-serif',
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.transform = 'scale(1.1)';
+          e.target.style.backgroundColor = '#6B2D2B';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = 'scale(1)';
+          e.target.style.backgroundColor = '#803D3B';
+        }}
+        title="مسح باركود الاشتراك"
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          style={{ color: 'white' }}
+        >
+          <path
+            d="M3 3H7V7H3V3Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M17 3H21V7H17V3Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M3 17H7V21H3V17Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M17 17H21V21H17V17Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M7 3V7H17V3"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M7 17V21H17V17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M3 7H7V17H3V7Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M17 7H21V17H17V7Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+
+      {/* Scanner Modal */}
+      <SubscriptionScannerModal
+        show={showScannerModal}
+        onHide={() => setShowScannerModal(false)}
       />
     </div>
   );

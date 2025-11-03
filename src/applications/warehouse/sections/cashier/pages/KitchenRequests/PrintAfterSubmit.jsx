@@ -42,6 +42,7 @@ function PrintAfterSubmit({
     cashier: "",
     payment: "",
     comment: "",
+    secondary_currency: null,
   });
 
   useEffect(() => {
@@ -75,6 +76,7 @@ function PrintAfterSubmit({
           total_price_after_discount_and_tax:
             InvoiceData.data.total_price_after_discount_and_tax,
           departmentName: InvoiceData.data.department,
+          secondary_currency: InvoiceData.data.secondary_currency,
         });
       } catch (error) {
         console.error("🖨️ PrintAfterSubmit: Error fetching order data:", error);
@@ -192,7 +194,10 @@ function PrintAfterSubmit({
                   السعر الكلي{" "}
                 </td>
                 <td className="text-price" colSpan={3}>
-                  {data.price} ج.م
+                  {data.secondary_currency 
+                    ? `${data.secondary_currency.price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                    : `${data.price} ج.م`
+                  }
                 </td>
               </tr>
               <tr>
@@ -200,7 +205,10 @@ function PrintAfterSubmit({
                   السعر الكلي بعد الخصم
                 </td>
                 <td className="text-price" colSpan={3}>
-                  {data.total_price} ج.م
+                  {data.secondary_currency 
+                    ? `${data.secondary_currency.total_price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                    : `${data.total_price} ج.م`
+                  }
                 </td>
               </tr>
             </tfoot>
