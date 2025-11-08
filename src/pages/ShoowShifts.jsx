@@ -35,7 +35,7 @@ const ShoowShifts = () => {
       <div className="py-4">
         <Link
           to={'/warehouse/reports/shift'}>
-          <button type="button" className="mx-3 btn btn-outline-success">اضافة شيفت جديد</button>
+          <button type="button" className="mx-3 btn btn-outline-success pdf-button">اضافة شيفت جديد</button>
         </Link>
       </div>
       <div className="container text-center">

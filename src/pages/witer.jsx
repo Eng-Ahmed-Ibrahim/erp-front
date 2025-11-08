@@ -53,7 +53,7 @@ const witer = () => {
       <div className="py-4">
         <Link
           to={'/warehouse/reports/witer/create-new'}>
-          <button type="button" className="mx-3 btn btn-outline-success">اضافة ويتر جديد</button>
+          <button type="button" className="mx-3 btn btn-outline-success pdf-button">اضافة ويتر جديد</button>
         </Link>
       </div>
       <table className="table table-hover">

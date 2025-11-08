@@ -8,8 +8,33 @@
 @font-face {
   font-family: 'Cairo';
   src: url('./fonts/Cairo/static/Cairo-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('./fonts/Cairo/static/Cairo-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('./fonts/Cairo/static/Cairo-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cairo';
   src: url('./fonts/Cairo/static/Cairo-Bold.ttf') format('truetype');
-  /* Add additional font weights and styles here if needed */
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 /*** Common variables ***/
@@ -431,24 +456,24 @@ ul {
 
   .custom-heading {
     font-size: 1.2rem;
-    font-family: 'Arial', sans-serif; 
+    font-family: 'Cairo', sans-serif;
   }
   
   .custom-label {
     font-size: 0.9rem; 
-    font-family: 'Arial', sans-serif; 
+    font-family: 'Cairo', sans-serif;
   }
   
   .custom-input {
     font-size: 0.9rem; 
-    font-family: 'Arial', sans-serif; 
+    font-family: 'Cairo', sans-serif;
   }  
 
 
 
   .custom-table {
     font-size: 0.9rem; /* Smaller font size for table */
-    font-family: 'Arial', sans-serif; 
+    font-family: 'Cairo', sans-serif;
   }
   
   .custom-header {

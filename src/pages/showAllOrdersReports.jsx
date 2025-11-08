@@ -158,7 +158,7 @@ const ShowAllOrderReports = () => {
   const handleGettingReports = async () => {
     try {
       await getAllWaiters();
-    } catch (err) {}
+    } catch (err) { }
   };
   const [newUserValues, setNewUserValues] = useState({
     deleviery_type: "kitchen",
@@ -264,7 +264,7 @@ const ShowAllOrderReports = () => {
       const recipeData = await getClientTypeById(id);
       setDiscount(recipeData.data.discount);
       setResedent(recipeData.data.name);
-    } catch (error) {}
+    } catch (error) { }
   };
   const getAllWaiters = async () => {
     try {
@@ -485,51 +485,51 @@ const ShowAllOrderReports = () => {
               </select>
             </div>
           </div>
-          <div className="row align-items-center">
-            <div className="col-md-3">
-              <div className="mb-3 d-flex text-center flex-column gap-small">
-                <label
-                  htmlFor="exampleFormControlInput1"
-                  className="form-label ps-3 "
-                >
-                  من
-                </label>
-                <input
-                  onChange={(e) => {
-                    const selectedDay = e.target.value;
-                    setFromDate(selectedDay);
-                  }}
-                  value={fromDate}
-                  type="date"
-                  className="form-control"
-                  id="exampleFormControlInput1"
-                  placeholder="name@example.com"
-                />
-              </div>
-            </div>
 
-            <div className="col-md-3">
-              <div className="mb-3 d-flex text-center flex-column gap-small">
-                <label
-                  htmlFor="exampleFormControlInput1"
-                  className="form-label ps-3 "
-                >
-                  الي
-                </label>
-                <input
-                  onChange={(e) => {
-                    const selectedDay = e.target.value;
-                    setToDate(selectedDay);
-                  }}
-                  value={toDate}
-                  type="date"
-                  className="form-control"
-                  id="exampleFormControlInput1"
-                  placeholder="name@example.com"
-                />
-              </div>
+          <div className="col">
+            <div className="mb-3">
+              <label
+                htmlFor="exampleFormControlInput1"
+                className="form-cashier-label "
+              >
+                من
+              </label>
+              <input
+                onChange={(e) => {
+                  const selectedDay = e.target.value;
+                  setFromDate(selectedDay);
+                }}
+                value={fromDate}
+                type="date"
+                className="form-control shadow-sm form-cashier-select"
+                id="exampleFormControlInput1"
+                placeholder="name@example.com"
+              />
             </div>
           </div>
+
+          <div className="col">
+            <div className="mb-3">
+              <label
+                htmlFor="exampleFormControlInput1"
+                className="form-cashier-label "
+              >
+                الي
+              </label>
+              <input
+                onChange={(e) => {
+                  const selectedDay = e.target.value;
+                  setToDate(selectedDay);
+                }}
+                value={toDate}
+                type="date"
+                className="form-control shadow-sm form-cashier-select "
+                id="exampleFormControlInput1"
+                placeholder="name@example.com"
+              />
+            </div>
+          </div>
+
         </div>
       </div>
       <div>
@@ -545,7 +545,7 @@ const ShowAllOrderReports = () => {
           <button
             className="form-cashier-btn"
             onClick={() => handleGettingReports()}
-            // style={{ width: "100%", transition: `all 0.3s` }}
+          // style={{ width: "100%", transition: `all 0.3s` }}
           >
             فلترة
           </button>
@@ -695,11 +695,11 @@ const ShowAllOrderReports = () => {
             <td style={{ textAlign: "center" }}>
               {data?.data
                 ? Object.values(data.data)
-                    .reduce(
-                      (acc, item) => acc + (item.total_order_price || 0),
-                      0
-                    )
-                    .toFixed(2)
+                  .reduce(
+                    (acc, item) => acc + (item.total_order_price || 0),
+                    0
+                  )
+                  .toFixed(2)
                 : 0}{" "}
               ج.م
             </td>

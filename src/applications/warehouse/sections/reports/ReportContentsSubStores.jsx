@@ -60,21 +60,50 @@ const ReportContentsSubStores = () => {
     <div
       style={{
         display: "flex",
-        flexDirection: "row",
-        padding: "20px 20px",
-        gap: "40px",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: "24px",
+        padding: "24px",
       }}
     >
-      {reports?.map((item, index) => (
-        <Link to={item?.route} style={{ textDecoration: "none" }}>
+      {reports?.map((item) => (
+        <Link
+          key={item.id}
+          to={item?.route}
+          style={{ textDecoration: "none", flex: "1 1 260px", maxWidth: "280px" }}
+        >
           <div
-            className="card shadow p-3 mb-5 bg-body-tertiary rounded"
-            key={index}
-            style={{ width: "18rem" }}
+            className="card shadow-sm rounded-4 h-100"
+            style={{
+              height: "100%",
+              minHeight: "320px",
+              display: "flex",
+              flexDirection: "column",
+              border: "1px solid #f0f0f0",
+            }}
           >
-            <img src={item?.img} className="card-img-top" alt={item?.name} />
-            <div className="card-body">
-              <h5 className="card-title">{item?.name}</h5>
+            <div
+              style={{
+                width: "100%",
+                height: "180px",
+                overflow: "hidden",
+                borderTopLeftRadius: "16px",
+                borderTopRightRadius: "16px",
+              }}
+            >
+              <img
+                src={item?.img}
+                alt={item?.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </div>
+            <div
+              className="card-body d-flex align-items-center justify-content-center text-center"
+              style={{ padding: "20px" }}
+            >
+              <h5 className="card-title mb-0" style={{ fontWeight: 600 }}>
+                {item?.name}
+              </h5>
             </div>
           </div>
         </Link>

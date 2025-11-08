@@ -340,26 +340,26 @@ const ExternalOrdersReport = () => {
                     #
                   </th>
 
-                  <th className="text-center"  style={{ background: "#b3946f", fontSize:"1.2rem"}}>
+                <th className="text-center" style={{ background: "#e6e6e6", fontSize:"1.2rem"}}>
                     {" "}
                     كود الأوردر
                   </th>
-                  <th className="text-center" style={{ background: "#b3946f", fontSize:"1.2rem" }}>
+                <th className="text-center" style={{ background: "#e6e6e6", fontSize:"1.2rem" }}>
                     {" "}
                     الحالة
                   </th>
-                  <th className="text-center" style={{ background: "#b3946f", fontSize:"1.2rem" }}>
+                <th className="text-center" style={{ background: "#e6e6e6", fontSize:"1.2rem" }}>
                     {" "}
                     التاربخ
                   </th>
-                  <th className="text-center" style={{ background: "#b3946f" , fontSize:"1.2rem"}}>
+                <th className="text-center" style={{ background: "#e6e6e6" , fontSize:"1.2rem"}}>
                     {" "}
                     إجمالي المدفوعات
                   </th>
-                  <th className="text-center" style={{ background: "#b3946f" , fontSize:"1.2rem"}}>
+                <th className="text-center" style={{ background: "#e6e6e6" , fontSize:"1.2rem"}}>
                     سعر الاوردر
                   </th>
-                  <th className="text-center" style={{ background: "#b3946f" , fontSize:"1.2rem"}}>
+                <th className="text-center" style={{ background: "#e6e6e6" , fontSize:"1.2rem"}}>
                     {" "}
                     الأرباح{" "}
                   </th>
@@ -376,7 +376,6 @@ const ExternalOrdersReport = () => {
                     >
                       <td
                         className="text-center"
-                        style={{ background: "#e6e6e6" }}
                       >
                         {index + 1}
                       </td>

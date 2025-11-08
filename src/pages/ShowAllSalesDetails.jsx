@@ -141,7 +141,7 @@ const ShowAllSalesDetails = () => {
   const [returnedData, setReturnedData] = useState([]);
   const tableRef = useRef();
   const [selectedDepatrmentName, setSelectedDepartmentName] = useState([]);
-  const [selectedDepartments, setSelectedDepartments] = useState("");
+  const [selectedDepartments, setSelectedDepartments] = useState([]);
   const handleSavePDF = async () => {
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = 190;
@@ -230,6 +230,7 @@ const ShowAllSalesDetails = () => {
   return (
     <div>
       <h1
+        className="heading"
         style={{
           display: "flex",
           flexDirection: "column",
@@ -241,26 +242,19 @@ const ShowAllSalesDetails = () => {
       </h1>
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "start",
-          alignItems: "start",
+          background: "#ffffff",
+          border: "1px solid #f0f0f0",
+          borderRadius: "16px",
+          padding: "20px",
+          marginBottom: "24px",
+          boxShadow: "0 12px 24px rgba(0,0,0,0.04)",
         }}
       >
-        <button onClick={handleSavePDF} className="pdf-button">
-          {" "}
-          حفظ PDF
-        </button>
-      </div>
-      <div style={{ display: "flex", flexDirection: "row", gap: "8px" }}>
-        <div className="col-md-3">
-          <div className="mb-3 d-flex text-center flex-column gap-small">
-            <label
-              htmlFor="exampleFormControlInput1"
-              className="form-label ps-3 "
-            >
-              من
-            </label>
+
+
+        <div className="row g-3 align-items-end">
+          <div className="col-lg-4 col-md-4 col-sm-12">
+            <label className="form-label fw-semibold text-muted ps-1">من</label>
             <input
               onChange={(e) => {
                 const selectedDay = e.target.value;
@@ -269,20 +263,11 @@ const ShowAllSalesDetails = () => {
               min="2024-11-05"
               value={fromDate}
               type="date"
-              className="form-control"
-              id="exampleFormControlInput1"
-              placeholder="name@example.com"
+              className="form-control shadow-sm"
             />
           </div>
-        </div>
-        <div className="col-md-3">
-          <div className="mb-3 d-flex text-center flex-column gap-small">
-            <label
-              htmlFor="exampleFormControlInput1"
-              className="form-label ps-3 "
-            >
-              الي
-            </label>
+          <div className="col-lg-4 col-md-4 col-sm-12">
+            <label className="form-label fw-semibold text-muted ps-1">إلى</label>
             <input
               onChange={(e) => {
                 const selectedDay = e.target.value;
@@ -290,76 +275,83 @@ const ShowAllSalesDetails = () => {
               }}
               value={toDate}
               type="date"
-              className="form-control"
-              id="exampleFormControlInput1"
-              placeholder="name@example.com"
+              className="form-control shadow-sm"
             />
           </div>
+          <div className="col-lg-4 col-md-4 col-sm-12 d-flex align-items-end">
+            <button
+              onClick={handleSavePDF}
+              className="pdf-button"
+              style={{ width: "100%", height: "48px" }}
+            >
+              حفظ PDF
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="d-flex justify-content-around flex-wrap">
-        {allDepartment.map((item) => (
-          <button
-            onClick={() => toggleDepartmentSelection(item.id)}
-            className={`form-check pe-3 py-3 m-3 shadow rounded shift-hover ${
-              selectedDepartments.includes(item.id) ? "shifts" : ""
-            }`}
-            key={item.id}
-            style={{ border: "2px solid #803d3b" }}
+
+        <div
+          style={{
+            border: "1px solid #f0f0f0",
+            borderRadius: "14px",
+            padding: "16px",
+            marginTop: "24px",
+            background: "#fcfcfc",
+          }}
+        >
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "12px",
+            }}
           >
-            <label className="form-check-label" htmlFor="defaultCheck1">
-              {item?.name}
-            </label>
-          </button>
-        ))}
-      </div>
-      <div>
-        <div>
+            {allDepartment.map((item) => {
+              const isSelected = selectedDepartments.includes(item.id);
+              return (
+                <button
+                  onClick={() => toggleDepartmentSelection(item.id)}
+                  key={item.id}
+                  style={{
+                    minWidth: "150px",
+                    padding: "12px 18px",
+                    borderRadius: "12px",
+                    border: isSelected ? "2px solid #803d3b" : "1px solid #e6e6e6",
+                    backgroundColor: isSelected ? "#803d3b" : "#ffffff",
+                    color: isSelected ? "#fff" : "#444",
+                    boxShadow: isSelected
+                      ? "0 10px 20px rgba(128,61,59,0.15)"
+                      : "0 6px 16px rgba(0,0,0,0.05)",
+                    transition: "all 0.25s ease",
+                    fontWeight: 600,
+                  }}
+                  className="department-pill"
+                >
+                  {item?.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
           <button
             className="form-cashier-btn"
             onClick={() => handleGettingReports()}
-            style={{ width: "100%", transition: `all 0.3s` }}
+          style={{
+            width: "100%",
+            transition: "all 0.3s",
+            marginTop: "22px",
+            padding: "14px",
+            fontSize: "1.05rem",
+            fontWeight: "bold",
+          }}
           >
             تأكيد
-          </button>
-        </div>
+        </button>
       </div>
       <table className="table table-hover mt-5" ref={tableRef}>
         <thead>
-          <tr>
-            <th colSpan="8" className="text-center">
-              <div>
-                <span>الفلتر </span>
-                <span> || </span>
-                <span> المنافذ</span>
-                <span>
-                  {selectedDepatrmentName.length > 0 ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "8px",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {selectedDepatrmentName.map((name, index) => (
-                        <span key={index} style={{ margin: "5px" }}>
-                          {name}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    "لا توجد منافذ محددة"
-                  )}
-                </span>
-                <span> || </span>
-                <span>التاريخ</span>
-                <span> من ({fromDate}) </span>
-                <span> || </span>
-                <span> الي ({toDate}) </span>
-              </div>
-            </th>
-          </tr>
+          {/*  */}
 
           <tr>
             <th scope="col">اجمالي التكلفه </th>
