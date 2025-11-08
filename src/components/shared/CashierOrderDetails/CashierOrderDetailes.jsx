@@ -57,7 +57,6 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
         
         handleParentChange(data?.data[0]?.id)
       }
-      console.log('eeeeeeeeeeeeeeee',data.data) // 444444444444444
     } catch (error) {
       console.error("Error fetching Product category parents:", error);
     }
@@ -206,7 +205,7 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
                 }}
                 // value={active}
                 // onChange={() => setActive(!active)}
-                class={`form-check  pe-3 py-3 m-3 shadow rounded shift-hover ${
+                className={`form-check  pe-3 py-3 m-3 shadow rounded shift-hover ${
                   selectedProduct === item.id ? "shifts" : ""
                 } 
           `}

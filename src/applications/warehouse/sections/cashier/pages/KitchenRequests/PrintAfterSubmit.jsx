@@ -194,8 +194,8 @@ function PrintAfterSubmit({
                   السعر الكلي{" "}
                 </td>
                 <td className="text-price" colSpan={3}>
-                  {data.secondary_currency 
-                    ? `${data.secondary_currency.price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                  {data.secondary_currency
+                    ? `${data?.products?.map((product) => product.quantity).reduce((acc, curr) => acc + curr, 0)} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
                     : `${data.price} ج.م`
                   }
                 </td>
@@ -206,7 +206,10 @@ function PrintAfterSubmit({
                 </td>
                 <td className="text-price" colSpan={3}>
                   {data.secondary_currency 
-                    ? `${data.secondary_currency.total_price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                    ? `${data?.products?.map((product) =>  product.quantity).reduce((acc, curr) => acc + curr, 0)} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+
+
+                    // ne wlogic here is every product with 1$  so the order price is the products * quantity in the order
                     : `${data.total_price} ج.م`
                   }
                 </td>

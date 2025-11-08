@@ -170,8 +170,8 @@ function PrintAfterFinish({ id, table_no, user }) {
                   السعر الكلي
                 </td>
                 <td className="text-price" colSpan={2}>
-                  {data.secondary_currency 
-                    ? `${data.secondary_currency.price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                  {data.secondary_currency
+                    ? `${data?.products?.map((product) => product.quantity).reduce((acc, curr) => acc + curr, 0)} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
                     : `${data.price?.toFixed(2)} ج.م`
                   }
                 </td>
@@ -181,8 +181,8 @@ function PrintAfterFinish({ id, table_no, user }) {
                   السعر الكلي بعد الخصم
                 </td>
                 <td className="text-price" colSpan={2}>
-                  {data.secondary_currency 
-                    ? `${data.secondary_currency.total_price} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
+                  {data.secondary_currency
+                    ? `${data?.products?.map((product) => product.quantity).reduce((acc, curr) => acc + curr, 0)}  ${data.secondary_currency.name_ar || data.secondary_currency.code}`
                     : `${data.total_price?.toFixed(2)} ج.م`
                   }
                 </td>
