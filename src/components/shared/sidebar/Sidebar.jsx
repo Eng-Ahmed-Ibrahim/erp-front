@@ -330,23 +330,23 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 88,
-                    name: "view suppliers",
+                    name: 'view suppliers',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/suppliers/show-suppliers"
                 className={`menu-link ${
-                  activeLink === "/warehouse/suppliers/show-suppliers"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/suppliers/show-suppliers'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() => {
                   // console.log("show-suppliers");
-                  handleMenuLinkClick("/warehouse/suppliers/show-suppliers");
+                  handleMenuLinkClick('/warehouse/suppliers/show-suppliers');
                 }}
               >
                 <span className="menu-link-icon">
@@ -354,7 +354,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الموردين
                 </span>
@@ -403,22 +403,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 135,
-                    name: "view recipe_category_parents",
+                    name: 'view recipe_category_parents',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/recipes/show-departments"
                 className={`menu-link ${
-                  activeLink === "/warehouse/recipes/show-departments"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/recipes/show-departments'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() => {
-                  handleMenuLinkClick("/warehouse/recipes/show-departments");
+                  handleMenuLinkClick('/warehouse/recipes/show-departments');
                 }}
               >
                 <span className="menu-link-icon">
@@ -426,7 +426,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   اقسام المخزن
                 </span>
@@ -439,26 +439,26 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 140,
-                    name: "view invoices",
+                    name: 'view invoices',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/invoices/show"
                 className={`menu-link ${
-                  activeLink === "/warehouse/invoices/show" ? "active" : ""
+                  activeLink === '/warehouse/invoices/show' ? 'active' : ''
                 } ${justifyContent}`}
-                onClick={() => handleMenuLinkClick("/warehouse/invoices/show")}
+                onClick={() => handleMenuLinkClick('/warehouse/invoices/show')}
               >
                 <span className="menu-link-icon">
                   <TbReport size={30} />
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الفواتير
                 </span>
@@ -471,22 +471,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 140,
-                    name: "view tainted",
+                    name: 'view tainted',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/invoices/show-tained"
                 className={`menu-link ${
-                  activeLink === "/warehouse/invoices/show-tained"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/invoices/show-tained'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/invoices/show-tained")
+                  handleMenuLinkClick('/warehouse/invoices/show-tained')
                 }
               >
                 <span className="menu-link-icon">
@@ -494,7 +494,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الهالك
                 </span>
@@ -507,22 +507,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 140,
-                    name: "view payable",
+                    name: 'view payable',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/payable/show-payable"
                 className={`menu-link ${
-                  activeLink === "/warehouse/payable/show-payable"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/payable/show-payable'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/payable/show-payable")
+                  handleMenuLinkClick('/warehouse/payable/show-payable')
                 }
               >
                 <span className="menu-link-icon">
@@ -530,7 +530,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   المدفوعات
                 </span>
@@ -543,22 +543,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 140,
-                    name: "view requests",
+                    name: 'view requests',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/requests/show-requests"
                 className={`menu-link ${
-                  activeLink === "/warehouse/requests/show-requests"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/requests/show-requests'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/requests/show-requests")
+                  handleMenuLinkClick('/warehouse/requests/show-requests')
                 }
               >
                 <span className="menu-link-icon">
@@ -566,13 +566,13 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الطلبات
                 </span>
               </Link>
             </li>
-            {user?.username != "رئيس قسم الحسابات" || "يحيي" ? (
+            {user?.username != 'رئيس قسم الحسابات' || 'يحيي' ? (
               <li
                 className="menu-item"
                 title="الكاشير"
@@ -580,26 +580,26 @@ const Sidebar = () => {
                   display: `${
                     checkMenuItemPermission({
                       id: 124,
-                      name: "add order",
+                      name: 'add order',
                     }) &&
                     !checkMenuItemPermission({
                       id: 124,
-                      name: "view sales points only",
+                      name: 'view sales points only',
                     })
-                      ? ""
-                      : "none"
+                      ? ''
+                      : 'none'
                   }`,
                 }}
               >
                 <Link
                   to="/warehouse/cashier/create-order"
                   className={`menu-link ${
-                    activeLink === "/warehouse/cashier/create-order"
-                      ? "active"
-                      : ""
+                    activeLink === '/warehouse/cashier/create-order'
+                      ? 'active'
+                      : ''
                   } ${justifyContent}`}
                   onClick={() => {
-                    handleMenuLinkClick("/warehouse/cashier/create-order");
+                    handleMenuLinkClick('/warehouse/cashier/create-order');
                   }}
                 >
                   <span className="menu-link-icon">
@@ -607,14 +607,14 @@ const Sidebar = () => {
                   </span>
                   <span
                     className={`menu-link-text ${display}`}
-                    style={{ fontSize: "20px" }}
+                    style={{ fontSize: '20px' }}
                   >
                     الكاشير
                   </span>
                 </Link>
               </li>
             ) : null}
-            {user?.username != "رئيس قسم الحسابات" ? (
+            {user?.username != 'رئيس قسم الحسابات' ? (
               <li
                 className="menu-item"
                 title="ترابيزات مفتوحة"
@@ -622,26 +622,26 @@ const Sidebar = () => {
                   display: `${
                     checkMenuItemPermission({
                       id: 124,
-                      name: "add order",
+                      name: 'add order',
                     }) &&
                     !checkMenuItemPermission({
                       id: 124,
-                      name: "view sales points only",
+                      name: 'view sales points only',
                     })
-                      ? ""
-                      : "none"
+                      ? ''
+                      : 'none'
                   }`,
                 }}
               >
                 <Link
                   to="/warehouse/cashier/opened-tables"
                   className={`menu-link ${
-                    activeLink === "/warehouse/cashier/opened-tables"
-                      ? "active"
-                      : ""
+                    activeLink === '/warehouse/cashier/opened-tables'
+                      ? 'active'
+                      : ''
                   } ${justifyContent}`}
                   onClick={() =>
-                    handleMenuLinkClick("/warehouse/cashier/opened-tables")
+                    handleMenuLinkClick('/warehouse/cashier/opened-tables')
                   }
                 >
                   <span className="menu-link-icon">
@@ -649,7 +649,7 @@ const Sidebar = () => {
                   </span>
                   <span
                     className={`menu-link-text ${display}`}
-                    style={{ fontSize: "20px" }}
+                    style={{ fontSize: '20px' }}
                   >
                     ترابيزات مفتوحة
                   </span>
@@ -663,22 +663,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 124,
-                    name: "add order",
+                    name: 'add order',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/cashier/selles-points"
                 className={`menu-link ${
-                  activeLink === "/warehouse/cashier/selles-points"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/cashier/selles-points'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/cashier/selles-points")
+                  handleMenuLinkClick('/warehouse/cashier/selles-points')
                 }
               >
                 <span className="menu-link-icon">
@@ -686,7 +686,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   نقاط البيع
                 </span>
@@ -699,22 +699,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 124,
-                    name: "view Kitchen_orders",
+                    name: 'view Kitchen_orders',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/cashier/kitchen-orders"
                 className={`menu-link ${
-                  activeLink === "/warehouse/cashier/kitchen-orders"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/cashier/kitchen-orders'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/cashier/kitchen-orders")
+                  handleMenuLinkClick('/warehouse/cashier/kitchen-orders')
                 }
               >
                 <span className="menu-link-icon">
@@ -722,7 +722,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text special-txt ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   أوردرات المطبخ
                 </span>
@@ -736,22 +736,22 @@ const Sidebar = () => {
                   display: `${
                     checkMenuItemPermission({
                       id: 124,
-                      name: "view orders",
+                      name: 'view orders',
                     })
-                      ? ""
-                      : "none"
+                      ? ''
+                      : 'none'
                   }`,
                 }}
               >
                 <Link
                   to="/warehouse/cashier/kitchen-requests"
                   className={`menu-link ${
-                    activeLink === "/warehouse/cashier/kitchen-requests"
-                      ? "active"
-                      : ""
+                    activeLink === '/warehouse/cashier/kitchen-requests'
+                      ? 'active'
+                      : ''
                   } ${justifyContent}`}
                   onClick={() =>
-                    handleMenuLinkClick("/warehouse/cashier/kitchen-requests")
+                    handleMenuLinkClick('/warehouse/cashier/kitchen-requests')
                   }
                 >
                   <span className="menu-link-icon">
@@ -759,7 +759,7 @@ const Sidebar = () => {
                   </span>
                   <span
                     className={`menu-link-text special-txt ${display}`}
-                    style={{ fontSize: "20px" }}
+                    style={{ fontSize: '20px' }}
                   >
                     الأوردرات
                   </span>
@@ -773,22 +773,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 146,
-                    name: "view deleted_orders",
+                    name: 'view deleted_orders',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/cashier/deleted-orders"
                 className={`menu-link ${
-                  activeLink === "/warehouse/cashier/deleted-orders"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/cashier/deleted-orders'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/cashier/deleted-orders")
+                  handleMenuLinkClick('/warehouse/cashier/deleted-orders')
                 }
               >
                 <span className="menu-link-icon">
@@ -796,7 +796,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text special-txt ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الأوردرات المحذوفة
                 </span>
@@ -809,26 +809,26 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 124,
-                    name: "view orders",
+                    name: 'view orders',
                   }) &&
                   !checkMenuItemPermission({
                     id: 124,
-                    name: "view orders only",
+                    name: 'view orders only',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/cashier/order-reports"
                 className={`menu-link ${
-                  activeLink === "/warehouse/cashier/order-reports"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/cashier/order-reports'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/cashier/order-reports")
+                  handleMenuLinkClick('/warehouse/cashier/order-reports')
                 }
               >
                 <span className="menu-link-icon">
@@ -836,7 +836,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text special-txt ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   تقارير المبيعات
                 </span>
@@ -844,7 +844,7 @@ const Sidebar = () => {
             </li>
             {!isMechOrChem && (
               <>
-                {" "}
+                {' '}
                 <li
                   className="menu-item"
                   title=" حد الامان"
@@ -852,23 +852,23 @@ const Sidebar = () => {
                     display: `${
                       checkMenuItemPermission({
                         id: 85,
-                        name: "safe limit",
+                        name: 'safe limit',
                       })
-                        ? ""
-                        : "none"
+                        ? ''
+                        : 'none'
                     }`,
                   }}
                 >
                   <Link
                     to="/warehouse/underLimit/show-under-limit"
                     className={`menu-link ${
-                      activeLink === "/warehouse/underLimit/show-under-limit"
-                        ? "active"
-                        : ""
+                      activeLink === '/warehouse/underLimit/show-under-limit'
+                        ? 'active'
+                        : ''
                     } ${justifyContent}`}
                     onClick={() =>
                       handleMenuLinkClick(
-                        "/warehouse/underLimit/show-under-limit"
+                        '/warehouse/underLimit/show-under-limit'
                       )
                     }
                   >
@@ -877,11 +877,11 @@ const Sidebar = () => {
                     </span>
                     <span
                       className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: '20px' }}
                     >
                       حد الامان
                     </span>
-                    <CgDanger size={30} style={{ color: "red" }} />
+                    <CgDanger size={30} style={{ color: 'red' }} />
                   </Link>
                 </li>
                 <li
@@ -891,10 +891,10 @@ const Sidebar = () => {
                     display: `${
                       checkMenuItemPermission({
                         id: 86,
-                        name: "expire_date limit",
+                        name: 'expire_date limit',
                       })
-                        ? ""
-                        : "none"
+                        ? ''
+                        : 'none'
                     }`,
                   }}
                 >
@@ -902,13 +902,13 @@ const Sidebar = () => {
                     to="/warehouse/underLimit/show-under-limit/show-expire-limit"
                     className={`menu-link ${
                       activeLink ===
-                      "/warehouse/underLimit/show-under-limit/show-expire-limit"
-                        ? "active"
-                        : ""
+                      '/warehouse/underLimit/show-under-limit/show-expire-limit'
+                        ? 'active'
+                        : ''
                     } ${justifyContent}`}
                     onClick={() =>
                       handleMenuLinkClick(
-                        "/warehouse/underLimit/show-under-limit/show-expire-limit"
+                        '/warehouse/underLimit/show-under-limit/show-expire-limit'
                       )
                     }
                   >
@@ -917,11 +917,11 @@ const Sidebar = () => {
                     </span>
                     <span
                       className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: '20px' }}
                     >
                       حد الصلاحية
                     </span>
-                    <CgDanger size={30} style={{ color: "red" }} />
+                    <CgDanger size={30} style={{ color: 'red' }} />
                   </Link>
                 </li>
               </>
@@ -967,22 +967,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/returants/show-resturants2"
                 className={`menu-link ${
-                  activeLink === "/warehouse/returants/show-resturants2"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/returants/show-resturants2'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() => {
-                  handleMenuLinkClick("/warehouse/returants/show-resturants2");
+                  handleMenuLinkClick('/warehouse/returants/show-resturants2');
                 }}
               >
                 <span className="menu-link-icon">
@@ -990,7 +990,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   المنتجات
                 </span>
@@ -1003,20 +1003,20 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 113,
-                    name: "view users",
+                    name: 'view users',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/users/show-users"
                 className={`menu-link ${
-                  activeLink === "/warehouse/users/show-users" ? "active" : ""
+                  activeLink === '/warehouse/users/show-users' ? 'active' : ''
                 } ${justifyContent}`}
                 onClick={() => {
-                  handleMenuLinkClick("/warehouse/users/show-users");
+                  handleMenuLinkClick('/warehouse/users/show-users');
                 }}
               >
                 <span className="menu-link-icon">
@@ -1024,7 +1024,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   المستخدمين
                 </span>
@@ -1037,20 +1037,20 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 110,
-                    name: "add role",
+                    name: 'add role',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/roles/show-roles"
                 className={`menu-link ${
-                  activeLink === "/warehouse/roles/show-roles" ? "active" : ""
+                  activeLink === '/warehouse/roles/show-roles' ? 'active' : ''
                 } ${justifyContent}`}
                 onClick={() => {
-                  handleMenuLinkClick("/warehouse/roles/show-roles");
+                  handleMenuLinkClick('/warehouse/roles/show-roles');
                 }}
               >
                 <span className="menu-link-icon">
@@ -1058,7 +1058,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الأدوار
                 </span>
@@ -1071,22 +1071,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 123,
-                    name: "view payment methods",
+                    name: 'view payment methods',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/clients/payment-method"
                 className={`menu-link ${
-                  activeLink === "/warehouse/clients/payment-method"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/clients/payment-method'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() => {
-                  handleMenuLinkClick("/warehouse/clients/payment-method");
+                  handleMenuLinkClick('/warehouse/clients/payment-method');
                 }}
               >
                 <span className="menu-link-icon">
@@ -1094,7 +1094,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   طرق الدفع
                 </span>
@@ -1107,22 +1107,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 123,
-                    name: "view client types",
+                    name: 'view client types',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/clients/client-type"
                 className={`menu-link ${
-                  activeLink === "/warehouse/clients/client-type"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/clients/client-type'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() => {
-                  handleMenuLinkClick("/warehouse/clients/client-type");
+                  handleMenuLinkClick('/warehouse/clients/client-type');
                 }}
               >
                 <span className="menu-link-icon">
@@ -1130,7 +1130,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   أنواع العملاء
                 </span>
@@ -1143,20 +1143,20 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 123,
-                    name: "view clients",
+                    name: 'view clients',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/clients/client"
                 className={`menu-link ${
-                  activeLink === "/warehouse/clients/client" ? "active" : ""
+                  activeLink === '/warehouse/clients/client' ? 'active' : ''
                 } ${justifyContent}`}
                 onClick={() => {
-                  handleMenuLinkClick("/warehouse/clients/client");
+                  handleMenuLinkClick('/warehouse/clients/client');
                 }}
               >
                 <span className="menu-link-icon">
@@ -1164,7 +1164,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   العملاء
                 </span>
@@ -1177,10 +1177,10 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 123,
-                    name: "view discount reasons",
+                    name: 'view discount reasons',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
@@ -1212,22 +1212,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 140,
-                    name: "view reports",
+                    name: 'view reports',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/reports/show-reports"
                 className={`menu-link ${
-                  activeLink === "/warehouse/reports/show-reports"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/reports/show-reports'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/reports/show-reports")
+                  handleMenuLinkClick('/warehouse/reports/show-reports')
                 }
               >
                 <span className="menu-link-icon">
@@ -1235,7 +1235,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   التقارير
                 </span>
@@ -1248,22 +1248,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 135,
-                    name: "view recipe_category_parents",
+                    name: 'view recipe_category_parents',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/departments/show-departments"
                 className={`menu-link ${
-                  activeLink === "/warehouse/departments/show-departments"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/departments/show-departments'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/departments/show-departments")
+                  handleMenuLinkClick('/warehouse/departments/show-departments')
                 }
               >
                 <span className="menu-link-icon">
@@ -1271,7 +1271,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   المخازن الفرعية
                 </span>
@@ -1288,23 +1288,23 @@ const Sidebar = () => {
                         display: `${
                           checkMenuItemPermission({
                             id: 148,
-                            name: "view incentives",
+                            name: 'view incentives',
                           })
-                            ? ""
-                            : "none"
+                            ? ''
+                            : 'none'
                         }`,
                       }}
                     >
                       <Link
                         to="/warehouse/Incentives/show-Incentives"
                         className={`menu-link ${
-                          activeLink === "/warehouse/Incentives/show-Incentives"
-                            ? "active"
-                            : ""
+                          activeLink === '/warehouse/Incentives/show-Incentives'
+                            ? 'active'
+                            : ''
                         } ${justifyContent}`}
                         onClick={() =>
                           handleMenuLinkClick(
-                            "/warehouse/Incentives/show-Incentives"
+                            '/warehouse/Incentives/show-Incentives'
                           )
                         }
                       >
@@ -1313,7 +1313,7 @@ const Sidebar = () => {
                         </span>
                         <span
                           className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
+                          style={{ fontSize: '20px' }}
                         >
                           الحوافز
                         </span>
@@ -1327,22 +1327,22 @@ const Sidebar = () => {
                         display: `${
                           checkMenuItemPermission({
                             id: 148,
-                            name: "view employees_and_jobs",
+                            name: 'view employees_and_jobs',
                           })
-                            ? ""
-                            : "none"
+                            ? ''
+                            : 'none'
                         }`,
                       }}
                     >
                       <Link
                         to="/warehouse/jobs/show-jobs"
                         className={`menu-link ${
-                          activeLink === "/warehouse/jobs/show-jobs"
-                            ? "active"
-                            : ""
+                          activeLink === '/warehouse/jobs/show-jobs'
+                            ? 'active'
+                            : ''
                         } ${justifyContent}`}
                         onClick={() =>
-                          handleMenuLinkClick("/warehouse/jobs/show-jobs")
+                          handleMenuLinkClick('/warehouse/jobs/show-jobs')
                         }
                       >
                         <span className="menu-link-icon">
@@ -1350,7 +1350,7 @@ const Sidebar = () => {
                         </span>
                         <span
                           className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
+                          style={{ fontSize: '20px' }}
                         >
                           الوظائف
                         </span>
@@ -1364,22 +1364,22 @@ const Sidebar = () => {
                         display: `${
                           checkMenuItemPermission({
                             id: 148,
-                            name: "view employees_and_jobs",
+                            name: 'view employees_and_jobs',
                           })
-                            ? ""
-                            : "none"
+                            ? ''
+                            : 'none'
                         }`,
                       }}
                     >
                       <Link
                         to="/warehouse/staff/show-staff"
                         className={`menu-link ${
-                          activeLink === "/warehouse/staff/show-staff"
-                            ? "active"
-                            : ""
+                          activeLink === '/warehouse/staff/show-staff'
+                            ? 'active'
+                            : ''
                         } ${justifyContent}`}
                         onClick={() =>
-                          handleMenuLinkClick("/warehouse/staff/show-staff")
+                          handleMenuLinkClick('/warehouse/staff/show-staff')
                         }
                       >
                         <span className="menu-link-icon">
@@ -1387,7 +1387,7 @@ const Sidebar = () => {
                         </span>
                         <span
                           className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
+                          style={{ fontSize: '20px' }}
                         >
                           العاملين بالدار
                         </span>
@@ -1400,23 +1400,23 @@ const Sidebar = () => {
                         display: `${
                           checkMenuItemPermission({
                             id: 148,
-                            name: "view employees_and_jobs",
+                            name: 'view employees_and_jobs',
                           })
-                            ? ""
-                            : "none"
+                            ? ''
+                            : 'none'
                         }`,
                       }}
                     >
                       <Link
                         to="/warehouse/show-employees-departments"
                         className={`menu-link ${
-                          activeLink === "/warehouse/show-employees-departments"
-                            ? "active"
-                            : ""
+                          activeLink === '/warehouse/show-employees-departments'
+                            ? 'active'
+                            : ''
                         } ${justifyContent}`}
                         onClick={() =>
                           handleMenuLinkClick(
-                            "/warehouse/show-employees-departments"
+                            '/warehouse/show-employees-departments'
                           )
                         }
                       >
@@ -1425,7 +1425,7 @@ const Sidebar = () => {
                         </span>
                         <span
                           className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
+                          style={{ fontSize: '20px' }}
                         >
                           الأقسام
                         </span>
@@ -1435,21 +1435,21 @@ const Sidebar = () => {
                     <li
                       className="menu-item"
                       style={{
-                        height: "25px",
-                        alignItems: "center",
+                        height: '25px',
+                        alignItems: 'center',
                       }}
                     >
                       <Link
                         className="menu-link"
                         onClick={() => handleIncentivesGroupClick()}
                         style={{
-                          justifyContent: "center",
-                          height: "20px",
+                          justifyContent: 'center',
+                          height: '20px',
                         }}
                       >
                         <span
                           className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
+                          style={{ fontSize: '20px' }}
                         >
                           ^
                         </span>
@@ -1465,10 +1465,10 @@ const Sidebar = () => {
                           display: `${
                             checkMenuItemPermission({
                               id: 148,
-                              name: "view employees_and_jobs",
+                              name: 'view employees_and_jobs',
                             })
-                              ? ""
-                              : "none"
+                              ? ''
+                              : 'none'
                           }`,
                         }}
                         onClick={() => handleIncentivesGroupClick()}
@@ -1478,12 +1478,12 @@ const Sidebar = () => {
                         </span>
                         <span
                           className={`menu-link-text ${display}`}
-                          style={{ fontSize: "20px" }}
+                          style={{ fontSize: '20px' }}
                         >
                           الحوافز
                           <img
                             src="../../../../assets/icons/down-arrow.png"
-                            style={{ width: "20px", marginRight: "10px" }}
+                            style={{ width: '20px', marginRight: '10px' }}
                           />
                         </span>
                       </Link>
@@ -1499,26 +1499,26 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 113,
-                    name: "view users",
+                    name: 'view users',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/reports/witer"
                 className={`menu-link ${
-                  activeLink === "/warehouse/reports/witer" ? "active" : ""
+                  activeLink === '/warehouse/reports/witer' ? 'active' : ''
                 } ${justifyContent}`}
-                onClick={() => handleMenuLinkClick("/warehouse/reports/witer")}
+                onClick={() => handleMenuLinkClick('/warehouse/reports/witer')}
               >
                 <span className="menu-link-icon">
                   <TbBrandUnity size={30} />
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الويتر
                 </span>
@@ -1533,10 +1533,10 @@ const Sidebar = () => {
                     display: `${
                       checkMenuItemPermission({
                         id: 140,
-                        name: "ترابيزات مفتوحة",
+                        name: 'ترابيزات مفتوحة',
                       })
-                        ? ""
-                        : "none"
+                        ? ''
+                        : 'none'
                     }`,
                   }}
                 >
@@ -1544,13 +1544,13 @@ const Sidebar = () => {
                     to="/warehouse/departments/show-departments/tables"
                     className={`menu-link ${
                       activeLink ===
-                      "/warehouse/departments/show-departments/tables"
-                        ? "active"
-                        : ""
+                      '/warehouse/departments/show-departments/tables'
+                        ? 'active'
+                        : ''
                     } ${justifyContent}`}
                     onClick={() =>
                       handleMenuLinkClick(
-                        "/warehouse/departments/show-departments/tables"
+                        '/warehouse/departments/show-departments/tables'
                       )
                     }
                   >
@@ -1559,7 +1559,7 @@ const Sidebar = () => {
                     </span>
                     <span
                       className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: '20px' }}
                     >
                       كل التربيزات المفتوحة
                     </span>
@@ -1573,22 +1573,22 @@ const Sidebar = () => {
                     display: `${
                       checkMenuItemPermission({
                         id: 140,
-                        name: "view units",
+                        name: 'view units',
                       })
-                        ? ""
-                        : "none"
+                        ? ''
+                        : 'none'
                     }`,
                   }}
                 >
                   <Link
                     to="/warehouse/units/show-units"
                     className={`menu-link ${
-                      activeLink === "/warehouse/units/show-units"
-                        ? "active"
-                        : ""
+                      activeLink === '/warehouse/units/show-units'
+                        ? 'active'
+                        : ''
                     } ${justifyContent}`}
                     onClick={() =>
-                      handleMenuLinkClick("/warehouse/units/show-units")
+                      handleMenuLinkClick('/warehouse/units/show-units')
                     }
                   >
                     <span className="menu-link-icon">
@@ -1596,7 +1596,7 @@ const Sidebar = () => {
                     </span>
                     <span
                       className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: '20px' }}
                     >
                       الوحدات
                     </span>
@@ -1611,26 +1611,26 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 146,
-                    name: "view products_review",
+                    name: 'view products_review',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/reports/review"
                 className={`menu-link ${
-                  activeLink === "/warehouse/reports/review" ? "active" : ""
+                  activeLink === '/warehouse/reports/review' ? 'active' : ''
                 } ${justifyContent}`}
-                onClick={() => handleMenuLinkClick("/warehouse/reports/review")}
+                onClick={() => handleMenuLinkClick('/warehouse/reports/review')}
               >
                 <span className="menu-link-icon">
                   <TbBrandUnity size={30} />
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   مراجعه المنتجات
                 </span>
@@ -1651,7 +1651,7 @@ const Sidebar = () => {
                   </span>
                   <span
                     className={`menu-link-text ${display}`}
-                    style={{ fontSize: "20px" }}
+                    style={{ fontSize: '20px' }}
                   >
                     كاشير {linkedDepartmentName}
                   </span>
@@ -1665,22 +1665,22 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 148,
-                    name: "view shifts",
+                    name: 'view shifts',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/reports/show-shifts"
                 className={`menu-link ${
-                  activeLink === "/warehouse/reports/show-shifts"
-                    ? "active"
-                    : ""
+                  activeLink === '/warehouse/reports/show-shifts'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/reports/show-shifts")
+                  handleMenuLinkClick('/warehouse/reports/show-shifts')
                 }
               >
                 <span className="menu-link-icon">
@@ -1688,7 +1688,7 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الشيفتات
                 </span>
@@ -1696,7 +1696,7 @@ const Sidebar = () => {
             </li>
             {receptionCollapsedGroup ? (
               <>
-                {" "}
+                {' '}
                 <li
                   className="menu-item"
                   title="كاشير الاستقبال"
@@ -1704,22 +1704,22 @@ const Sidebar = () => {
                     display: `${
                       checkMenuItemPermission({
                         id: 200,
-                        name: "view reception cashier",
+                        name: 'view reception cashier',
                       })
-                        ? ""
-                        : "none"
+                        ? ''
+                        : 'none'
                     }`,
                   }}
                 >
                   <Link
                     to="/warehouse/reception/cashier"
                     className={`menu-link ${
-                      activeLink === "/warehouse/reception/cashier"
-                        ? "active"
-                        : ""
+                      activeLink === '/warehouse/reception/cashier'
+                        ? 'active'
+                        : ''
                     } ${justifyContent}`}
                     onClick={() =>
-                      handleMenuLinkClick("/warehouse/reception/cashier")
+                      handleMenuLinkClick('/warehouse/reception/cashier')
                     }
                   >
                     <span className="menu-link-icon">
@@ -1727,7 +1727,7 @@ const Sidebar = () => {
                     </span>
                     <span
                       className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: '20px' }}
                     >
                       كاشير الإسكان
                     </span>
@@ -1740,22 +1740,22 @@ const Sidebar = () => {
                     display: `${
                       checkMenuItemPermission({
                         id: 201,
-                        name: "manage reception",
+                        name: 'manage reception',
                       })
-                        ? ""
-                        : "none"
+                        ? ''
+                        : 'none'
                     }`,
                   }}
                 >
                   <Link
                     to="/warehouse/reception/management"
                     className={`menu-link ${
-                      activeLink === "/warehouse/reception/management"
-                        ? "active"
-                        : ""
+                      activeLink === '/warehouse/reception/management'
+                        ? 'active'
+                        : ''
                     } ${justifyContent}`}
                     onClick={() =>
-                      handleMenuLinkClick("/warehouse/reception/management")
+                      handleMenuLinkClick('/warehouse/reception/management')
                     }
                   >
                     <span className="menu-link-icon">
@@ -1763,7 +1763,7 @@ const Sidebar = () => {
                     </span>
                     <span
                       className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: '20px' }}
                     >
                       إدارة الإسكان
                     </span>
@@ -1776,26 +1776,26 @@ const Sidebar = () => {
                     display: `${
                       checkMenuItemPermission({
                         id: 201,
-                        name: "manage reception",
+                        name: 'manage reception',
                       })
-                        ? ""
-                        : "none"
+                        ? ''
+                        : 'none'
                     }`,
                   }}
                 >
                   <Link
                     to="/warehouse/accounting"
                     className={`menu-link ${
-                      activeLink === "/warehouse/accounting" ? "active" : ""
+                      activeLink === '/warehouse/accounting' ? 'active' : ''
                     } ${justifyContent}`}
-                    onClick={() => handleMenuLinkClick("/warehouse/accounting")}
+                    onClick={() => handleMenuLinkClick('/warehouse/accounting')}
                   >
                     <span className="menu-link-icon">
                       <FaCalculator size={30} />
                     </span>
                     <span
                       className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: '20px' }}
                     >
                       تقارير الإسكان
                     </span>
@@ -1804,8 +1804,8 @@ const Sidebar = () => {
                 <li
                   className="menu-item"
                   style={{
-                    height: "25px",
-                    alignItems: "center",
+                    height: '25px',
+                    alignItems: 'center',
                   }}
                 >
                   <Link
@@ -1814,13 +1814,13 @@ const Sidebar = () => {
                       setReceptionCollapsedGroup(!receptionCollapsedGroup);
                     }}
                     style={{
-                      justifyContent: "center",
-                      height: "20px",
+                      justifyContent: 'center',
+                      height: '20px',
                     }}
                   >
                     <span
                       className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: '20px' }}
                     >
                       ^
                     </span>
@@ -1836,10 +1836,10 @@ const Sidebar = () => {
                       display: `${
                         checkMenuItemPermission({
                           id: 200,
-                          name: "view reception cashier",
+                          name: 'view reception cashier',
                         })
-                          ? ""
-                          : "none"
+                          ? ''
+                          : 'none'
                       }`,
                     }}
                     onClick={(e) => {
@@ -1851,12 +1851,12 @@ const Sidebar = () => {
                     </span>
                     <span
                       className={`menu-link-text ${display}`}
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: '20px' }}
                     >
                       الإسكان
                       <img
                         src="../../../../assets/icons/down-arrow.png"
-                        style={{ width: "20px", marginRight: "10px" }}
+                        style={{ width: '20px', marginRight: '10px' }}
                       />
                     </span>
                   </Link>
@@ -1870,28 +1870,127 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 205,
-                    name: "add order v2",
+                    name: 'add order v2',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/pos"
                 className={`menu-link ${
-                  activeLink === "/warehouse/pos" ? "active" : ""
+                  activeLink === '/warehouse/pos' ? 'active' : ''
                 } ${justifyContent}`}
-                onClick={() => handleMenuLinkClick("/warehouse/pos")}
+                onClick={() => handleMenuLinkClick('/warehouse/pos')}
               >
                 <span className="menu-link-icon">
                   <FaCashRegister size={30} />
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الكاشير
+                </span>
+              </Link>
+            </li>
+            <li
+              className="menu-item"
+              title="اشتراكات الأنشطة"
+              // style={{
+              //   display: `${
+              //     checkMenuItemPermission({
+              //       id: 210,
+              //       name: 'view activities subscriptions',
+              //     })
+              //       ? ''
+              //       : 'none'
+              //   }`,
+              // }}
+            >
+              <Link
+                to="/warehouse/activities-subscriptions"
+                className={`menu-link ${
+                  activeLink === '/warehouse/activities-subscriptions'
+                    ? 'active'
+                    : ''
+                } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick('/warehouse/activities-subscriptions')
+                }
+              >
+                <span className="menu-link-icon">
+                  <FaUserCircle size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: '20px' }}
+                >
+                  اشتراكات الأنشطة
+                </span>
+              </Link>
+            </li>
+            <li
+              className="menu-item"
+              title="كاشير الأنشطة"
+              // style={{
+              //   display: `${
+              //     checkMenuItemPermission({
+              //       id: 210,
+              //       name: 'view activities subscriptions',
+              //     })
+              //       ? ''
+              //       : 'none'
+              //   }`,
+              // }}
+            >
+              <Link
+                to="/warehouse/activities-cashier"
+                className={`menu-link ${
+                  activeLink === '/warehouse/activities-cashier' ? 'active' : ''
+                } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick('/warehouse/activities-cashier')
+                }
+              >
+                <span className="menu-link-icon">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M3 3H7V7H3V3Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M17 3H21V7H17V3Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M3 17H7V21H3V17Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M17 17H21V21H17V17Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                    <path d="M7 3H17V7" stroke="currentColor" strokeWidth="2" />
+                    <path
+                      d="M7 17H17V21"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                    <path d="M3 7V17" stroke="currentColor" strokeWidth="2" />
+                    <path d="M21 7V17" stroke="currentColor" strokeWidth="2" />
+                  </svg>
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: '20px' }}
+                >
+                  كاشير الأنشطة
                 </span>
               </Link>
             </li>
@@ -1899,10 +1998,10 @@ const Sidebar = () => {
               <Link
                 to="/warehouse/account-settings"
                 className={`menu-link ${
-                  activeLink === "/warehouse/account-settings" ? "active" : ""
+                  activeLink === '/warehouse/account-settings' ? 'active' : ''
                 } ${justifyContent}`}
                 onClick={() =>
-                  handleMenuLinkClick("/warehouse/account-settings")
+                  handleMenuLinkClick('/warehouse/account-settings')
                 }
               >
                 <span className="menu-link-icon">
@@ -1910,13 +2009,12 @@ const Sidebar = () => {
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   الإعدادات
                 </span>
               </Link>
             </li>
-
 
             <li
               className="menu-item"
@@ -1925,37 +2023,40 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 205,
-                    name: "view audit",
+                    name: 'view audit',
                   })
-                    ? ""
-                    : "none"
+                    ? ''
+                    : 'none'
                 }`,
               }}
             >
               <Link
                 to="/warehouse/reports/audit-dashboard"
                 className={`menu-link ${
-                  activeLink === "/warehouse/reports/audit-dashboard" ? "active" : ""
+                  activeLink === '/warehouse/reports/audit-dashboard'
+                    ? 'active'
+                    : ''
                 } ${justifyContent}`}
-                onClick={() => handleMenuLinkClick("/warehouse/reports/audit-dashboard")}
+                onClick={() =>
+                  handleMenuLinkClick('/warehouse/reports/audit-dashboard')
+                }
               >
                 <span className="menu-link-icon">
                   <FaCashRegister size={30} />
                 </span>
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   سجلات المراجعة
                 </span>
               </Link>
             </li>
 
-
             <li className="menu-item" title="تسجيل خروج">
               <button
                 className={`menu-link logout ${
-                  activeLink === "/warehouse/*" ? "active" : ""
+                  activeLink === '/warehouse/*' ? 'active' : ''
                 } ${justifyContent}`}
                 onClick={handleLogout}
               >
@@ -1965,7 +2066,7 @@ const Sidebar = () => {
                 {/* <button onClick={handleLogout} style={{ fontSize: "20px", }}> */}
                 <span
                   className={`menu-link-text ${display}`}
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: '20px' }}
                 >
                   تسجيل خروج
                 </span>

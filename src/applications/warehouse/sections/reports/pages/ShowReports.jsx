@@ -91,6 +91,11 @@ function ShowReports() {
       
       route: "/warehouse/reports/show-reports/type-card",
     },
+    {
+      image: `${Report4}`,
+      name: "تقرير المخزون حسب التصنيفات",
+      route: "/warehouse/reports/show-reports/category-inventory-departments",
+    },
   ];
 
   const handleCardClick = (route) => {

@@ -5,7 +5,8 @@
     padding: 20px;
     border-radius: 8px;
     // box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    box-shadow: 0px 15px 12px 16px rgba(0, 0, 0, 0.2)
+    box-shadow: 0px 15px 12px 16px rgba(0, 0, 0, 0.2);
+    font-family: 'Cairo', sans-serif;
 }
 
 .form-cashier-title {
@@ -15,6 +16,8 @@
     text-align: center;
     border-radius: 5px;
     margin-bottom: 25px;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
 }
 
 .form-cashier-details-parent {
@@ -333,3 +336,63 @@ button:hover {
 .download-btn:hover {
     background-color: #005684;
 } */
+
+// Cairo Font Styles for Scanner Modal and Components
+.subscription-scanner-modal {
+    font-family: 'Cairo', sans-serif !important;
+    
+    .ant-modal-title {
+        font-family: 'Cairo', sans-serif !important;
+        font-weight: 600;
+        font-size: 18px;
+    }
+    
+    .ant-modal-body {
+        font-family: 'Cairo', sans-serif !important;
+    }
+    
+    .scanner-input {
+        font-family: 'Cairo', sans-serif !important;
+        font-size: 16px;
+    }
+    
+    .scanner-label {
+        font-family: 'Cairo', sans-serif !important;
+        font-weight: 600;
+    }
+    
+    .scanner-result {
+        font-family: 'Cairo', sans-serif !important;
+        font-size: 14px;
+    }
+    
+    .scanner-error {
+        font-family: 'Cairo', sans-serif !important;
+        font-size: 14px;
+    }
+    
+    .scanner-button {
+        font-family: 'Cairo', sans-serif !important;
+        font-weight: 500;
+    }
+}
+
+// Floating Scanner Icon
+.floating-scanner-icon {
+    font-family: 'Cairo', sans-serif !important;
+    
+    &:hover {
+        transform: scale(1.1);
+        background-color: #6B2D2B !important;
+    }
+}
+
+// Ensure all form elements use Cairo font
+.form-cashier-label,
+.form-cashier-name-input,
+.form-cashier-input,
+.form-cashier-txt-area,
+.form-cashier-btn,
+.form-cashier-select {
+    font-family: 'Cairo', sans-serif !important;
+}

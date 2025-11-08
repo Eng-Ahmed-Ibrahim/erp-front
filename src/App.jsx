@@ -143,6 +143,8 @@ import {
   ShowSupplierInvoicesReport,
   ShowTotalStores,
 } from "./applications/warehouse/sections/reports/pages";
+import CategoryInventoryReport from "./applications/warehouse/sections/reports/pages/CategoryInventoryReport";
+import ShowDepartmentsForCategoryReport from "./applications/warehouse/sections/reports/pages/ShowDepartmentsForCategoryReport";
 import ShowDepartmentsProducts from "./applications/warehouse/sections/reports/pages/ShowDepartmentsProducts";
 import Home from "./applications/warehouse/sections/home/Home";
 import MenuSellsPoints from "./pages/MenuSellsPoints";
@@ -192,6 +194,8 @@ import ShowAllStaff from "./applications/warehouse/sections/incentives/pages/sho
 import ShowAllJobs from "./applications/warehouse/sections/incentives/pages/showAllJobs";
 import AccountSetting from "./applications/warehouse/sections/accountSettings/AccountSetting.jsx";
 import POSPage from "./pages/pos/POSPage.jsx";
+import ActivitiesSubscriptions from './components/activitiesSubscriptions/ActivitiesSubscriptions.jsx';
+import ActivitiesCashier from './components/activitiesSubscriptions/cashier/ActivitiesCashier/ActivitiesCashier.jsx';
 function App() {
   return (
     <div className="page-wrapper">
@@ -210,7 +214,7 @@ function App() {
               path="/warehouse/suppliers/show-suppliers"
               element={
                 <ProtectedRoute
-                  requiredPermission={{ id: 88, name: "view suppliers" }}
+                  requiredPermission={{ id: 88, name: 'view suppliers' }}
                 >
                   <ShowSuppliers />
                 </ProtectedRoute>
@@ -220,7 +224,7 @@ function App() {
               path="/warehouse/suppliers/add-supplier"
               element={
                 <ProtectedRoute
-                  requiredPermission={{ id: 89, name: "add supplier" }}
+                  requiredPermission={{ id: 89, name: 'add supplier' }}
                 >
                   <AddSupplier />
                 </ProtectedRoute>
@@ -230,7 +234,7 @@ function App() {
               path="/warehouse/suppliers/:id/edit-supplier"
               element={
                 <ProtectedRoute
-                  requiredPermission={{ id: 90, name: "edit supplier" }}
+                  requiredPermission={{ id: 90, name: 'edit supplier' }}
                 >
                   <EditSuppliers />
                 </ProtectedRoute>
@@ -242,7 +246,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 92,
-                    name: "show supplier invoices",
+                    name: 'show supplier invoices',
                   }}
                 >
                   <ShowSupplierInvoices />
@@ -260,7 +264,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 73,
-                    name: "view recipe_category_parents",
+                    name: 'view recipe_category_parents',
                   }}
                 >
                   <Departments />
@@ -273,7 +277,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 147,
-                    name: "view review-recipes",
+                    name: 'view review-recipes',
                   }}
                 >
                   <RecipesReview />
@@ -286,7 +290,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 73,
-                    name: "view recipe_category_parents",
+                    name: 'view recipe_category_parents',
                   }}
                 >
                   <ShowRecipesCategoryParent />
@@ -299,7 +303,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 74,
-                    name: "create recipe_category_parent",
+                    name: 'create recipe_category_parent',
                   }}
                 >
                   <AddRecipeCategoryParent />
@@ -312,7 +316,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 75,
-                    name: "edit recipe_category_parent",
+                    name: 'edit recipe_category_parent',
                   }}
                 >
                   <EditRecipeCategoryParent />
@@ -330,7 +334,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   }}
                 >
                   <Resturants />
@@ -345,7 +349,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   }}
                 >
                   <ShowProduct2 />
@@ -359,7 +363,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   }}
                 >
                   <ShowSubCategory2 />
@@ -373,7 +377,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   }}
                 >
                   <AddNewProduct2 />
@@ -386,7 +390,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   }}
                 >
                   <UpdateProduct2 />
@@ -399,7 +403,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   }}
                 >
                   <CustomPrice />
@@ -412,7 +416,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   }}
                 >
                   <DetailsProduct2 />
@@ -425,7 +429,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   }}
                 >
                   <CreateNewProduct2 />
@@ -438,7 +442,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 93,
-                    name: "view categories",
+                    name: 'view categories',
                   }}
                 >
                   <UpdateSubProduct2 />
@@ -452,7 +456,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 97,
-                    name: "view sub_categories",
+                    name: 'view sub_categories',
                   }}
                 >
                   <ShowSubCategory />
@@ -466,7 +470,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 98,
-                    name: "add sub_category",
+                    name: 'add sub_category',
                   }}
                 >
                   <AddSubCategory />
@@ -480,7 +484,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 99,
-                    name: "edit sub_category",
+                    name: 'edit sub_category',
                   }}
                 >
                   <EditSubCategory />
@@ -496,7 +500,7 @@ function App() {
             <ProtectedRoute
               requiredPermission={{
                 id: 206,
-                name: "view audit",
+                name: 'view audit',
               }}
             >
               <AuditDashboard />
@@ -512,7 +516,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 101,
-                    name: "view products",
+                    name: 'view products',
                   }}
                 >
                   <ShowProduct />
@@ -526,7 +530,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 102,
-                    name: "add product",
+                    name: 'add product',
                   }}
                 >
                   <AddProduct />
@@ -540,7 +544,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "add products to department",
+                    name: 'add products to department',
                   }}
                 >
                   <AddProductToDepartment />
@@ -554,7 +558,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "edit product",
+                    name: 'edit product',
                   }}
                 >
                   {/* <EditProduct /> */}
@@ -569,7 +573,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 105,
-                    name: "add products to department",
+                    name: 'add products to department',
                   }}
                 >
                   <AddProductRecipe />
@@ -590,7 +594,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 77,
-                    name: "view recipe_categories",
+                    name: 'view recipe_categories',
                   }}
                 >
                   <ShowRecipesSubCategory />
@@ -604,7 +608,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 78,
-                    name: "add recipe_category",
+                    name: 'add recipe_category',
                   }}
                 >
                   <AddRecipeSubCategory />
@@ -617,7 +621,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 79,
-                    name: "edit recipe_category",
+                    name: 'edit recipe_category',
                   }}
                 >
                   <EditRecipeSubCategory />
@@ -635,7 +639,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 81,
-                    name: "view recipes",
+                    name: 'view recipes',
                   }}
                 >
                   <ShowRecipe />
@@ -648,7 +652,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 82,
-                    name: "add recipe",
+                    name: 'add recipe',
                   }}
                 >
                   <AddRecipes />
@@ -661,7 +665,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 81,
-                    name: "edit recipe",
+                    name: 'edit recipe',
                   }}
                 >
                   <EditRecipes />
@@ -675,7 +679,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 834,
-                    name: "view recipes",
+                    name: 'view recipes',
                   }}
                 >
                   <RelatedProducts />
@@ -693,7 +697,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 140,
-                    name: "view invoices",
+                    name: 'view invoices',
                   }}
                 >
                   <InvoiceCategories />
@@ -707,7 +711,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view tainted",
+                    name: 'view tainted',
                   }}
                 >
                   <ShowTaintedInvoices />
@@ -720,7 +724,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "add tainted",
+                    name: 'add tainted',
                   }}
                 >
                   <AddTaintedInvoices />
@@ -734,7 +738,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "edit invoice",
+                    name: 'edit invoice',
                   }}
                 >
                   <PrintInvoice />
@@ -748,7 +752,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 140,
-                    name: "view invoices",
+                    name: 'view invoices',
                   }}
                 >
                   <IncomingInvoice />
@@ -761,7 +765,7 @@ function App() {
                   <ProtectedRoute
                     requiredPermission={{
                       id: 141,
-                      name: "view invoices",
+                      name: 'view invoices',
                     }}
                   >
                     <AddInvoices />
@@ -775,7 +779,7 @@ function App() {
                   <ProtectedRoute
                     requiredPermission={{
                       id: 141,
-                      name: "view invoices",
+                      name: 'view invoices',
                     }}
                   >
                     <AddInvoices />
@@ -789,7 +793,7 @@ function App() {
                   <ProtectedRoute
                     requiredPermission={{
                       id: 141,
-                      name: "view invoices",
+                      name: 'view invoices',
                     }}
                   >
                     <AddInvoices />
@@ -803,7 +807,7 @@ function App() {
                   <ProtectedRoute
                     requiredPermission={{
                       id: 141,
-                      name: "view invoices",
+                      name: 'view invoices',
                     }}
                   >
                     <AddInvoices />
@@ -820,7 +824,7 @@ function App() {
               <ProtectedRoute
                 requiredPermission={{
                   id: 85,
-                  name: "safe limit",
+                  name: 'safe limit',
                 }}
               >
                 <ShowUnderLimit />
@@ -834,7 +838,7 @@ function App() {
               <ProtectedRoute
                 requiredPermission={{
                   id: 103,
-                  name: "expire_date limit",
+                  name: 'expire_date limit',
                 }}
               >
                 <ShowExpireLimit />
@@ -851,7 +855,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 130,
-                    name: "view requests",
+                    name: 'view requests',
                   }}
                 >
                   <ShowRequests />
@@ -864,7 +868,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 131,
-                    name: "add request",
+                    name: 'add request',
                   }}
                 >
                   <AddRequest />
@@ -877,7 +881,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 132,
-                    name: "edit request",
+                    name: 'edit request',
                   }}
                 >
                   <EditRequest />
@@ -895,7 +899,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "add order",
+                    name: 'add order',
                   }}
                 >
                   <AddCashierOrder />
@@ -908,7 +912,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "add order",
+                    name: 'add order',
                   }}
                 >
                   <OpenedTables />
@@ -921,7 +925,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "add order",
+                    name: 'add order',
                   }}
                 >
                   <SellsPoints />
@@ -934,7 +938,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "add order",
+                    name: 'add order',
                   }}
                 >
                   <MenuSellsPoints />
@@ -947,7 +951,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "view orders",
+                    name: 'view orders',
                   }}
                 >
                   <OrderDetails />
@@ -960,7 +964,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 130,
-                    name: "view orders",
+                    name: 'view orders',
                   }}
                 >
                   <CashierWarehouseRequests />
@@ -973,7 +977,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 124,
-                    name: "add order",
+                    name: 'add order',
                   }}
                 >
                   <CashierKitchenRequests />
@@ -987,7 +991,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "view orders",
+                    name: 'view orders',
                   }}
                 >
                   <KitchenRequests />
@@ -1001,7 +1005,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "view orders",
+                    name: 'view orders',
                   }}
                 >
                   <DeletedOrders />
@@ -1015,7 +1019,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "view orders",
+                    name: 'view orders',
                   }}
                 >
                   <KitchenRequests />
@@ -1028,7 +1032,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "view Kitchen_orders",
+                    name: 'view Kitchen_orders',
                   }}
                 >
                   <KitchenOrders />
@@ -1041,7 +1045,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "view orders",
+                    name: 'view orders',
                   }}
                 >
                   <OrdersReports />
@@ -1054,7 +1058,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 123,
-                    name: "add order",
+                    name: 'add order',
                   }}
                 >
                   <PrintOrder />
@@ -1067,7 +1071,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 105,
-                    name: "view orders",
+                    name: 'view orders',
                   }}
                 >
                   <AddProductToOrder />
@@ -1085,7 +1089,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 113,
-                    name: "view users",
+                    name: 'view users',
                   }}
                 >
                   <ShowUsers />
@@ -1111,7 +1115,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 115,
-                    name: "edit user",
+                    name: 'edit user',
                   }}
                 >
                   <EditUser />
@@ -1124,7 +1128,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 114,
-                    name: "add user",
+                    name: 'add user',
                   }}
                 >
                   <AddUser />
@@ -1142,7 +1146,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 118,
-                    name: "add role",
+                    name: 'add role',
                   }}
                 >
                   <ShowRoles />
@@ -1155,7 +1159,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 118,
-                    name: "add role",
+                    name: 'add role',
                   }}
                 >
                   <AddRole />
@@ -1168,7 +1172,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 117,
-                    name: "edit role",
+                    name: 'edit role',
                   }}
                 >
                   <EditRole />
@@ -1186,7 +1190,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 81,
-                    name: "view recipes",
+                    name: 'view recipes',
                   }}
                 >
                   <ShowDepartment />
@@ -1200,7 +1204,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "create department",
+                    name: 'create department',
                   }}
                 >
                   <AddDepartments />
@@ -1213,7 +1217,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "edit department",
+                    name: 'edit department',
                   }}
                 >
                   <EditDepartment />
@@ -1230,7 +1234,7 @@ function App() {
                   // }}
                   requiredPermission={{
                     id: 81,
-                    name: "view recipes",
+                    name: 'view recipes',
                   }}
                 >
                   <ShowProductDepartment />
@@ -1243,7 +1247,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 81,
-                    name: "view recipes",
+                    name: 'view recipes',
                   }}
                 >
                   <ShowProductDepartment2 />
@@ -1257,7 +1261,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "add products to department",
+                    name: 'add products to department',
                   }}
                 >
                   <AddProductToDepartment />
@@ -1270,7 +1274,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "ترابيزات مفتوحة",
+                    name: 'ترابيزات مفتوحة',
                   }}
                 >
                   <ShowAllTable />
@@ -1283,7 +1287,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "ترابيزات مفتوحة",
+                    name: 'ترابيزات مفتوحة',
                   }}
                 >
                   <DetailsOrder2 />
@@ -1301,7 +1305,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view units",
+                    name: 'view units',
                   }}
                 >
                   <ShowUnits />
@@ -1314,7 +1318,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "add unit",
+                    name: 'add unit',
                   }}
                 >
                   <AddUnits />
@@ -1327,7 +1331,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "edit unit",
+                    name: 'edit unit',
                   }}
                 >
                   <EditUnits />
@@ -1345,7 +1349,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view payable",
+                    name: 'view payable',
                   }}
                 >
                   <ShowPayables />
@@ -1358,7 +1362,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "add payable",
+                    name: 'add payable',
                   }}
                 >
                   <AddPayable />
@@ -1376,7 +1380,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view payment methods",
+                    name: 'view payment methods',
                   }}
                 >
                   <PaymentMethod />
@@ -1389,7 +1393,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "add payment method",
+                    name: 'add payment method',
                   }}
                 >
                   <AddPaymentMethod />
@@ -1402,7 +1406,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "edit payment method",
+                    name: 'edit payment method',
                   }}
                 >
                   <EditPaymentMethod />
@@ -1415,7 +1419,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view discount reasons",
+                    name: 'view discount reasons',
                   }}
                 >
                   <DiscountReason />
@@ -1428,7 +1432,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "edit discount reason",
+                    name: 'edit discount reason',
                   }}
                 >
                   <EditDiscountReason />
@@ -1441,7 +1445,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "add discount reason",
+                    name: 'add discount reason',
                   }}
                 >
                   <AddDiscountReason />
@@ -1454,7 +1458,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view client types",
+                    name: 'view client types',
                   }}
                 >
                   <ClientType />
@@ -1467,7 +1471,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "edit client type",
+                    name: 'edit client type',
                   }}
                 >
                   <EditClientType />
@@ -1480,7 +1484,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "add client type",
+                    name: 'add client type',
                   }}
                 >
                   <AddClientType />
@@ -1493,7 +1497,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view clients",
+                    name: 'view clients',
                   }}
                 >
                   <Client />
@@ -1506,7 +1510,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "add client",
+                    name: 'add client',
                   }}
                 >
                   <AddClient />
@@ -1519,7 +1523,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "edit client",
+                    name: 'edit client',
                   }}
                 >
                   <EditClient />
@@ -1536,7 +1540,7 @@ function App() {
               <ProtectedRoute
                 requiredPermission={{
                   id: 148,
-                  name: "view incentives",
+                  name: 'view incentives',
                 }}
               >
                 <ShowInventives />
@@ -1549,7 +1553,7 @@ function App() {
               <ProtectedRoute
                 requiredPermission={{
                   id: 148,
-                  name: "view employees_and_jobs",
+                  name: 'view employees_and_jobs',
                 }}
               >
                 <ShowAllStaff />
@@ -1562,20 +1566,20 @@ function App() {
               <ProtectedRoute
                 requiredPermission={{
                   id: 148,
-                  name: "view employees_and_jobs",
+                  name: 'view employees_and_jobs',
                 }}
               >
                 <ShowAllJobs />
               </ProtectedRoute>
             }
-          ></Route>{" "}
+          ></Route>{' '}
           <Route
             path="/warehouse/staff/show-staff"
             element={
               <ProtectedRoute
                 requiredPermission={{
                   id: 148,
-                  name: "view employees_and_jobs",
+                  name: 'view employees_and_jobs',
                 }}
               >
                 <ShowAllStaff />
@@ -1588,7 +1592,7 @@ function App() {
               <ProtectedRoute
                 requiredPermission={{
                   id: 148,
-                  name: "view employees_and_jobs",
+                  name: 'view employees_and_jobs',
                 }}
               >
                 <ShowEmployeesDepartments />
@@ -1602,7 +1606,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowReports />
@@ -1615,7 +1619,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowAllDepartment />
@@ -1628,7 +1632,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowDepartmentsForBalance />
@@ -1641,7 +1645,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowRecipeReports />
@@ -1654,7 +1658,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowSupplierInvoicesReport />
@@ -1667,7 +1671,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <InventoryShowSupplierInvoicesReport />
@@ -1680,7 +1684,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <CashierShowSupplierInvoicesReport />
@@ -1693,7 +1697,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowAllOrdersReports />
@@ -1706,7 +1710,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowAllSalesDetails />
@@ -1719,7 +1723,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowDepartmentsProducts />
@@ -1732,7 +1736,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowDepartmentProductsReport />
@@ -1745,7 +1749,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 154,
-                    name: "view external-orders-reports",
+                    name: 'view external-orders-reports',
                   }}
                 >
                   <ExternalOrdersReport />
@@ -1758,7 +1762,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <InventoryDiscrepancyReviews />
@@ -1772,7 +1776,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowAllSupplier />
@@ -1785,7 +1789,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowTotalStores />
@@ -1798,7 +1802,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowOneRecipeReport />
@@ -1811,7 +1815,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowInventoryBalanceReport />
@@ -1824,7 +1828,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowInventoryDepartmentOrdersReport />
@@ -1837,10 +1841,36 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowCardTypeReport />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/reports/show-reports/category-inventory-departments"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: 'view reports',
+                  }}
+                >
+                  <ShowDepartmentsForCategoryReport />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/reports/show-reports/category-inventory/:id"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: 'view reports',
+                  }}
+                >
+                  <CategoryInventoryReport />
                 </ProtectedRoute>
               }
             ></Route>
@@ -1850,7 +1880,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowRecipesFromAllDepartments />
@@ -1863,7 +1893,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <OneRecipeReport />
@@ -1876,7 +1906,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ShowRecipesForSupplier />
@@ -1889,7 +1919,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view shifts",
+                    name: 'view shifts',
                   }}
                 >
                   <ShoowShifts />
@@ -1902,7 +1932,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <Shifts />
@@ -1915,7 +1945,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <Witer />
@@ -1928,7 +1958,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ReviewProducts />
@@ -1941,7 +1971,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <ReviewProduct />
@@ -1954,7 +1984,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <UpdateReviewProduct />
@@ -1967,7 +1997,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <CreateNewWiter />
@@ -1980,7 +2010,7 @@ function App() {
                 <ProtectedRoute
                   requiredPermission={{
                     id: 103,
-                    name: "view reports",
+                    name: 'view reports',
                   }}
                 >
                   <UpdateWiter />
@@ -1994,14 +2024,14 @@ function App() {
               <ProtectedRoute
                 requiredPermission={{
                   id: 200,
-                  name: "view reception cashier",
+                  name: 'view reception cashier',
                 }}
               >
                 <CashierPage />
               </ProtectedRoute>
             }
           >
-            {" "}
+            {' '}
           </Route>
           <Route
             path="/warehouse/accounting"
@@ -2009,32 +2039,32 @@ function App() {
               <ProtectedRoute
                 requiredPermission={{
                   id: 200,
-                  name: "view reception cashier",
+                  name: 'view reception cashier',
                 }}
               >
                 <AccountingPage />
               </ProtectedRoute>
             }
           >
-            {" "}
+            {' '}
           </Route>
           <Route
             path="/warehouse/reception/management"
             element={
               <ProtectedRoute
-                requiredPermission={{ id: 201, name: "manage reception" }}
+                requiredPermission={{ id: 201, name: 'manage reception' }}
               >
                 <ReceptionPage />
               </ProtectedRoute>
             }
           >
-            {" "}
+            {' '}
           </Route>
           <Route
             path="/warehouse/pos"
             element={
               <ProtectedRoute
-                requiredPermission={{ id: 205, name: "add order v2" }}
+                requiredPermission={{ id: 205, name: 'add order v2' }}
               >
                 <POSPage />
               </ProtectedRoute>
@@ -2043,6 +2073,26 @@ function App() {
           <Route
             path="/warehouse/account-settings"
             element={<AccountSetting />}
+          ></Route>
+          <Route
+            path="/warehouse/activities-subscriptions"
+            element={
+              <ProtectedRoute
+                requiredPermission={{ id: 201, name: 'manage reception' }}
+              >
+                <ActivitiesSubscriptions />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="/warehouse/activities-cashier"
+            element={
+              <ProtectedRoute
+                requiredPermission={{ id: 201, name: 'manage reception' }}
+              >
+                <ActivitiesCashier />
+              </ProtectedRoute>
+            }
           ></Route>
         </Route>
       </Routes>

@@ -1,0 +1,302 @@
+.data-table {
+  background-color: var(--light-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--light-shadow1);
+
+  &--loading,
+  &--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+  }
+
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--brown-color);
+    font-weight: 500;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--base-text-color);
+    text-align: center;
+  }
+
+  &__empty-icon {
+    color: var(--light-beige-color);
+  }
+
+  &__empty-message {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  &__container {
+    overflow-x: auto;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  &__header {
+    background-color: var(--brown-color);
+    color: white;
+  }
+
+  &__header-cell {
+    padding: 1rem;
+    text-align: center;
+    font-weight: 600;
+    font-family: var(--font-family-cairo);
+    white-space: nowrap;
+
+    &--actions {
+      text-align: center;
+      width: 120px;
+    }
+
+    // Specific column widths for different table types
+    &:nth-child(1) { width: 60px; } // ID column
+    &:nth-child(2) { width: 200px; } // Name column
+    &:nth-child(3) { width: 150px; } // Academy/Type column
+    &:nth-child(4) { width: 120px; } // Phone/Duration column
+    &:nth-child(5) { width: 100px; } // Status column
+    &:nth-child(6) { width: 100px; } // Additional column
+    &:nth-child(7) { width: 100px; } // Additional column
+    &:nth-child(8) { width: 100px; } // Additional column
+    &:nth-child(9) { width: 100px; } // Status column
+    &:nth-child(10) { width: 120px; } // Actions column
+  }
+
+  &__body {
+    background-color: var(--light-color);
+  }
+
+  &__row {
+    border-bottom: 1px solid var(--light-beige-color);
+    transition: var(--default-transition);
+
+    &:hover {
+      background-color: rgba(128, 61, 59, 0.05);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--clickable {
+      cursor: pointer;
+    }
+  }
+
+  &__cell {
+    padding: 1rem;
+    color: var(--black-color);
+    vertical-align: middle;
+    text-align: center;
+
+    &--actions {
+      text-align: center;
+      padding: 0.5rem;
+    }
+
+    // Match column widths with headers
+    &:nth-child(1) { width: 60px; } // ID column
+    &:nth-child(2) { width: 200px; } // Name column
+    &:nth-child(3) { width: 150px; } // Academy/Type column
+    &:nth-child(4) { width: 120px; } // Phone/Duration column
+    &:nth-child(5) { width: 100px; } // Status column
+    &:nth-child(6) { width: 100px; } // Additional column
+    &:nth-child(7) { width: 100px; } // Additional column
+    &:nth-child(8) { width: 100px; } // Additional column
+    &:nth-child(9) { width: 100px; } // Status column
+    &:nth-child(10) { width: 120px; } // Actions column
+  }
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--light-beige-color);
+  border-top: 3px solid var(--brown-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Dark mode support
+.dark-mode {
+  .data-table {
+    background-color: var(--bg-color-inverted);
+
+    &__header {
+      background-color: var(--primary-color);
+    }
+
+    &__body {
+      background-color: var(--bg-color-inverted);
+    }
+
+    &__row {
+      border-bottom-color: var(--border-color-inverted);
+
+      &:hover {
+        background-color: rgba(71, 91, 232, 0.05);
+      }
+    }
+
+    &__cell {
+      color: var(--text-color-inverted);
+    }
+
+    &__empty-icon {
+      color: var(--border-color-inverted);
+    }
+
+    &__empty-message {
+      color: var(--base-text-color);
+    }
+  }
+
+  .loading-spinner {
+    border-color: var(--border-color-inverted);
+    border-top-color: var(--primary-color);
+  }
+}
+
+// Pagination styles
+.data-table__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--light-color);
+  border-top: 1px solid var(--light-beige-color);
+  margin-top: 1rem;
+  border-radius: 0 0 8px 8px;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  .pagination-info {
+    font-size: 0.9rem;
+    color: var(--gray-color);
+    font-family: var(--font-family-cairo);
+  }
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .pagination-pages {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .pagination-btn {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--light-beige-color);
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: var(--font-family-cairo);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 40px;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+      background-color: var(--brown-color);
+      color: var(--light-color);
+      border-color: var(--brown-color);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &--active {
+      background-color: var(--brown-color);
+      color: var(--light-color);
+      border-color: var(--brown-color);
+    }
+  }
+
+  .pagination-size {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--gray-color);
+    font-family: var(--font-family-cairo);
+  }
+
+  .pagination-select {
+    padding: 0.5rem;
+    border: 1px solid var(--light-beige-color);
+    border-radius: 4px;
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    font-size: 0.9rem;
+    font-family: var(--font-family-cairo);
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: var(--brown-color);
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .data-table {
+    &__header-cell,
+    &__cell {
+      padding: 0.75rem 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    &__header-cell--actions,
+    &__cell--actions {
+      width: 80px;
+      padding: 0.5rem 0.25rem;
+    }
+
+    &__pagination {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+
+      .pagination-controls {
+        justify-content: center;
+      }
+
+      .pagination-size {
+        justify-content: center;
+      }
+    }
+  }
+}

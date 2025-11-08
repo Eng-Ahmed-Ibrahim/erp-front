@@ -11,6 +11,7 @@ import {
   updateInvoiceQuintity,
   updateInvoicePrice,
   getTransfareInvoiceByType,
+  getStockUsers,
 } from "../../../../../apis/invoices";
 import Table from "../../../../../components/shared/table/Table";
 import { getSuppliers } from "../../../../../apis/suppliers";
@@ -20,6 +21,7 @@ function Categories(props) {
   const [selectedCategory, setSelectedCategory] = useState("inComing");
   const [supplier, setAllSupplier] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [stockUsers, setStockUsers] = useState([]);
 
   const { user } = useAuth();
 
@@ -41,6 +43,20 @@ function Categories(props) {
       setDepartments(res.data);
     };
     fetchDepartments();
+    
+    const fetchStockUsers = async () => {
+      const res = await getStockUsers();
+      if (res && res.data) {
+        setStockUsers(
+          [{ label: "كل المستخدمين", value: "" }].concat(
+            res.data.map((item) => {
+              return { label: item.name, value: item.id };
+            })
+          )
+        );
+      }
+    };
+    fetchStockUsers();
   }, []);
   const statusOptions = [
     { value: "", label: "الحاله" },
@@ -183,8 +199,8 @@ function Categories(props) {
       ? {
           key: "department_id",
           type: "selection",
-          id: "نوع القسم",
-          placeholder: "إختار قسم لإظهار نتائج",
+          id: " القسم",
+          placeholder: "إختار قسم ",
           options: departments.map((department) => {
             return { value: department.id, label: department.name };
           }),
@@ -196,6 +212,13 @@ function Categories(props) {
       id: "اختر الحالة",
       placeholder: "اختر الحالة",
       options: statusOptions,
+    },
+    {
+      key: "created_by",
+      type: "selection",
+      id: "مدخل البيانات",
+      placeholder: "اختر مدخل البيانات",
+      options: stockUsers,
     },
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },
@@ -223,6 +246,13 @@ function Categories(props) {
       options: departments.map((department) => {
         return { value: department.id, label: department.name };
       }),
+    },
+    {
+      key: "created_by",
+      type: "selection",
+      id: "مدخل البيانات",
+      placeholder: "اختر مدخل البيانات",
+      options: stockUsers,
     },
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },
@@ -254,6 +284,13 @@ function Categories(props) {
       placeholder: "اختر الحالة",
       options: statusOptions,
     },
+    {
+      key: "created_by",
+      type: "selection",
+      id: "مدخل البيانات",
+      placeholder: "اختر مدخل البيانات",
+      options: stockUsers,
+    },
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },
   ];
@@ -283,6 +320,13 @@ function Categories(props) {
       id: "اختر الحالة",
       placeholder: "اختر الحالة",
       options: statusOptions,
+    },
+    {
+      key: "created_by",
+      type: "selection",
+      id: "مدخل البيانات",
+      placeholder: "اختر مدخل البيانات",
+      options: stockUsers,
     },
     { key: "from_date", type: "date", id: "من تاريخ" },
     { key: "to_date", type: "date", id: "إلى تاريخ" },

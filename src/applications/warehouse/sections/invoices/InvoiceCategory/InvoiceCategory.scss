@@ -1,12 +1,11 @@
-.invoice-container .row {
-
-    justify-content: space-around;
-    // margin-inline: 40px;
-    padding-inline: 40px;
-}
-
 .invoice-container {
+    font-family: 'Cairo', sans-serif;
+    
     .row {
+        justify-content: space-around;
+        // margin-inline: 40px;
+        padding-inline: 40px;
+
         .category-btn {
             width: calc(calc(100% /     4) - 60px);
 

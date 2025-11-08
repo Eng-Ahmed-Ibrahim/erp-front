@@ -1,0 +1,148 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  z-index: 9999 !important;
+  padding: 1rem;
+}
+
+.modal {
+  background-color: var(--light-color, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+
+  &--small {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  &--medium {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  &--large {
+    width: 100%;
+    max-width: 800px;
+  }
+
+  &--extra-large {
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  &--fullscreen {
+    width: 95vw;
+    height: 95vh;
+    max-width: none;
+    max-height: none;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--light-beige-color, #e5e5e5);
+    background-color: var(--brown-color, #8b4513);
+    color: white;
+    width: 100%;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-family: var(--font-family-cairo, Arial, sans-serif);
+  }
+
+  &__close-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: var(--default-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__content {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    
+    // Hide scrollbar but keep scrolling functionality
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    
+    &::-webkit-scrollbar {
+      display: none; /* WebKit browsers (Chrome, Safari, Edge) */
+    }
+  }
+}
+
+// Dark mode support
+.dark-mode {
+  .modal {
+    background-color: var(--bg-color-inverted);
+
+    &__header {
+      background-color: var(--primary-color);
+      border-bottom-color: var(--border-color-inverted);
+    }
+
+    &__content {
+      background-color: var(--bg-color-inverted);
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .modal {
+    &--medium,
+    &--large,
+    &--extra-large {
+      max-width: 95vw;
+    }
+
+    &__header {
+      padding: 1rem;
+    }
+
+    &__content {
+      padding: 1rem;
+    }
+  }
+}

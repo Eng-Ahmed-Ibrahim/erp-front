@@ -180,6 +180,7 @@ export async function getIncomingInvoiceByType(
     code,
     status,
     department_id,
+    created_by,
   } = filteredValues;
   const default_from = "1970-01-01";
   const default_to = new Date().toISOString().split("T")[0];
@@ -196,6 +197,7 @@ export async function getIncomingInvoiceByType(
           supplier_id,
           status,
           department_id,
+          created_by,
           page,
         },
         headers: {
@@ -231,6 +233,7 @@ export async function getOutgoingInvoiceByType(
     code,
     status,
     department_id,
+    created_by,
   } = filteredValues;
   // const default_from = "1970-01-01";
   // const default_to = new Date().toISOString().split("T")[0];
@@ -247,6 +250,7 @@ export async function getOutgoingInvoiceByType(
           supplier_id,
           status,
           department_id,
+          created_by,
           page,
         },
         headers: {
@@ -279,6 +283,7 @@ export async function getReturndInvoiceByType(
     code,
     status,
     department_id,
+    created_by,
   } = filteredValues;
 
   try {
@@ -294,6 +299,7 @@ export async function getReturndInvoiceByType(
           supplier_id,
           status,
           department_id,
+          created_by,
           page,
         },
         headers: {
@@ -324,6 +330,7 @@ export async function getTransfareInvoiceByType(
     code,
     status,
     department_id,
+    created_by,
   } = filteredValues;
 
   try {
@@ -339,6 +346,7 @@ export async function getTransfareInvoiceByType(
           supplier_id,
           status,
           department_id,
+          created_by,
           page,
         },
         headers: {
@@ -356,7 +364,7 @@ export async function getTransfareInvoiceByType(
 }
 
 export async function getTaintedInvoices(filteredValues, id, setIsLoading) {
-  const { from_date, to_date, supplier_id, invoice_price, page, code, status } =
+  const { from_date, to_date, supplier_id, invoice_price, page, code, status, created_by } =
     filteredValues;
 
   try {
@@ -369,6 +377,7 @@ export async function getTaintedInvoices(filteredValues, id, setIsLoading) {
         invoice_price,
         supplier_id,
         status,
+        created_by,
         page,
       },
       headers: {
@@ -640,5 +649,19 @@ export async function removeRecipeFromInvoice(invoiceId, recipeId) {
       error.response?.data?.error?.message || 'حدث خطأ أثناء حذف المكون'
     );
     throw error;
+  }
+}
+
+export async function getStockUsers() {
+  try {
+    const res = await axios.get(`${domain}/api/v1/store/user/stocks`, {
+      headers: {
+        Authorization: `Bearer ${Token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    message.error("حدث خطأ في جلب المستخدمين");
+    console.error("Error fetching stock users:", error);
   }
 }

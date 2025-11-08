@@ -275,3 +275,31 @@ export async function getAvailableCaptureDates() {
     return { data: [] };
   }
 }
+
+export async function getCategoryInventoryReport(filteredValues, setIsLoading) {
+  try {
+    setIsLoading(true);
+    const { from, to, department_id, parent_category_id, recipe_category_id, report_type } = filteredValues;
+
+    const res = await axios.get(`${domain}/api/v1/store/category_inventory_report`, {
+      params: {
+        from,
+        to,
+        department_id,
+        parent_category_id,
+        recipe_category_id,
+        report_type,
+      },
+      headers: {
+        Authorization: `Bearer ${Token}`,
+      },
+    });
+    
+    setIsLoading(false);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching category inventory report:", error);
+    setIsLoading(false);
+    message.error("حدث خطأ في جلب تقرير فئات المخزون");
+  }
+}
