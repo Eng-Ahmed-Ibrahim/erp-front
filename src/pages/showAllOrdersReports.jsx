@@ -15,6 +15,8 @@ function DataModal({
   selectedPaymentMethodName,
   selectedClientTypeName,
   selectedClientsName,
+  overrideClientTypeName,
+  overrideClientName,
 }) {
   const tableRef = useRef();
   const handleSavePDF = async () => {
@@ -72,9 +74,9 @@ function DataModal({
               <div>
                 <span>الفلتر </span>
                 <span> || </span>
-                <span>({selectedClientTypeName})</span>
+                <span>({overrideClientTypeName || selectedClientTypeName})</span>
                 <span> || </span>
-                <span>({selectedClientsName})</span>
+                <span>({overrideClientName || selectedClientsName})</span>
               </div>
             </th>
           </tr>
@@ -148,6 +150,10 @@ const ShowAllOrderReports = () => {
     useState("");
   const [clientTypes, setClientTypes] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [modalOverrides, setModalOverrides] = useState({
+    clientTypeName: "",
+    clientName: "",
+  });
   const { user } = useAuth();
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -155,6 +161,71 @@ const ShowAllOrderReports = () => {
   const tableRef = useRef();
   const [newCosts, setNewCosts] = useState({});
   const [isModalVisable, setIsModalVisable] = useState(false);
+  const isClientSummaryView = !selectedClients;
+
+  const clientSummary = useMemo(() => {
+    if (!data?.data) {
+      return [];
+    }
+
+    const summaryMap = new Map();
+
+    Object.values(data.data).forEach((department) => {
+      department?.orders?.forEach((order) => {
+        const normalizedName =
+          order.client_name && order.client_name.trim() !== ""
+            ? order.client_name.trim()
+            : "unknown";
+        const clientKey = String(order.client_id ?? normalizedName);
+
+        if (!summaryMap.has(clientKey)) {
+          summaryMap.set(clientKey, {
+            clientId: order.client_id ?? null,
+            clientName:
+              order.client_name && order.client_name.trim() !== ""
+                ? order.client_name
+                : "لا يوجد",
+            clientTypeName: order.client_type_name || "—",
+            totalOrderPrice: 0,
+            totalOrderCount: 0,
+            orders: [],
+          });
+        }
+
+        const entry = summaryMap.get(clientKey);
+        entry.totalOrderPrice += Number(order.total_price) || 0;
+        entry.totalOrderCount += 1;
+        entry.orders.push(order);
+      });
+    });
+
+    return Array.from(summaryMap.values()).sort(
+      (a, b) => b.totalOrderPrice - a.totalOrderPrice
+    );
+  }, [data]);
+
+  const departmentRows = useMemo(
+    () => (data?.data ? Object.values(data.data) : []),
+    [data]
+  );
+
+  const totalClientOrderPrice = useMemo(
+    () =>
+      clientSummary.reduce(
+        (acc, item) => acc + (Number(item.totalOrderPrice) || 0),
+        0
+      ),
+    [clientSummary]
+  );
+
+  const totalClientOrderCount = useMemo(
+    () =>
+      clientSummary.reduce(
+        (acc, item) => acc + (Number(item.totalOrderCount) || 0),
+        0
+      ),
+    [clientSummary]
+  );
   const handleGettingReports = async () => {
     try {
       await getAllWaiters();
@@ -371,16 +442,36 @@ const ShowAllOrderReports = () => {
     }
     pdf.save("تقرير المبيعات المفصل.pdf");
   };
-  const handleClick = (id) => {
-    setSelectedItemId(id);
-    const department = data?.data.find((item) => item.department_id === id);
+  const handleRowClick = (row) => {
+    if (!row) {
+      return;
+    }
 
-    if (department) {
-      const ordersForDepartment = department.orders;
-      setOrders(ordersForDepartment);
+    if (isClientSummaryView) {
+      setSelectedItemId(row.clientId ?? null);
+      setOrders(row.orders || []);
+      setModalOverrides({
+        clientTypeName: row.clientTypeName || "",
+        clientName: row.clientName || "",
+      });
+    } else {
+      setSelectedItemId(row.department_id);
+      setOrders(row.orders || []);
+      setModalOverrides({
+        clientTypeName: "",
+        clientName: "",
+      });
     }
 
     setIsModalVisable(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisable(false);
+    setModalOverrides({
+      clientTypeName: "",
+      clientName: "",
+    });
   };
 
   return (
@@ -644,7 +735,7 @@ const ShowAllOrderReports = () => {
       >
         <thead style={{ backgroundColor: "#80403b", color: "white" }}>
           <tr>
-            <th colSpan="2" className="text-center p-3">
+            <th colSpan={isClientSummaryView ? 4 : 2} className="text-center p-3">
               <div style={{ fontSize: "18px", fontWeight: "bold" }}>
                 <span>طريقة الدفع: {selectedPaymentMethodName || "الكل"}</span>
                 <span style={{ margin: "0 10px" }}>|</span>
@@ -659,62 +750,132 @@ const ShowAllOrderReports = () => {
             </th>
           </tr>
           <tr style={{ backgroundColor: "#e8e8e8" }}>
-            <th scope="col" style={{ width: "70%", textAlign: "right" }}>
-              المنفذ
+            <th
+              scope="col"
+              style={{
+                width: isClientSummaryView ? "35%" : "70%",
+                textAlign: "right",
+              }}
+            >
+              {isClientSummaryView ? "اسم العميل" : "المنفذ"}
             </th>
-            <th scope="col" style={{ width: "30%", textAlign: "center" }}>
-              الإجمالي
+            {isClientSummaryView && (
+              <>
+                <th scope="col" style={{ width: "20%", textAlign: "center" }}>
+                  نوع العميل
+                </th>
+                <th scope="col" style={{ width: "15%", textAlign: "center" }}>
+                  عدد الطلبات
+                </th>
+              </>
+            )}
+            <th
+              scope="col"
+              style={{
+                width: isClientSummaryView ? "30%" : "30%",
+                textAlign: "center",
+              }}
+            >
+              {isClientSummaryView ? "إجمالي قيمة الطلبات" : "الإجمالي"}
             </th>
           </tr>
         </thead>
 
         <tbody>
-          {data?.data &&
-            Object.keys(data.data).map((key, index) => {
-              const order = data.data[key];
-              return (
+          {isClientSummaryView ? (
+            clientSummary.length > 0 ? (
+              clientSummary.map((client) => (
                 <tr
-                  key={index}
+                  key={client.clientId ?? client.clientName}
                   style={{ cursor: "pointer" }}
-                  onClick={() => handleClick(order.department_id)}
+                  onClick={() => handleRowClick(client)}
                 >
-                  <td style={{ textAlign: "right" }}>
-                    {order.department_name}
+                  <td style={{ textAlign: "right" }}>{client.clientName}</td>
+                  <td style={{ textAlign: "center" }}>
+                    {client.clientTypeName}
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {client.totalOrderCount}
                   </td>
                   <td style={{ textAlign: "center", fontWeight: "bold" }}>
-                    {Math.round(order.total_order_price * 100) / 100} ج.م
+                    {Number(client.totalOrderPrice).toFixed(2)} ج.م
                   </td>
                 </tr>
-              );
-            })}
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} style={{ textAlign: "center" }}>
+                  لا توجد بيانات لعرضها.
+                </td>
+              </tr>
+            )
+          ) : departmentRows.length > 0 ? (
+            departmentRows.map((order, index) => (
+              <tr
+                key={order.department_id ?? index}
+                style={{ cursor: "pointer" }}
+                onClick={() => handleRowClick(order)}
+              >
+                <td style={{ textAlign: "right" }}>{order.department_name}</td>
+                <td style={{ textAlign: "center", fontWeight: "bold" }}>
+                  {Math.round(order.total_order_price * 100) / 100} ج.م
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={2} style={{ textAlign: "center" }}>
+                لا توجد بيانات لعرضها.
+              </td>
+            </tr>
+          )}
         </tbody>
 
         <tfoot>
-          <tr style={{ backgroundColor: "#d4edda", fontWeight: "bold" }}>
-            <td style={{ textAlign: "right" }}>الإجمالي الكلي</td>
-            <td style={{ textAlign: "center" }}>
-              {data?.data
-                ? Object.values(data.data)
+          {isClientSummaryView ? (
+            <>
+              <tr style={{ backgroundColor: "#d4edda", fontWeight: "bold" }}>
+                <td colSpan={3} style={{ textAlign: "right" }}>
+                  إجمالي قيمة الطلبات
+                </td>
+                <td style={{ textAlign: "center" }}>
+                  {Number(totalClientOrderPrice).toFixed(2)} ج.م
+                </td>
+              </tr>
+              <tr style={{ backgroundColor: "#f8f9fa", fontWeight: "bold" }}>
+                <td colSpan={3} style={{ textAlign: "right" }}>
+                  إجمالي عدد الطلبات
+                </td>
+                <td style={{ textAlign: "center" }}>{totalClientOrderCount}</td>
+              </tr>
+            </>
+          ) : (
+            <tr style={{ backgroundColor: "#d4edda", fontWeight: "bold" }}>
+              <td style={{ textAlign: "right" }}>الإجمالي الكلي</td>
+              <td style={{ textAlign: "center" }}>
+                {departmentRows
                   .reduce(
                     (acc, item) => acc + (item.total_order_price || 0),
                     0
                   )
-                  .toFixed(2)
-                : 0}{" "}
-              ج.م
-            </td>
-          </tr>
+                  .toFixed(2)}{" "}
+                ج.م
+              </td>
+            </tr>
+          )}
         </tfoot>
       </table>
 
       <DataModal
         show={isModalVisable}
-        onHide={() => setIsModalVisable(false)}
+        onHide={handleCloseModal}
         itemId={selectedItemId}
         orders={orders}
         selectedPaymentMethodName={selectedPaymentMethodName}
         selectedClientTypeName={selectedClientTypeName}
         selectedClientsName={selectedClientsName}
+        overrideClientTypeName={modalOverrides.clientTypeName}
+        overrideClientName={modalOverrides.clientName}
       />
     </div>
   );
