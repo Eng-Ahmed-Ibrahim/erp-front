@@ -6,6 +6,7 @@ import {
   getAcademies,
   getCashiers,
   createSubscription,
+  updateSubscription,
   generateQRCode,
   getQRCodeSVG,
   getBarcodeSVG,
@@ -15,6 +16,7 @@ import {
 import FormField from '../../shared/FormField/FormField';
 import Modal from '../../shared/Modal/Modal';
 import DataTable from '../../shared/DataTable/DataTable';
+import SubscriptionReceipt from '../../shared/SubscriptionReceipt/SubscriptionReceipt';
 import './SubscriptionManagement.scss';
 
 const SubscriptionManagement = () => {
@@ -26,6 +28,12 @@ const SubscriptionManagement = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
+  const [showExtendModal, setShowExtendModal] = useState(false);
+  const [extendSubscription, setExtendSubscription] = useState(null);
+  const [extendEndDate, setExtendEndDate] = useState('');
+  const [extendError, setExtendError] = useState('');
+  const [extendLoading, setExtendLoading] = useState(false);
+  const [showReceiptPreview, setShowReceiptPreview] = useState(false);
   const [qrCode, setQrCode] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -388,10 +396,22 @@ const SubscriptionManagement = () => {
 
   const handleGenerateQR = async (subscription) => {
     try {
+      setShowReceiptPreview(false);
+      setSelectedSubscription(null);
+
       // First generate the QR code to ensure it exists
       const response = await generateQRCode(subscription.id);
+
       if (response.success) {
         setQrCode(response.data.qr_code);
+
+        const subscriptionData = response.data?.subscription_data || {};
+        const baseSubscription = {
+          ...subscription,
+          ...subscriptionData,
+        };
+
+        let updatedSubscription = { ...baseSubscription };
 
         // Now fetch both QR code and barcode SVG directly from the backend
         try {
@@ -400,21 +420,21 @@ const SubscriptionManagement = () => {
             getBarcodeSVG(subscription.id),
           ]);
 
-          // Update subscription with both QR code and barcode SVG data
-          const updatedSubscription = {
-            ...subscription,
+          updatedSubscription = {
+            ...updatedSubscription,
             qr_code_image: {
+              ...(updatedSubscription.qr_code_image || {}),
               svg_data: qrSvgContent,
               filename: `subscription_${subscription.id}_qr.svg`,
             },
+            qr_code_svg: qrSvgContent,
             barcode_image: {
+              ...(updatedSubscription.barcode_image || {}),
               svg_data: barcodeSvgContent,
               filename: `subscription_${subscription.id}_barcode.svg`,
             },
+            barcode_svg: barcodeSvgContent,
           };
-
-          setSelectedSubscription(updatedSubscription);
-          setShowQRModal(true);
 
           console.log('QR Code SVG fetched successfully');
           console.log('QR SVG Content Length:', qrSvgContent.length);
@@ -426,18 +446,42 @@ const SubscriptionManagement = () => {
           );
         } catch (svgError) {
           console.error('Error fetching SVG:', svgError);
-          // Fallback to the original approach
-          const updatedSubscription = {
-            ...subscription,
-            qr_code_image: response.data.qr_code_image,
-          };
-          setSelectedSubscription(updatedSubscription);
-          setShowQRModal(true);
+
+          const qrCodeImage = response.data?.qr_code_image;
+          if (qrCodeImage) {
+            updatedSubscription = {
+              ...updatedSubscription,
+              qr_code_image: qrCodeImage,
+              qr_code_svg:
+                qrCodeImage.svg_data || updatedSubscription.qr_code_svg,
+            };
+
+            if (qrCodeImage?.barcode) {
+              updatedSubscription.barcode_image = {
+                ...(updatedSubscription.barcode_image || {}),
+                ...qrCodeImage.barcode,
+              };
+
+              if (qrCodeImage.barcode.svg_data) {
+                updatedSubscription.barcode_svg = qrCodeImage.barcode.svg_data;
+              }
+            }
+          }
         }
+
+        setSelectedSubscription(updatedSubscription);
+        setShowQRModal(true);
       }
     } catch (error) {
       console.error('Error generating QR code:', error);
     }
+  };
+
+  const handleCloseQRModal = () => {
+    setShowQRModal(false);
+    setSelectedSubscription(null);
+    setShowReceiptPreview(false);
+    setQrCode('');
   };
 
   const handleGenerateAllQRCodes = async () => {
@@ -452,7 +496,7 @@ const SubscriptionManagement = () => {
         );
 
         // Refresh subscriptions to show updated QR codes
-        fetchSubscriptions();
+        loadData();
       }
     } catch (error) {
       console.error('Error generating all QR codes:', error);
@@ -508,6 +552,65 @@ const SubscriptionManagement = () => {
     );
   };
 
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) {
+      return '';
+    }
+    return dateStr.length > 10 ? dateStr.substring(0, 10) : dateStr;
+  };
+
+  const handleOpenExtendModal = (subscription) => {
+    setExtendSubscription(subscription);
+    setExtendEndDate(formatDateForInput(subscription.end_date));
+    setExtendError('');
+    setShowExtendModal(true);
+  };
+
+  const handleCloseExtendModal = () => {
+    setShowExtendModal(false);
+    setExtendSubscription(null);
+    setExtendEndDate('');
+    setExtendError('');
+    setExtendLoading(false);
+  };
+
+  const handleExtendSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!extendSubscription) {
+      return;
+    }
+
+    if (!extendEndDate) {
+      setExtendError('يرجى إدخال تاريخ النهاية الجديد');
+      return;
+    }
+
+    try {
+      setExtendLoading(true);
+      setExtendError('');
+
+      const response = await updateSubscription(extendSubscription.id, {
+        end_date: extendEndDate,
+      });
+
+      if (response.success) {
+        showNotification('تم تمديد تاريخ نهاية الاشتراك بنجاح', 'success');
+        handleCloseExtendModal();
+        await loadData();
+      } else {
+        setExtendError(response.message || 'تعذر تحديث الاشتراك');
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        'حدث خطأ أثناء تحديث تاريخ انتهاء الاشتراك';
+      setExtendError(message);
+    } finally {
+      setExtendLoading(false);
+    }
+  };
+
   const columns = [
     {
       key: 'id',
@@ -544,6 +647,28 @@ const SubscriptionManagement = () => {
 
   const actions = (row) => (
     <div className="table-actions">
+      <button
+        className="action-btn action-btn--secondary"
+        onClick={() => handleOpenExtendModal(row)}
+        title="تعديل تاريخ النهاية"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M5 21H9L19.5 10.5L15.5 6.5L5 17V21Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M14.5 5.5L18.5 1.5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
       <button
         className="action-btn action-btn--primary"
         onClick={() => handleGenerateQR(row)}
@@ -780,6 +905,84 @@ const SubscriptionManagement = () => {
       </div>
 
       {/* Create Subscription Modal */}
+      <Modal
+        isOpen={showExtendModal}
+        onClose={handleCloseExtendModal}
+        title="تعديل الاشتراك"
+        size="medium"
+        className="modal--auto-height subscription-extend-modal"
+      >
+        {extendSubscription ? (
+          <form onSubmit={handleExtendSubmit} className="subscription-form">
+            <div className="form-section">
+              <div className="form-row">
+                <FormField
+                  label="المشترك"
+                  name="extend_subscriber"
+                  value={getSubscriberName(extendSubscription.subscriber_id)}
+                  disabled
+                  readOnly
+                />
+                <FormField
+                  label="العرض"
+                  name="extend_offer"
+                  value={getOfferName(extendSubscription.offer_id)}
+                  disabled
+                  readOnly
+                />
+              </div>
+              <div className="form-row">
+                <FormField
+                  label="تاريخ البداية"
+                  type="date"
+                  name="extend_start_date"
+                  value={formatDateForInput(extendSubscription.start_date)}
+                  disabled
+                  readOnly
+                />
+                <FormField
+                  label="تاريخ النهاية"
+                  type="date"
+                  name="extend_end_date"
+                  value={extendEndDate}
+                  onChange={(e) => {
+                    setExtendEndDate(e.target.value);
+                    if (extendError) {
+                      setExtendError('');
+                    }
+                  }}
+                  min={formatDateForInput(extendSubscription.end_date)}
+                  required
+                  error={extendError}
+                />
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button
+                type="button"
+                className="btn btn--secondary"
+                onClick={handleCloseExtendModal}
+                disabled={extendLoading}
+              >
+                إلغاء
+              </button>
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={extendLoading}
+              >
+                {extendLoading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="loading-state">
+            <p>جاري تحميل بيانات الاشتراك...</p>
+          </div>
+        )}
+      </Modal>
+
       <Modal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
@@ -1027,9 +1230,9 @@ const SubscriptionManagement = () => {
       {/* QR Code Modal */}
       <Modal
         isOpen={showQRModal}
-        onClose={() => setShowQRModal(false)}
+        onClose={handleCloseQRModal}
         title="رمز QR"
-        size="small"
+        size="large"
       >
         <div className="qr-code-display">
           <div className="qr-code-info">
@@ -1164,12 +1367,38 @@ const SubscriptionManagement = () => {
               نسخ بيانات QR
             </button>
             <button
+              className="btn btn--secondary"
+              onClick={() => setShowReceiptPreview((prev) => !prev)}
+            >
+              {showReceiptPreview ? 'إخفاء الإيصال' : 'عرض / طباعة الإيصال'}
+            </button>
+            <button
               className="btn btn--primary"
-              onClick={() => setShowQRModal(false)}
+              onClick={handleCloseQRModal}
             >
               إغلاق
             </button>
           </div>
+
+          {showReceiptPreview && selectedSubscription && (
+            <div className="receipt-preview-container">
+              <SubscriptionReceipt
+                subscription={selectedSubscription}
+                academy={academies.find(
+                  (academy) => academy.id === selectedSubscription.academy_id
+                )}
+                offer={offers.find(
+                  (offer) => offer.id === selectedSubscription.offer_id
+                )}
+                subscriber={subscribers.find(
+                  (subscriber) => subscriber.id === selectedSubscription.subscriber_id
+                )}
+                onAfterPrint={() =>
+                  showNotification('تم طباعة الإيصال بنجاح', 'success')
+                }
+              />
+            </div>
+          )}
         </div>
       </Modal>
     </div>

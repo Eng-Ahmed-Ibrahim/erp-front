@@ -101,15 +101,30 @@
     flex: 1;
     width: 100%;
     min-width: 0;
-    
+
     // Hide scrollbar but keep scrolling functionality
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
-    
+    scrollbar-width: none;
+      /* Firefox */
+      -ms-overflow-style: none;
+      /* Internet Explorer 10+ */
     &::-webkit-scrollbar {
-      display: none; /* WebKit browsers (Chrome, Safari, Edge) */
+      display: none;
+        /* WebKit browsers (Chrome, Safari, Edge) */
     }
   }
+}
+
+.modal--auto-height {
+
+  .modal__content {
+    flex: 0;
+    overflow-y: visible;
+  }
+}
+
+.subscription-extend-modal {
+  max-height: 50vh;
+  max-width: 60vh;
 }
 
 // Dark mode support
@@ -131,6 +146,7 @@
 // Responsive design
 @media (max-width: 768px) {
   .modal {
+
     &--medium,
     &--large,
     &--extra-large {

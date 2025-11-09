@@ -420,6 +420,17 @@
     justify-content: center;
     margin-top: 2rem;
   }
+
+  .receipt-preview-container {
+    margin-top: 2.5rem;
+    text-align: right;
+    direction: rtl;
+
+    .receipt-container {
+      margin: 0 auto;
+      max-width: 600px;
+    }
+  }
 }
 
 .table-actions {
