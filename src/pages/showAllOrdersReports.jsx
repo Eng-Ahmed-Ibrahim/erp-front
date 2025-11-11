@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
-import { message, Modal } from "antd";
+import { message, Modal, Button } from "antd";
 import axios from "axios";
 import { API_ENDPOINT } from "../../config";
 import { changeOrderStatus, getOrders } from "../apis/orders";
@@ -41,28 +41,40 @@ function DataModal({
     }
     pdf.save("تقرير المبيعات المفصل.pdf");
   };
+  const modalFooter = (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        gap: "12px",
+        fontFamily: "'Cairo', sans-serif",
+      }}
+    >
+      <Button onClick={handleSavePDF} key="pdf">
+        حفظ PDF
+      </Button>
+      <Button onClick={onHide} key="cancel">
+        إلغاء
+      </Button>
+      <Button type="primary" onClick={onHide} key="ok">
+        تم
+      </Button>
+    </div>
+  );
   return (
     <Modal
-      title="تفاصيل مبيعات المفصل "
+      title="تقرير مبيعات المفصل "
       centered
       open={show}
       onOk={onHide}
       onCancel={onHide}
       width={1400}
+      className="detailed-report-modal"
+      style={{ fontFamily: "'Cairo', sans-serif" }}
+      bodyStyle={{ fontFamily: "'Cairo', sans-serif" }}
+      footer={modalFooter}
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "start",
-          alignItems: "start",
-        }}
-      >
-        <button onClick={handleSavePDF} className="pdf-button">
-          {" "}
-          حفظ PDF
-        </button>
-      </div>
       <table
         className="table table-hover mt-5"
         style={{ fontSize: "24px" }}
