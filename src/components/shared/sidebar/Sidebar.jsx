@@ -728,6 +728,41 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
+            <li
+              className="menu-item"
+              title="جرد المخزون"
+              style={{
+                // display: `${
+                //   checkMenuItemPermission({
+                //     id: 901,
+                //     name: 'create inventory blind count',
+                //   })
+                //     ? ''
+                //     : 'none'
+                // }`,
+              }}
+            >
+              <Link
+                to="/warehouse/inventory/blind-count"
+                className={`menu-link ${activeLink === '/warehouse/inventory/blind-count'
+                  ? 'active'
+                  : ''
+                  } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick('/warehouse/inventory/blind-count')
+                }
+              >
+                <span className="menu-link-icon">
+                  <FaWarehouse size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: '20px' }}
+                >
+                  جرد المخزون
+                </span>
+              </Link>
+            </li>
             {!isTalaat && user?.department?.is_orders_visible ? (
               <li
                 className="menu-item"

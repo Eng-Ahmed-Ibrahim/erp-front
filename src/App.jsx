@@ -187,6 +187,9 @@ import ReceptionPage from "./pages/reception/ReceptionPage";
 import AuditDashboard from "./pages/AuditDashboard";
 
 import InventoryDiscrepancyReviews from "./pages/InventoryDiscrepancyReviews";
+import InventoryBlindCount from "./pages/InventoryBlindCount";
+import InventoryBlindCountReports from "./pages/InventoryBlindCountReports";
+import InventoryBlindCountDetails from "./pages/InventoryBlindCountDetails";
 import ShowDepartmentsForBalance from "./applications/warehouse/sections/reports/pages/ShowDepartmentsForBalance";
 import ShowInventives from "./applications/warehouse/sections/incentives/pages/showIncentives";
 import ShowEmployeesDepartments from "./applications/warehouse/sections/incentives/pages/showEmployeesDepartments";
@@ -207,6 +210,21 @@ function App() {
             element={<Unauthorized />}
           ></Route>
           <Route path="/warehouse/home" element={<Home />}></Route>
+        </Route>
+        <Route path="/warehouse" element={<Warehouse />}>
+          <Route
+            path="/warehouse/inventory/blind-count"
+            element={
+              <ProtectedRoute
+                // requiredPermission={{
+                //   id: 901,
+                //   name: 'create inventory blind count',
+                // }}
+              >
+                <InventoryBlindCount />
+              </ProtectedRoute>
+            }
+          ></Route>
         </Route>
         <Route path="/warehouse" element={<Warehouse />}>
           <Route path="/warehouse/suppliers" element={<Suppliers />}>
@@ -1766,6 +1784,32 @@ function App() {
                   }}
                 >
                   <InventoryDiscrepancyReviews />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/reports/inventory-blind-counts"
+              element={
+                <ProtectedRoute
+                  // requiredPermission={{
+                  //   id: 902,
+                  //   name: 'view inventory blind count reports',
+                  // }}
+                >
+                  <InventoryBlindCountReports />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/reports/inventory-blind-counts/:id"
+              element={
+                <ProtectedRoute
+                  // requiredPermission={{
+                  //   id: 902,
+                  //   name: 'view inventory blind count reports',
+                  // }}
+                >
+                  <InventoryBlindCountDetails />
                 </ProtectedRoute>
               }
             ></Route>

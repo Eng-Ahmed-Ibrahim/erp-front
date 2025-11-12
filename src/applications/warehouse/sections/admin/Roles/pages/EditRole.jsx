@@ -13,8 +13,13 @@ const EditRole = () => {
     const fetchData = async () => {
       try {
         const recipeData = await getRoleById(id);
-        setData(recipeData?.data);
-        // console.log(recipeData.data);
+        // Transform the data to match the form field structure
+        const transformedData = {
+          name: recipeData?.data?.name,
+          type: recipeData?.data?.permissions?.map(permission => permission.id) || []
+        };
+        setData(transformedData);
+        console.log("Transformed data:", transformedData);
       } catch (error) {
         // console.log("Error fetching data:", error);
       }
@@ -57,7 +62,7 @@ const EditRole = () => {
   return (
     <div className="form-container">
       <h1 className="form-title">تعديل دور</h1>
-      {data && (
+      {data && permissions && (
         <DynamicForm
           fields={fields}
           initialValues={data}

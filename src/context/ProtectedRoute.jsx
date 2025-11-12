@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { Spin } from "antd";
@@ -9,11 +9,16 @@ const ProtectedRoute = ({ children, requiredPermission }) => {
 
   useEffect(() => {
     if (!isLoading) {
-      const hasPermission = user
-        ? user.permissions.some(
-          (permission) => permission.name === requiredPermission.name
-        )
-        : false;
+      const permissions = Array.isArray(user?.permissions)
+        ? user.permissions
+        : [];
+
+      const hasPermission =
+        !requiredPermission ||
+        permissions.some(
+          (permission) => permission?.name === requiredPermission.name
+        );
+
       if (!hasPermission) {
         navigate("/warehouse/unauthorized");
       }

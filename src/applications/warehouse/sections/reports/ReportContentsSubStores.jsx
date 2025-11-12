@@ -49,6 +49,12 @@ const ReportContentsSubStores = () => {
       img: `${Report5}`,
       route: "/warehouse/reports/inventory-discrepancy-reviews/show",
     },
+    {
+      id: 6,
+      name: "تقارير جرد المخزون",
+      img: `${Report5}`,
+      route: "/warehouse/reports/inventory-blind-counts",
+    },
   ];
 
   if (viewProductsReport) {
