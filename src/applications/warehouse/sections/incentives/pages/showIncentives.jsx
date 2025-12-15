@@ -103,6 +103,7 @@ function DataModal({ show, onHide, item, itemId, refreshFn }) {
   const [discount, setDiscount] = useState(0);
   const [reward, setReward] = useState(0);
   const [points, setPoints] = useState(0);
+  const [excellenceBonus, setExcellenceBonus] = useState(0);
   const [advanceDeduction, setAdvanceDeduction] = useState(0);
   const [simCardDeduction, setSimCardDeduction] = useState(0);
   const [otherDeduction, setOtherDeduction] = useState(0);
@@ -111,6 +112,7 @@ function DataModal({ show, onHide, item, itemId, refreshFn }) {
     setDiscount(item?.discount || 0);
     setReward(item?.reward || 0);
     setPoints(item?.points || 0);
+    setExcellenceBonus(item?.excellence_bonus || 0);
     setAdvanceDeduction(item?.advance || 0);
     setSimCardDeduction(item?.sim_card_deduction || 0);
     setOtherDeduction(item?.other_deductions || 0);
@@ -123,6 +125,7 @@ function DataModal({ show, onHide, item, itemId, refreshFn }) {
         discount: discount,
         reward: reward,
         points: points,
+        excellence_bonus: excellenceBonus,
         advance: advanceDeduction,
         sim_card_deduction: simCardDeduction,
         other_deductions: otherDeduction,
@@ -202,6 +205,20 @@ function DataModal({ show, onHide, item, itemId, refreshFn }) {
             required
           />
         </div>
+        <div className="mb-3">
+          <label htmlFor="exampleInputPassword" className="form-label">
+            {" "}
+            مكافأة التميز{" "}
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="exampleInputEmail1"
+            value={excellenceBonus}
+            onChange={(e) => setExcellenceBonus(e.target.value)}
+            required
+          />
+        </div>
 
         <hr style={{ width: "50%", color: "#803D3B", margin: "5px auto" }} />
         <hr style={{ width: "50%", color: "#803D3B", margin: "5px auto" }} />
@@ -274,6 +291,7 @@ const ShowInventives = () => {
   const [incentivesCount, setIncentivesCount] = useState([]);
   const [employeeType, setEmployeeType] = useState([]);
   const [employeeTypes, setEmployeesTypes] = useState([]);
+  const [hasExcellenceBonus, setHasExcellenceBonus] = useState("all");
   const tableRef = useRef(null);
   const [saveButtonState, changeSaveButtonState] = useState(false);
   const [incetiveType, setIncentiveType] = useState(1);
@@ -311,6 +329,10 @@ const ShowInventives = () => {
 
   const handleEmplyeeTypChange = (type) => {
     setEmployeeType(type);
+  };
+
+  const handleExcellenceBonusFilterChange = (value) => {
+    setHasExcellenceBonus(value);
   };
 
   useEffect(() => {
@@ -369,6 +391,7 @@ const ShowInventives = () => {
       month: selectedMonth,
       employee_type: employeeType,
       type: incetiveType,
+      has_excellence_bonus: hasExcellenceBonus,
     };
 
     await axios
@@ -402,6 +425,7 @@ const ShowInventives = () => {
     employeeType,
     saveButtonState,
     incetiveType,
+    hasExcellenceBonus,
   ]);
 
   const handelEditPoints = async () => {
@@ -611,6 +635,30 @@ const ShowInventives = () => {
                     {type.name}
                   </Select.Option>
                 ))}
+            </Select>
+          </div>
+          <div>
+            <label
+              className="form-label"
+              style={{
+                fontWeight: "bold",
+                marginBottom: "8px",
+                display: "block",
+              }}
+            >
+              مكافأة التميز
+            </label>
+            <Select
+              className="form-input"
+              value={hasExcellenceBonus}
+              onChange={handleExcellenceBonusFilterChange}
+              placeholder="اختر الحالة"
+              style={{ width: "200px", height: "45px" }}
+              dropdownAlign={{ overflow: "auto", align: "bottomCenter" }}
+            >
+              <Select.Option value="all">الكل</Select.Option>
+              <Select.Option value={true}>يوجد مكافأة</Select.Option>
+              <Select.Option value={false}>لا يوجد مكافأة</Select.Option>
             </Select>
           </div>
         </div>
