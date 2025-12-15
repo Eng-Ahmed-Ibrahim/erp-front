@@ -3,25 +3,29 @@ import { API_ENDPOINT } from "../../../config";
 const domain = API_ENDPOINT;
 import { message } from "antd";
 const Token = localStorage.getItem("token") || sessionStorage.getItem("token");
+
 export async function getDeaprtments(
   filteredValues = { name: "", page: "" },
   id,
-  setIsLoading
+  setIsLoading,
+  include_invoices = true
 ) {
   try {
     setIsLoading(true);
-    const { name, page, from_date, to_date, warehouse_section_id } = filteredValues;
+    const { name, page, from_date, to_date, warehouse_section_id } =
+      filteredValues;
 
     const res = await axios.get(`${domain}/api/v1/store/department`, {
       params: {
         name: name,
         Deaprtment_category_id: id,
-        date :{
+        date: {
           from: from_date,
           to: to_date,
         },
         page,
-        warehouse_section_id
+        warehouse_section_id,
+        include_invoices : include_invoices
       },
       headers: {
         Authorization: `Bearer ${Token}`,
@@ -150,7 +154,7 @@ export async function getDeaprtmentsFilterById(
 
     const res = await axios.get(
       `${domain}/api/v1/store/products/department/${id}`,
-      // `${domain}/api/v1/store/invoice/filter/get_recipes/out_going_from_to_date/${id}`, 
+      // `${domain}/api/v1/store/invoice/filter/get_recipes/out_going_from_to_date/${id}`,
       {
         params: {
           name: name,
@@ -190,18 +194,19 @@ export async function deleteDeaprtment(id) {
   }
 }
 
-export async function deleteProductDeaprtment(id ,dep_id) {
+export async function deleteProductDeaprtment(id, dep_id) {
   try {
     const res = await axios.delete(
       `${domain}/api/v1/store/products/department/delete/${id}`,
-      {params : {
-        department_id:dep_id
-      },
-      
+      {
+        params: {
+          department_id: dep_id,
+        },
+
         headers: {
           Authorization: `Bearer ${Token}`,
-        },}
-      
+        },
+      }
     );
     // // console.log(res.data);
     return res.data;

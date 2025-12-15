@@ -10,7 +10,7 @@ import { getAllDepartments } from "../../../../../../apis/departments";
 
 import { API_ENDPOINT } from "../../../../../../../config";
 import { useNavigate } from "react-router-dom";
-import { message, Modal } from "antd";
+import { message, Modal, Select } from "antd";
 import Invoice from "../../Invoice";
 import TaintedInvoiceDetailes from "../../../../../../components/shared/InvoiveDetails/TaintedInvoiceDetailes";
 
@@ -298,18 +298,21 @@ const AddInvoices = () => {
           <label className="form-label" htmlFor="supplierSelect">
             اختر المورد:
           </label>
-          <select
+          <Select
+            showSearch
+            placeholder="اختر المورد"
+            optionFilterProp="children"
+            onChange={(value) => setSelectedSupplier(value)}
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            options={suppliers.map((supplier) => ({
+              value: supplier.id,
+              label: supplier.name,
+            }))}
+            style={{ width: '100%', height: '40px' }}
             className="form-select"
-            id="supplierSelect"
-            onChange={(e) => setSelectedSupplier(e.target.value)}
-          >
-            <option value="">اختر المورد</option>
-            {suppliers.map((supplier) => (
-              <option key={supplier.id} value={supplier.id}>
-                {supplier.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       )}
 
@@ -320,18 +323,21 @@ const AddInvoices = () => {
           <label className="form-label" htmlFor="supplierSelect">
             {lastItem === 'transfare' ? ' تحويل من' : 'اختر قسم:'}
           </label>
-          <select
+          <Select
+            showSearch
+            placeholder="اختر قسم"
+            optionFilterProp="children"
+            onChange={(value) => setSelectedDepartment(value)}
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            options={department.map((dept) => ({
+              value: dept.id,
+              label: dept.name,
+            }))}
+            style={{ width: '100%', height: '40px' }}
             className="form-select"
-            id="supplierSelect"
-            onChange={(e) => setSelectedDepartment(e.target.value)}
-          >
-            <option value="">اختر قسم</option>
-            {department.map((supplier) => (
-              <option key={supplier.id} value={supplier.id}>
-                {supplier.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       ) : null}
 
@@ -340,18 +346,21 @@ const AddInvoices = () => {
           <label className="form-label" htmlFor="supplierSelect">
             إلي
           </label>
-          <select
+          <Select
+            showSearch
+            placeholder="اختر قسم"
+            optionFilterProp="children"
+            onChange={(value) => setTargetDepartment(value)}
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            options={department.map((dept) => ({
+              value: dept.id,
+              label: dept.name,
+            }))}
+            style={{ width: '100%', height: '40px' }}
             className="form-select"
-            id="supplierSelect"
-            onChange={(e) => setTargetDepartment(e.target.value)}
-          >
-            <option value="">اختر قسم</option>
-            {department.map((supplier) => (
-              <option key={supplier.id} value={supplier.id}>
-                {supplier.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       ) : null}
 

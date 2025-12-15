@@ -1,22 +1,22 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { API_ENDPOINT } from '../../config';
-import { Pagination, Select, message } from 'antd';
-import { usePDF } from 'react-to-pdf';
-import { useAuth } from '../context/AuthContext';
-import '../fonts/Amiri-Regular-normal.js';
+import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
+import { API_ENDPOINT } from "../../config";
+import { Pagination, Select, message } from "antd";
+import { usePDF } from "react-to-pdf";
+import { useAuth } from "../context/AuthContext";
+import "../fonts/Amiri-Regular-normal.js";
 
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import LogoDAR from '../../public/assets/images/Dar_logo.svg';
-import { useMemo } from 'react';
-import generatePDF, { Resolution, Margin } from 'react-to-pdf';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { DownloadTableExcel } from 'react-export-table-to-excel';
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+import LogoDAR from "../../public/assets/images/Dar_logo.svg";
+import { useMemo } from "react";
+import generatePDF, { Resolution, Margin } from "react-to-pdf";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import { DownloadTableExcel } from "react-export-table-to-excel";
 
 const ShowInventoryBalanceReport = () => {
   const tableRef = useRef();
@@ -24,19 +24,22 @@ const ShowInventoryBalanceReport = () => {
   const item = useLocation()?.state?.item;
   const [isPending, setIsPending] = useState(false);
   const [searchItem, setSearchItem] = useState([]);
-  const [fromDate, setFromDate] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [reportType, setReportType] = useState('');
+  const [fromDate, setFromDate] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [reportType, setReportType] = useState("");
   const [recipeCategoryParents, setRecipeCategoryParents] = useState([]);
 
-  const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]);
+  const [toDate, setToDate] = useState(new Date().toISOString().split("T")[0]);
   const startDate = new Date(2024 - 11 - 12);
   const Token =
-    localStorage.getItem('token') || sessionStorage.getItem('token');
+    localStorage.getItem("token") || sessionStorage.getItem("token");
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const { id } = useParams();
   console.log(id);
+  const [WarehouseSections, setWarehouseSections] = useState([]);
+  const [sectionId, SetSectionId] = useState("");
+
   useEffect(() => {
     fetchRecipeCategoryParents();
 
@@ -45,7 +48,7 @@ const ShowInventoryBalanceReport = () => {
       ?.get(`${API_ENDPOINT}/api/v1/store/inventory_balance`, {
         params: {
           data: {
-            from: '2024-11-12',
+            from: "2024-11-12",
             to: toDate,
             department_id: id,
           },
@@ -62,6 +65,28 @@ const ShowInventoryBalanceReport = () => {
         setIsPending(false);
       });
   }, [currentPage]);
+
+  useEffect(() => {
+    const fetchWarehouseSections = async () => {
+      try {
+        const response = await fetch(
+          `${API_ENDPOINT}/api/v1/store/warehouse_sections`,
+          {
+            headers: {
+              Authorization: `Bearer ${Token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setWarehouseSections(data.data);
+      } catch (error) {
+        console.error("Error fetching recipe category parents:", error);
+      }
+    };
+
+    fetchWarehouseSections();
+  }, []);
+
   const fetchRecipeCategoryParents = async () => {
     try {
       const response = await fetch(
@@ -75,21 +100,21 @@ const ShowInventoryBalanceReport = () => {
       const data = await response.json();
       setRecipeCategoryParents(data.data);
     } catch (error) {
-      console.error('Error fetching recipe category parents:', error);
+      console.error("Error fetching recipe category parents:", error);
     }
   };
 
   const options = [
-    { name: 'كميات ', id: 1 },
-    { name: 'أسعار', id: 2 },
+    { name: "كميات ", id: 1 },
+    { name: "أسعار", id: 2 },
   ];
 
   const handleSavePDF = async () => {
     try {
       const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4',
+        orientation: "p",
+        unit: "mm",
+        format: "a4",
         compress: true,
       });
 
@@ -104,11 +129,11 @@ const ShowInventoryBalanceReport = () => {
         scale: 2,
         logging: false,
         useCORS: true,
-        backgroundColor: '#ffffff',
+        backgroundColor: "#ffffff",
         windowHeight: table.scrollHeight,
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.85);
+      const imgData = canvas.toDataURL("image/jpeg", 0.85);
 
       const imgWidth = pageWidth;
       const totalHeight = (canvas.height * imgWidth) / canvas.width;
@@ -116,13 +141,13 @@ const ShowInventoryBalanceReport = () => {
       let heightLeft = totalHeight;
       let position = topMargin;
       let pageNumber = 1;
-      pdf.setFont('Amiri-Regular');
+      pdf.setFont("Amiri-Regular");
       pdf.setFontSize(11);
       // pdf.text("تقرير المخازن", 105, 10, { align: "center" });
 
       pdf.addImage(
         imgData,
-        'JPEG',
+        "JPEG",
         leftMargin,
         position,
         imgWidth,
@@ -134,11 +159,11 @@ const ShowInventoryBalanceReport = () => {
         pageNumber++;
         position = -(totalHeight - heightLeft);
 
-        pdf.text('تقرير المخازن (استمرار)', leftMargin, 15);
+        pdf.text("تقرير المخازن (استمرار)", leftMargin, 15);
 
         pdf.addImage(
           imgData,
-          'JPEG',
+          "JPEG",
           leftMargin,
           position,
           imgWidth,
@@ -164,19 +189,19 @@ const ShowInventoryBalanceReport = () => {
         const bgY = textY - textHeight;
 
         pdf.setFillColor(255, 255, 255);
-        pdf.rect(0, bgY, textWidth + 10, textHeight + 15, 'F');
+        pdf.rect(0, bgY, textWidth + 10, textHeight + 15, "F");
 
         if (i) {
-          pdf.rect(0, 0, textWidth + 10, 5, 'F');
+          pdf.rect(0, 0, textWidth + 10, 5, "F");
         }
 
-        pdf.text(text, 105, textY, { align: 'right' });
+        pdf.text(text, 105, textY, { align: "right" });
       }
 
-      pdf.save('ميزان مخزني.pdf');
+      pdf.save("ميزان مخزني.pdf");
     } catch (error) {
-      console.error('PDF generation error:', error);
-      alert('حدث خطأ أثناء إنشاء ملف PDF');
+      console.error("PDF generation error:", error);
+      alert("حدث خطأ أثناء إنشاء ملف PDF");
     }
   };
 
@@ -192,6 +217,7 @@ const ShowInventoryBalanceReport = () => {
             name: searchItem,
             category_id: categoryId,
             report_type: reportType,
+            warehouse_section_id : sectionId,
           },
         },
         headers: {
@@ -205,7 +231,7 @@ const ShowInventoryBalanceReport = () => {
       .catch((err) => {
         setIsPending(false);
         message.error(err.response.data.message);
-        console.error('Error fetching data:', err);
+        console.error("Error fetching data:", err);
       });
   };
   const handlePageChange = (page) => {
@@ -263,11 +289,11 @@ const ShowInventoryBalanceReport = () => {
 `;
 
   if (
-    typeof window !== 'undefined' &&
-    !document.getElementById('sum-row-styles')
+    typeof window !== "undefined" &&
+    !document.getElementById("sum-row-styles")
   ) {
-    const style = document.createElement('style');
-    style.id = 'sum-row-styles';
+    const style = document.createElement("style");
+    style.id = "sum-row-styles";
     style.innerHTML = sumRowStyles;
     document.head.appendChild(style);
   }
@@ -302,7 +328,7 @@ const ShowInventoryBalanceReport = () => {
             className="form-control"
             value={toDate}
             onChange={(e) => {
-              setToDate(e.target.value.toString().split('T')[0]);
+              setToDate(e.target.value.toString().split("T")[0]);
             }}
             min="2024-11-12"
           />
@@ -346,6 +372,28 @@ const ShowInventoryBalanceReport = () => {
 
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
+            مخزن :
+          </label>
+          <select
+            className="form-control"
+            aria-label="المخزن"
+            value={sectionId}
+            onChange={(e) => {
+              const selectedText = e.target.selectedOptions[0].text;
+              SetSectionId(e.target.value);
+            }}
+          >
+            <option value=""> من فضلك اختر المخزن</option>
+            {WarehouseSections.map((section, index) => (
+              <option key={section.id} value={section.id}>
+                {section.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="exampleInputEmail1" className="form-label">
             نوع التقرير
           </label>
           <select
@@ -367,9 +415,9 @@ const ShowInventoryBalanceReport = () => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '20px' }}>
+      <div style={{ display: "flex", gap: "20px" }}>
         <button onClick={handleSavePDF} className="pdf-button">
-          {' '}
+          {" "}
           حفظ PDF
         </button>
 
@@ -382,51 +430,51 @@ const ShowInventoryBalanceReport = () => {
         </DownloadTableExcel>
 
         <button onClick={handleFilterData} className="pdf-button">
-          {' '}
+          {" "}
           فلتره
         </button>
       </div>
       <table
         className="table table table-hover mt-5"
         style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          color: 'var(--text-color-inverted)',
+          width: "100%",
+          borderCollapse: "collapse",
+          color: "var(--text-color-inverted)",
         }}
         ref={tableRef}
       >
         <thead>
           <tr className="fw-bold fs-5 my-3">
-            <th scope="col" style={{ background: '#edede9' }}>
+            <th scope="col" style={{ background: "#edede9" }}>
               الرقم
             </th>
 
-            <th scope="col" style={{ background: '#edede9' }}>
+            <th scope="col" style={{ background: "#edede9" }}>
               الصنف
             </th>
-            <th scope="col" style={{ background: '#edede9' }}>
+            <th scope="col" style={{ background: "#edede9" }}>
               رصيد اول المده
             </th>
-            <th scope="col" style={{ background: '#edede9' }}>
+            <th scope="col" style={{ background: "#edede9" }}>
               مورد
             </th>
-            <th scope="col" style={{ background: '#edede9' }}>
+            <th scope="col" style={{ background: "#edede9" }}>
               صرف
             </th>
-            <th scope="col" style={{ background: '#edede9' }}>
+            <th scope="col" style={{ background: "#edede9" }}>
               مرتجع منه
             </th>
-            <th scope="col" style={{ background: '#edede9' }}>
+            <th scope="col" style={{ background: "#edede9" }}>
               مرتجع اليه
             </th>
-            <th scope="col" style={{ background: '#edede9' }}>
+            <th scope="col" style={{ background: "#edede9" }}>
               الهالك
             </th>
-            <th scope="col" style={{ background: '#edede9' }}>
+            <th scope="col" style={{ background: "#edede9" }}>
               الجرد الفعلى
             </th>
-            <th scope="col" style={{ background: '#edede9' }}>
-            الاجمالى
+            <th scope="col" style={{ background: "#edede9" }}>
+              الاجمالى
             </th>
           </tr>
         </thead>
@@ -466,11 +514,11 @@ const ShowInventoryBalanceReport = () => {
               <td
                 className="clickable-cell"
                 style={{
-                  padding: ' 14px 12px',
-                  border: '1px solid #E4C59E',
-                  color: '#803D3B',
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
                 }}
               >
                 {item.recipe_name}
@@ -478,11 +526,11 @@ const ShowInventoryBalanceReport = () => {
               <td
                 className="clickable-cell"
                 style={{
-                  padding: ' 14px 12px',
-                  border: '1px solid #E4C59E',
-                  color: '#803D3B',
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
                 }}
               >
                 {item.initial_stock}
@@ -490,11 +538,11 @@ const ShowInventoryBalanceReport = () => {
               <td
                 className="clickable-cell"
                 style={{
-                  padding: ' 14px 12px',
-                  border: '1px solid #E4C59E',
-                  color: '#803D3B',
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
                 }}
               >
                 {item.total_incoming}
@@ -502,11 +550,11 @@ const ShowInventoryBalanceReport = () => {
               <td
                 className="clickable-cell"
                 style={{
-                  padding: ' 14px 12px',
-                  border: '1px solid #E4C59E',
-                  color: '#803D3B',
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
                 }}
               >
                 {item.total_outgoing}
@@ -514,11 +562,11 @@ const ShowInventoryBalanceReport = () => {
               <td
                 className="clickable-cell"
                 style={{
-                  padding: ' 14px 12px',
-                  border: '1px solid #E4C59E',
-                  color: '#803D3B',
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
                 }}
               >
                 {item.total_returned_to}
@@ -526,11 +574,11 @@ const ShowInventoryBalanceReport = () => {
               <td
                 className="clickable-cell"
                 style={{
-                  padding: ' 14px 12px',
-                  border: '1px solid #E4C59E',
-                  color: '#803D3B',
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
                 }}
               >
                 {item.total_returned_from}
@@ -538,11 +586,11 @@ const ShowInventoryBalanceReport = () => {
               <td
                 className="clickable-cell"
                 style={{
-                  padding: ' 14px 12px',
-                  border: '1px solid #E4C59E',
-                  color: '#803D3B',
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
                 }}
               >
                 {item.total_tainted}
@@ -550,21 +598,21 @@ const ShowInventoryBalanceReport = () => {
               <td
                 className="clickable-cell"
                 style={{
-                  padding: ' 14px 12px',
-                  border: '1px solid #E4C59E',
-                  color: '#803D3B',
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
                 }}
               ></td>
               <td
                 className="clickable-cell"
                 style={{
-                  padding: ' 14px 12px',
-                  border: '1px solid #E4C59E',
-                  color: '#803D3B',
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  padding: " 14px 12px",
+                  border: "1px solid #E4C59E",
+                  color: "#803D3B",
+                  fontSize: "18px",
+                  fontWeight: "700",
                 }}
               >
                 {item.total}

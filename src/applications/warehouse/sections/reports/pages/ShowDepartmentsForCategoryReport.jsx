@@ -25,7 +25,7 @@ const ShowDepartmentsForCategoryReport = () => {
                 title="الأقسام - تقرير المخزون حسب التصنيفات"
                 filters={filters}
                 fetchData={(filterValues, currentPage, setIsLoading) =>
-                    getDeaprtments(filterValues, currentPage, setIsLoading)
+                    getDeaprtments(filterValues, currentPage, setIsLoading, false)
                 }
             />
         </div>

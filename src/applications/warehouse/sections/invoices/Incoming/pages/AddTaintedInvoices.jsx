@@ -10,7 +10,7 @@ import { getAllDepartments } from "../../../../../../apis/departments";
 
 import { API_ENDPOINT } from "../../../../../../../config";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { message, Select } from "antd";
 import TaintedInvoiceDetailes from "../../../../../../components/shared/InvoiveDetails/TaintedInvoiceDetailes";
 
 const AddTaintedInvoices = () => {
@@ -148,18 +148,21 @@ const AddTaintedInvoices = () => {
                 <label className="form-label" htmlFor="supplierSelect">
                     اختر قسم:
                 </label>
-                <select
+                <Select
+                    showSearch
+                    placeholder="اختر قسم"
+                    optionFilterProp="children"
+                    onChange={(value) => setSelectedDepartment(value)}
+                    filterOption={(input, option) =>
+                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={department.map((dept) => ({
+                        value: dept.id,
+                        label: dept.name,
+                    }))}
+                    style={{ width: '100%', height: '40px' }}
                     className="form-select"
-                    id="supplierSelect"
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
-                >
-                    <option value="">اختر قسم</option>
-                    {department.map((supplier) => (
-                        <option key={supplier.id} value={supplier.id}>
-                            {supplier.name}
-                        </option>
-                    ))}
-                </select>
+                />
             </div>
 
             <div>

@@ -732,14 +732,14 @@ const Sidebar = () => {
               className="menu-item"
               title="جرد المخزون"
               style={{
-                // display: `${
-                //   checkMenuItemPermission({
-                //     id: 901,
-                //     name: 'create inventory blind count',
-                //   })
-                //     ? ''
-                //     : 'none'
-                // }`,
+                display: `${
+                  checkMenuItemPermission({
+                    id: 901,
+                    name: 'create inventory blind count',
+                  })
+                    ? ''
+                    : 'none'
+                }`,
               }}
             >
               <Link
@@ -1933,16 +1933,16 @@ const Sidebar = () => {
             <li
               className="menu-item"
               title="اشتراكات الأنشطة"
-              // style={{
-              //   display: `${
-              //     checkMenuItemPermission({
-              //       id: 210,
-              //       name: 'view activities subscriptions',
-              //     })
-              //       ? ''
-              //       : 'none'
-              //   }`,
-              // }}
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 210,
+                    name: 'view activities subscriptions',
+                  })
+                    ? ''
+                    : 'none'
+                }`,
+              }}
             >
               <Link
                 to="/warehouse/activities-subscriptions"
@@ -1969,16 +1969,16 @@ const Sidebar = () => {
             <li
               className="menu-item"
               title="كاشير الأنشطة"
-              // style={{
-              //   display: `${
-              //     checkMenuItemPermission({
-              //       id: 210,
-              //       name: 'view activities subscriptions',
-              //     })
-              //       ? ''
-              //       : 'none'
-              //   }`,
-              // }}
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 210,
+                    name: 'view activities subscriptions',
+                  })
+                    ? ''
+                    : 'none'
+                }`,
+              }}
             >
               <Link
                 to="/warehouse/activities-cashier"
