@@ -10,8 +10,11 @@ import FormField from '../../shared/FormField/FormField';
 import Modal from '../../shared/Modal/Modal';
 import DataTable from '../../shared/DataTable/DataTable';
 import './OfferManagement.scss';
+import { useAuth } from "../../../../context/AuthContext";
 
 const OfferManagement = () => {
+  const { user } = useAuth();
+
   const [offers, setOffers] = useState([]);
   const [academies, setAcademies] = useState([]);
   const [filteredOffers, setFilteredOffers] = useState([]);
@@ -353,6 +356,10 @@ const OfferManagement = () => {
 
   const actions = (row) => (
     <div className="table-actions">
+            {user?.permissions.some(
+            (permission) => permission.name === "edit academy offer"
+          ) && (
+
       <button
         className="action-btn action-btn--primary"
         onClick={() => handleEdit(row)}
@@ -371,6 +378,10 @@ const OfferManagement = () => {
           />
         </svg>
       </button>
+          )}
+           {user?.permissions.some(
+            (permission) => permission.name === "remove academy offer"
+          ) && (
       <button
         className="action-btn action-btn--danger"
         onClick={() => {
@@ -388,6 +399,7 @@ const OfferManagement = () => {
           />
         </svg>
       </button>
+          )}
     </div>
   );
 
@@ -434,6 +446,9 @@ const OfferManagement = () => {
               ))}
             </select>
           </div>
+          {user?.permissions.some(
+            (permission) => permission.name === "add academy offer"
+          ) && (
           <button
             className="add-btn"
             onClick={() => {
@@ -443,6 +458,7 @@ const OfferManagement = () => {
           >
             إنشاء عرض جديد
           </button>
+          )}
         </div>
       </div>
 

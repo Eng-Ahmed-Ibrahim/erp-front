@@ -2122,7 +2122,7 @@ function App() {
             path="/warehouse/activities-subscriptions"
             element={
               <ProtectedRoute
-                requiredPermission={{ id: 201, name: 'manage reception' }}
+                requiredPermission={{ id: 201, name: 'manage activities subscriptions' }}
               >
                 <ActivitiesSubscriptions />
               </ProtectedRoute>
@@ -2132,7 +2132,7 @@ function App() {
             path="/warehouse/activities-cashier"
             element={
               <ProtectedRoute
-                requiredPermission={{ id: 201, name: 'manage reception' }}
+                requiredPermission={{ id: 201, name: 'manage activities cashier' }}
               >
                 <ActivitiesCashier />
               </ProtectedRoute>

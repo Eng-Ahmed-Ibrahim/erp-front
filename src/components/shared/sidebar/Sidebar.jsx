@@ -1937,7 +1937,7 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 210,
-                    name: 'view activities subscriptions',
+                    name: 'manage activities subscriptions',
                   })
                     ? ''
                     : 'none'
@@ -1973,7 +1973,7 @@ const Sidebar = () => {
                 display: `${
                   checkMenuItemPermission({
                     id: 210,
-                    name: 'view activities subscriptions',
+                    name: 'manage activities cashier',
                   })
                     ? ''
                     : 'none'

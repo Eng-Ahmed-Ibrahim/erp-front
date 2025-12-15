@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   getSubscriptions,
   getSubscribers,
@@ -12,14 +12,17 @@ import {
   getBarcodeSVG,
   generateAllQRCodes,
   searchSubscriberByIdentifier,
-} from '../../../../apis/activitiesSubscriptions';
-import FormField from '../../shared/FormField/FormField';
-import Modal from '../../shared/Modal/Modal';
-import DataTable from '../../shared/DataTable/DataTable';
-import SubscriptionReceipt from '../../shared/SubscriptionReceipt/SubscriptionReceipt';
-import './SubscriptionManagement.scss';
+} from "../../../../apis/activitiesSubscriptions";
+import FormField from "../../shared/FormField/FormField";
+import Modal from "../../shared/Modal/Modal";
+import DataTable from "../../shared/DataTable/DataTable";
+import SubscriptionReceipt from "../../shared/SubscriptionReceipt/SubscriptionReceipt";
+import "./SubscriptionManagement.scss";
+import { useAuth } from "../../../../context/AuthContext";
 
 const SubscriptionManagement = () => {
+  const { user } = useAuth();
+
   const [subscriptions, setSubscriptions] = useState([]);
   const [subscribers, setSubscribers] = useState([]);
   const [offers, setOffers] = useState([]);
@@ -30,15 +33,17 @@ const SubscriptionManagement = () => {
   const [selectedSubscription, setSelectedSubscription] = useState(null);
   const [showExtendModal, setShowExtendModal] = useState(false);
   const [extendSubscription, setExtendSubscription] = useState(null);
-  const [extendEndDate, setExtendEndDate] = useState('');
-  const [extendError, setExtendError] = useState('');
+  const [extendEndDate, setExtendEndDate] = useState("");
+  const [extendStartDate, setExtendStartDate] = useState(""); // Add this
+
+  const [extendError, setExtendError] = useState("");
   const [extendLoading, setExtendLoading] = useState(false);
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
-  const [qrCode, setQrCode] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [createdByFilter, setCreatedByFilter] = useState('');
-  const [academyFilter, setAcademyFilter] = useState('');
+  const [qrCode, setQrCode] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [createdByFilter, setCreatedByFilter] = useState("");
+  const [academyFilter, setAcademyFilter] = useState("");
   const [debounceTimer, setDebounceTimer] = useState(null);
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -49,17 +54,17 @@ const SubscriptionManagement = () => {
     to: 0,
   });
   const [formData, setFormData] = useState({
-    subscriber_id: '',
-    subscriber_identifier: '', // For searching
-    subscriber_full_name: '',
-    subscriber_phone: '',
-    subscriber_type: 'civilian', // عسكري or مدني
-    subscriber_national_id: '',
-    subscriber_military_id: '',
-    offer_id: '',
-    academy_id: '',
-    start_date: '',
-    end_date: '',
+    subscriber_id: "",
+    subscriber_identifier: "", // For searching
+    subscriber_full_name: "",
+    subscriber_phone: "",
+    subscriber_type: "civilian", // عسكري or مدني
+    subscriber_national_id: "",
+    subscriber_military_id: "",
+    offer_id: "",
+    academy_id: "",
+    start_date: "",
+    end_date: "",
     chosen_days: [],
   });
   const [academies, setAcademies] = useState([]);
@@ -70,31 +75,31 @@ const SubscriptionManagement = () => {
   const [errors, setErrors] = useState({});
   const [notification, setNotification] = useState({
     show: false,
-    message: '',
-    type: 'success',
+    message: "",
+    type: "success",
   });
 
   // Helper function to show notifications
-  const showNotification = (message, type = 'success') => {
+  const showNotification = (message, type = "success") => {
     setNotification({ show: true, message, type });
     setTimeout(() => {
-      setNotification({ show: false, message: '', type: 'success' });
+      setNotification({ show: false, message: "", type: "success" });
     }, 4000); // Auto-hide after 4 seconds
   };
 
   const daysOfWeek = [
-    { value: 'Monday', label: 'الاثنين' },
-    { value: 'Tuesday', label: 'الثلاثاء' },
-    { value: 'Wednesday', label: 'الأربعاء' },
-    { value: 'Thursday', label: 'الخميس' },
-    { value: 'Friday', label: 'الجمعة' },
-    { value: 'Saturday', label: 'السبت' },
-    { value: 'Sunday', label: 'الأحد' },
+    { value: "Monday", label: "الاثنين" },
+    { value: "Tuesday", label: "الثلاثاء" },
+    { value: "Wednesday", label: "الأربعاء" },
+    { value: "Thursday", label: "الخميس" },
+    { value: "Friday", label: "الجمعة" },
+    { value: "Saturday", label: "السبت" },
+    { value: "Sunday", label: "الأحد" },
   ];
 
   const subscriberTypes = [
-    { value: 'civilian', label: 'مدني' },
-    { value: 'infantry', label: 'عسكري' },
+    { value: "civilian", label: "مدني" },
+    { value: "infantry", label: "عسكري" },
   ];
 
   useEffect(() => {
@@ -123,7 +128,10 @@ const SubscriptionManagement = () => {
     };
   }, [dateFrom, dateTo, createdByFilter, academyFilter]);
 
-  const loadData = async (page = pagination.current_page, perPage = pagination.per_page) => {
+  const loadData = async (
+    page = pagination.current_page,
+    perPage = pagination.per_page
+  ) => {
     setLoading(true);
     try {
       // Prepare filter parameters
@@ -157,7 +165,7 @@ const SubscriptionManagement = () => {
       setAcademies(academiesRes.data || []);
       setCashiers(cashiersRes.data || []);
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error("Error loading data:", error);
     } finally {
       setLoading(false);
     }
@@ -179,7 +187,7 @@ const SubscriptionManagement = () => {
     }
 
     // Handle subscriber identifier auto-search
-    if (name === 'subscriber_identifier') {
+    if (name === "subscriber_identifier") {
       if (value.trim().length >= 1) {
         // Auto-search when typing 3+ characters
         handleSubscriberSearch(value);
@@ -190,28 +198,28 @@ const SubscriptionManagement = () => {
     }
 
     // Handle subscriber type change - clear ID fields
-    if (name === 'subscriber_type') {
+    if (name === "subscriber_type") {
       setFormData((prev) => ({
         ...prev,
-        subscriber_national_id: '',
-        subscriber_military_id: '',
+        subscriber_national_id: "",
+        subscriber_military_id: "",
       }));
     }
 
     // Handle academy selection - load offers for selected academy
-    if (name === 'academy_id') {
+    if (name === "academy_id") {
       const academyOffers = offers.filter((offer) => offer.academy_id == value);
       setAcademyOffers(academyOffers);
       setFormData((prev) => ({
         ...prev,
-        offer_id: '', // Reset offer selection
+        offer_id: "", // Reset offer selection
         chosen_days: [], // Reset chosen days
       }));
       setSelectedOffer(null);
     }
 
     // Handle offer selection - set available days and calculate end date
-    if (name === 'offer_id') {
+    if (name === "offer_id") {
       const offer = academyOffers.find((o) => o.id == value);
       if (offer) {
         setSelectedOffer(offer);
@@ -221,13 +229,13 @@ const SubscriptionManagement = () => {
           chosen_days: [], // Reset chosen days
           end_date: prev.start_date
             ? calculateEndDate(prev.start_date, offer.duration_days)
-            : '',
+            : "",
         }));
       }
     }
 
     // Handle start date change - recalculate end date if offer is selected
-    if (name === 'start_date' && selectedOffer) {
+    if (name === "start_date" && selectedOffer) {
       setFormData((prev) => ({
         ...prev,
         end_date: calculateEndDate(value, selectedOffer.duration_days),
@@ -236,11 +244,11 @@ const SubscriptionManagement = () => {
   };
 
   const calculateEndDate = (startDate, durationDays) => {
-    if (!startDate || !durationDays) return '';
+    if (!startDate || !durationDays) return "";
     const start = new Date(startDate);
     const end = new Date(start);
     end.setDate(start.getDate() + parseInt(durationDays));
-    return end.toISOString().split('T')[0];
+    return end.toISOString().split("T")[0];
   };
 
   const handleSubscriberSearch = async (identifier) => {
@@ -256,7 +264,7 @@ const SubscriptionManagement = () => {
         setShowSearchResults(true);
       }
     } catch (error) {
-      console.error('Error searching subscriber:', error);
+      console.error("Error searching subscriber:", error);
       setSearchResults([]);
       setShowSearchResults(true);
     }
@@ -279,10 +287,10 @@ const SubscriptionManagement = () => {
   };
 
   const clearAllFilters = () => {
-    setDateFrom('');
-    setDateTo('');
-    setCreatedByFilter('');
-    setAcademyFilter('');
+    setDateFrom("");
+    setDateTo("");
+    setCreatedByFilter("");
+    setAcademyFilter("");
   };
 
   const handlePageChange = (page, perPage = pagination.per_page) => {
@@ -294,11 +302,11 @@ const SubscriptionManagement = () => {
       ...prev,
       subscriber_id: subscriber.id,
       subscriber_full_name: subscriber.full_name,
-      subscriber_phone: subscriber.phone || '',
-      subscriber_identifier: subscriber.identifier || '',
-      subscriber_type: subscriber.type || 'civilian',
-      subscriber_national_id: subscriber.national_id || '',
-      subscriber_military_id: subscriber.military_id || '',
+      subscriber_phone: subscriber.phone || "",
+      subscriber_identifier: subscriber.identifier || "",
+      subscriber_type: subscriber.type || "civilian",
+      subscriber_national_id: subscriber.national_id || "",
+      subscriber_military_id: subscriber.military_id || "",
     }));
     setShowSearchResults(false);
   };
@@ -307,12 +315,12 @@ const SubscriptionManagement = () => {
     // Clear subscriber_id to indicate this is a new subscriber
     setFormData((prev) => ({
       ...prev,
-      subscriber_id: '',
-      subscriber_full_name: '',
-      subscriber_phone: '',
-      subscriber_type: 'civilian',
-      subscriber_national_id: '',
-      subscriber_military_id: '',
+      subscriber_id: "",
+      subscriber_full_name: "",
+      subscriber_phone: "",
+      subscriber_type: "civilian",
+      subscriber_national_id: "",
+      subscriber_military_id: "",
     }));
     setShowSearchResults(false);
   };
@@ -339,11 +347,11 @@ const SubscriptionManagement = () => {
           type: formData.subscriber_type,
           phone: formData.subscriber_phone,
           national_id:
-            formData.subscriber_type === 'civilian'
+            formData.subscriber_type === "civilian"
               ? formData.subscriber_national_id
               : null,
           military_id:
-            formData.subscriber_type === 'infantry'
+            formData.subscriber_type === "infantry"
               ? formData.subscriber_military_id
               : null,
         };
@@ -355,18 +363,18 @@ const SubscriptionManagement = () => {
         setShowCreateModal(false);
         resetForm();
         loadData();
-        showNotification('تم إنشاء الاشتراك بنجاح! 🎉', 'success');
+        showNotification("تم إنشاء الاشتراك بنجاح! 🎉", "success");
       }
     } catch (error) {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else {
         const errorMessage =
-          error.response?.data?.message || 'حدث خطأ أثناء إنشاء الاشتراك';
+          error.response?.data?.message || "حدث خطأ أثناء إنشاء الاشتراك";
         setErrors({
           general: errorMessage,
         });
-        showNotification(errorMessage, 'error');
+        showNotification(errorMessage, "error");
       }
     } finally {
       setLoading(false);
@@ -375,17 +383,17 @@ const SubscriptionManagement = () => {
 
   const resetForm = () => {
     setFormData({
-      subscriber_id: '',
-      subscriber_identifier: '',
-      subscriber_full_name: '',
-      subscriber_phone: '',
-      subscriber_type: 'civilian',
-      subscriber_national_id: '',
-      subscriber_military_id: '',
-      offer_id: '',
-      academy_id: '',
-      start_date: '',
-      end_date: '',
+      subscriber_id: "",
+      subscriber_identifier: "",
+      subscriber_full_name: "",
+      subscriber_phone: "",
+      subscriber_type: "civilian",
+      subscriber_national_id: "",
+      subscriber_military_id: "",
+      offer_id: "",
+      academy_id: "",
+      start_date: "",
+      end_date: "",
       chosen_days: [],
     });
     setAcademyOffers([]);
@@ -436,16 +444,16 @@ const SubscriptionManagement = () => {
             barcode_svg: barcodeSvgContent,
           };
 
-          console.log('QR Code SVG fetched successfully');
-          console.log('QR SVG Content Length:', qrSvgContent.length);
-          console.log('Barcode SVG fetched successfully');
-          console.log('Barcode SVG Content Length:', barcodeSvgContent.length);
+          console.log("QR Code SVG fetched successfully");
+          console.log("QR SVG Content Length:", qrSvgContent.length);
+          console.log("Barcode SVG fetched successfully");
+          console.log("Barcode SVG Content Length:", barcodeSvgContent.length);
           console.log(
-            'QR SVG Content Preview:',
-            qrSvgContent.substring(0, 100) + '...'
+            "QR SVG Content Preview:",
+            qrSvgContent.substring(0, 100) + "..."
           );
         } catch (svgError) {
-          console.error('Error fetching SVG:', svgError);
+          console.error("Error fetching SVG:", svgError);
 
           const qrCodeImage = response.data?.qr_code_image;
           if (qrCodeImage) {
@@ -473,7 +481,7 @@ const SubscriptionManagement = () => {
         setShowQRModal(true);
       }
     } catch (error) {
-      console.error('Error generating QR code:', error);
+      console.error("Error generating QR code:", error);
     }
   };
 
@@ -481,7 +489,7 @@ const SubscriptionManagement = () => {
     setShowQRModal(false);
     setSelectedSubscription(null);
     setShowReceiptPreview(false);
-    setQrCode('');
+    setQrCode("");
   };
 
   const handleGenerateAllQRCodes = async () => {
@@ -489,20 +497,20 @@ const SubscriptionManagement = () => {
       setLoading(true);
       const response = await generateAllQRCodes();
       if (response.success) {
-        console.log('All QR codes generated:', response.data);
+        console.log("All QR codes generated:", response.data);
         showNotification(
-          'تم إنشاء رموز QR لجميع الاشتراكات بنجاح! 🎉',
-          'success'
+          "تم إنشاء رموز QR لجميع الاشتراكات بنجاح! 🎉",
+          "success"
         );
 
         // Refresh subscriptions to show updated QR codes
         loadData();
       }
     } catch (error) {
-      console.error('Error generating all QR codes:', error);
+      console.error("Error generating all QR codes:", error);
       showNotification(
-        'حدث خطأ في إنشاء رموز QR. يرجى المحاولة مرة أخرى',
-        'error'
+        "حدث خطأ في إنشاء رموز QR. يرجى المحاولة مرة أخرى",
+        "error"
       );
     } finally {
       setLoading(false);
@@ -511,17 +519,17 @@ const SubscriptionManagement = () => {
 
   const getSubscriberName = (subscriberId) => {
     const subscriber = subscribers.find((s) => s.id === subscriberId);
-    return subscriber ? subscriber.full_name : 'Unknown';
+    return subscriber ? subscriber.full_name : "Unknown";
   };
 
   const getOfferName = (offerId) => {
     const offer = offers.find((o) => o.id === offerId);
-    return offer ? offer.name : 'Unknown';
+    return offer ? offer.name : "Unknown";
   };
 
   const getAcademyName = (academyId) => {
     const academy = academies.find((a) => a.id === academyId);
-    return academy ? academy.name : 'غير محدد';
+    return academy ? academy.name : "غير محدد";
   };
 
   const getCreatedByUsers = () => {
@@ -534,19 +542,19 @@ const SubscriptionManagement = () => {
 
   const getStatusBadge = (status) => {
     const statusColors = {
-      active: 'status-badge--active',
-      expired: 'status-badge--expired',
-      cancelled: 'status-badge--cancelled',
+      active: "status-badge--active",
+      expired: "status-badge--expired",
+      cancelled: "status-badge--cancelled",
     };
 
     const statusLabels = {
-      active: 'نشط',
-      expired: 'منتهي',
-      cancelled: 'ملغي',
+      active: "نشط",
+      expired: "منتهي",
+      cancelled: "ملغي",
     };
 
     return (
-      <span className={`status-badge ${statusColors[status] || ''}`}>
+      <span className={`status-badge ${statusColors[status] || ""}`}>
         {statusLabels[status] || status}
       </span>
     );
@@ -554,23 +562,24 @@ const SubscriptionManagement = () => {
 
   const formatDateForInput = (dateStr) => {
     if (!dateStr) {
-      return '';
+      return "";
     }
     return dateStr.length > 10 ? dateStr.substring(0, 10) : dateStr;
   };
 
   const handleOpenExtendModal = (subscription) => {
     setExtendSubscription(subscription);
+    setExtendStartDate(formatDateForInput(subscription.start_date)); // init start date
     setExtendEndDate(formatDateForInput(subscription.end_date));
-    setExtendError('');
+    setExtendError("");
     setShowExtendModal(true);
   };
 
   const handleCloseExtendModal = () => {
     setShowExtendModal(false);
     setExtendSubscription(null);
-    setExtendEndDate('');
-    setExtendError('');
+    setExtendEndDate("");
+    setExtendError("");
     setExtendLoading(false);
   };
 
@@ -582,29 +591,34 @@ const SubscriptionManagement = () => {
     }
 
     if (!extendEndDate) {
-      setExtendError('يرجى إدخال تاريخ النهاية الجديد');
+      setExtendError("يرجى إدخال تاريخ النهاية الجديد");
+      return;
+    }
+    if (!extendStartDate) {
+      setExtendError("يرجى إدخال تاريخ البداية الجديد");
       return;
     }
 
     try {
       setExtendLoading(true);
-      setExtendError('');
+      setExtendError("");
 
       const response = await updateSubscription(extendSubscription.id, {
         end_date: extendEndDate,
+        start_date: extendStartDate
       });
 
       if (response.success) {
-        showNotification('تم تمديد تاريخ نهاية الاشتراك بنجاح', 'success');
+        showNotification("تم تعديل  تاريخ الاشتراك بنجاح", "success");
         handleCloseExtendModal();
         await loadData();
       } else {
-        setExtendError(response.message || 'تعذر تحديث الاشتراك');
+        setExtendError(response.message || "تعذر تحديث الاشتراك");
       }
     } catch (error) {
       const message =
         error.response?.data?.message ||
-        'حدث خطأ أثناء تحديث تاريخ انتهاء الاشتراك';
+        "حدث خطأ أثناء تحديث تاريخ انتهاء الاشتراك";
       setExtendError(message);
     } finally {
       setExtendLoading(false);
@@ -613,62 +627,67 @@ const SubscriptionManagement = () => {
 
   const columns = [
     {
-      key: 'id',
-      header: 'رقم الاشتراك',
+      key: "id",
+      header: "رقم الاشتراك",
     },
     {
-      key: 'subscriber_id',
-      header: 'المشترك',
+      key: "subscriber_id",
+      header: "المشترك",
       render: (value) => getSubscriberName(value),
     },
     {
-      key: 'offer_id',
-      header: 'العرض',
+      key: "offer_id",
+      header: "العرض",
       render: (value) => getOfferName(value),
     },
     {
-      key: 'start_date',
-      header: 'تاريخ البداية',
+      key: "start_date",
+      header: "تاريخ البداية",
     },
     {
-      key: 'end_date',
-      header: 'تاريخ النهاية',
+      key: "end_date",
+      header: "تاريخ النهاية",
     },
     {
-      key: 'remaining_classes',
-      header: 'المتبقي',
+      key: "remaining_classes",
+      header: "المتبقي",
     },
     {
-      key: 'status',
-      header: 'الحالة',
+      key: "status",
+      header: "الحالة",
       render: (value) => getStatusBadge(value),
     },
   ];
 
   const actions = (row) => (
     <div className="table-actions">
-      <button
-        className="action-btn action-btn--secondary"
-        onClick={() => handleOpenExtendModal(row)}
-        title="تعديل تاريخ النهاية"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M5 21H9L19.5 10.5L15.5 6.5L5 17V21Z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M14.5 5.5L18.5 1.5"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
+      {user?.permissions.some(
+        (permission) => permission.name === "edit academy offer subescribtion"
+      ) && (
+        <button
+          className="action-btn action-btn--secondary"
+          onClick={() => handleOpenExtendModal(row)}
+          title="تعديل تاريخ النهاية"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M5 21H9L19.5 10.5L15.5 6.5L5 17V21Z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M14.5 5.5L18.5 1.5"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
+
       <button
         className="action-btn action-btn--primary"
         onClick={() => handleGenerateQR(row)}
@@ -794,17 +813,29 @@ const SubscriptionManagement = () => {
               }
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M4 4V9H4.58152M19.9381 11C19.446 7.05369 16.0796 4 12 4C8.64262 4 5.76829 6.06817 4.58152 9M4.58152 9H9M20 20V15H19.4185M19.4185 15C18.2317 17.9318 15.3574 20 12 20C7.92038 20 4.55399 16.9463 4.06189 13M19.4185 15H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M4 4V9H4.58152M19.9381 11C19.446 7.05369 16.0796 4 12 4C8.64262 4 5.76829 6.06817 4.58152 9M4.58152 9H9M20 20V15H19.4185M19.4185 15C18.2317 17.9318 15.3574 20 12 20C7.92038 20 4.55399 16.9463 4.06189 13M19.4185 15H15"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </div>
+
           <div className="action-buttons">
-            <button
-              className="add-btn"
-              onClick={() => setShowCreateModal(true)}
-            >
-              إنشاء اشتراك جديد
-            </button>
+            {user?.permissions.some(
+              (permission) =>
+                permission.name === "add academy offer subescribtion"
+            ) && (
+              <button
+                className="add-btn"
+                onClick={() => setShowCreateModal(true)}
+              >
+                إنشاء اشتراك جديد
+              </button>
+            )}
             <button
               className="qr-refresh-btn"
               onClick={handleGenerateAllQRCodes}
@@ -843,7 +874,7 @@ const SubscriptionManagement = () => {
         <div className={`notification notification--${notification.type}`}>
           <div className="notification__content">
             <div className="notification__icon">
-              {notification.type === 'success' ? (
+              {notification.type === "success" ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
@@ -871,7 +902,7 @@ const SubscriptionManagement = () => {
             <button
               className="notification__close"
               onClick={() =>
-                setNotification({ show: false, message: '', type: 'success' })
+                setNotification({ show: false, message: "", type: "success" })
               }
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -898,8 +929,8 @@ const SubscriptionManagement = () => {
           onPageChange={handlePageChange}
           emptyMessage={
             dateFrom || dateTo || createdByFilter || academyFilter
-              ? 'لم يتم العثور على اشتراكات تطابق البحث'
-              : 'لا توجد اشتراكات'
+              ? "لم يتم العثور على اشتراكات تطابق البحث"
+              : "لا توجد اشتراكات"
           }
         />
       </div>
@@ -936,10 +967,23 @@ const SubscriptionManagement = () => {
                   label="تاريخ البداية"
                   type="date"
                   name="extend_start_date"
-                  value={formatDateForInput(extendSubscription.start_date)}
-                  disabled
-                  readOnly
+                  value={extendStartDate}
+                  onChange={(e) => {
+                    setExtendStartDate(e.target.value);
+
+                    // Optional: validation
+                    if (extendError) setExtendError("");
+                    if (extendEndDate && e.target.value > extendEndDate) {
+                      setExtendError(
+                        "تاريخ البداية لا يمكن أن يكون بعد تاريخ النهاية"
+                      );
+                    }
+                  }}
+                  min={formatDateForInput(extendSubscription.start_date)}
+                  required
+                  error={extendError}
                 />
+
                 <FormField
                   label="تاريخ النهاية"
                   type="date"
@@ -948,7 +992,7 @@ const SubscriptionManagement = () => {
                   onChange={(e) => {
                     setExtendEndDate(e.target.value);
                     if (extendError) {
-                      setExtendError('');
+                      setExtendError("");
                     }
                   }}
                   min={formatDateForInput(extendSubscription.end_date)}
@@ -972,7 +1016,7 @@ const SubscriptionManagement = () => {
                 className="btn btn--primary"
                 disabled={extendLoading}
               >
-                {extendLoading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+                {extendLoading ? "جاري الحفظ..." : "حفظ التغييرات"}
               </button>
             </div>
           </form>
@@ -1073,7 +1117,7 @@ const SubscriptionManagement = () => {
                 error={errors.subscriber_type}
               />
 
-              {formData.subscriber_type === 'civilian' ? (
+              {formData.subscriber_type === "civilian" ? (
                 <FormField
                   label="الرقم القومي"
                   type="text"
@@ -1127,8 +1171,8 @@ const SubscriptionManagement = () => {
                   value: o.id,
                   label: `${o.name} (${
                     o.num_classes
-                      ? o.num_classes + ' حصة'
-                      : o.num_hours + ' ساعة'
+                      ? o.num_classes + " حصة"
+                      : o.num_hours + " ساعة"
                   })`,
                 }))}
                 required
@@ -1145,14 +1189,14 @@ const SubscriptionManagement = () => {
                   <strong>المدة:</strong> {selectedOffer.duration_days} يوم
                 </p>
                 <p>
-                  <strong>الأيام المتاحة:</strong>{' '}
+                  <strong>الأيام المتاحة:</strong>{" "}
                   {selectedOffer.available_days
                     .map((day) => {
                       const dayLabel =
                         daysOfWeek.find((d) => d.value === day)?.label || day;
                       return dayLabel;
                     })
-                    .join(', ')}
+                    .join(", ")}
                 </p>
                 <p>
                   <strong>السعر:</strong> مشاة ${selectedOffer.price_infantry}|
@@ -1186,7 +1230,7 @@ const SubscriptionManagement = () => {
             </div>
             {selectedOffer && (
               <p className="date-note">
-                تاريخ النهاية محسوب تلقائياً: تاريخ البداية +{' '}
+                تاريخ النهاية محسوب تلقائياً: تاريخ البداية +{" "}
                 {selectedOffer.duration_days} يوم
               </p>
             )}
@@ -1238,17 +1282,17 @@ const SubscriptionManagement = () => {
           <div className="qr-code-info">
             <h4>تفاصيل الاشتراك</h4>
             <p>
-              <strong>المشترك:</strong>{' '}
+              <strong>المشترك:</strong>{" "}
               {selectedSubscription &&
                 getSubscriberName(selectedSubscription.subscriber_id)}
             </p>
             <p>
-              <strong>العرض:</strong>{' '}
+              <strong>العرض:</strong>{" "}
               {selectedSubscription &&
                 getOfferName(selectedSubscription.offer_id)}
             </p>
             <p>
-              <strong>الحالة:</strong>{' '}
+              <strong>الحالة:</strong>{" "}
               {selectedSubscription &&
                 getStatusBadge(selectedSubscription.status)}
             </p>
@@ -1268,7 +1312,7 @@ const SubscriptionManagement = () => {
                       dangerouslySetInnerHTML={{
                         __html:
                           typeof selectedSubscription.qr_code_image.svg_data ===
-                          'string'
+                          "string"
                             ? selectedSubscription.qr_code_image.svg_data
                             : JSON.stringify(
                                 selectedSubscription.qr_code_image.svg_data
@@ -1370,12 +1414,9 @@ const SubscriptionManagement = () => {
               className="btn btn--secondary"
               onClick={() => setShowReceiptPreview((prev) => !prev)}
             >
-              {showReceiptPreview ? 'إخفاء الإيصال' : 'عرض / طباعة الإيصال'}
+              {showReceiptPreview ? "إخفاء الإيصال" : "عرض / طباعة الإيصال"}
             </button>
-            <button
-              className="btn btn--primary"
-              onClick={handleCloseQRModal}
-            >
+            <button className="btn btn--primary" onClick={handleCloseQRModal}>
               إغلاق
             </button>
           </div>
@@ -1391,10 +1432,11 @@ const SubscriptionManagement = () => {
                   (offer) => offer.id === selectedSubscription.offer_id
                 )}
                 subscriber={subscribers.find(
-                  (subscriber) => subscriber.id === selectedSubscription.subscriber_id
+                  (subscriber) =>
+                    subscriber.id === selectedSubscription.subscriber_id
                 )}
                 onAfterPrint={() =>
-                  showNotification('تم طباعة الإيصال بنجاح', 'success')
+                  showNotification("تم طباعة الإيصال بنجاح", "success")
                 }
               />
             </div>

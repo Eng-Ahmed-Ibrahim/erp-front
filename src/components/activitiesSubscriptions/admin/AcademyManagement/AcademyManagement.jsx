@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   getAcademies,
   createAcademy,
@@ -8,13 +8,16 @@ import {
   createCoach,
   updateCoach,
   deleteCoach,
-} from '../../../../apis/activitiesSubscriptions';
-import FormField from '../../shared/FormField/FormField';
-import Modal from '../../shared/Modal/Modal';
-import DataTable from '../../shared/DataTable/DataTable';
-import './AcademyManagement.scss';
+} from "../../../../apis/activitiesSubscriptions";
+import FormField from "../../shared/FormField/FormField";
+import Modal from "../../shared/Modal/Modal";
+import DataTable from "../../shared/DataTable/DataTable";
+import "./AcademyManagement.scss";
+import { useAuth } from "../../../../context/AuthContext";
 
 const AcademyManagement = () => {
+  const { user } = useAuth();
+
   const [academies, setAcademies] = useState([]);
   const [filteredAcademies, setFilteredAcademies] = useState([]);
   const [coaches, setCoaches] = useState([]);
@@ -23,31 +26,31 @@ const AcademyManagement = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAcademy, setSelectedAcademy] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
-    name: '',
+    name: "",
     contracted: false,
     revenue_share_infantry: 60,
     revenue_share_academy: 40,
     working_days: [],
-    status: 'active',
+    status: "active",
     coaches: [],
   });
   const [errors, setErrors] = useState({});
 
   const daysOfWeek = [
-    { value: 'Saturday', label: 'السبت' },
-    { value: 'Sunday', label: 'الأحد' },
-    { value: 'Monday', label: 'الإثنين' },
-    { value: 'Tuesday', label: 'الثلاثاء' },
-    { value: 'Wednesday', label: 'الأربعاء' },
-    { value: 'Thursday', label: 'الخميس' },
-    { value: 'Friday', label: 'الجمعة' },
+    { value: "Saturday", label: "السبت" },
+    { value: "Sunday", label: "الأحد" },
+    { value: "Monday", label: "الإثنين" },
+    { value: "Tuesday", label: "الثلاثاء" },
+    { value: "Wednesday", label: "الأربعاء" },
+    { value: "Thursday", label: "الخميس" },
+    { value: "Friday", label: "الجمعة" },
   ];
 
   const statusOptions = [
-    { value: 'active', label: 'نشط' },
-    { value: 'inactive', label: 'غير نشط' },
+    { value: "active", label: "نشط" },
+    { value: "inactive", label: "غير نشط" },
   ];
 
   useEffect(() => {
@@ -56,7 +59,7 @@ const AcademyManagement = () => {
 
   useEffect(() => {
     // Filter academies based on search query
-    if (searchQuery.trim() === '') {
+    if (searchQuery.trim() === "") {
       setFilteredAcademies(academies);
     } else {
       const filtered = academies.filter((academy) =>
@@ -72,7 +75,7 @@ const AcademyManagement = () => {
       const response = await getAcademies();
       setAcademies(response.data || []);
     } catch (error) {
-      console.error('Error loading academies:', error);
+      console.error("Error loading academies:", error);
     } finally {
       setLoading(false);
     }
@@ -81,14 +84,13 @@ const AcademyManagement = () => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-
-    if (type === 'checkbox' && name === 'working_days') {
+    if (type === "checkbox" && name === "working_days") {
       // Handle working days checkbox array
       setFormData((prev) => ({
         ...prev,
         [name]: value, // value is already an array from FormField
       }));
-    } else if (type === 'checkbox') {
+    } else if (type === "checkbox") {
       // Handle single checkbox
       setFormData((prev) => ({
         ...prev,
@@ -119,7 +121,7 @@ const AcademyManagement = () => {
     const newErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'اسم الأكاديمية مطلوب';
+      newErrors.name = "اسم الأكاديمية مطلوب";
     }
 
     if (
@@ -128,13 +130,13 @@ const AcademyManagement = () => {
       100
     ) {
       newErrors.revenue_share_infantry =
-        'يجب أن يكون مجموع النسب المئوية للإيرادات 100%';
+        "يجب أن يكون مجموع النسب المئوية للإيرادات 100%";
       newErrors.revenue_share_academy =
-        'يجب أن يكون مجموع النسب المئوية للإيرادات 100%';
+        "يجب أن يكون مجموع النسب المئوية للإيرادات 100%";
     }
 
     if (formData.working_days.length === 0) {
-      newErrors.working_days = 'يجب اختيار يوم عمل واحد على الأقل';
+      newErrors.working_days = "يجب اختيار يوم عمل واحد على الأقل";
     }
 
     setErrors(newErrors);
@@ -167,7 +169,7 @@ const AcademyManagement = () => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else {
-        setErrors({ general: error.response?.data?.message || 'حدث خطأ' });
+        setErrors({ general: error.response?.data?.message || "حدث خطأ" });
       }
     }
   };
@@ -194,18 +196,18 @@ const AcademyManagement = () => {
         loadAcademies();
       }
     } catch (error) {
-      console.error('Error deleting academy:', error);
+      console.error("Error deleting academy:", error);
     }
   };
 
   const resetForm = () => {
     setFormData({
-      name: '',
+      name: "",
       contracted: false,
       revenue_share_infantry: 60,
       revenue_share_academy: 40,
       working_days: [],
-      status: 'active',
+      status: "active",
     });
     setErrors({});
     setSelectedAcademy(null);
@@ -213,22 +215,22 @@ const AcademyManagement = () => {
 
   // Debug: Log formData changes
   React.useEffect(() => {
-    console.log('formData changed:', formData);
+    console.log("formData changed:", formData);
   }, [formData]);
 
   const getStatusBadge = (status) => {
     const statusColors = {
-      active: 'status-badge--active',
-      inactive: 'status-badge--inactive',
+      active: "status-badge--active",
+      inactive: "status-badge--inactive",
     };
 
     const statusText = {
-      active: 'نشط',
-      inactive: 'غير نشط',
+      active: "نشط",
+      inactive: "غير نشط",
     };
 
     return (
-      <span className={`status-badge ${statusColors[status] || ''}`}>
+      <span className={`status-badge ${statusColors[status] || ""}`}>
         {statusText[status] || status}
       </span>
     );
@@ -239,30 +241,30 @@ const AcademyManagement = () => {
       <span
         className={`contract-badge ${
           contracted
-            ? 'contract-badge--contracted'
-            : 'contract-badge--not-contracted'
+            ? "contract-badge--contracted"
+            : "contract-badge--not-contracted"
         }`}
       >
-        {contracted ? 'متعاقد' : 'غير متعاقد'}
+        {contracted ? "متعاقد" : "غير متعاقد"}
       </span>
     );
   };
 
   const formatWorkingDays = (workingDays) => {
-    if (!Array.isArray(workingDays)) return 'غير محدد';
+    if (!Array.isArray(workingDays)) return "غير محدد";
 
     const dayNames = {
-      Saturday: 'السبت',
-      Sunday: 'الأحد',
-      Monday: 'الإثنين',
-      Tuesday: 'الثلاثاء',
-      Wednesday: 'الأربعاء',
-      Thursday: 'الخميس',
-      Friday: 'الجمعة',
+      Saturday: "السبت",
+      Sunday: "الأحد",
+      Monday: "الإثنين",
+      Tuesday: "الثلاثاء",
+      Wednesday: "الأربعاء",
+      Thursday: "الخميس",
+      Friday: "الجمعة",
     };
 
     const arabicDays = workingDays.map((day) => dayNames[day] || day);
-    return arabicDays.join('، ');
+    return arabicDays.join("، ");
   };
 
   // Coach management functions
@@ -272,9 +274,9 @@ const AcademyManagement = () => {
       coaches: [
         ...(prev.coaches || []),
         {
-          name: '',
-          phone: '',
-          bio: '',
+          name: "",
+          phone: "",
+          bio: "",
           active: true,
         },
       ],
@@ -299,77 +301,86 @@ const AcademyManagement = () => {
 
   const columns = [
     {
-      key: 'id',
-      header: '#',
+      key: "id",
+      header: "#",
     },
     {
-      key: 'name',
-      header: 'الاسم',
+      key: "name",
+      header: "الاسم",
     },
     {
-      key: 'contracted',
-      header: 'حالة العقد',
+      key: "contracted",
+      header: "حالة العقد",
       render: (value) => getContractBadge(value),
     },
     {
-      key: 'revenue_share_infantry',
-      header: 'حصة دار المشاة',
+      key: "revenue_share_infantry",
+      header: "حصة دار المشاة",
       render: (value) => `${value || 0}%`,
     },
     {
-      key: 'revenue_share_academy',
-      header: 'حصة الأكاديمية',
+      key: "revenue_share_academy",
+      header: "حصة الأكاديمية",
       render: (value) => `${value || 0}%`,
     },
     {
-      key: 'working_days',
-      header: 'أيام العمل',
+      key: "working_days",
+      header: "أيام العمل",
       render: (value) => formatWorkingDays(value),
     },
     {
-      key: 'status',
-      header: 'الحالة',
+      key: "status",
+      header: "الحالة",
       render: (value) => getStatusBadge(value),
     },
   ];
 
   const actions = (row) => (
     <div className="table-actions">
-      <button
-        className="action-btn action-btn--primary"
-        onClick={() => handleEdit(row)}
-        title="تعديل الأكاديمية"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <path
-            d="M18.5 2.5C18.8978 2.10218 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10218 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10218 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-        </svg>
-      </button>
-      <button
-        className="action-btn action-btn--danger"
-        onClick={() => {
-          setSelectedAcademy(row);
-          setShowDeleteModal(true);
-        }}
-        title="حذف الأكاديمية"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" />
-          <path
-            d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-        </svg>
-      </button>
+      {user?.permissions.some(
+        (permission) => permission.name === "edit academy"
+      ) && (
+        <button
+          className="action-btn action-btn--primary"
+          onClick={() => handleEdit(row)}
+          title="تعديل الأكاديمية"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              d="M18.5 2.5C18.8978 2.10218 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10218 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10218 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+          </svg>
+        </button>
+      )}
+
+      {user?.permissions.some(
+        (permission) => permission.name === "remove academy"
+      ) && (
+        <button
+          className="action-btn action-btn--danger"
+          onClick={() => {
+            setSelectedAcademy(row);
+            setShowDeleteModal(true);
+          }}
+          title="حذف الأكاديمية"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" />
+            <path
+              d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 
@@ -402,15 +413,19 @@ const AcademyManagement = () => {
               />
             </svg>
           </div>
-          <button
-            className="add-btn"
-            onClick={() => {
-              resetForm();
-              setShowCreateModal(true);
-            }}
-          >
-            إنشاء أكاديمية جديدة
-          </button>
+          {user?.permissions.some(
+            (permission) => permission.name === "add academy"
+          ) && (
+            <button
+              className="add-btn"
+              onClick={() => {
+                resetForm();
+                setShowCreateModal(true);
+              }}
+            >
+              إنشاء أكاديمية جديدة
+            </button>
+          )}
         </div>
       </div>
 
@@ -422,8 +437,8 @@ const AcademyManagement = () => {
           actions={actions}
           emptyMessage={
             searchQuery
-              ? 'لم يتم العثور على أكاديميات تطابق البحث'
-              : 'لم يتم العثور على أكاديميات'
+              ? "لم يتم العثور على أكاديميات تطابق البحث"
+              : "لم يتم العثور على أكاديميات"
           }
         />
       </div>
@@ -458,7 +473,7 @@ const AcademyManagement = () => {
             name="contracted"
             checked={formData.contracted}
             onChange={handleInputChange}
-            options={[{ value: true, label: 'هذه الأكاديمية متعاقدة' }]}
+            options={[{ value: true, label: "هذه الأكاديمية متعاقدة" }]}
           />
 
           {formData.contracted && (
@@ -488,7 +503,7 @@ const AcademyManagement = () => {
                 />
               </div>
               <div className="revenue-total">
-                المجموع:{' '}
+                المجموع:{" "}
                 {Number(formData.revenue_share_infantry) +
                   Number(formData.revenue_share_academy)}
                 %
@@ -549,7 +564,7 @@ const AcademyManagement = () => {
                     type="text"
                     name={`coach_${index}_name`}
                     value={coach.name}
-                    onChange={(e) => updateCoach(index, 'name', e.target.value)}
+                    onChange={(e) => updateCoach(index, "name", e.target.value)}
                     required
                   />
 
@@ -559,7 +574,7 @@ const AcademyManagement = () => {
                     name={`coach_${index}_phone`}
                     value={coach.phone}
                     onChange={(e) =>
-                      updateCoach(index, 'phone', e.target.value)
+                      updateCoach(index, "phone", e.target.value)
                     }
                   />
 
@@ -568,7 +583,7 @@ const AcademyManagement = () => {
                     type="textarea"
                     name={`coach_${index}_bio`}
                     value={coach.bio}
-                    onChange={(e) => updateCoach(index, 'bio', e.target.value)}
+                    onChange={(e) => updateCoach(index, "bio", e.target.value)}
                   />
                 </div>
               </div>
@@ -618,7 +633,7 @@ const AcademyManagement = () => {
             name="contracted"
             checked={formData.contracted}
             onChange={handleInputChange}
-            options={[{ value: true, label: 'هذه الأكاديمية متعاقدة' }]}
+            options={[{ value: true, label: "هذه الأكاديمية متعاقدة" }]}
           />
           {formData.contracted && (
             <div className="revenue-share-section">
@@ -647,7 +662,7 @@ const AcademyManagement = () => {
                 />
               </div>
               <div className="revenue-total">
-                المجموع:{' '}
+                المجموع:{" "}
                 {Number(formData.revenue_share_infantry) +
                   Number(formData.revenue_share_academy)}
                 %
@@ -696,11 +711,11 @@ const AcademyManagement = () => {
           setSelectedAcademy(null);
         }}
         title="حذف الأكاديمية"
-        size="small"
+        size="large"
       >
         <div className="delete-confirmation">
           <p>
-            هل أنت متأكد من حذف الأكاديمية{' '}
+            هل أنت متأكد من حذف الأكاديمية{" "}
             <strong>{selectedAcademy?.name}</strong>؟
           </p>
           <p className="warning-text">لا يمكن التراجع عن هذا الإجراء.</p>

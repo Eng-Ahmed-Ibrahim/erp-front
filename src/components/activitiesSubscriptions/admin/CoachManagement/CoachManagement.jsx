@@ -1,25 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { getCoaches, createCoach, updateCoach, deleteCoach, getAcademies } from '../../../../apis/activitiesSubscriptions';
-import Modal from '../../shared/Modal/Modal';
-import './CoachManagement.scss';
+import React, { useState, useEffect } from "react";
+import {
+  getCoaches,
+  createCoach,
+  updateCoach,
+  deleteCoach,
+  getAcademies,
+} from "../../../../apis/activitiesSubscriptions";
+import Modal from "../../shared/Modal/Modal";
+import "./CoachManagement.scss";
+import { useAuth } from "../../../../context/AuthContext";
 
 const CoachManagement = () => {
   const [coaches, setCoaches] = useState([]);
+  const { user } = useAuth();
+
   const [academies, setAcademies] = useState([]);
   const [filteredCoaches, setFilteredCoaches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCoach, setEditingCoach] = useState(null);
   const [errors, setErrors] = useState({});
-  const [success, setSuccess] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [academyFilter, setAcademyFilter] = useState('');
+  const [success, setSuccess] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [academyFilter, setAcademyFilter] = useState("");
 
   const [formData, setFormData] = useState({
-    academy_id: '',
-    name: '',
-    phone: '',
-    bio: '',
+    academy_id: "",
+    name: "",
+    phone: "",
+    bio: "",
     active: true,
   });
 
@@ -62,8 +71,8 @@ const CoachManagement = () => {
         setAcademies(academiesResponse.data);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
-      setErrors({ general: 'حدث خطأ في تحميل البيانات' });
+      console.error("Error fetching data:", error);
+      setErrors({ general: "حدث خطأ في تحميل البيانات" });
     } finally {
       setLoading(false);
     }
@@ -73,12 +82,12 @@ const CoachManagement = () => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
 
     // Clear field-specific error
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -94,15 +103,15 @@ const CoachManagement = () => {
     const newErrors = {};
 
     if (!formData.academy_id) {
-      newErrors.academy_id = 'الأكاديمية مطلوبة';
+      newErrors.academy_id = "الأكاديمية مطلوبة";
     }
 
     if (!formData.name.trim()) {
-      newErrors.name = 'اسم المدرب مطلوب';
+      newErrors.name = "اسم المدرب مطلوب";
     }
 
     if (formData.phone && !/^[0-9+\-\s]+$/.test(formData.phone)) {
-      newErrors.phone = 'رقم الهاتف غير صحيح';
+      newErrors.phone = "رقم الهاتف غير صحيح";
     }
 
     setErrors(newErrors);
@@ -134,7 +143,7 @@ const CoachManagement = () => {
 
       if (response.success) {
         setSuccess(
-          editingCoach ? 'تم تحديث المدرب بنجاح' : 'تم إنشاء المدرب بنجاح'
+          editingCoach ? "تم تحديث المدرب بنجاح" : "تم إنشاء المدرب بنجاح"
         );
         setIsModalOpen(false);
         setEditingCoach(null);
@@ -142,13 +151,13 @@ const CoachManagement = () => {
         fetchData();
 
         // Clear success message after 3 seconds
-        setTimeout(() => setSuccess(''), 3000);
+        setTimeout(() => setSuccess(""), 3000);
       } else {
-        setErrors({ general: response.message || 'حدث خطأ في العملية' });
+        setErrors({ general: response.message || "حدث خطأ في العملية" });
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      setErrors({ general: 'حدث خطأ في العملية' });
+      console.error("Error submitting form:", error);
+      setErrors({ general: "حدث خطأ في العملية" });
     }
   };
 
@@ -157,39 +166,39 @@ const CoachManagement = () => {
     setFormData({
       academy_id: coach.academy_id.toString(),
       name: coach.name,
-      phone: coach.phone || '',
-      bio: coach.bio || '',
+      phone: coach.phone || "",
+      bio: coach.bio || "",
       active: coach.active,
     });
     setIsModalOpen(true);
   };
 
   const handleDelete = async (coachId) => {
-    if (!window.confirm('هل أنت متأكد من حذف هذا المدرب؟')) {
+    if (!window.confirm("هل أنت متأكد من حذف هذا المدرب؟")) {
       return;
     }
 
     try {
       const response = await deleteCoach(coachId);
       if (response.success) {
-        setSuccess('تم حذف المدرب بنجاح');
+        setSuccess("تم حذف المدرب بنجاح");
         fetchData();
-        setTimeout(() => setSuccess(''), 3000);
+        setTimeout(() => setSuccess(""), 3000);
       } else {
-        setErrors({ general: response.message || 'حدث خطأ في الحذف' });
+        setErrors({ general: response.message || "حدث خطأ في الحذف" });
       }
     } catch (error) {
-      console.error('Error deleting coach:', error);
-      setErrors({ general: 'حدث خطأ في الحذف' });
+      console.error("Error deleting coach:", error);
+      setErrors({ general: "حدث خطأ في الحذف" });
     }
   };
 
   const resetForm = () => {
     setFormData({
-      academy_id: '',
-      name: '',
-      phone: '',
-      bio: '',
+      academy_id: "",
+      name: "",
+      phone: "",
+      bio: "",
       active: true,
     });
     setErrors({});
@@ -203,16 +212,16 @@ const CoachManagement = () => {
 
   const getAcademyName = (academyId) => {
     const academy = academies.find((a) => a.id === academyId);
-    return academy ? academy.name : 'غير محدد';
+    return academy ? academy.name : "غير محدد";
   };
 
   const columns = [
-    { key: 'id', label: 'المعرف' },
-    { key: 'name', label: 'اسم المدرب' },
-    { key: 'academy', label: 'الأكاديمية' },
-    { key: 'phone', label: 'رقم الهاتف' },
-    { key: 'active', label: 'الحالة' },
-    { key: 'actions', label: 'الإجراءات' },
+    { key: "id", label: "المعرف" },
+    { key: "name", label: "اسم المدرب" },
+    { key: "academy", label: "الأكاديمية" },
+    { key: "phone", label: "رقم الهاتف" },
+    { key: "active", label: "الحالة" },
+    { key: "actions", label: "الإجراءات" },
   ];
 
   if (loading) {
@@ -269,17 +278,22 @@ const CoachManagement = () => {
               ))}
             </select>
           </div>
-          <button className="add-btn" onClick={() => setIsModalOpen(true)}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 5V19M5 12H19"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-            إضافة مدرب جديد
-          </button>
+
+          {user?.permissions.some(
+            (permission) => permission.name === "add academy coach"
+          ) && (
+            <button className="add-btn" onClick={() => setIsModalOpen(true)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+              إضافة مدرب جديد
+            </button>
+          )}
         </div>
       </div>
 
@@ -334,8 +348,8 @@ const CoachManagement = () => {
               </svg>
               <p className="data-table__empty-message">
                 {searchQuery || academyFilter
-                  ? 'لم يتم العثور على مدربين تطابق البحث'
-                  : 'لا توجد مدربين مسجلين'}
+                  ? "لم يتم العثور على مدربين تطابق البحث"
+                  : "لا توجد مدربين مسجلين"}
               </p>
             </div>
           </div>
@@ -368,59 +382,68 @@ const CoachManagement = () => {
                         {getAcademyName(coach.academy_id)}
                       </td>
                       <td className="data-table__cell">
-                        {coach.phone || 'غير محدد'}
+                        {coach.phone || "غير محدد"}
                       </td>
                       <td className="data-table__cell">
                         <span
                           className={`status-badge status-badge--${
-                            coach.active ? 'active' : 'inactive'
+                            coach.active ? "active" : "inactive"
                           }`}
                         >
-                          {coach.active ? 'نشط' : 'غير نشط'}
+                          {coach.active ? "نشط" : "غير نشط"}
                         </span>
                       </td>
                       <td className="data-table__cell data-table__cell--actions">
                         <div className="action-buttons">
-                          <button
-                            className="action-btn action-btn--primary"
-                            onClick={() => handleEdit(coach)}
-                            title="تعديل"
-                          >
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                            >
-                              <path
-                                d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13M18.5 2.5C18.8978 2.10218 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10218 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10218 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            className="action-btn action-btn--danger"
-                            onClick={() => handleDelete(coach.id)}
-                            title="حذف"
-                          >
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                            >
-                              <path
-                                d="M3 6H5H21M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </button>
+                          {user?.permissions.some(
+                            (permission) =>
+                              permission.name ===
+                              "edit academy coach"
+                          ) && (
+                            <>
+                              {" "}
+                              <button
+                                className="action-btn action-btn--primary"
+                                onClick={() => handleEdit(coach)}
+                                title="تعديل"
+                              >
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13M18.5 2.5C18.8978 2.10218 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10218 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10218 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                className="action-btn action-btn--danger"
+                                onClick={() => handleDelete(coach.id)}
+                                title="حذف"
+                              >
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M3 6H5H21M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -435,7 +458,7 @@ const CoachManagement = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        title={editingCoach ? 'تعديل المدرب' : 'إضافة مدرب جديد'}
+        title={editingCoach ? "تعديل المدرب" : "إضافة مدرب جديد"}
         size="extra-large"
       >
         <form onSubmit={handleSubmit} className="coach-form">
@@ -447,7 +470,7 @@ const CoachManagement = () => {
                 name="academy_id"
                 value={formData.academy_id}
                 onChange={handleInputChange}
-                className={errors.academy_id ? 'error' : ''}
+                className={errors.academy_id ? "error" : ""}
               >
                 <option value="">اختر الأكاديمية</option>
                 {academies.map((academy) => (
@@ -469,7 +492,7 @@ const CoachManagement = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className={errors.name ? 'error' : ''}
+                className={errors.name ? "error" : ""}
                 placeholder="أدخل اسم المدرب"
               />
               {errors.name && (
@@ -485,7 +508,7 @@ const CoachManagement = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className={errors.phone ? 'error' : ''}
+                className={errors.phone ? "error" : ""}
                 placeholder="أدخل رقم الهاتف"
               />
               {errors.phone && (
@@ -528,7 +551,7 @@ const CoachManagement = () => {
               إلغاء
             </button>
             <button type="submit" className="btn btn--primary">
-              {editingCoach ? 'تحديث' : 'إنشاء'}
+              {editingCoach ? "تحديث" : "إنشاء"}
             </button>
           </div>
         </form>
