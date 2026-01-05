@@ -2032,16 +2032,16 @@ const Sidebar = () => {
             <li
               className="menu-item"
               title="بطاقات العضوية"
-              // style={{
-              //   display: `${
-              //     checkMenuItemPermission({
-              //       id: 202,
-              //       name: 'manage membership cards',
-              //     })
-              //       ? ''
-              //       : 'none'
-              //   }`,
-              // }}
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 210,
+                    name: 'manage membership-cards',
+                  })
+                    ? ''
+                    : 'none'
+                }`,
+              }}
             >
               <Link
                 to="/warehouse/membership-cards"

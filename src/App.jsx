@@ -2150,7 +2150,7 @@ function App() {
             path="/warehouse/membership-cards"
             element={
               <ProtectedRoute
-                requiredPermission={{ id: 201, name: "manage reception" }}
+                requiredPermission={{ id: 210, name: "manage membership-cards" }}
               >
                 <MembershipCards />
               </ProtectedRoute>
