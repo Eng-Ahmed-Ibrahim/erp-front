@@ -292,32 +292,33 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-family-cairo);
+  background-color: transparent !important;
 
   &--primary {
-    background-color: var(--brown-color);
-    color: white;
+    background-color: var(--brown-color) !important;
+    color: white !important;
 
     &:hover {
-      background-color: var(--beige-color);
+      background-color: var(--beige-color) !important;
     }
   }
 
   &--secondary {
-    // background-color: var(--light-beige-color);
-    color: var(--brown-color);
+    background-color: transparent !important;
+    color: var(--brown-color) !important;
 
     &:hover {
-      background-color: var(--beige-color);
-      color: white;
+      background-color: var(--beige-color) !important;
+      color: white !important;
     }
   }
 
   &--danger {
-    background-color: var(--red-color);
-    color: white;
+    background-color: var(--red-color) !important;
+    color: white !important;
 
     &:hover {
-      background-color: #dc2626;
+      background-color: #dc2626 !important;
     }
   }
 }

@@ -575,3 +575,127 @@ export async function getAttendanceStats(startDate, endDate) {
     throw error;
   }
 }
+
+// Financial Reports API
+export async function getFinancialDashboardStats(params = {}) {
+  try {
+    const queryParams = new URLSearchParams();
+    if (params.start_date) queryParams.append('start_date', params.start_date);
+    if (params.end_date) queryParams.append('end_date', params.end_date);
+
+    const res = await axios.get(
+      `${API_ENDPOINT}/api/v1/activities-subscriptions/financial-reports/dashboard-stats?${queryParams.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getFinancialRevenueAnalytics(params = {}) {
+  try {
+    const queryParams = new URLSearchParams();
+    if (params.start_date) queryParams.append('start_date', params.start_date);
+    if (params.end_date) queryParams.append('end_date', params.end_date);
+    if (params.group_by) queryParams.append('group_by', params.group_by);
+
+    const res = await axios.get(
+      `${API_ENDPOINT}/api/v1/activities-subscriptions/financial-reports/revenue-analytics?${queryParams.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getSubscriptionsFinancials(params = {}) {
+  try {
+    const queryParams = new URLSearchParams();
+    if (params.start_date) queryParams.append('start_date', params.start_date);
+    if (params.end_date) queryParams.append('end_date', params.end_date);
+    if (params.academy_id) queryParams.append('academy_id', params.academy_id);
+    if (params.subscriber_type) queryParams.append('subscriber_type', params.subscriber_type);
+
+    const res = await axios.get(
+      `${API_ENDPOINT}/api/v1/activities-subscriptions/financial-reports/subscriptions-financials?${queryParams.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getRevenueByAcademy(params = {}) {
+  try {
+    const queryParams = new URLSearchParams();
+    if (params.start_date) queryParams.append('start_date', params.start_date);
+    if (params.end_date) queryParams.append('end_date', params.end_date);
+
+    const res = await axios.get(
+      `${API_ENDPOINT}/api/v1/activities-subscriptions/financial-reports/revenue-by-academy?${queryParams.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getRevenueBySubscriberType(params = {}) {
+  try {
+    const queryParams = new URLSearchParams();
+    if (params.start_date) queryParams.append('start_date', params.start_date);
+    if (params.end_date) queryParams.append('end_date', params.end_date);
+
+    const res = await axios.get(
+      `${API_ENDPOINT}/api/v1/activities-subscriptions/financial-reports/revenue-by-subscriber-type?${queryParams.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function generateFinancialReport(reportType, params = {}) {
+  try {
+    const queryParams = new URLSearchParams();
+    if (params.start_date) queryParams.append('start_date', params.start_date);
+    if (params.end_date) queryParams.append('end_date', params.end_date);
+
+    const res = await axios.get(
+      `${API_ENDPOINT}/api/v1/activities-subscriptions/financial-reports/reports/${reportType}?${queryParams.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}

@@ -756,176 +756,260 @@ const ShowInventives = () => {
         }}
         ref={tableRef}
       >
-        <thead>
-          <tr className="fw-bold fs-5 my-3">
-            <th scope="col" style={{ background: "#edede9" }}>
-              الاسم
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              القسم
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              {" "}
-              عدد الأبناط
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              الخصم
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              الاثابه
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              {" "}
-              الإستقطاعات
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              {" "}
-              اجمالي الحافز
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              الوظيفه
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              الرقم القومي
-            </th>
-            <th scope="col" style={{ background: "#edede9" }}>
-              ألاجرائات
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.map((item, index) => (
-            <tr key={index} className="content-area-table">
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {item?.employee?.name}
-              </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {" "}
-                {item?.employee?.department?.name}
-              </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {item.points
-                  ? item.points
-                  : item.job.points
-                  ? item.job.points
-                  : "لا يوجد"}
-              </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {item?.discount}
-              </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {item?.reward}
-              </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {item?.sim_card_deduction +
-                  item?.advance +
-                  item?.other_deductions}
-              </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {item?.total_incentives}
-              </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {item?.job?.name}
-              </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {" "}
-                {item?.employee?.national_id}
-              </td>
-              <td
-                style={{
-                  padding: " 14px 12px",
-                  border: "1px solid #E4C59E",
-                  color: "#803D3B",
-                  fontSize: "18px",
-                  fontWeight: "700",
-                }}
-              >
-                {" "}
-                <button
-                  type="button"
-                  className="btn text-light fs-bold px-3"
-                  style={{ backgroundColor: "#AF8260" }}
-                  onClick={() => handelEdit(item)}
-                  disabled={!canEdit}
-                >
-                  تعديل
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        {hasExcellenceBonus === true || hasExcellenceBonus === "true" ? (
+          <>
+            <thead>
+              <tr className="fw-bold fs-5 my-3">
+                <th scope="col" style={{ background: "#edede9" }}>
+                  الاسم
+                </th>
+                <th scope="col" style={{ background: "#edede9" }}>
+                  الرقم القومي
+                </th>
+                <th scope="col" style={{ background: "#edede9" }}>
+                  التميز (عدد النقاط)
+                </th>
+                <th scope="col" style={{ background: "#edede9" }}>
+                   قيمةالتميز
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.map((item, index) => {
+                const bonusPoints = item?.excellence_bonus || 0;
+                const pointValueRow = item?.point_value || 0;
+                const deptPercentage =
+                  item?.employee?.department?.points_percentage != null
+                    ? item.employee.department.points_percentage / 100
+                    : 1;
+                const bonusAmount =
+                  bonusPoints * pointValueRow * deptPercentage;
+
+                return (
+                  <tr key={index} className="content-area-table">
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item?.employee?.name}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item?.employee?.national_id}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {bonusPoints}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {bonusAmount.toFixed(2)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </>
+        ) : (
+          <>
+              <thead>
+                <tr className="fw-bold fs-5 my-3">
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    الاسم
+                  </th>
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    القسم
+                  </th>
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    {" "}
+                    عدد الأبناط
+                  </th>
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    الخصم
+                  </th>
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    الاثابه
+                  </th>
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    {" "}
+                    الإستقطاعات
+                  </th>
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    {" "}
+                    اجمالي الحافز
+                  </th>
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    الوظيفه
+                  </th>
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    الرقم القومي
+                  </th>
+                  <th scope="col" style={{ background: "#edede9" }}>
+                    ألاجرائات
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {data?.map((item, index) => (
+                  <tr key={index} className="content-area-table">
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item?.employee?.name}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {" "}
+                      {item?.employee?.department?.name}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item.points
+                        ? item.points
+                        : item.job.points
+                          ? item.job.points
+                          : "لا يوجد"}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item?.discount}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item?.reward}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item?.sim_card_deduction +
+                        item?.advance +
+                        item?.other_deductions}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item?.total_incentives}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item?.job?.name}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {" "}
+                      {item?.employee?.national_id}
+                    </td>
+                    <td
+                      style={{
+                        padding: " 14px 12px",
+                        border: "1px solid #E4C59E",
+                        color: "#803D3B",
+                        fontSize: "18px",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {" "}
+                      <button
+                        type="button"
+                        className="btn text-light fs-bold px-3"
+                        style={{ backgroundColor: "#AF8260" }}
+                        onClick={() => handelEdit(item)}
+                        disabled={!canEdit}
+                      >
+                        تعديل
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+          </>
+        )}
       </table>
 
       <DataModal

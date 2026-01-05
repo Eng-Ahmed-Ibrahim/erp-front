@@ -1,0 +1,296 @@
+@import '../MembershipReports/MembershipReports.scss';
+
+.financial-reports {
+  @extend .membership-reports;
+}
+
+.revenue-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  
+  @media (max-width: 1400px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.revenue-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--light-beige-color);
+
+  &--total {
+    background: linear-gradient(135deg, var(--brown-color), var(--beige-color));
+    color: white;
+    border: none;
+
+    .revenue-card__icon {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .revenue-card__label {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .revenue-card__value {
+      color: white;
+    }
+  }
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: var(--light-beige-color);
+    color: var(--brown-color);
+
+    &--establishment {
+      background-color: #dbeafe;
+      color: #2563eb;
+    }
+
+    &--annual {
+      background-color: #d1fae5;
+      color: #059669;
+    }
+
+    &--issuance {
+      background-color: #fef3c7;
+      color: #d97706;
+    }
+
+    &--replacement {
+      background-color: #fff7ed;
+      color: #ea580c;
+    }
+  }
+
+  &--replacement {
+    border-color: #fed7aa;
+    
+    .revenue-card__label {
+      color: #ea580c;
+    }
+    
+    .revenue-card__value {
+      color: #ea580c;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+
+  &__value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--brown-color);
+  }
+}
+
+.charts-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.chart-card--full {
+  grid-column: span 1;
+}
+
+.monthly-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 280px;
+  padding-top: 1rem;
+  gap: 0.5rem;
+}
+
+.month-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 60px;
+
+  &__fill-container {
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  &__fill {
+    width: 100%;
+    background: linear-gradient(180deg, var(--brown-color), var(--beige-color));
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    position: relative;
+    transition: height 0.5s ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  &__value {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--brown-color);
+    font-weight: 600;
+    white-space: nowrap;
+    padding-bottom: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &:hover &__value {
+    opacity: 1;
+  }
+
+  &__label {
+    font-size: 0.7rem;
+    color: #666;
+    margin-top: 0.5rem;
+    text-align: center;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    height: 60px;
+    overflow: hidden;
+  }
+}
+
+.pie-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pie-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background-color: var(--light-beige-color);
+  border-radius: 6px;
+
+  &__color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__label {
+    font-size: 0.85rem;
+    color: var(--base-text-color);
+  }
+
+  &__percentage {
+    font-size: 0.75rem;
+    color: #666;
+    padding: 0.15rem 0.4rem;
+    background-color: white;
+    border-radius: 4px;
+  }
+
+  &__value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--brown-color);
+    white-space: nowrap;
+  }
+}
+
+// Dark mode
+.dark-mode {
+  .revenue-card {
+    background-color: var(--bg-color-inverted);
+    border-color: var(--border-color-inverted);
+
+    &--total {
+      border: none;
+    }
+
+    &__label {
+      color: #999;
+    }
+
+    &__value {
+      color: var(--text-color-inverted);
+    }
+  }
+
+  .pie-item {
+    background-color: var(--border-color-inverted);
+
+    &__percentage {
+      background-color: var(--bg-color-inverted);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 1200px) {
+  .revenue-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .revenue-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .monthly-chart {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 1rem;
+  }
+
+  .month-bar {
+    min-width: 40px;
+  }
+}
+
+
+
+

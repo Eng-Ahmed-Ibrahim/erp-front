@@ -20,7 +20,7 @@ import {
   FaTruckArrowRight,
   FaCalendarXmark,
 } from "react-icons/fa6";
-import { FaUserCircle, FaUser, FaUsers } from "react-icons/fa";
+import { FaUserCircle, FaUser, FaUsers, FaIdCard } from "react-icons/fa";
 import { BsCashCoin, BsCreditCard2FrontFill } from "react-icons/bs";
 
 import { HiOutlineOfficeBuilding } from "react-icons/hi";
@@ -2026,6 +2026,40 @@ const Sidebar = () => {
                   style={{ fontSize: '20px' }}
                 >
                   كاشير الأنشطة
+                </span>
+              </Link>
+            </li>
+            <li
+              className="menu-item"
+              title="بطاقات العضوية"
+              // style={{
+              //   display: `${
+              //     checkMenuItemPermission({
+              //       id: 202,
+              //       name: 'manage membership cards',
+              //     })
+              //       ? ''
+              //       : 'none'
+              //   }`,
+              // }}
+            >
+              <Link
+                to="/warehouse/membership-cards"
+                className={`menu-link ${
+                  activeLink === '/warehouse/membership-cards' ? 'active' : ''
+                } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick('/warehouse/membership-cards')
+                }
+              >
+                <span className="menu-link-icon">
+                  <FaIdCard size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: '20px' }}
+                >
+                  بطاقات العضوية
                 </span>
               </Link>
             </li>
