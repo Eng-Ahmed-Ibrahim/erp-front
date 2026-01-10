@@ -119,25 +119,11 @@
     margin: 0.5rem 0;
     border-radius: 6px;
     border: 1px solid var(--tbl-border-color) !important;
-    overflow-x: auto;
-
-    &::-webkit-scrollbar {
-      height: 6px;
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background-color: var(--scroll-track-bg-color);
-    }
-
-    &::-webkit-scrollbar-thumb {
-      border-radius: 100vh !important;
-      background-color: #e9e9e9;
-      outline: 1px solid rgba(0, 0, 0, 0.02);
-      outline-offset: -1px;
-    }
-
-    table {
+    overflow: visible;
+    position: relative;
+  }
+  
+  .data-table-diagram table {
       // min-width: 900px;
       width: 100%;
       border-collapse: collapse;
@@ -257,11 +243,11 @@
           }
         }
 
-        .dt-status-text {
-          text-transform: capitalize;
-        }
+      .dt-status-text {
+        text-transform: capitalize;
       }
     }
+  
   }
 
   .clickable-cell {
@@ -677,14 +663,48 @@
   }
 }
 
-// Sticky header styles
+// Table container - default scrolling (no fixed height)
 .table-container {
-  max-height: 70vh;
-  overflow-y: auto;
-  position: relative;
+  position: relative !important;
+  width: 100% !important;
+  display: block !important;
+  overflow-x: auto !important;
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse !important;
+    margin: 0;
+    display: table;
+    
+    thead {
+      position: relative;
+      background-color: #edede9 !important;
+      display: table-header-group;
+      
+      tr {
+        display: table-row;
+        background-color: #edede9 !important;
+      }
+      
+      th {
+        background-color: #edede9 !important;
+        border-bottom: 2px solid var(--brown-color) !important;
+        position: relative;
+      }
+    }
+    
+    tbody {
+      display: table-row-group;
+    }
+    
+    tr {
+      display: table-row;
+    }
+  }
   
   &::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
   }
   
   &::-webkit-scrollbar-track {
@@ -700,16 +720,25 @@
       background-color: #d1d1d1;
     }
   }
+  
+  &::-webkit-scrollbar-corner {
+    background-color: var(--scroll-track-bg-color);
+  }
 }
 
+// Table styles - must be outside content-area-table to work with table-container
+// These styles are for tables outside table-container
 .data-table {
-  &.sticky-header {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  display: table;
+  
+  // When inside table-container, sticky is handled there
+  // These styles only apply when NOT inside table-container
+  &:not(.table-container .data-table) {
     thead {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background-color: #edede9;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
       
       th {
         background-color: #edede9;

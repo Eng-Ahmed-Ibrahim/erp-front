@@ -424,6 +424,17 @@ export async function calculateFees(beneficiaryType, isRenewal = false) {
   }
 }
 
+export async function renewSubscription(id, renewalData) {
+  try {
+    const res = await axios.post(`${API_ENDPOINT}/api/v1/membership-cards/subscriptions/${id}/renew`, renewalData, {
+      headers: getHeaders(),
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 // =====================
 // Membership Cards API
 // =====================
@@ -599,10 +610,10 @@ export async function getCardsNotEncoded() {
 
 export const RELATIONSHIP_TYPES = [
   { value: 'spouse', label: 'الزوجة' },
-  { value: 'child', label: 'الابن / الابنة' },
-  { value: 'parent', label: 'الأب / الأم' },
+  { value: 'child', label: 'الأبناء' },
+  { value: 'parent', label: 'الآباء' },
   { value: 'grandchild', label: 'الأحفاد' },
-  { value: 'child_spouse', label: 'زوج / زوجة الابن' },
+  { value: 'child_spouse', label: 'أزواج الأبناء' },
 ];
 
 export const WEAPON_TYPES = [

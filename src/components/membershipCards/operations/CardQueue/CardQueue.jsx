@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   getOfficerCards,
-  markCardPrinted, 
-  markCardEncoded, 
+  markCardPrinted,
+  markCardEncoded,
   revokeCard,
   writeCardData,
   CARD_STATUSES,
@@ -58,51 +58,51 @@ const CardQueue = ({ selectedOfficer }) => {
   const [processingId, setProcessingId] = useState(null);
 
   const filters = [
-    { 
-      id: 'all', 
-      label: 'الكل', 
+    {
+      id: 'all',
+      label: 'الكل',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-          <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-          <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
-          <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2"/>
+          <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" />
+          <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" />
+          <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" />
+          <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" />
         </svg>
       ),
-      color: '#6b7280' 
+      color: '#6b7280'
     },
-    { 
-      id: 'active', 
-      label: 'نشطة', 
+    {
+      id: 'active',
+      label: 'نشطة',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       ),
-      color: '#10b981' 
+      color: '#10b981'
     },
-    { 
-      id: 'pending', 
-      label: 'قيد المعالجة', 
+    {
+      id: 'pending',
+      label: 'قيد المعالجة',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-          <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+          <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       ),
-      color: '#f59e0b' 
+      color: '#f59e0b'
     },
-    { 
-      id: 'expired', 
-      label: 'منتهية', 
+    {
+      id: 'expired',
+      label: 'منتهية',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-          <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+          <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       ),
-      color: '#ef4444' 
+      color: '#ef4444'
     },
   ];
 
@@ -116,14 +116,14 @@ const CardQueue = ({ selectedOfficer }) => {
 
   const fetchCards = async () => {
     if (!selectedOfficer?.id) return;
-    
+
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await getOfficerCards(selectedOfficer.id);
       let filteredCards = response.data || [];
-      
+
       // Apply filter
       if (activeFilter !== 'all') {
         if (activeFilter === 'pending') {
@@ -132,7 +132,7 @@ const CardQueue = ({ selectedOfficer }) => {
           filteredCards = filteredCards.filter(card => card.status === activeFilter);
         }
       }
-      
+
       setCards(filteredCards);
     } catch (err) {
       setError('حدث خطأ في تحميل البيانات');
@@ -189,7 +189,7 @@ const CardQueue = ({ selectedOfficer }) => {
     // Priority: Use card's actual data (officer or beneficiary from subscription)
     const cardOfficer = card.officer;
     const cardBeneficiary = card.beneficiary;
-    
+
     // Use card.photo directly (already set to correct photo: officer or beneficiary)
     const cardPhoto = card.photo || null;
 
@@ -270,11 +270,33 @@ const CardQueue = ({ selectedOfficer }) => {
   const handlePrintCard = (card) => {
     const theme = getCardTheme(card);
     const holder = getCardHolder(card);
+    // Get officer theme for photo border (always use officer's theme)
+    const cardOfficer = card.officer || selectedOfficer;
+    let officerThemeForBorder = CARD_THEMES.blue; // Default
+    if (cardOfficer?.rank === 'لواء') {
+      officerThemeForBorder = CARD_THEMES.red;
+    } else if (cardOfficer?.weapon_type === 'infantry' || cardOfficer?.is_infantry) {
+      officerThemeForBorder = CARD_THEMES.blue;
+    } else if (cardOfficer?.weapon_type && cardOfficer.weapon_type !== 'infantry') {
+      officerThemeForBorder = CARD_THEMES.yellow;
+    }
     const origin = window.location.origin;
     const photoUrl = holder.photo
       ? (holder.photo.startsWith('http') ? holder.photo : origin + holder.photo)
       : null;
     const egyptianSymbolsUrl = `${origin}/assets/images/Ancient-Egyptian-Symbols-Egypt-Tours-Portal-removebg-preview.png`;
+
+    // Format dates for display
+    const issueDateFormatted = card.created_at
+      ? (typeof card.created_at === 'string'
+        ? new Date(card.created_at).toLocaleDateString('ar-EG')
+        : String(card.created_at))
+      : null;
+    const expiryDateFormatted = card.expiry_date
+      ? (typeof card.expiry_date === 'string'
+        ? new Date(card.expiry_date).toLocaleDateString('ar-EG')
+        : String(card.expiry_date))
+      : null;
 
     // Create print window
     const printWindow = window.open('', '_blank', 'width=800,height=600');
@@ -294,8 +316,8 @@ const CardQueue = ({ selectedOfficer }) => {
         <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800;900&display=swap" rel="stylesheet">
         <style>
           @page {
-            size: A4;
-            margin: 20mm;
+            size: A4 landscape;
+            margin: 0;
           }
           * {
             margin: 0;
@@ -311,6 +333,8 @@ const CardQueue = ({ selectedOfficer }) => {
             background: #f5f5f5;
             padding: 20px;
             direction: rtl;
+            width: 100vw;
+            height: 100vh;
           }
           .card-design {
             width: 280px;
@@ -319,6 +343,8 @@ const CardQueue = ({ selectedOfficer }) => {
             overflow: hidden;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            transform: rotate(-90deg);
+            transform-origin: center center;
           }
           .card-design__background {
             position: absolute;
@@ -335,19 +361,13 @@ const CardQueue = ({ selectedOfficer }) => {
             left: 50%;
             right: 0;
             height: 12%;
-            background: linear-gradient(180deg, #0f2d3f 0%, #1a4a6b 50%, #0f2d3f 100%);
             z-index: 2;
-            border-bottom: 3px solid #d4af37;
-            border-radius: 0 0 0 20px;
             overflow: visible;
           }
           .card-design__top-border::before {
             content: '';
             position: absolute;
             inset: 0;
-            background-image: url('${egyptianSymbolsUrl}');
-            background-size: 120px auto;
-            background-repeat: repeat;
             opacity: 0.35;
             filter: sepia(100%) saturate(250%) hue-rotate(10deg) brightness(0.7);
             pointer-events: none;
@@ -357,9 +377,7 @@ const CardQueue = ({ selectedOfficer }) => {
             position: absolute;
             inset: -5.5px;
             border-radius: 0 0 0 20px;
-            background: linear-gradient(120deg, #ffffff 0%, #C0C0C0 70%, #C0C0C0 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
+          
             mask-composite: exclude;
             padding: 3px;
             z-index: 1;
@@ -370,10 +388,7 @@ const CardQueue = ({ selectedOfficer }) => {
             left: 0;
             right: 50%;
             height: 12%;
-            background: linear-gradient(180deg, #0f2d3f 0%, #1a4a6b 50%, #0f2d3f 100%);
             z-index: 2;
-            border-top: 3px solid #d4af37;
-            border-radius: 0 20px 0 0;
             overflow: visible;
           }
           .card-design__bottom-border::before {
@@ -383,10 +398,6 @@ const CardQueue = ({ selectedOfficer }) => {
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url('${egyptianSymbolsUrl}');
-            background-size: 120px auto;
-            background-repeat: repeat;
-            background-position: center center;
             opacity: 0.35;
             filter: sepia(100%) saturate(250%) hue-rotate(10deg) brightness(0.7);
           }
@@ -395,10 +406,7 @@ const CardQueue = ({ selectedOfficer }) => {
             position: absolute;
             inset: -5.5px;
             border-radius: 0 20px 0 0;
-            background: linear-gradient(120deg, #C0C0C0 0%, #C0C0C0 30%, #ffffff 100%);
-            z-index: 1;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
+        
             padding: 3px;
           }
           .card-design__org-name {
@@ -418,12 +426,12 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__photo-container {
             position: absolute;
-            top: 30%;
-            left: 6.5%;
-            width: 23%;
+            top: 28%;
+            left: 5.5%;
+            width: 26%;
             aspect-ratio: 1;
             border-radius: 50%;
-            border: 4px solid #0a1a2a;
+            border: 2px solid var(--card-photo-border, #0a1a2a);
             overflow: hidden;
             background: #f8f8f8;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
@@ -463,6 +471,42 @@ const CardQueue = ({ selectedOfficer }) => {
             position: relative;
             z-index: 1;
             filter: grayscale(100%);
+          }
+          .card-design__dates {
+            position: absolute;
+            bottom: 12%;
+            left: 3.5%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            z-index: 4;
+          }
+          .card-design__date-row {
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+            gap: 0.25rem;
+            line-height: 1.1;
+          }
+          .card-design__date-label {
+            font-size: 0.45rem;
+            font-weight: 700;
+            color: #0a1a2a;
+            font-family: 'Cairo', sans-serif;
+            letter-spacing: 0.03px;
+            opacity: 0.85;
+            white-space: nowrap;
+          }
+          .card-design__date-value {
+            font-size: 0.42rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-family: 'Cairo', sans-serif;
+            letter-spacing: 0.02px;
+            opacity: 0.9;
+            direction: rtl;
+            text-align: right;
+            white-space: nowrap;
           }
           .card-design__logo-container {
             position: absolute;
@@ -511,7 +555,7 @@ const CardQueue = ({ selectedOfficer }) => {
             opacity: 0.9;
           }
           .card-design__signature-title {
-            font-size: 0.62rem;
+            font-size: 0.52rem;
             font-weight: 700;
             color: #0a1a2a;
             font-family: 'Cairo', sans-serif;
@@ -530,7 +574,7 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-info-label {
             font-size: 0.72rem;
-            font-weight: 800;
+            font-weight: 900;
             color: #0a1a2a;
             min-width: fit-content;
             white-space: nowrap;
@@ -540,7 +584,7 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-info-value {
             font-size: 0.72rem;
-            font-weight: 700;
+            font-weight: 800;
             color: #1a1a1a;
             flex: 1;
             text-align: right;
@@ -557,52 +601,80 @@ const CardQueue = ({ selectedOfficer }) => {
             white-space: nowrap;
             word-break: normal;
           }
+          .card-info-value--full-text {
+            overflow: visible;
+            text-overflow: clip;
+            white-space: nowrap;
+            word-break: normal;
+            flex-shrink: 0;
+          }
           @media print {
             body {
               background: white;
               padding: 0;
+              margin: 0;
+              width: 100%;
+              height: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
             }
             .card-design {
               margin: 0 auto;
               box-shadow: none;
+              transform: rotate(-90deg);
+              transform-origin: center center;
             }
             @page {
+              size: A4 landscape;
               margin: 0;
             }
           }
         </style>
       </head>
       <body>
-        <div class="card-design">
+        <div class="card-design" style="--card-photo-border: ${officerThemeForBorder.primary};">
           <div class="card-design__background"></div>
           <div class="card-design__top-border"></div>
           <div class="card-design__bottom-border"></div>
-          <div class="card-design__org-name">دار ضباط المشاة</div>
-          <div class="card-design__photo-container">
+          <div class="card-design__org-name"></div>
+          <div class="card-design__photo-container" style="border-color: ${officerThemeForBorder.primary};">
             ${photoUrl ? `<img src="${photoUrl}" alt="${holder.name}" class="card-design__photo-img" />` : '<div class="card-design__photo-placeholder"></div>'}
           </div>
-          <div class="card-design__logo-container">
-            <img src="${origin}/assets/images/transparent-card-logo.PNG" alt="Logo" class="card-design__logo" />
+          <div class="card-design__dates">
+            ${issueDateFormatted ? `
+            <div class="card-design__date-row">
+              <span class="card-design__date-label">إصدار:</span>
+              <span class="card-design__date-value">${issueDateFormatted}</span>
+            </div>
+            ` : ''}
+            ${expiryDateFormatted ? `
+            <div class="card-design__date-row">
+              <span class="card-design__date-label">انتهاء:</span>
+              <span class="card-design__date-value">${expiryDateFormatted}</span>
+            </div>
+            ` : ''}
           </div>
+          
           <div class="card-design__info-section">
             <div class="card-info-field">
               <span class="card-info-label">عضوية:</span>
               <span class="card-info-value">${card.subscription_id || '-'}</span>
             </div>
             <div class="card-info-field">
-              <span class="card-info-label">${holder.type === 'officer' ? 'رتبة:' : 'الصلة:'}</span>
-              <span class="card-info-value">${holder.type === 'officer' ? (holder.rank || card.officer?.rank || '-') : (holder.relationship || card.beneficiary?.relationship_type || '-')}</span>
+              <span class="card-info-label">الصفه:</span>
+              <span class="card-info-value card-info-value--full-text" style="margin-left: 2.8rem;">${holder.type === 'officer' ? 'سيادته' : (holder.relationship || getRelationshipLabel(card.beneficiary?.relationship_type) || '-')}</span>
+              <span class="card-info-label" style="margin-right: 1rem;">الرتبه:</span>
+              <span class="card-info-value card-info-value--full-text">${holder.type === 'officer' ? (holder.rank || card.officer?.rank || '-') : (card.officer?.rank || '-')}</span>
             </div>
             <div class="card-info-field">
               <span class="card-info-label">إسم:</span>
               <span class="card-info-value">${holder.name || '-'}</span>
             </div>
-            ${holder.type === 'officer' ? `
             <div class="card-info-field">
               <span class="card-info-label">ت ش:</span>
-              <span class="card-info-value">${holder.seniority_number || card.officer?.seniority_number || '-'}</span>
+              <span class="card-info-value">${holder.membership_number || card.officer?.membership_number || '-'}</span>
             </div>
-            ` : ''}
             <div class="card-info-field">
               <span class="card-info-label">رقم قومي:</span>
               <span class="card-info-value card-info-value--national-id">${holder.national_id || card.officer?.national_id || card.beneficiary?.national_id || '-'}</span>
@@ -663,7 +735,7 @@ const CardQueue = ({ selectedOfficer }) => {
   const handleMarkEncoded = async (cardId) => {
     try {
       setProcessingId(cardId);
-      
+
       // Find the card to get token and UID
       const card = cards.find(c => c.id === cardId);
       if (!card) {
@@ -690,8 +762,8 @@ const CardQueue = ({ selectedOfficer }) => {
     } catch (err) {
       console.error('Error encoding card:', err);
       setError(
-        err.response?.data?.message || 
-        err.message || 
+        err.response?.data?.message ||
+        err.message ||
         'حدث خطأ في كتابة البيانات على البطاقة'
       );
     } finally {
@@ -701,7 +773,7 @@ const CardQueue = ({ selectedOfficer }) => {
 
   const handleRevoke = async (cardId) => {
     if (!window.confirm('هل أنت متأكد من إلغاء هذه البطاقة؟')) return;
-    
+
     try {
       setProcessingId(cardId);
       await revokeCard(cardId);
@@ -716,7 +788,7 @@ const CardQueue = ({ selectedOfficer }) => {
   const getStatusBadge = (card) => {
     let status = card.status;
     let label = '';
-    
+
     if (card.is_revoked) {
       status = 'revoked';
       label = 'ملغية';
@@ -733,11 +805,11 @@ const CardQueue = ({ selectedOfficer }) => {
       status = 'active';
       label = 'نشطة';
     }
-    
+
     const statusInfo = CARD_STATUSES.find(s => s.value === status);
-    
+
     return (
-      <span 
+      <span
         className={`card-status card-status--${status}`}
         style={{ '--status-color': statusInfo?.color || '#6b7280' }}
       >
@@ -753,19 +825,19 @@ const CardQueue = ({ selectedOfficer }) => {
         <div className="card-queue__header">
           <h3 className="card-queue__title">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
-              <path d="M2 10H22" stroke="currentColor" strokeWidth="2"/>
-              <circle cx="6" cy="14" r="1" fill="currentColor"/>
-              <path d="M10 14H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
+              <path d="M2 10H22" stroke="currentColor" strokeWidth="2" />
+              <circle cx="6" cy="14" r="1" fill="currentColor" />
+              <path d="M10 14H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
             بطاقات الضابط
           </h3>
         </div>
-        
+
         <div className="card-queue__empty-officer">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
           </svg>
           <p>اختر ضابطاً لعرض بطاقاته</p>
           <span>انقر على صف في جدول الضباط لعرض بطاقاته هنا</span>
@@ -782,10 +854,10 @@ const CardQueue = ({ selectedOfficer }) => {
       <div className="card-queue__header" style={{ background: officerTheme.gradient }}>
         <h3 className="card-queue__title">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
-            <path d="M2 10H22" stroke="currentColor" strokeWidth="2"/>
-            <circle cx="6" cy="14" r="1" fill="currentColor"/>
-            <path d="M10 14H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
+            <path d="M2 10H22" stroke="currentColor" strokeWidth="2" />
+            <circle cx="6" cy="14" r="1" fill="currentColor" />
+            <path d="M10 14H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
           بطاقات {selectedOfficer.full_name}
         </h3>
@@ -822,9 +894,9 @@ const CardQueue = ({ selectedOfficer }) => {
         ) : cards.length === 0 ? (
           <div className="card-queue__empty">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-              <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
-              <path d="M2 10H22" stroke="currentColor" strokeWidth="2"/>
-              <path d="M6 15H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
+                <path d="M2 10H22" stroke="currentColor" strokeWidth="2" />
+                <path d="M6 15H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
             <p>لا توجد بطاقات لهذا الضابط</p>
           </div>
@@ -832,9 +904,19 @@ const CardQueue = ({ selectedOfficer }) => {
               cards.map((card) => {
                 const theme = getCardTheme(card);
                 const holder = getCardHolder(card);
-                return (
-                  <div key={card.id} className={`card-item card-item--${theme.id}`}>
-                    {/* Card Preview */}
+            // Get officer theme for photo border (always use officer's theme)
+            const cardOfficer = card.officer || selectedOfficer;
+            let officerThemeForBorder = CARD_THEMES.blue; // Default
+            if (cardOfficer?.rank === 'لواء') {
+              officerThemeForBorder = CARD_THEMES.red;
+            } else if (cardOfficer?.weapon_type === 'infantry' || cardOfficer?.is_infantry) {
+              officerThemeForBorder = CARD_THEMES.blue;
+            } else if (cardOfficer?.weapon_type && cardOfficer.weapon_type !== 'infantry') {
+              officerThemeForBorder = CARD_THEMES.yellow;
+            }
+            return (
+              <div key={card.id} className={`card-item card-item--${theme.id}`}>
+                {/* Card Preview */}
                 <div
                   className="card-item__preview"
                   style={{
@@ -843,48 +925,73 @@ const CardQueue = ({ selectedOfficer }) => {
                     '--card-accent': theme.accent,
                     '--card-gradient': theme.gradient,
                     '--card-strip': theme.stripColor,
+                    '--card-photo-border': officerThemeForBorder.primary,
                   }}
                 >
                   <div className="card-design">
                     {/* Card Background - White */}
                     <div className="card-design__background"></div>
-                    
+
                     {/* Top Decorative Border */}
                     <div className="card-design__top-border"></div>
-                    
+
                     {/* Bottom Decorative Border */}
                     <div className="card-design__bottom-border"></div>
-                    
+
                     {/* Top Left: Organization Name */}
                     <div className="card-design__org-name">دار ضباط المشاة</div>
-                    
+
                     {/* Left Center: Photo */}
                     <div className="card-design__photo-container">
                       {holder.photo ? (
-                            <img
-                              src={holder.photo}
-                              alt={holder.name}
-                              className="card-design__photo-img"
-                              onError={(e) => {
-                                // If image fails to load, show placeholder
-                                e.target.style.display = 'none';
-                                e.target.parentElement.innerHTML = '<div class="card-design__photo-placeholder"></div>';
-                              }}
-                            />
+                        <img
+                          src={holder.photo}
+                          alt={holder.name}
+                          className="card-design__photo-img"
+                          onError={(e) => {
+                            // If image fails to load, show placeholder
+                            e.target.style.display = 'none';
+                            e.target.parentElement.innerHTML = '<div class="card-design__photo-placeholder"></div>';
+                          }}
+                        />
                       ) : (
                         <div className="card-design__photo-placeholder"></div>
                       )}
                     </div>
-                    
+
+                    {/* Left Bottom: Issue and Expiry Dates (same line as signature) */}
+                    <div className="card-design__dates">
+                      {card.created_at && (
+                        <div className="card-design__date-row">
+                          <span className="card-design__date-label">إصدار:</span>
+                          <span className="card-design__date-value">
+                            {typeof card.created_at === 'string'
+                              ? new Date(card.created_at).toLocaleDateString('ar-EG')
+                              : String(card.created_at)}
+                          </span>
+                        </div>
+                      )}
+                      {card.expiry_date && (
+                        <div className="card-design__date-row">
+                          <span className="card-design__date-label">انتهاء:</span>
+                          <span className="card-design__date-value">
+                            {typeof card.expiry_date === 'string'
+                              ? new Date(card.expiry_date).toLocaleDateString('ar-EG')
+                              : String(card.expiry_date)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Center: Logo */}
                     <div className="card-design__logo-container">
-                      <img 
-                        src="/assets/images/transparent-card-logo.PNG" 
-                        alt="Infantry House Logo" 
+                      <img
+                        src="/assets/images/transparent-card-logo.PNG"
+                        alt="Infantry House Logo"
                         className="card-design__logo"
                       />
                     </div>
-                    
+
                     {/* Right Side: Information Fields */}
                     <div className="card-design__info-section">
                       <div className="card-info-field">
@@ -892,36 +999,41 @@ const CardQueue = ({ selectedOfficer }) => {
                         <span className="card-info-value">{String(card.subscription_id || '-')}</span>
                       </div>
                       <div className="card-info-field">
-                            <span className="card-info-label">
-                              {holder.type === 'officer' ? 'رتبة:' : 'الصلة:'}
-                            </span>
-                        <span className="card-info-value">
-                          {holder.type === 'officer' 
-                                ? String(holder.rank || card.officer?.rank || '-')
-                            : String(holder.relationship || card.beneficiary?.relationship_type || '-')}
+                        <span className="card-info-label">الصفه:</span>
+                        <span className="card-info-value card-info-value--full-text" style={{ marginLeft: '2.8rem' }}>
+                          {holder.type === 'officer'
+                            ? 'سيادته'
+                            : String(holder.relationship || getRelationshipLabel(card.beneficiary?.relationship_type) || '-')}
+                        </span>
+                        <span className="card-info-label" >الرتبه:</span>
+                        <span className="card-info-value card-info-value--full-text" >
+                          {String(
+                            holder.type === 'officer'
+                              ? (holder.rank || card.officer?.rank || '-')
+                              : (card.officer?.rank || '-')
+                          )}
                         </span>
                       </div>
                       <div className="card-info-field">
                         <span className="card-info-label">إسم:</span>
                         <span className="card-info-value">{String(holder.name || '-')}</span>
                       </div>
-                          {/* ت ش: Only show for officers */}
-                          {holder.type === 'officer' && (
-                            <div className="card-info-field">
-                              <span className="card-info-label">ت ش:</span>
-                              <span className="card-info-value">
-                                {String(holder.seniority_number || card.officer?.seniority_number || '-')}
-                              </span>
-                            </div>
-                          )}
+                      {/* ت ش: Only show for officers */}
+                      <div className="card-info-field">
+                        <span className="card-info-label">ت ش:</span>
+                        <span className="card-info-value">
+                          {String(holder.membership_number || card.officer?.membership_number || '-')}
+                        </span>
+                      </div>
+
                       <div className="card-info-field">
                         <span className="card-info-label">رقم قومي:</span>
-                            <span className="card-info-value card-info-value--national-id">
-                              {String(holder.national_id || card.officer?.national_id || card.beneficiary?.national_id || '-')}
-                            </span>
+                        <span className="card-info-value card-info-value--national-id">
+                          {String(holder.national_id || card.officer?.national_id || card.beneficiary?.national_id || '-')}
+                        </span>
                       </div>
                     </div>
-                    
+
                     {/* Bottom: Signature Line */}
                     <div className="card-design__signature">
                       <div className="card-design__signature-line"></div>
@@ -944,10 +1056,10 @@ const CardQueue = ({ selectedOfficer }) => {
                   <div className="info-row">
                     <span className="info-label">تاريخ الانتهاء:</span>
                     <span className="info-value">
-                      {card.expiry_date 
-                        ? (typeof card.expiry_date === 'string' 
-                            ? new Date(card.expiry_date).toLocaleDateString('ar-EG')
-                            : String(card.expiry_date))
+                      {card.expiry_date
+                        ? (typeof card.expiry_date === 'string'
+                          ? new Date(card.expiry_date).toLocaleDateString('ar-EG')
+                          : String(card.expiry_date))
                         : '-'}
                     </span>
                   </div>
@@ -1036,9 +1148,9 @@ const CardQueue = ({ selectedOfficer }) => {
         </span>
         <button className="refresh-btn" onClick={fetchCards} disabled={loading}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={loading ? 'spin' : ''}>
-            <path d="M23 4V10H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            <path d="M1 20V14H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            <path d="M3.51 9C4.01717 7.56678 4.87913 6.2854 6.01547 5.27542C7.1518 4.26543 8.52547 3.55976 10.0083 3.22426C11.4911 2.88875 13.0348 2.93434 14.4952 3.35677C15.9556 3.77921 17.2853 4.56471 18.36 5.64L23 10M1 14L5.64 18.36C6.71475 19.4353 8.04437 20.2208 9.50481 20.6432C10.9652 21.0657 12.5089 21.1112 13.9917 20.7757C15.4745 20.4402 16.8482 19.7346 17.9845 18.7246C19.1209 17.7146 19.9828 16.4332 20.49 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M23 4V10H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M1 20V14H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M3.51 9C4.01717 7.56678 4.87913 6.2854 6.01547 5.27542C7.1518 4.26543 8.52547 3.55976 10.0083 3.22426C11.4911 2.88875 13.0348 2.93434 14.4952 3.35677C15.9556 3.77921 17.2853 4.56471 18.36 5.64L23 10M1 14L5.64 18.36C6.71475 19.4353 8.04437 20.2208 9.50481 20.6432C10.9652 21.0657 12.5089 21.1112 13.9917 20.7757C15.4745 20.4402 16.8482 19.7346 17.9845 18.7246C19.1209 17.7146 19.9828 16.4332 20.49 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </button>
       </div>

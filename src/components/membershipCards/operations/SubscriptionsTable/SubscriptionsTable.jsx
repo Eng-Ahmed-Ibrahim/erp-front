@@ -5,6 +5,8 @@ import {
   suspendSubscription, 
   activateSubscription,
   deleteSubscription,
+  renewSubscription,
+  calculateFees,
   issueCard,
   issueReplacementCard,
   getReplacementCardFee,
@@ -41,6 +43,19 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
   const [cardFormLoading, setCardFormLoading] = useState(false);
   const [cardFormError, setCardFormError] = useState(null);
   const [scanningCard, setScanningCard] = useState(false);
+
+  // Renewal modal state
+  const [showRenewalModal, setShowRenewalModal] = useState(false);
+  const [renewingSubscription, setRenewingSubscription] = useState(null);
+  const [renewalFormData, setRenewalFormData] = useState({
+    new_end_date: '',
+    paid_annual_fee: 0,
+    paid_issuance_fee: 0,
+    notes: '',
+  });
+  const [renewalFees, setRenewalFees] = useState(null);
+  const [renewalFormLoading, setRenewalFormLoading] = useState(false);
+  const [renewalFormError, setRenewalFormError] = useState(null);
 
   useEffect(() => {
     fetchSubscriptions();
@@ -227,7 +242,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
     return (
       <span 
         className={`status-badge status-badge--${status}`}
-        style={{ '--status-color': statusInfo?.color }}
+        style={{ backgroundColor: statusInfo?.color }}
       >
         {statusInfo?.label || status}
       </span>
@@ -245,6 +260,89 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
     const now = new Date();
     const diffDays = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
     return diffDays > 0 && diffDays <= 30;
+  };
+
+  // Renewal Modal handlers
+  const handleOpenRenewalModal = async (subscription) => {
+    setRenewingSubscription(subscription);
+    setRenewalFormError(null);
+
+    // Calculate default new end date (1 year from current end date)
+    const currentEndDate = new Date(subscription.end_date);
+    const newEndDate = new Date(currentEndDate);
+    newEndDate.setFullYear(newEndDate.getFullYear() + 1);
+
+    // Fetch renewal fees
+    try {
+      const beneficiaryType = subscription.beneficiary ? 
+        (subscription.beneficiary.relationship_type || 'officer') : 'officer';
+      const feesResponse = await calculateFees(beneficiaryType, true);
+      setRenewalFees(feesResponse.data);
+      
+      setRenewalFormData({
+        new_end_date: newEndDate.toISOString().split('T')[0],
+        paid_annual_fee: feesResponse.data?.annual_subscription_fee || 0,
+        paid_issuance_fee: feesResponse.data?.issuance_fee || 0,
+        notes: '',
+      });
+    } catch (err) {
+      console.error('Error fetching renewal fees:', err);
+      setRenewalFees(null);
+      setRenewalFormData({
+        new_end_date: newEndDate.toISOString().split('T')[0],
+        paid_annual_fee: 0,
+        paid_issuance_fee: 0,
+        notes: '',
+      });
+    }
+
+    setShowRenewalModal(true);
+  };
+
+  const handleCloseRenewalModal = () => {
+    setShowRenewalModal(false);
+    setRenewingSubscription(null);
+    setRenewalFormData({
+      new_end_date: '',
+      paid_annual_fee: 0,
+      paid_issuance_fee: 0,
+      notes: '',
+    });
+    setRenewalFees(null);
+    setRenewalFormError(null);
+  };
+
+  const handleRenewalFormChange = (e) => {
+    const { name, value } = e.target;
+    setRenewalFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleRenewSubscription = async (e) => {
+    e.preventDefault();
+
+    if (!renewalFormData.new_end_date) {
+      setRenewalFormError('يرجى إدخال تاريخ الانتهاء الجديد');
+      return;
+    }
+
+    try {
+      setRenewalFormLoading(true);
+      setRenewalFormError(null);
+
+      await renewSubscription(renewingSubscription.id, {
+        new_end_date: renewalFormData.new_end_date,
+        paid_annual_fee: parseFloat(renewalFormData.paid_annual_fee) || 0,
+        paid_issuance_fee: parseFloat(renewalFormData.paid_issuance_fee) || 0,
+        notes: renewalFormData.notes || null,
+      });
+
+      handleCloseRenewalModal();
+      fetchSubscriptions();
+    } catch (err) {
+      setRenewalFormError(err.response?.data?.message || 'حدث خطأ في تجديد الاشتراك');
+    } finally {
+      setRenewalFormLoading(false);
+    }
   };
 
   if (loading && subscriptions.length === 0) {
@@ -338,7 +436,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                       <span className="expiring-badge">قريب الانتهاء</span>
                     )}
                   </td>
-                  <td>{getStatusBadge(subscription.status)}</td>
+                  <td className="status-cell" style={{ textAlign: 'left' }}>{getStatusBadge(subscription.status)}</td>
                   <td className="actions">
                     {/* Issue Card Button - only for active subscriptions */}
                     {subscription.status === 'active' && !subscription.has_card && (
@@ -358,7 +456,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                     {/* Issue Replacement Card Button - only for active subscriptions with existing card */}
                     {subscription.status === 'active' && subscription.has_card && (
                       <button
-                        className="action-btn action-btn--replacement"
+                        className="action-btn action-btn--suspend replacement-card-btn"
                         onClick={() => handleOpenCardIssueModal(subscription, true)}
                         title="إصدار بطاقة بديلة (بطاقة مفقودة)"
                       >
@@ -366,6 +464,20 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                           <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </button>
+                    )}
+                    {/* Renewal Button - show when can_renew is true */}
+                    {subscription.can_renew && (
+                      <button
+                        className="action-btn action-btn--renew"
+                        onClick={() => handleOpenRenewalModal(subscription)}
+                        title="تجديد الاشتراك"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M1 4V10H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M23 20V14H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </button>
                     )}
@@ -579,6 +691,172 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                     ? (isReplacement ? 'جاري إصدار البطاقة البديلة...' : 'جاري كتابة البيانات على البطاقة...')
                     : (isReplacement ? `إصدار بطاقة بديلة (${replacementFee ? replacementFee.toFixed(2) : '0.00'} ج.م)` : 'إصدار البطاقة')
                   }
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Renewal Modal */}
+      {showRenewalModal && renewingSubscription && (
+        <div className="modal-overlay" onClick={handleCloseRenewalModal}>
+          <div className="card-issue-modal renewal-modal" onClick={e => e.stopPropagation()}>
+            <div className="card-issue-modal__header">
+              <h3>تجديد الاشتراك</h3>
+              <button className="close-btn" onClick={handleCloseRenewalModal}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            {renewalFees && (
+              <div className="card-issue-modal__fee-notice">
+                <div className="fee-notice">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  <div className="fee-notice__content">
+                    <span className="fee-notice__label">رسوم التجديد:</span>
+                    <span className="fee-notice__value">{renewalFees.total?.toFixed(2) || '0.00'} ج.م</span>
+                  </div>
+                </div>
+                <div className="fee-breakdown">
+                  <div className="fee-item">
+                    <span>رسوم الاشتراك السنوي:</span>
+                    <span>{renewalFees.annual_subscription_fee?.toFixed(2) || '0.00'} ج.م</span>
+                  </div>
+                  <div className="fee-item">
+                    <span>رسوم الإصدار:</span>
+                    <span>{renewalFees.issuance_fee?.toFixed(2) || '0.00'} ج.م</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="card-issue-modal__info">
+              <div className="info-grid">
+                <div className="info-item">
+                  <div className="info-item__icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </div>
+                  <div className="info-item__content">
+                    <span className="info-item__label">رقم الاشتراك</span>
+                    <span className="info-item__value">#{renewingSubscription.id}</span>
+                  </div>
+                </div>
+                <div className="info-item">
+                  <div className="info-item__icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  </div>
+                  <div className="info-item__content">
+                    <span className="info-item__label">
+                      {renewingSubscription.beneficiary ? 'المستفيد' : 'الضابط'}
+                    </span>
+                    <span className="info-item__value">
+                      {renewingSubscription.beneficiary?.full_name || renewingSubscription.officer?.full_name || '-'}
+                    </span>
+                  </div>
+                </div>
+                <div className="info-item">
+                  <div className="info-item__icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                  </div>
+                  <div className="info-item__content">
+                    <span className="info-item__label">تاريخ الانتهاء الحالي</span>
+                    <span className="info-item__value">{formatDate(renewingSubscription.end_date)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={handleRenewSubscription}>
+              {renewalFormError && (
+                <div className="form-error-message">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  {renewalFormError}
+                </div>
+              )}
+
+              <div className="form-group">
+                <label htmlFor="new_end_date">تاريخ الانتهاء الجديد *</label>
+                <input
+                  type="date"
+                  id="new_end_date"
+                  name="new_end_date"
+                  value={renewalFormData.new_end_date}
+                  onChange={handleRenewalFormChange}
+                  min={renewingSubscription.end_date}
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="paid_annual_fee">رسوم الاشتراك السنوي (ج.م) *</label>
+                  <input
+                    type="number"
+                    id="paid_annual_fee"
+                    name="paid_annual_fee"
+                    value={renewalFormData.paid_annual_fee}
+                    onChange={handleRenewalFormChange}
+                    step="0.01"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="paid_issuance_fee">رسوم الإصدار (ج.م) *</label>
+                  <input
+                    type="number"
+                    id="paid_issuance_fee"
+                    name="paid_issuance_fee"
+                    value={renewalFormData.paid_issuance_fee}
+                    onChange={handleRenewalFormChange}
+                    step="0.01"
+                    min="0"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="notes">ملاحظات (اختياري)</label>
+                <textarea
+                  id="notes"
+                  name="notes"
+                  value={renewalFormData.notes}
+                  onChange={handleRenewalFormChange}
+                  rows="3"
+                  placeholder="أضف أي ملاحظات حول التجديد..."
+                />
+              </div>
+
+              <div className="card-issue-modal__actions">
+                <button type="button" className="btn btn--secondary" onClick={handleCloseRenewalModal}>
+                  إلغاء
+                </button>
+                <button type="submit" className="btn btn--primary" disabled={renewalFormLoading}>
+                  {renewalFormLoading ? 'جاري التجديد...' : 'تجديد الاشتراك'}
                 </button>
               </div>
             </form>

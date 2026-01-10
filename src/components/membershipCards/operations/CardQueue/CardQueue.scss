@@ -575,7 +575,7 @@
     width: 23%;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 4px solid #0a1a2a;
+    border: 2px solid var(--card-photo-border, #0a1a2a);
     overflow: hidden;
     background: #f8f8f8;
     box-shadow:
@@ -623,6 +623,46 @@
     }
   }
 
+  // Left Bottom: Issue and Expiry Dates (same line as signature)
+  &__dates {
+    position: absolute;
+    bottom: 12%;
+    left: 3.5%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    z-index: 4;
+  }
+
+  &__date-row {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.25rem;
+    line-height: 1.1;
+  }
+
+  &__date-label {
+    font-size: 0.45rem;
+    font-weight: 700;
+    color: #0a1a2a;
+    font-family: var(--font-family-cairo);
+    letter-spacing: 0.03px;
+    opacity: 0.85;
+    white-space: nowrap;
+  }
+
+  &__date-value {
+    font-size: 0.42rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    font-family: var(--font-family-cairo);
+    letter-spacing: 0.02px;
+    opacity: 0.9;
+    direction: rtl;
+    text-align: right;
+    white-space: nowrap;
+  }
   // Center: Logo - Subtle background element
   &__logo-container {
     position: absolute;
@@ -678,7 +718,7 @@
   }
 
   &__signature-title {
-    font-size: 0.62rem;
+    font-size: 0.52rem;
     font-weight: 700;
     color: #0a1a2a;
     font-family: var(--font-family-cairo);
@@ -701,7 +741,7 @@
 
 .card-info-label {
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 900;
   color: #0a1a2a;
   min-width: fit-content;
   white-space: nowrap;
@@ -712,7 +752,7 @@
 
 .card-info-value {
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #1a1a1a;
   flex: 1;
   text-align: right;
@@ -730,6 +770,14 @@
     white-space: nowrap;
     word-break: normal;
   }
+// Full text display for الصفه (relationship) value
+&--full-text {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+  word-break: normal;
+  flex-shrink: 0;
+}
 }
 
 // Card Status Badge
@@ -758,7 +806,7 @@
   }
 
   &--revoked {
-    --status-color: #6b7280;
+    --status-color: #b8b8b8;
   }
 }
 
@@ -810,14 +858,14 @@
   }
 
   &--revoke {
-    background: transparent;
+    background: linear-gradient(135deg, #ef4444 0%, #b8b8b8 100%);
     color: #ef4444;
     border: 1px solid rgba(239, 68, 68, 0.3);
     padding: 0.5rem;
-    flex: 0;
+    flex:0 0 20%;
 
     &:hover:not(:disabled) {
-      background: rgba(239, 68, 68, 0.1);
+      background: linear-gradient(135deg, #b8b8b8 0%, #ef4444 100%);
       border-color: rgba(239, 68, 68, 0.5);
     }
   }
