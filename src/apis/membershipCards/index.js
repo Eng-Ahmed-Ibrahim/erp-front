@@ -671,6 +671,26 @@ export async function getCardSerialId(serialId = null) {
 }
 
 /**
+ * Read card from NFC reader and get membership ID
+ * @returns {Promise} Response with membership ID and officer data
+ */
+export async function readCardAndGetMembershipId() {
+  try {
+    const res = await axios.post(
+      `${API_ENDPOINT}/api/v1/membership-cards/cards/read-membership-id`,
+      {},
+      {
+        headers: getHeaders(),
+        timeout: 30000, // 30 seconds timeout
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
  * Write data to NFC card via Laravel
  * @param {string} cardToken - Card UID/token
  * @param {string} dataHex - Data in hex format (32 chars = 16 bytes)

@@ -19,6 +19,7 @@ import {
   checkTableNumber,
   reviewOrderPrice,
 } from '../../../../../../apis/orders';
+import { readCardAndGetMembershipId } from '../../../../../../apis/membershipCards';
 // import { getOrderById, deleteOrder } from "../../../../../../apis/orders";
 import { getRoles } from '../../../../../../apis/roles';
 import { useNavigate } from 'react-router-dom';
@@ -1773,6 +1774,8 @@ const AddCashierOrder = () => {
   const [messageVisible, setMessageVisible] = useState(false);
   const [isOrderReviewModalVisible, setIsOrderReviewModalVisible] =
     useState(false);
+  const [scanningMembershipCard, setScanningMembershipCard] = useState(false);
+  const [membershipCardError, setMembershipCardError] = useState('');
   const debouncedHandleSubmit = useCallback(debounce(handleSubmit, 200), [
     handleSubmit,
   ]);
@@ -1859,6 +1862,48 @@ const AddCashierOrder = () => {
     setMilitryIdInputValue(value);
     setMilitryIdGotClicked(true);
   };
+
+  // Handle membership card reading from NFC agent
+  const handleReadMembershipCard = async () => {
+    try {
+      setScanningMembershipCard(true);
+      setMembershipCardError('');
+
+      const response = await readCardAndGetMembershipId();
+
+      if (response.success && response.data && response.data.membership_id) {
+        const membershipNumber = response.data.membership_id;
+        setMilitryIdInputValue(membershipNumber);
+        handleNewUserFormChange('military_number', membershipNumber);
+
+        message.success(`تم قراءة رقم العضوية: ${membershipNumber}`);
+        setMembershipCardError('');
+      } else {
+        const errorMsg = response.message || 'فشل في قراءة البطاقة';
+        setMembershipCardError(errorMsg);
+        message.error(errorMsg);
+      }
+    } catch (error) {
+      console.error('Error reading membership card:', error);
+      const errorMessage =
+        error.response?.data?.message || 'حدث خطأ في قراءة البطاقة. تأكد من وضع البطاقة على القارئ';
+      setMembershipCardError(errorMessage);
+      message.error(errorMessage);
+    } finally {
+      setScanningMembershipCard(false);
+    }
+  };
+
+  // Auto-update form when membership number is manually entered
+  useEffect(() => {
+    if (militryIdInputValue && militryIdGotClicked) {
+      const cleanValue = militryIdInputValue.trim();
+      if (cleanValue.length > 0) {
+        handleNewUserFormChange('military_number', cleanValue);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [militryIdInputValue, militryIdGotClicked]);
 
   useEffect(() => {
     const resetMessageVisibility = () => setMessageVisible(false);
@@ -1998,16 +2043,91 @@ const AddCashierOrder = () => {
 
         {addFormVisible && (
           <div className="form-cashier-details-parent">
-            <div>
+            <div style={{ width: '100%' }}>
               <label className="form-cashier-label"> الرقم العضوية:</label>
-              <input
-                className="form-cashier-input"
-                type="password"
-                value={militryIdInputValue}
-                onWheel={(event) => event.currentTarget.blur()}
-                autoComplete="new-password"
-                onChange={handleInputChange}
-              />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input
+                  className="form-cashier-input"
+                  type="text"
+                  value={militryIdInputValue}
+                  onWheel={(event) => event.currentTarget.blur()}
+                  autoComplete="new-password"
+                  onChange={handleInputChange}
+                  placeholder="امسح البطاقة أو أدخل رقم العضوية"
+                  style={{ flex: 1 }}
+                />
+                <button
+                  type="button"
+                  onClick={handleReadMembershipCard}
+                  disabled={scanningMembershipCard}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#803D3B',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: scanningMembershipCard ? 'not-allowed' : 'pointer',
+                    whiteSpace: 'nowrap',
+                    fontFamily: 'Cairo, sans-serif',
+                    opacity: scanningMembershipCard ? 0.6 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                  title="قراءة البطاقة من القارئ"
+                >
+                  {scanningMembershipCard ? (
+                    <>
+                      <span className="loading-spinner-small" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></span>
+                      <span>جاري القراءة...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M3 3H7V7H3V3Z" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M17 3H21V7H17V3Z" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M3 17H7V21H3V17Z" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M17 17H21V21H17V17Z" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M7 3V7H17V3" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M7 17V21H17V17" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M3 7H7V17H3V7Z" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M17 7H21V17H17V7Z" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <span>قراءة البطاقة</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              {membershipCardError && (
+                <div
+                  style={{
+                    color: '#d32f2f',
+                    fontSize: '14px',
+                    marginTop: '4px',
+                    fontFamily: 'Cairo, sans-serif',
+                  }}
+                >
+                  {membershipCardError}
+                </div>
+              )}
+              <small
+                style={{
+                  color: '#666',
+                  fontSize: '12px',
+                  display: 'block',
+                  marginTop: '4px',
+                  fontFamily: 'Cairo, sans-serif',
+                }}
+              >
+                ضع البطاقة على القارئ وانقر على زر "قراءة البطاقة" أو أدخل رقم العضوية يدوياً
+              </small>
             </div>
           </div>
         )}
