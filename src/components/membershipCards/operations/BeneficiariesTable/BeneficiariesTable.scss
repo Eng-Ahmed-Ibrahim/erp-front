@@ -233,6 +233,20 @@
     color: #666;
   }
 
+  .notes-cell {
+    max-width: 200px;
+    word-wrap: break-word;
+    word-break: break-word;
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.4;
+    
+    &:empty::before {
+      content: '-';
+      color: #999;
+    }
+  }
+
   .empty-message {
     text-align: center;
     padding: 2.5rem 1rem;

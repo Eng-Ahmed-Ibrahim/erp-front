@@ -298,8 +298,8 @@ const CardQueue = ({ selectedOfficer }) => {
         : String(card.expiry_date))
       : null;
 
-    // Create print window
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    // Create print window - optimized for card printing
+    const printWindow = window.open('', '_blank', 'width=400,height=300');
 
     if (!printWindow) {
       setError('يرجى السماح بالنوافذ المنبثقة لاستخدام ميزة الطباعة');
@@ -316,8 +316,9 @@ const CardQueue = ({ selectedOfficer }) => {
         <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800;900&display=swap" rel="stylesheet">
         <style>
           @page {
-            size: A4 landscape;
+            size: 85mm 54mm;
             margin: 0;
+            padding: 0;
           }
           * {
             margin: 0;
@@ -326,25 +327,25 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           body {
             font-family: 'Cairo', 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: #f5f5f5;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            width: 85mm;
+            height: 54mm;
+            background: #ffffff;
             direction: rtl;
-            width: 100vw;
-            height: 100vh;
+            overflow: hidden;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
           .card-design {
-            width: 280px;
-            aspect-ratio: 1.586;
+            width: 85mm;
+            height: 54mm;
             position: relative;
             overflow: hidden;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-            transform: rotate(-90deg);
-            transform-origin: center center;
+            border-radius: 0;
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
           }
           .card-design__background {
             position: absolute;
@@ -360,7 +361,7 @@ const CardQueue = ({ selectedOfficer }) => {
             top: 0;
             left: 50%;
             right: 0;
-            height: 12%;
+            height: 6.5mm;
             z-index: 2;
             overflow: visible;
           }
@@ -375,11 +376,10 @@ const CardQueue = ({ selectedOfficer }) => {
           .card-design__top-border::after {
             content: '';
             position: absolute;
-            inset: -5.5px;
-            border-radius: 0 0 0 20px;
-          
+            inset: -1.5mm;
+            border-radius: 0 0 0 5mm;
             mask-composite: exclude;
-            padding: 3px;
+            padding: 0.8mm;
             z-index: 1;
           }
           .card-design__bottom-border {
@@ -387,7 +387,7 @@ const CardQueue = ({ selectedOfficer }) => {
             bottom: 0;
             left: 0;
             right: 50%;
-            height: 12%;
+            height: 6.5mm;
             z-index: 2;
             overflow: visible;
           }
@@ -404,37 +404,36 @@ const CardQueue = ({ selectedOfficer }) => {
           .card-design__bottom-border::after {
             content: '';
             position: absolute;
-            inset: -5.5px;
-            border-radius: 0 20px 0 0;
-        
-            padding: 3px;
+            inset: -1.5mm;
+            border-radius: 0 5mm 0 0;
+            padding: 0.8mm;
           }
           .card-design__org-name {
             position: absolute;
-            top: 2%;
-            left: 3.5%;
-            font-size: 0.9rem;
+            top: 1.5mm;
+            left: 3mm;
+            font-size: 2.8mm;
             font-weight: 900;
             color: #0a1a2a;
             font-family: 'Cairo', sans-serif;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.1mm;
             white-space: nowrap;
             z-index: 4;
             text-align: left;
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0.3mm 0.5mm rgba(255, 255, 255, 0.9);
             line-height: 1.2;
           }
           .card-design__photo-container {
             position: absolute;
-            top: 28%;
-            left: 5.5%;
-            width: 26%;
-            aspect-ratio: 1;
+            top: 15mm;
+            left: 4.5mm;
+            width: 22mm;
+            height: 22mm;
             border-radius: 50%;
-            border: 2px solid var(--card-photo-border, #0a1a2a);
+            border: 0.5mm solid var(--card-photo-border, #0a1a2a);
             overflow: hidden;
             background: #f8f8f8;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 1mm 3mm rgba(0, 0, 0, 0.3), inset 0 0 0 0.2mm rgba(255, 255, 255, 0.8);
             z-index: 4;
           }
           .card-design__photo-img {
@@ -474,35 +473,35 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__dates {
             position: absolute;
-            bottom: 12%;
-            left: 3.5%;
+            bottom: 6.5mm;
+            left: 3mm;
             display: flex;
             flex-direction: column;
-            gap: 0.15rem;
+            gap: 0.4mm;
             z-index: 4;
           }
           .card-design__date-row {
             display: flex;
             flex-direction: row;
             align-items: baseline;
-            gap: 0.25rem;
+            gap: 0.6mm;
             line-height: 1.1;
           }
           .card-design__date-label {
-            font-size: 0.45rem;
+            font-size: 1.1mm;
             font-weight: 700;
             color: #0a1a2a;
             font-family: 'Cairo', sans-serif;
-            letter-spacing: 0.03px;
+            letter-spacing: 0.08mm;
             opacity: 0.85;
             white-space: nowrap;
           }
           .card-design__date-value {
-            font-size: 0.42rem;
+            font-size: 1mm;
             font-weight: 600;
             color: #1a1a1a;
             font-family: 'Cairo', sans-serif;
-            letter-spacing: 0.02px;
+            letter-spacing: 0.05mm;
             opacity: 0.9;
             direction: rtl;
             text-align: right;
@@ -510,25 +509,25 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__honorary-membership {
             position: absolute;
-            top: 52%;
-            left: 6.5%;
-            width: 23%;
+            top: 28mm;
+            left: 5.5mm;
+            width: 20mm;
             text-align: center;
-            font-size: 0.5rem;
+            font-size: 1.3mm;
             font-weight: 700;
             color: #991b1b;
             font-family: 'Cairo', sans-serif;
-            letter-spacing: 0.05px;
+            letter-spacing: 0.1mm;
             z-index: 4;
-            margin-top: 0.2rem;
+            margin-top: 0.5mm;
           }
           .card-design__logo-container {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 42%;
-            max-width: 115px;
+            width: 36mm;
+            max-width: 36mm;
             z-index: 1;
             display: flex;
             align-items: center;
@@ -544,60 +543,59 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__info-section {
             position: absolute;
-            top: 19%;
-            right: 5.5%;
-            width: 53%;
+            top: 10mm;
+            right: 4.5mm;
+            width: 45mm;
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 1mm;
             z-index: 4;
           }
           .card-design__signature {
             position: absolute;
-            bottom: 12%;
-            left: 43%;
+            bottom: 6.5mm;
+            left: 50%;
             transform: translateX(-50%);
-            width: 50%;
+            width: 36mm;
             text-align: center;
             z-index: 4;
           }
           .card-design__signature-line {
-            width: 60%;
-            height: 1.5px;
+            width: 30mm;
+            height: 0.4mm;
             background: #0a1a2a;
-            margin: 0 auto 0.25rem auto;
+            margin: 0 auto 0.6mm auto;
             opacity: 0.9;
           }
           .card-design__signature-title {
-            font-size: 0.52rem;
+            font-size: 1.3mm;
             font-weight: 700;
             color: #0a1a2a;
             font-family: 'Cairo', sans-serif;
-            letter-spacing: 0.15px;
+            letter-spacing: 0.4mm;
             opacity: 0.95;
             line-height: 1.2;
-            margin-left: -15px;
           }
           .card-info-field {
             display: flex;
             align-items: baseline;
-            gap: 0.4rem;
+            gap: 1mm;
             direction: rtl;
             font-family: 'Cairo', sans-serif;
-            line-height: 1;
+            line-height: 1.1;
           }
           .card-info-label {
-            font-size: 0.72rem;
+            font-size: 1.8mm;
             font-weight: 900;
             color: #0a1a2a;
             min-width: fit-content;
             white-space: nowrap;
             flex-shrink: 0;
-            letter-spacing: 0.08px;
-            line-height: 1;
+            letter-spacing: 0.2mm;
+            line-height: 1.1;
           }
           .card-info-value {
-            font-size: 0.72rem;
+            font-size: 1.8mm;
             font-weight: 800;
             color: #1a1a1a;
             flex: 1;
@@ -606,8 +604,8 @@ const CardQueue = ({ selectedOfficer }) => {
             text-overflow: ellipsis;
             white-space: nowrap;
             min-width: 0;
-            letter-spacing: 0.03px;
-            line-height: 1;
+            letter-spacing: 0.08mm;
+            line-height: 1.1;
           }
           .card-info-value--national-id {
             overflow: visible;
@@ -623,25 +621,46 @@ const CardQueue = ({ selectedOfficer }) => {
             flex-shrink: 0;
           }
           @media print {
+            @page {
+              size: 85mm 54mm;
+              margin: 0;
+              padding: 0;
+            }
+            html, body {
+              margin: 0;
+              padding: 0;
+              width: 85mm;
+              height: 54mm;
+              overflow: hidden;
+              background: white;
+            }
             body {
               background: white;
               padding: 0;
               margin: 0;
-              width: 100%;
-              height: 100%;
-              display: flex;
-              justify-content: center;
-              align-items: center;
+              width: 85mm;
+              height: 54mm;
+              overflow: hidden;
+              display: block;
             }
             .card-design {
-              margin: 0 auto;
-              box-shadow: none;
-              transform: rotate(-90deg);
-              transform-origin: center center;
-            }
-            @page {
-              size: A4 landscape;
               margin: 0;
+              padding: 0;
+              box-shadow: none;
+              transform: none;
+              width: 85mm;
+              height: 54mm;
+              border-radius: 0;
+              position: relative;
+            }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            img {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
             }
           }
         </style>
@@ -706,10 +725,15 @@ const CardQueue = ({ selectedOfficer }) => {
         </div>
         <script>
           window.onload = function() {
-            window.print();
-            window.onafterprint = function() {
-              window.close();
-            };
+            // Small delay to ensure all content is loaded, especially images
+            setTimeout(function() {
+              window.print();
+              window.onafterprint = function() {
+                setTimeout(function() {
+                  window.close();
+                }, 100);
+              };
+            }, 200);
           };
         </script>
       </body>

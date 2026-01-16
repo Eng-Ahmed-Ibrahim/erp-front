@@ -145,13 +145,14 @@ const BeneficiariesTable = ({ selectedOfficer, onSelectOfficer }) => {
               <th>تاريخ الميلاد</th>
               <th>العمر</th>
               <th>الرقم القومي</th>
+              <th>ملاحظات</th>
               <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody>
             {beneficiaries.length === 0 ? (
               <tr>
-                <td colSpan="7" className="empty-message">
+                <td colSpan="8" className="empty-message">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
                     <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" strokeWidth="2"/>
                     <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
@@ -172,6 +173,7 @@ const BeneficiariesTable = ({ selectedOfficer, onSelectOfficer }) => {
                   <td>{beneficiary.birth_date}</td>
                   <td>{calculateAge(beneficiary.birth_date)} سنة</td>
                   <td className="national-id">{beneficiary.national_id || '-'}</td>
+                  <td className="notes-cell">{beneficiary.notes || '-'}</td>
                   <td className="actions">
                     <button
                       className="action-btn action-btn--edit"
