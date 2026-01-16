@@ -18,6 +18,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
     fee_plan_id: '',
     start_date: new Date().toISOString().split('T')[0],
     end_date: '',
+    is_honorary_membership: false,
   });
   const [officer, setOfficer] = useState(defaultOfficer || null);
   const [beneficiaries, setBeneficiaries] = useState([]);
@@ -162,6 +163,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
         fee_plan_id: parseInt(formData.fee_plan_id),
         start_date: formData.start_date,
         end_date: formData.end_date,
+        is_honorary_membership: formData.is_honorary_membership || false,
       };
 
       await createSubscription(payload);
@@ -380,6 +382,18 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
                   />
                   {errors.end_date && <span className="form-error">{errors.end_date}</span>}
                 </div>
+              </div>
+
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="is_honorary_membership"
+                    checked={formData.is_honorary_membership}
+                    onChange={(e) => setFormData(prev => ({ ...prev, is_honorary_membership: e.target.checked }))}
+                  />
+                  <span>عضوية فخرية (Honorary Membership)</span>
+                </label>
               </div>
 
               <div className="step-navigation">

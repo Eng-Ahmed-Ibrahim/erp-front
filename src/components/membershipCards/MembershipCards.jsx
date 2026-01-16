@@ -182,16 +182,35 @@ const MembershipCards = () => {
     },
   ];
 
-  useEffect(() => {
-    // Reset tab when section changes
-    if (activeSection === 'operations') {
-      setActiveTab('officers');
-    } else if (activeSection === 'reports') {
-      setActiveTab('membership');
-    } else if (activeSection === 'config') {
-      setActiveTab('feePlans');
+  const getCurrentTabs = () => {
+    switch (activeSection) {
+      case 'operations':
+        return operationsTabs;
+      case 'reports':
+        return reportsTabs;
+      case 'config':
+        return configTabs;
+      default:
+        return [];
     }
-  }, [activeSection]);
+  };
+
+  useEffect(() => {
+    // Reset tab only when section actually changes, not on every render
+    const currentTabs = getCurrentTabs();
+    const isValidTab = currentTabs.some(tab => tab.id === activeTab);
+
+    // Only reset if current tab is not valid for current section
+    if (!isValidTab) {
+      if (activeSection === 'operations') {
+        setActiveTab('officers');
+      } else if (activeSection === 'reports') {
+        setActiveTab('membership');
+      } else if (activeSection === 'config') {
+        setActiveTab('feePlans');
+      }
+    }
+  }, [activeSection, activeTab]);
 
   const renderOperationsContent = () => {
     switch (activeTab) {
@@ -243,19 +262,6 @@ const MembershipCards = () => {
         return <LookupsManagement />;
       default:
         return null;
-    }
-  };
-
-  const getCurrentTabs = () => {
-    switch (activeSection) {
-      case 'operations':
-        return operationsTabs;
-      case 'reports':
-        return reportsTabs;
-      case 'config':
-        return configTabs;
-      default:
-        return [];
     }
   };
 

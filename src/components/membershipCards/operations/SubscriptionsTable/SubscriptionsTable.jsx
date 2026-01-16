@@ -39,6 +39,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
     card_uid: '',
     expiry_date: '',
     serial_id: '',
+    show_expiry_date: true,
   });
   const [cardFormLoading, setCardFormLoading] = useState(false);
   const [cardFormError, setCardFormError] = useState(null);
@@ -218,6 +219,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
         card_uid: cardFormData.card_uid.trim(),
         expiry_date: cardFormData.expiry_date,
         serial_id: cardFormData.serial_id || cardFormData.card_uid.trim(),
+        show_expiry_date: cardFormData.show_expiry_date !== false,
       };
 
       if (isReplacement) {

@@ -508,6 +508,20 @@ const CardQueue = ({ selectedOfficer }) => {
             text-align: right;
             white-space: nowrap;
           }
+          .card-design__honorary-membership {
+            position: absolute;
+            top: 52%;
+            left: 6.5%;
+            width: 23%;
+            text-align: center;
+            font-size: 0.5rem;
+            font-weight: 700;
+            color: #991b1b;
+            font-family: 'Cairo', sans-serif;
+            letter-spacing: 0.05px;
+            z-index: 4;
+            margin-top: 0.2rem;
+          }
           .card-design__logo-container {
             position: absolute;
             top: 50%;
@@ -641,6 +655,11 @@ const CardQueue = ({ selectedOfficer }) => {
           <div class="card-design__photo-container" style="border-color: ${officerThemeForBorder.primary};">
             ${photoUrl ? `<img src="${photoUrl}" alt="${holder.name}" class="card-design__photo-img" />` : '<div class="card-design__photo-placeholder"></div>'}
           </div>
+          ${card.subscription?.is_honorary_membership ? `
+          <div class="card-design__honorary-membership">
+            عضويه فخريه
+          </div>
+          ` : ''}
           <div class="card-design__dates">
             ${issueDateFormatted ? `
             <div class="card-design__date-row">
@@ -648,7 +667,7 @@ const CardQueue = ({ selectedOfficer }) => {
               <span class="card-design__date-value">${issueDateFormatted}</span>
             </div>
             ` : ''}
-            ${expiryDateFormatted ? `
+            ${(card.show_expiry_date !== false && expiryDateFormatted) ? `
             <div class="card-design__date-row">
               <span class="card-design__date-label">انتهاء:</span>
               <span class="card-design__date-value">${expiryDateFormatted}</span>
@@ -959,6 +978,13 @@ const CardQueue = ({ selectedOfficer }) => {
                       )}
                     </div>
 
+                    {/* Honorary Membership Text - Under Photo */}
+                    {card.subscription?.is_honorary_membership && (
+                      <div className="card-design__honorary-membership">
+                        عضويه فخريه
+                      </div>
+                    )}
+
                     {/* Left Bottom: Issue and Expiry Dates (same line as signature) */}
                     <div className="card-design__dates">
                       {card.created_at && (
@@ -971,7 +997,7 @@ const CardQueue = ({ selectedOfficer }) => {
                           </span>
                         </div>
                       )}
-                      {card.expiry_date && (
+                      {card.show_expiry_date !== false && card.expiry_date && (
                         <div className="card-design__date-row">
                           <span className="card-design__date-label">انتهاء:</span>
                           <span className="card-design__date-value">

@@ -623,6 +623,22 @@
     }
   }
 
+  // Honorary Membership Text - Under Photo
+  &__honorary-membership {
+    position: absolute;
+    top: 52%;
+    left: 6.5%;
+    width: 23%;
+    text-align: center;
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: #991b1b;
+    font-family: var(--font-family-cairo);
+    letter-spacing: 0.05px;
+    z-index: 4;
+    margin-top: 0.2rem;
+  }
+
   // Left Bottom: Issue and Expiry Dates (same line as signature)
   &__dates {
     position: absolute;
