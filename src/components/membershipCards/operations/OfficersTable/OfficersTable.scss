@@ -225,6 +225,28 @@
     letter-spacing: 0.5px;
   }
 
+  .notes-cell {
+    max-width: 200px;
+    font-size: 0.85rem;
+    color: #555;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
+    &:hover {
+      white-space: normal;
+      word-wrap: break-word;
+      overflow: visible;
+      position: relative;
+      z-index: 10;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      padding: 0.5rem;
+      border-radius: 4px;
+      max-width: 300px;
+    }
+  }
+
   .empty-message {
     text-align: center;
     padding: 4rem 1rem;

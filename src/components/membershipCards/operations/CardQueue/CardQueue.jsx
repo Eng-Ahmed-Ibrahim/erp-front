@@ -440,6 +440,7 @@ const CardQueue = ({ selectedOfficer }) => {
             background: #f8f8f8;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
             z-index: 4;
+            margin-right: 2%;
           }
           .card-design__photo-img {
             width: 100%;
@@ -478,11 +479,12 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__dates {
             position: absolute;
-            bottom: 12%;
+            bottom: 17%;
             left: 3.5%;
             display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
+            flex-direction: row;
+            gap: 0.8rem;
+            align-items: baseline;
             z-index: 4;
           }
           .card-design__date-row {
@@ -555,6 +557,7 @@ const CardQueue = ({ selectedOfficer }) => {
             flex-direction: column;
             gap: 0.4rem;
             z-index: 4;
+            padding-left: 2%;
           }
           .card-design__signature {
             position: absolute;

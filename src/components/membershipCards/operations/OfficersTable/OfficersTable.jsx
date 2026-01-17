@@ -130,13 +130,14 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
               <th>السلاح</th>
               <th>الرقم القومي</th>
               <th>رقم الأقدمية</th>
+              <th>ملاحظات</th>
               <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody>
             {officers.length === 0 ? (
               <tr>
-                <td colSpan="7" className="empty-message">
+                <td colSpan="8" className="empty-message">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
                     <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2"/>
                     <path d="M9 9H9.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
@@ -159,6 +160,7 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
                   <td>{getWeaponLabel(officer.weapon_type)}</td>
                   <td className="national-id">{officer.national_id}</td>
                   <td>{officer.seniority_number || '-'}</td>
+                  <td className="notes-cell">{officer.notes || '-'}</td>
                   <td className="actions">
                     <button
                       className="action-btn action-btn--view"
