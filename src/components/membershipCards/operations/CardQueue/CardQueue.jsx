@@ -489,7 +489,7 @@ const CardQueue = ({ selectedOfficer }) => {
             gap: 0.25rem;
             line-height: 1.1;
             position: absolute;
-            bottom: 18%;
+            bottom: 19%;
             left: 4%;
           }
           .card-design__date-label {
@@ -561,7 +561,7 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__signature {
             position: absolute;
-            bottom: 17%;
+            bottom: 18%;
             left: 43%;
             transform: translateX(-50%);
             width: 50%;
@@ -569,7 +569,7 @@ const CardQueue = ({ selectedOfficer }) => {
             z-index: 4;
           }
           .card-design__signature-line {
-            width: 60%;
+            width: 45%;
             height: 1.5px;
             background: #0a1a2a;
             margin: 0 auto 0.25rem auto;
@@ -591,21 +591,21 @@ const CardQueue = ({ selectedOfficer }) => {
             gap: 0.3rem;
             direction: rtl;
             font-family: 'Cairo', sans-serif;
-            line-height: 1.1;
+            line-height: 1.3;
           }
           .card-info-label {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 900;
             color: #0a1a2a;
             min-width: fit-content;
             white-space: nowrap;
             flex-shrink: 0;
-            letter-spacing: 0.08px;
-            line-height: 1;
+            letter-spacing: 0.09px;
+            line-height: 1.3;
           }
           .card-info-value {
-            font-size: 0.68rem;
-            font-weight: 800;
+            font-size: 0.7rem;
+            font-weight: 900;
             color: #1a1a1a;
             flex: 1;
             text-align: right;
@@ -613,8 +613,8 @@ const CardQueue = ({ selectedOfficer }) => {
             white-space: nowrap;
             text-overflow: ellipsis;
             min-width: 0;
-            letter-spacing: 0.03px;
-            line-height: 1.15;
+            letter-spacing: 0.04px;
+            line-height: 1.3;
           }
           .card-info-value--national-id {
             overflow: hidden;

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { createOfficer, updateOfficer, RANKS, WEAPON_TYPES } from '../../../../apis/membershipCards';
+import { 
+  createOfficer, 
+  updateOfficer, 
+  RANKS, 
+  WEAPON_TYPES,
+  getOfficerAttachments,
+  uploadOfficerAttachment,
+  deleteAttachment
+} from '../../../../apis/membershipCards';
 import './OfficerForm.scss';
 
 const OfficerForm = ({ officer, onClose, onSuccess }) => {
@@ -17,6 +25,13 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  
+  // Attachments state
+  const [attachments, setAttachments] = useState([]); // Uploaded attachments (for edit mode)
+  const [pendingAttachments, setPendingAttachments] = useState([]); // Files waiting to be uploaded (for create mode)
+  const [attachmentsLoading, setAttachmentsLoading] = useState(false);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [attachmentDescription, setAttachmentDescription] = useState('');
 
   useEffect(() => {
     if (officer) {
@@ -32,10 +47,98 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
         photo: null,
       });
       setPhotoPreview(officer.photo || null);
+      // Load attachments for existing officer
+      loadAttachments(officer.id);
+      setPendingAttachments([]);
     } else {
       setPhotoPreview(null);
+      setAttachments([]);
+      setPendingAttachments([]);
     }
   }, [officer]);
+
+  const loadAttachments = async (officerId) => {
+    try {
+      setAttachmentsLoading(true);
+      const response = await getOfficerAttachments(officerId);
+      if (response.success) {
+        setAttachments(response.data || []);
+      }
+    } catch (err) {
+      console.error('Error loading attachments:', err);
+    } finally {
+      setAttachmentsLoading(false);
+    }
+  };
+
+  // Handle attachment selection - for both create and edit modes
+  const handleAttachmentSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (officer) {
+      // Edit mode: upload immediately
+      try {
+        setUploadingAttachment(true);
+        const response = await uploadOfficerAttachment(officer.id, file, attachmentDescription);
+        if (response.success) {
+          setAttachments(prev => [response.data, ...prev]);
+          setAttachmentDescription('');
+        }
+      } catch (err) {
+        console.error('Error uploading attachment:', err);
+        setErrors(prev => ({ ...prev, attachment: 'حدث خطأ أثناء رفع المرفق' }));
+      } finally {
+        setUploadingAttachment(false);
+      }
+    } else {
+      // Create mode: store file locally to upload after officer creation
+      const pendingFile = {
+        id: Date.now(), // Temporary ID for UI
+        file: file,
+        original_name: file.name,
+        description: attachmentDescription,
+        file_size_formatted: formatFileSize(file.size),
+        mime_type: file.type,
+      };
+      setPendingAttachments(prev => [pendingFile, ...prev]);
+      setAttachmentDescription('');
+    }
+    
+    e.target.value = ''; // Reset file input
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 B';
+    const units = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + units[i];
+  };
+
+  const handleDeleteAttachment = async (attachmentId) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذا المرفق؟')) return;
+
+    try {
+      const response = await deleteAttachment(attachmentId);
+      if (response.success) {
+        setAttachments(prev => prev.filter(a => a.id !== attachmentId));
+      }
+    } catch (err) {
+      console.error('Error deleting attachment:', err);
+    }
+  };
+
+  const handleRemovePendingAttachment = (pendingId) => {
+    setPendingAttachments(prev => prev.filter(a => a.id !== pendingId));
+  };
+
+  const getFileIcon = (mimeType) => {
+    if (mimeType?.startsWith('image/')) return '🖼️';
+    if (mimeType?.includes('pdf')) return '📄';
+    if (mimeType?.includes('word') || mimeType?.includes('document')) return '📝';
+    if (mimeType?.includes('excel') || mimeType?.includes('spreadsheet')) return '📊';
+    return '📎';
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -105,10 +208,26 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
         delete payload.photo;
       }
       
+      let createdOfficerId = null;
+      
       if (officer) {
         await updateOfficer(officer.id, payload);
       } else {
-        await createOfficer(payload);
+        // Create officer first
+        const response = await createOfficer(payload);
+        createdOfficerId = response.data?.id;
+        
+        // Upload pending attachments after officer creation
+        if (createdOfficerId && pendingAttachments.length > 0) {
+          for (const pending of pendingAttachments) {
+            try {
+              await uploadOfficerAttachment(createdOfficerId, pending.file, pending.description);
+            } catch (err) {
+              console.error('Error uploading attachment:', err);
+              // Continue with other attachments even if one fails
+            }
+          }
+        }
       }
       
       onSuccess();
@@ -122,6 +241,10 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
       setLoading(false);
     }
   };
+
+  // Combine uploaded and pending attachments for display
+  const allAttachments = officer ? attachments : pendingAttachments;
+  const hasAttachments = allAttachments.length > 0;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -286,6 +409,99 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
             />
           </div>
           
+          {/* Attachments Section */}
+          <div className="attachments-section">
+            <h3 className="attachments-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+              </svg>
+              المرفقات
+              {!officer && pendingAttachments.length > 0 && (
+                <span className="attachments-pending-badge">
+                  {pendingAttachments.length} سيتم رفعها بعد الحفظ
+                </span>
+              )}
+            </h3>
+            
+            {/* Upload new attachment */}
+            <div className="attachment-upload">
+              <div className="attachment-upload-row">
+                <input
+                  type="text"
+                  placeholder="وصف المرفق (اختياري)"
+                  value={attachmentDescription}
+                  onChange={(e) => setAttachmentDescription(e.target.value)}
+                  className="attachment-description-input"
+                />
+                <label className="attachment-upload-btn">
+                  <input
+                    type="file"
+                    onChange={handleAttachmentSelect}
+                    disabled={uploadingAttachment}
+                    style={{ display: 'none' }}
+                  />
+                  {uploadingAttachment ? (
+                    <span className="uploading-text">جاري الرفع...</span>
+                  ) : (
+                    <>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                      </svg>
+                      إضافة مرفق
+                    </>
+                  )}
+                </label>
+              </div>
+              {errors.attachment && <span className="form-error">{errors.attachment}</span>}
+            </div>
+            
+            {/* Attachments list */}
+            {attachmentsLoading ? (
+              <div className="attachments-loading">جاري تحميل المرفقات...</div>
+            ) : hasAttachments ? (
+              <div className="attachments-list">
+                {allAttachments.map((attachment) => (
+                  <div key={attachment.id} className={`attachment-item ${!officer ? 'pending' : ''}`}>
+                    <span className="attachment-icon">{getFileIcon(attachment.mime_type)}</span>
+                    <div className="attachment-info">
+                      {officer ? (
+                        <a 
+                          href={attachment.file_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="attachment-name"
+                        >
+                          {attachment.original_name}
+                        </a>
+                      ) : (
+                        <span className="attachment-name">{attachment.original_name}</span>
+                      )}
+                      {attachment.description && (
+                        <span className="attachment-desc">{attachment.description}</span>
+                      )}
+                      <span className="attachment-size">{attachment.file_size_formatted}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="attachment-delete"
+                      onClick={() => officer ? handleDeleteAttachment(attachment.id) : handleRemovePendingAttachment(attachment.id)}
+                      title="حذف المرفق"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="attachments-empty">لا توجد مرفقات</div>
+            )}
+          </div>
+          
           <div className="modal-footer">
             <button type="button" className="btn btn--secondary" onClick={onClose}>
               إلغاء
@@ -301,7 +517,3 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
 };
 
 export default OfficerForm;
-
-
-
-

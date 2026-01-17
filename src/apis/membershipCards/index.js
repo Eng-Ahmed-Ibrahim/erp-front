@@ -733,6 +733,140 @@ export const BENEFICIARY_TYPES = [
   { value: 'child_spouse', label: 'زوج / زوجة الابن' },
 ];
 
+// =====================
+// Attachments API
+// =====================
+
+/**
+ * Get all attachments for an officer
+ */
+export async function getOfficerAttachments(officerId) {
+  try {
+    const res = await axios.get(
+      `${API_ENDPOINT}/api/v1/membership-cards/officers/${officerId}/attachments`,
+      { headers: getHeaders() }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Upload attachment for an officer
+ */
+export async function uploadOfficerAttachment(officerId, file, description = null) {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (description) {
+      formData.append('description', description);
+    }
+    
+    const res = await axios.post(
+      `${API_ENDPOINT}/api/v1/membership-cards/officers/${officerId}/attachments`,
+      formData,
+      {
+        headers: {
+          ...getHeaders(),
+          'Content-Type': 'multipart/form-data',
+        }
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Get all attachments for a beneficiary
+ */
+export async function getBeneficiaryAttachments(officerId, beneficiaryId) {
+  try {
+    const res = await axios.get(
+      `${API_ENDPOINT}/api/v1/membership-cards/officers/${officerId}/beneficiaries/${beneficiaryId}/attachments`,
+      { headers: getHeaders() }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Upload attachment for a beneficiary
+ */
+export async function uploadBeneficiaryAttachment(officerId, beneficiaryId, file, description = null) {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (description) {
+      formData.append('description', description);
+    }
+    
+    const res = await axios.post(
+      `${API_ENDPOINT}/api/v1/membership-cards/officers/${officerId}/beneficiaries/${beneficiaryId}/attachments`,
+      formData,
+      {
+        headers: {
+          ...getHeaders(),
+          'Content-Type': 'multipart/form-data',
+        }
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Get a single attachment by ID
+ */
+export async function getAttachment(id) {
+  try {
+    const res = await axios.get(
+      `${API_ENDPOINT}/api/v1/membership-cards/attachments/${id}`,
+      { headers: getHeaders() }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Update attachment description
+ */
+export async function updateAttachment(id, description) {
+  try {
+    const res = await axios.put(
+      `${API_ENDPOINT}/api/v1/membership-cards/attachments/${id}`,
+      { description },
+      { headers: getHeaders() }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Delete an attachment
+ */
+export async function deleteAttachment(id) {
+  try {
+    const res = await axios.delete(
+      `${API_ENDPOINT}/api/v1/membership-cards/attachments/${id}`,
+      { headers: getHeaders() }
+    );
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 
 
