@@ -574,7 +574,7 @@
     left: 6.5%;
     width: 23%;
     aspect-ratio: 1;
-    border-radius: 50%;
+    border-radius: 4px;
     border: 2px solid var(--card-photo-border, #0a1a2a);
     overflow: hidden;
     background: #f8f8f8;
@@ -607,7 +607,7 @@
       width: 60%;
       height: 60%;
       background: linear-gradient(135deg, #d0d0d0 0%, #c0c0c0 100%);
-      border-radius: 50%;
+      border-radius: 4px;
       opacity: 0.5;
       top: 50%;
       left: 50%;
@@ -627,7 +627,7 @@
   // Honorary Membership Text - Under Photo
   &__honorary-membership {
     position: absolute;
-    top: 52%;
+    top: 65%;
     left: 6.5%;
     width: 23%;
     text-align: center;

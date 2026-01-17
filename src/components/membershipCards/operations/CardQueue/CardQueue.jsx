@@ -324,6 +324,14 @@ const CardQueue = ({ selectedOfficer }) => {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          html {
+            width: 54mm;
+            height: 85mm;
+            margin: 0;
+            padding: 0;
           }
           body {
             font-family: 'Cairo', 'Arial', sans-serif;
@@ -336,21 +344,19 @@ const CardQueue = ({ selectedOfficer }) => {
             overflow: hidden;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
-            display: flex;
-            justify-content: center;
-            align-items: center;
           }
           .card-design {
             width: 85mm;
             height: 54mm;
-            position: relative;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-90deg);
             overflow: hidden;
             border-radius: 0;
             background: #ffffff;
             margin: 0;
             padding: 0;
-            transform: rotate(-90deg);
-            transform-origin: center center;
           }
           .card-design__background {
             position: absolute;
@@ -366,9 +372,9 @@ const CardQueue = ({ selectedOfficer }) => {
             top: 0;
             left: 50%;
             right: 0;
-            height: 12%;
+            height: 10%;
             z-index: 2;
-            overflow: visible;
+            overflow: hidden;
           }
           .card-design__top-border::before {
             content: '';
@@ -392,9 +398,9 @@ const CardQueue = ({ selectedOfficer }) => {
             bottom: 0;
             left: 0;
             right: 50%;
-            height: 12%;
+            height: 10%;
             z-index: 2;
-            overflow: visible;
+            overflow: hidden;
           }
           .card-design__bottom-border::before {
             content: '';
@@ -415,9 +421,9 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__org-name {
             position: absolute;
-            top: 2%;
-            left: 3.5%;
-            font-size: 0.9rem;
+            top: 1%;
+            left: 2%;
+            font-size: 0.85rem;
             font-weight: 900;
             color: #0a1a2a;
             font-family: 'Cairo', sans-serif;
@@ -430,17 +436,15 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__photo-container {
             position: absolute;
-            top: 30%;
-            left: 6.5%;
-            width: 23%;
+            top: 28%;
+            left: 3%;
+            width: 21%;
             aspect-ratio: 1;
-            border-radius: 50%;
+            border-radius: 4px;
             border: 2px solid var(--card-photo-border, #0a1a2a);
             overflow: hidden;
             background: #f8f8f8;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
             z-index: 4;
-            margin-right: 2%;
           }
           .card-design__photo-img {
             width: 100%;
@@ -463,7 +467,7 @@ const CardQueue = ({ selectedOfficer }) => {
             width: 60%;
             height: 60%;
             background: linear-gradient(135deg, #d0d0d0 0%, #c0c0c0 100%);
-            border-radius: 50%;
+            border-radius: 4px;
             opacity: 0.5;
             top: 50%;
             left: 50%;
@@ -477,22 +481,16 @@ const CardQueue = ({ selectedOfficer }) => {
             z-index: 1;
             filter: grayscale(100%);
           }
-          .card-design__dates {
-            position: absolute;
-            bottom: 17%;
-            left: 3.5%;
-            display: flex;
-            flex-direction: row;
-            gap: 0.8rem;
-            align-items: baseline;
-            z-index: 4;
-          }
+
           .card-design__date-row {
             display: flex;
             flex-direction: row;
             align-items: baseline;
             gap: 0.25rem;
             line-height: 1.1;
+            position: absolute;
+            bottom: 18%;
+            left: 4%;
           }
           .card-design__date-label {
             font-size: 0.45rem;
@@ -516,12 +514,13 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__honorary-membership {
             position: absolute;
-            top: 52%;
-            left: 6.5%;
-            width: 23%;
+            top: 62%;
+            left: 3%;
+            width: 21%;
             text-align: center;
-            font-size: 0.5rem;
-            font-weight: 700;
+            font-size: 0.45rem;
+            font-weight: 900;
+            text-stroke: 1px #000;
             color: #991b1b;
             font-family: 'Cairo', sans-serif;
             letter-spacing: 0.05px;
@@ -550,18 +549,19 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__info-section {
             position: absolute;
-            top: 19%;
-            right: 5.5%;
-            width: 53%;
+            top: 21%;
+            right: 3%;
+            width: 68%;
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.3rem;
             z-index: 4;
-            padding-left: 2%;
+            padding: 0;
+            margin: 0;
           }
           .card-design__signature {
             position: absolute;
-            bottom: 12%;
+            bottom: 17%;
             left: 43%;
             transform: translateX(-50%);
             width: 50%;
@@ -588,13 +588,13 @@ const CardQueue = ({ selectedOfficer }) => {
           .card-info-field {
             display: flex;
             align-items: baseline;
-            gap: 0.4rem;
+            gap: 0.3rem;
             direction: rtl;
             font-family: 'Cairo', sans-serif;
-            line-height: 1;
+            line-height: 1.1;
           }
           .card-info-label {
-            font-size: 0.72rem;
+            font-size: 0.65rem;
             font-weight: 900;
             color: #0a1a2a;
             min-width: fit-content;
@@ -604,27 +604,27 @@ const CardQueue = ({ selectedOfficer }) => {
             line-height: 1;
           }
           .card-info-value {
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             font-weight: 800;
             color: #1a1a1a;
             flex: 1;
             text-align: right;
             overflow: hidden;
-            text-overflow: ellipsis;
             white-space: nowrap;
+            text-overflow: ellipsis;
             min-width: 0;
             letter-spacing: 0.03px;
-            line-height: 1;
+            line-height: 1.15;
           }
           .card-info-value--national-id {
-            overflow: visible;
-            text-overflow: clip;
+            overflow: hidden;
+            text-overflow: ellipsis;
             white-space: nowrap;
             word-break: normal;
           }
           .card-info-value--full-text {
-            overflow: visible;
-            text-overflow: clip;
+            overflow: hidden;
+            text-overflow: ellipsis;
             white-space: nowrap;
             word-break: normal;
             flex-shrink: 0;
@@ -636,34 +636,27 @@ const CardQueue = ({ selectedOfficer }) => {
               padding: 0;
             }
             html, body {
-              margin: 0;
-              padding: 0;
-              width: 54mm;
-              height: 85mm;
-              overflow: hidden;
-              background: white;
-            }
-            body {
-              background: white;
-              padding: 0;
-              margin: 0;
-              width: 54mm;
-              height: 85mm;
-              overflow: hidden;
-              display: flex;
-              justify-content: center;
-              align-items: center;
+              margin: 0 !important;
+              padding: 0 !important;
+              width: 54mm !important;
+              height: 85mm !important;
+              overflow: hidden !important;
+              background: white !important;
             }
             .card-design {
-              margin: 0;
-              padding: 0;
-              box-shadow: none;
-              transform: rotate(-90deg);
-              transform-origin: center center;
-              width: 85mm;
-              height: 54mm;
-              border-radius: 0;
-              position: relative;
+              margin: 0 !important;
+              padding: 0 !important;
+              box-shadow: none !important;
+              width: 85mm !important;
+              height: 54mm !important;
+              border-radius: 0 !important;
+              position: fixed !important;
+              top: 50% !important;
+              left: 50% !important;
+              transform: translate(-50%, -50%) rotate(-90deg) !important;
+              overflow: hidden !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
             }
             * {
               -webkit-print-color-adjust: exact !important;
@@ -691,20 +684,14 @@ const CardQueue = ({ selectedOfficer }) => {
             عضويه فخريه
           </div>
           ` : ''}
-          <div class="card-design__dates">
-            ${issueDateFormatted ? `
-            <div class="card-design__date-row">
-              <span class="card-design__date-label">إصدار:</span>
-              <span class="card-design__date-value">${issueDateFormatted}</span>
-            </div>
-            ` : ''}
+        
             ${(card.show_expiry_date !== false && expiryDateFormatted) ? `
             <div class="card-design__date-row">
               <span class="card-design__date-label">انتهاء:</span>
               <span class="card-design__date-value">${expiryDateFormatted}</span>
             </div>
             ` : ''}
-          </div>
+          
           
           <div class="card-design__info-section">
             <div class="card-info-field">
@@ -944,16 +931,16 @@ const CardQueue = ({ selectedOfficer }) => {
         ) : cards.length === 0 ? (
           <div className="card-queue__empty">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
-                <path d="M2 10H22" stroke="currentColor" strokeWidth="2" />
-                <path d="M6 15H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
+              <path d="M2 10H22" stroke="currentColor" strokeWidth="2" />
+              <path d="M6 15H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
             <p>لا توجد بطاقات لهذا الضابط</p>
           </div>
         ) : (
-              cards.map((card) => {
-                const theme = getCardTheme(card);
-                const holder = getCardHolder(card);
+          cards.map((card) => {
+            const theme = getCardTheme(card);
+            const holder = getCardHolder(card);
             // Get officer theme for photo border (always use officer's theme)
             const cardOfficer = card.officer || selectedOfficer;
             let officerThemeForBorder = CARD_THEMES.blue; // Default
