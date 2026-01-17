@@ -423,7 +423,7 @@ const CardQueue = ({ selectedOfficer }) => {
             position: absolute;
             top: 1%;
             left: 2%;
-            font-size: 0.85rem;
+            font-size: 0.92rem;
             font-weight: 900;
             color: #0a1a2a;
             font-family: 'Cairo', sans-serif;
@@ -431,7 +431,7 @@ const CardQueue = ({ selectedOfficer }) => {
             white-space: nowrap;
             z-index: 4;
             text-align: left;
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9), 0 0 0.5px #0a1a2a;
             line-height: 1.2;
           }
           .card-design__photo-container {
@@ -493,24 +493,26 @@ const CardQueue = ({ selectedOfficer }) => {
             left: 4%;
           }
           .card-design__date-label {
-            font-size: 0.45rem;
-            font-weight: 700;
+            font-size: 0.5rem;
+            font-weight: 900;
             color: #0a1a2a;
             font-family: 'Cairo', sans-serif;
             letter-spacing: 0.03px;
-            opacity: 0.85;
+            opacity: 0.9;
             white-space: nowrap;
+            text-shadow: 0 0 0.2px #0a1a2a;
           }
           .card-design__date-value {
-            font-size: 0.42rem;
-            font-weight: 600;
+            font-size: 0.48rem;
+            font-weight: 800;
             color: #1a1a1a;
             font-family: 'Cairo', sans-serif;
             letter-spacing: 0.02px;
-            opacity: 0.9;
+            opacity: 0.95;
             direction: rtl;
             text-align: right;
             white-space: nowrap;
+            text-shadow: 0 0 0.2px #1a1a1a;
           }
           .card-design__honorary-membership {
             position: absolute;
@@ -518,7 +520,7 @@ const CardQueue = ({ selectedOfficer }) => {
             left: 3%;
             width: 21%;
             text-align: center;
-            font-size: 0.45rem;
+            font-size: 0.5rem;
             font-weight: 900;
             text-stroke: 1px #000;
             color: #991b1b;
@@ -526,6 +528,7 @@ const CardQueue = ({ selectedOfficer }) => {
             letter-spacing: 0.05px;
             z-index: 4;
             margin-top: 0.2rem;
+            text-shadow: 0 0 0.3px #991b1b;
           }
           .card-design__logo-container {
             position: absolute;
@@ -549,12 +552,12 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__info-section {
             position: absolute;
-            top: 21%;
+            top: 18%;
             right: 3%;
             width: 68%;
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
+            gap: 0.2rem;
             z-index: 4;
             padding: 0;
             margin: 0;
@@ -584,48 +587,53 @@ const CardQueue = ({ selectedOfficer }) => {
             opacity: 0.95;
             line-height: 1.2;
             margin-left: -15px;
+            text-shadow: 0 0 0.2px #0a1a2a;
           }
           .card-info-field {
             display: flex;
-            align-items: baseline;
-            gap: 0.3rem;
+            align-items: flex-start;
+            gap: 0.25rem;
             direction: rtl;
             font-family: 'Cairo', sans-serif;
-            line-height: 1.3;
+            line-height: 1.15;
           }
           .card-info-label {
-            font-size: 0.7rem;
+            font-size: 0.78rem;
             font-weight: 900;
             color: #0a1a2a;
             min-width: fit-content;
             white-space: nowrap;
             flex-shrink: 0;
             letter-spacing: 0.09px;
-            line-height: 1.3;
+            line-height: 1.15;
+            text-shadow: 0 0 0.3px #0a1a2a;
           }
           .card-info-value {
-            font-size: 0.7rem;
+            font-size: 0.78rem;
             font-weight: 900;
             color: #1a1a1a;
             flex: 1;
             text-align: right;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            overflow: visible;
+            white-space: normal;
+            word-wrap: break-word;
             min-width: 0;
             letter-spacing: 0.04px;
-            line-height: 1.3;
+            line-height: 1.15;
+            text-shadow: 0 0 0.3px #1a1a1a;
+          }
+          .card-info-value--nowrap {
+            white-space: nowrap !important;
           }
           .card-info-value--national-id {
-            overflow: hidden;
-            text-overflow: ellipsis;
+            overflow: visible;
             white-space: nowrap;
             word-break: normal;
           }
           .card-info-value--full-text {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            overflow: visible;
+            white-space: normal;
+            word-wrap: break-word;
             word-break: normal;
             flex-shrink: 0;
           }
@@ -700,9 +708,9 @@ const CardQueue = ({ selectedOfficer }) => {
             </div>
             <div class="card-info-field">
               <span class="card-info-label">الصفه:</span>
-              <span class="card-info-value card-info-value--full-text" style="margin-left: 2.8rem;">${holder.type === 'officer' ? 'سيادته' : (holder.relationship || getRelationshipLabel(card.beneficiary?.relationship_type) || '-')}</span>
+              <span class="card-info-value card-info-value--nowrap" style="margin-left: 2.8rem;">${holder.type === 'officer' ? 'سيادته' : (holder.relationship || getRelationshipLabel(card.beneficiary?.relationship_type) || '-')}</span>
               <span class="card-info-label" style="margin-right: 1rem;">الرتبه:</span>
-              <span class="card-info-value card-info-value--full-text">${holder.type === 'officer' ? (holder.rank || card.officer?.rank || '-') : (card.officer?.rank || '-')}</span>
+              <span class="card-info-value card-info-value--nowrap">${holder.type === 'officer' ? (holder.rank || card.officer?.rank || '-') : (card.officer?.rank || '-')}</span>
             </div>
             <div class="card-info-field">
               <span class="card-info-label">إسم:</span>
