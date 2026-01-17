@@ -183,7 +183,7 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
     }
     
     if (!formData.membership_number) {
-      newErrors.membership_number = 'رقم العضوية مطلوب';
+      newErrors.membership_number = 'الرقم العسكري مطلوب';
     }
     
     setErrors(newErrors);
@@ -279,7 +279,7 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
             </div>
             
             <div className="form-group">
-              <label htmlFor="membership_number">رقم العضوية *</label>
+              <label htmlFor="membership_number">الرقم العسكري *</label>
               <input
                 type="text"
                 id="membership_number"

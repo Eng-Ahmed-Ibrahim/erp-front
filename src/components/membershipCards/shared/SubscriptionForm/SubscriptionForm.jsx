@@ -219,7 +219,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
                     <div className="search-row">
                       <input
                         type="text"
-                        placeholder="رقم العضوية أو الرقم القومي..."
+                        placeholder="الرقم العسكري أو الرقم القومي..."
                         value={searchIdentifier}
                         onChange={(e) => setSearchIdentifier(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearch())}

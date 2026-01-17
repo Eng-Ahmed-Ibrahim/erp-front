@@ -96,7 +96,7 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
         <div className="officers-table__search">
           <input
             type="text"
-            placeholder="البحث برقم العضوية أو الرقم القومي أو الاسم..."
+            placeholder="البحث بالرقم العسكري أو الرقم القومي أو الاسم..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -124,7 +124,7 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
         <table className="data-table">
           <thead>
             <tr>
-              <th>رقم العضوية</th>
+              <th>الرقم العسكري</th>
               <th>الاسم</th>
               <th>الرتبة</th>
               <th>السلاح</th>
