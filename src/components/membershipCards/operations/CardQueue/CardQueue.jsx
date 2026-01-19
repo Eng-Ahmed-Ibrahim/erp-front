@@ -615,7 +615,7 @@ const CardQueue = ({ selectedOfficer }) => {
             flex-shrink: 0;
             letter-spacing: 0.09px;
             line-height: 1.15;
-            text-shadow: 0 0 0.3px #0a1a2a;
+            text-shadow: 0 0 0.3pxrgb(0, 0, 0);
           }
           .card-info-value {
             font-size: 0.78rem;
@@ -629,7 +629,7 @@ const CardQueue = ({ selectedOfficer }) => {
             min-width: 0;
             letter-spacing: 0.04px;
             line-height: 1.15;
-            text-shadow: 0 0 0.3px #1a1a1a;
+            text-shadow: 0 0 0.3pxrgb(0, 0, 0);
           }
           .card-info-value--service-status {
            font-size: 0.6rem;
@@ -731,11 +731,12 @@ const CardQueue = ({ selectedOfficer }) => {
               ${card.officer?.service_status ? `
                 <span class="card-info-value card-info-value--nowrap card-info-value--service-status" style="margin-right: 0.5rem; margin-left: 1rem;">
                   ${card.officer.service_status === 'retired' ? 'بالمعاش' :
-          card.officer.service_status === 'transferred' ? 'منقول' :
-            card.officer.service_status === 'deceased' ? 'متوفي' :
-              card.officer.service_status === 'martyr' ? 'شهيد' :
-                card.officer.service_status === 'recalled' ? 'مستدعي' :
-                  card.officer.service_status}
+                    card.officer.service_status === 'transferred' ? 'منقول' :
+                    card.officer.service_status === 'active' ? 'بالخدمة' :
+                    card.officer.service_status === 'deceased' ? 'متوفي' :
+                    card.officer.service_status === 'martyr' ? 'شهيد' :
+                    card.officer.service_status === 'recalled' ? 'مستدعي' :
+                    card.officer.service_status}
                 </span>
               ` : ''}
               <span class="card-info-label">الصفه:</span>
@@ -1122,6 +1123,7 @@ const CardQueue = ({ selectedOfficer }) => {
                           <>
                             <span className="card-info-value card-info-value--full-text card-info-value--service-status" style={{ marginLeft: '0.9rem', marginRight: '2.3rem' }}>
                               {card.officer.service_status === 'retired' ? 'بالمعاش' :
+                                card.officer.service_status === 'active' ? 'بالخدمة' :
                                 card.officer.service_status === 'transferred' ? 'منقول' :
                                   card.officer.service_status === 'deceased' ? 'متوفي' :
                                     card.officer.service_status === 'martyr' ? 'شهيد' :

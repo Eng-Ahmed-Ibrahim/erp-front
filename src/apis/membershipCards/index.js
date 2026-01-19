@@ -635,6 +635,7 @@ export const RELATIONSHIP_TYPES = [
 ];
 
 export const SERVICE_STATUSES = [
+  { value: 'active', label: 'بالخدمة' },
   { value: 'retired', label: 'بالمعاش' },
   { value: 'transferred', label: 'منقول' },
   { value: 'deceased', label: 'متوفي' },
