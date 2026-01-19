@@ -381,7 +381,7 @@
 // Membership Card Design - Recreated with CSS
 .card-design {
   width: 100%;
-  max-width: 280px;
+  max-width: 320px;
   aspect-ratio: 1.586;
   position: relative;
   overflow: hidden;
@@ -728,6 +728,16 @@
     z-index: 4;
   }
 
+  &__signature-image {
+    width: 60%;
+    max-width: 80px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+    object-fit: contain;
+    margin-bottom: -2px;
+  }
+
   &__signature-line {
     width: 60%;
     height: 1.5px;
@@ -1067,7 +1077,7 @@
         }
 
         .card-design {
-          max-width: 240px;
+          max-width: 300px;
 
           &__logo {
             svg {
@@ -1135,7 +1145,7 @@
         }
 
         .card-design {
-          max-width: 200px;
+          max-width: 280px;
 
           &__content {
             padding: 0.5rem;

@@ -63,7 +63,7 @@ export async function updateOfficer(id, officerData) {
     const formData = new FormData();
     // Use POST with _method spoofing for Laravel to properly handle FormData
     formData.append('_method', 'PUT');
-    
+
     Object.keys(officerData).forEach(key => {
       if (key === 'photo' && officerData[key] instanceof File) {
         formData.append('photo', officerData[key]);
@@ -71,7 +71,7 @@ export async function updateOfficer(id, officerData) {
         formData.append(key, officerData[key]);
       }
     });
-    
+
     // Use POST instead of PUT for FormData to work properly with Laravel
     const res = await axios.post(`${API_ENDPOINT}/api/v1/membership-cards/officers/${id}`, formData, {
       headers: {
@@ -144,7 +144,7 @@ export async function createBeneficiary(officerId, beneficiaryData) {
         formData.append(key, beneficiaryData[key]);
       }
     });
-    
+
     const res = await axios.post(
       `${API_ENDPOINT}/api/v1/membership-cards/officers/${officerId}/beneficiaries`,
       formData,
@@ -166,7 +166,7 @@ export async function updateBeneficiary(officerId, id, beneficiaryData) {
     const formData = new FormData();
     // Use POST with _method spoofing for Laravel to properly handle FormData
     formData.append('_method', 'PUT');
-    
+
     Object.keys(beneficiaryData).forEach(key => {
       if (key === 'photo') {
         // Only append photo if it's a File object (new upload)
@@ -178,7 +178,7 @@ export async function updateBeneficiary(officerId, id, beneficiaryData) {
         formData.append(key, beneficiaryData[key]);
       }
     });
-    
+
     // Use POST instead of PUT for FormData to work properly with Laravel
     const res = await axios.post(
       `${API_ENDPOINT}/api/v1/membership-cards/officers/${officerId}/beneficiaries/${id}`,
@@ -641,6 +641,8 @@ export const RANKS = [
   { value: 'فريق', label: 'فريق' },
   { value: 'فريق أول', label: 'فريق أول' },
   { value: 'مشير', label: 'مشير' },
+  { value: 'وكيل وزارة', label: 'وكيل وزارة' },
+  { value: 'وكيل أول وزارة', label: 'وكيل أول وزارة' }
 ];
 
 export const SUBSCRIPTION_STATUSES = [
@@ -762,7 +764,7 @@ export async function uploadOfficerAttachment(officerId, file, description = nul
     if (description) {
       formData.append('description', description);
     }
-    
+
     const res = await axios.post(
       `${API_ENDPOINT}/api/v1/membership-cards/officers/${officerId}/attachments`,
       formData,
@@ -804,7 +806,7 @@ export async function uploadBeneficiaryAttachment(officerId, beneficiaryId, file
     if (description) {
       formData.append('description', description);
     }
-    
+
     const res = await axios.post(
       `${API_ENDPOINT}/api/v1/membership-cards/officers/${officerId}/beneficiaries/${beneficiaryId}/attachments`,
       formData,

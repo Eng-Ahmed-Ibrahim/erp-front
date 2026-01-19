@@ -438,7 +438,7 @@ const CardQueue = ({ selectedOfficer }) => {
             position: absolute;
             top: 28%;
             left: 3%;
-            width: 21%;
+            width: 24%;
             aspect-ratio: 1;
             border-radius: 4px;
             border: 2px solid var(--card-photo-border, #0a1a2a);
@@ -565,11 +565,20 @@ const CardQueue = ({ selectedOfficer }) => {
           .card-design__signature {
             position: absolute;
             bottom: 18%;
-            left: 43%;
+            left: 39%;
             transform: translateX(-50%);
             width: 50%;
             text-align: center;
             z-index: 4;
+          }
+          .card-design__signature-image {
+            width: 60%;
+            max-width: 80px;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+            object-fit: contain;
+            margin-bottom: -2px;
           }
           .card-design__signature-line {
             width: 45%;
@@ -704,28 +713,52 @@ const CardQueue = ({ selectedOfficer }) => {
           <div class="card-design__info-section">
             <div class="card-info-field">
               <span class="card-info-label">عضوية:</span>
+              
               <span class="card-info-value">${card.subscription_id || '-'}</span>
-            </div>
+              ${holder.type !== 'officer' ? `
+                <>
+                  <span class="card-info-label">ت ش:</span>
+                  <span class="card-info-value">${holder.membership_number || card.officer?.membership_number || '-'}</span>
+                </>
+            `: ''}
+               </div>
             <div class="card-info-field">
               <span class="card-info-label">الصفه:</span>
               <span class="card-info-value card-info-value--nowrap" style="margin-left: 2.8rem;">${holder.type === 'officer' ? 'سيادته' : (holder.relationship || getRelationshipLabel(card.beneficiary?.relationship_type) || '-')}</span>
               <span class="card-info-label" style="margin-right: 1rem;">الرتبه:</span>
               <span class="card-info-value card-info-value--nowrap">${holder.type === 'officer' ? (holder.rank || card.officer?.rank || '-') : (card.officer?.rank || '-')}</span>
             </div>
+            ${holder.type === 'officer' ? `
+              <div class="card-info-field">
+                <span class="card-info-label">العضو:</span>
+                <span class="card-info-value">${holder.name || '-'}</span>
+              </div>
+            ` : `
             <div class="card-info-field">
-              <span class="card-info-label">إسم:</span>
+              <span class="card-info-label">العضو:</span>
+              <span class="card-info-value">${card.officer?.full_name || '-'}</span>
+            </div>
+
+            <div class="card-info-field">
+              <span class="card-info-label">المستفيد:</span>
               <span class="card-info-value">${holder.name || '-'}</span>
             </div>
-            <div class="card-info-field">
+            `}
+
+            ${holder.type === 'officer' ? `
+              <div class="card-info-field">
               <span class="card-info-label">ت ش:</span>
               <span class="card-info-value">${holder.membership_number || card.officer?.membership_number || '-'}</span>
             </div>
+            ` : ''}
+
             <div class="card-info-field">
               <span class="card-info-label">رقم قومي:</span>
               <span class="card-info-value card-info-value--national-id">${holder.national_id || card.officer?.national_id || card.beneficiary?.national_id || '-'}</span>
             </div>
           </div>
           <div class="card-design__signature">
+            <img src="${origin}/assets/images/ehab-signature-preview.png" alt="Signature" class="card-design__signature-image" />
             <div class="card-design__signature-line"></div>
             <div class="card-design__signature-title">رئيس مجلس الإدارة</div>
           </div>
@@ -1049,6 +1082,15 @@ const CardQueue = ({ selectedOfficer }) => {
                       <div className="card-info-field">
                         <span className="card-info-label">عضوية:</span>
                         <span className="card-info-value">{String(card.subscription_id || '-')}</span>
+
+                        {holder.type !== 'officer' && (
+                          <>
+                            <span className="card-info-label">ت ش:</span>
+                            <span className="card-info-value">
+                              {String(holder.membership_number || card.officer?.membership_number || '-')}
+                            </span>
+                          </>
+                        )}
                       </div>
                       <div className="card-info-field">
                         <span className="card-info-label">الصفه:</span>
@@ -1066,18 +1108,27 @@ const CardQueue = ({ selectedOfficer }) => {
                           )}
                         </span>
                       </div>
+
                       <div className="card-info-field">
-                        <span className="card-info-label">إسم:</span>
-                        <span className="card-info-value">{String(holder.name || '-')}</span>
-                      </div>
-                      {/* ت ش: Only show for officers */}
-                      <div className="card-info-field">
-                        <span className="card-info-label">ت ش:</span>
-                        <span className="card-info-value">
-                          {String(holder.membership_number || card.officer?.membership_number || '-')}
-                        </span>
+                        <span className="card-info-label">العضو:</span>
+                        <span className="card-info-value"> {holder.type === 'officer' ? String(holder.name || '-') : String(card.officer?.full_name || '-')}</span>
                       </div>
 
+                      {holder.type === 'beneficiary' && (
+                        <div className="card-info-field">
+                          <span className="card-info-label">المستفيد:</span>
+                          <span className="card-info-value">{String(holder.name || '-')}</span>
+                        </div>
+                      )}
+
+                      {holder.type === 'officer' && (
+                        <div className="card-info-field">
+                          <span className="card-info-label">ت ش:</span>
+                          <span className="card-info-value">
+                            {String(holder.membership_number || card.officer?.membership_number || '-')}
+                          </span>
+                        </div>
+                      )}
                       <div className="card-info-field">
                         <span className="card-info-label">رقم قومي:</span>
                         <span className="card-info-value card-info-value--national-id">
@@ -1088,6 +1139,11 @@ const CardQueue = ({ selectedOfficer }) => {
 
                     {/* Bottom: Signature Line */}
                     <div className="card-design__signature">
+                      <img
+                        src="/assets/images/ehab-signature-preview.png"
+                        alt="Signature"
+                        className="card-design__signature-image"
+                      />
                       <div className="card-design__signature-line"></div>
                       <div className="card-design__signature-title">رئيس مجلس الإدارة</div>
                     </div>
