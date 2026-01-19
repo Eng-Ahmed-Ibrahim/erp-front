@@ -42,7 +42,12 @@ export async function createOfficer(officerData) {
       if (key === 'photo' && officerData[key] instanceof File) {
         formData.append('photo', officerData[key]);
       } else if (officerData[key] !== null && officerData[key] !== undefined) {
-        formData.append(key, officerData[key]);
+        // Convert boolean to "1" or "0" for Laravel validation
+        if (typeof officerData[key] === 'boolean') {
+          formData.append(key, officerData[key] ? '1' : '0');
+        } else {
+          formData.append(key, officerData[key]);
+        }
       }
     });
     
@@ -68,7 +73,12 @@ export async function updateOfficer(id, officerData) {
       if (key === 'photo' && officerData[key] instanceof File) {
         formData.append('photo', officerData[key]);
       } else if (officerData[key] !== null && officerData[key] !== undefined) {
-        formData.append(key, officerData[key]);
+        // Convert boolean to "1" or "0" for Laravel validation
+        if (typeof officerData[key] === 'boolean') {
+          formData.append(key, officerData[key] ? '1' : '0');
+        } else {
+          formData.append(key, officerData[key]);
+        }
       }
     });
 
@@ -622,6 +632,14 @@ export const RELATIONSHIP_TYPES = [
   { value: 'parent', label: 'الآباء' },
   { value: 'grandchild', label: 'الأحفاد' },
   { value: 'child_spouse', label: 'أزواج الأبناء' },
+];
+
+export const SERVICE_STATUSES = [
+  { value: 'retired', label: 'بالمعاش' },
+  { value: 'transferred', label: 'منقول' },
+  { value: 'deceased', label: 'متوفي' },
+  { value: 'martyr', label: 'شهيد' },
+  { value: 'recalled', label: 'مستدعي' },
 ];
 
 export const WEAPON_TYPES = [

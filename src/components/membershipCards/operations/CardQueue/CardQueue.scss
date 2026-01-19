@@ -792,6 +792,10 @@
   letter-spacing: 0.03px;
   line-height: 1;
 
+  &--service-status {
+    font-size: 0.6rem;
+    font-weight: 700;
+  }
   // National ID - show full number in same line
   &--national-id {
     overflow: visible;

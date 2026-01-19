@@ -4,6 +4,7 @@ import {
   updateOfficer, 
   RANKS, 
   WEAPON_TYPES,
+  SERVICE_STATUSES,
   getOfficerAttachments,
   uploadOfficerAttachment,
   deleteAttachment
@@ -21,6 +22,8 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
     age: '',
     notes: '',
     photo: null,
+    service_status: '',
+    is_staff_officer: false,
   });
   const [photoPreview, setPhotoPreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -45,6 +48,8 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
         age: officer.age || '',
         notes: officer.notes || '',
         photo: null,
+        service_status: officer.service_status || '',
+        is_staff_officer: officer.is_staff_officer || false,
       });
       setPhotoPreview(officer.photo || null);
       // Load attachments for existing officer
@@ -338,6 +343,35 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
                 ))}
               </select>
               {errors.weapon_type && <span className="form-error">{errors.weapon_type}</span>}
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="service_status">حالة الخدمة</label>
+              <select
+                id="service_status"
+                name="service_status"
+                value={formData.service_status}
+                onChange={handleChange}
+              >
+                <option value="">اختر حالة الخدمة</option>
+                {SERVICE_STATUSES.map(status => (
+                  <option key={status.value} value={status.value}>{status.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="is_staff_officer"
+                  checked={formData.is_staff_officer}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_staff_officer: e.target.checked }))}
+                />
+                <span>اركان حرب</span>
+              </label>
             </div>
           </div>
           

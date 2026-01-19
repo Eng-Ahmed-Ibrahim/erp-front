@@ -437,7 +437,7 @@ const CardQueue = ({ selectedOfficer }) => {
           .card-design__photo-container {
             position: absolute;
             top: 28%;
-            left: 3%;
+            left: 2%;
             width: 24%;
             aspect-ratio: 1;
             border-radius: 4px;
@@ -553,7 +553,7 @@ const CardQueue = ({ selectedOfficer }) => {
           .card-design__info-section {
             position: absolute;
             top: 18%;
-            right: 3%;
+            right: 2%;
             width: 68%;
             display: flex;
             flex-direction: column;
@@ -609,7 +609,7 @@ const CardQueue = ({ selectedOfficer }) => {
           .card-info-label {
             font-size: 0.78rem;
             font-weight: 900;
-            color: #0a1a2a;
+            color:rgb(0, 0, 0);
             min-width: fit-content;
             white-space: nowrap;
             flex-shrink: 0;
@@ -620,7 +620,7 @@ const CardQueue = ({ selectedOfficer }) => {
           .card-info-value {
             font-size: 0.78rem;
             font-weight: 900;
-            color: #1a1a1a;
+            color:rgb(8, 0, 0);
             flex: 1;
             text-align: right;
             overflow: visible;
@@ -630,6 +630,10 @@ const CardQueue = ({ selectedOfficer }) => {
             letter-spacing: 0.04px;
             line-height: 1.15;
             text-shadow: 0 0 0.3px #1a1a1a;
+          }
+          .card-info-value--service-status {
+           font-size: 0.6rem;
+           font-weight: 700;
           }
           .card-info-value--nowrap {
             white-space: nowrap !important;
@@ -716,32 +720,41 @@ const CardQueue = ({ selectedOfficer }) => {
               
               <span class="card-info-value">${card.subscription_id || '-'}</span>
               ${holder.type !== 'officer' ? `
-                <>
                   <span class="card-info-label">ت ش:</span>
-                  <span class="card-info-value">${holder.membership_number || card.officer?.membership_number || '-'}</span>
-                </>
+                  <span class="card-info-value">${holder.membership_number || card.officer?.membership_number || '-'}</span>   
             `: ''}
                </div>
             <div class="card-info-field">
+              <span class="card-info-label">الرتبه:</span>
+              <span class="card-info-value card-info-value--nowrap " style="margin-left: 0.5rem;">${holder.type === 'officer' ? (holder.rank || card.officer?.rank || '-') : (card.officer?.rank || '-')}${card.officer?.is_staff_officer ? ' أح' : ''}</span>
+             
+              ${card.officer?.service_status ? `
+                <span class="card-info-value card-info-value--nowrap card-info-value--service-status" style="margin-right: 0.5rem; margin-left: 1rem;">
+                  ${card.officer.service_status === 'retired' ? 'بالمعاش' :
+          card.officer.service_status === 'transferred' ? 'منقول' :
+            card.officer.service_status === 'deceased' ? 'متوفي' :
+              card.officer.service_status === 'martyr' ? 'شهيد' :
+                card.officer.service_status === 'recalled' ? 'مستدعي' :
+                  card.officer.service_status}
+                </span>
+              ` : ''}
               <span class="card-info-label">الصفه:</span>
-              <span class="card-info-value card-info-value--nowrap" style="margin-left: 2.8rem;">${holder.type === 'officer' ? 'سيادته' : (holder.relationship || getRelationshipLabel(card.beneficiary?.relationship_type) || '-')}</span>
-              <span class="card-info-label" style="margin-right: 1rem;">الرتبه:</span>
-              <span class="card-info-value card-info-value--nowrap">${holder.type === 'officer' ? (holder.rank || card.officer?.rank || '-') : (card.officer?.rank || '-')}</span>
+              <span class="card-info-value card-info-value--nowrap" >${holder.type === 'officer' ? 'سيادته' : (holder.relationship || getRelationshipLabel(card.beneficiary?.relationship_type) || '-')}</span>
             </div>
             ${holder.type === 'officer' ? `
               <div class="card-info-field">
                 <span class="card-info-label">العضو:</span>
-                <span class="card-info-value">${holder.name || '-'}</span>
+                <span class="card-info-value card-info-value--nowrap">${holder.name || '-'}</span>
               </div>
             ` : `
             <div class="card-info-field">
               <span class="card-info-label">العضو:</span>
-              <span class="card-info-value">${card.officer?.full_name || '-'}</span>
+              <span class="card-info-value card-info-value--nowrap">${card.officer?.full_name || '-'}</span>
             </div>
 
             <div class="card-info-field">
               <span class="card-info-label">المستفيد:</span>
-              <span class="card-info-value">${holder.name || '-'}</span>
+              <span class="card-info-value card-info-value--nowrap">${holder.name || '-'}</span>
             </div>
             `}
 
@@ -1093,12 +1106,6 @@ const CardQueue = ({ selectedOfficer }) => {
                         )}
                       </div>
                       <div className="card-info-field">
-                        <span className="card-info-label">الصفه:</span>
-                        <span className="card-info-value card-info-value--full-text" style={{ marginLeft: '2.8rem' }}>
-                          {holder.type === 'officer'
-                            ? 'سيادته'
-                            : String(holder.relationship || getRelationshipLabel(card.beneficiary?.relationship_type) || '-')}
-                        </span>
                         <span className="card-info-label" >الرتبه:</span>
                         <span className="card-info-value card-info-value--full-text" >
                           {String(
@@ -1106,7 +1113,31 @@ const CardQueue = ({ selectedOfficer }) => {
                               ? (holder.rank || card.officer?.rank || '-')
                               : (card.officer?.rank || '-')
                           )}
+                          {card.officer?.is_staff_officer && (
+                            <span className="card-info-value card-info-value--full-text card-info-value--service-status" style={{ marginRight: '0.4rem', marginLeft: '0.5rem' }}>أح</span>
+                          )}
                         </span>
+
+                        {card.officer?.service_status && (
+                          <>
+                            <span className="card-info-value card-info-value--full-text card-info-value--service-status" style={{ marginLeft: '0.9rem', marginRight: '2.3rem' }}>
+                              {card.officer.service_status === 'retired' ? 'بالمعاش' :
+                                card.officer.service_status === 'transferred' ? 'منقول' :
+                                  card.officer.service_status === 'deceased' ? 'متوفي' :
+                                    card.officer.service_status === 'martyr' ? 'شهيد' :
+                                      card.officer.service_status === 'recalled' ? 'مستدعي' :
+                                        card.officer.service_status}
+                            </span>
+                          </>
+                        )}
+
+                        <span className="card-info-label" style={{ marginRight: '1rem' }}>الصفه:</span>
+                        <span className="card-info-value card-info-value--full-text" >
+                          {holder.type === 'officer'
+                            ? 'سيادته'
+                            : String(holder.relationship || getRelationshipLabel(card.beneficiary?.relationship_type) || '-')}
+                        </span>
+
                       </div>
 
                       <div className="card-info-field">
