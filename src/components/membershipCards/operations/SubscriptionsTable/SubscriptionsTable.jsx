@@ -128,20 +128,52 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
       try {
         const feeResponse = await getReplacementCardFee();
         setReplacementFee(feeResponse.data?.fee || 0);
+        
+        // Fetch existing card to get its expiry date
+        try {
+          const cardResponse = await getCardBySubscription(subscription.id);
+          if (cardResponse.success && cardResponse.data) {
+            const existingCard = cardResponse.data;
+            // Use the existing card's expiry date
+            setCardFormData({
+              card_uid: '',
+              expiry_date: existingCard.expiry_date || subscription.end_date || '',
+              serial_id: '',
+            });
+          } else {
+            setCardFormData({
+              card_uid: '',
+              expiry_date: subscription.end_date || '',
+              serial_id: '',
+            });
+          }
+        } catch (cardErr) {
+          console.error('Error fetching existing card:', cardErr);
+          // Fallback to subscription end date
+          setCardFormData({
+            card_uid: '',
+            expiry_date: subscription.end_date || '',
+            serial_id: '',
+          });
+        }
       } catch (err) {
         console.error('Error fetching replacement fee:', err);
         setReplacementFee(50); // Default fee
+        setCardFormData({
+          card_uid: '',
+          expiry_date: subscription.end_date || '',
+          serial_id: '',
+        });
       }
     } else {
       setReplacementFee(null);
+      // Set default expiry date to the subscription end date
+      setCardFormData({
+        card_uid: '',
+        expiry_date: subscription.end_date || '',
+        serial_id: '',
+      });
     }
-
-    // Set default expiry date to the subscription end date
-    setCardFormData({
-      card_uid: '',
-      expiry_date: subscription.end_date || '',
-      serial_id: '',
-    });
     setCardFormError(null);
     setShowCardIssueModal(true);
   };
@@ -157,6 +189,10 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
 
   const handleCardFormChange = (e) => {
     const { name, value } = e.target;
+    // Prevent editing expiry_date if it's a replacement card
+    if (isReplacement && name === 'expiry_date') {
+      return;
+    }
     setCardFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -205,7 +241,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
       return;
     }
 
-    if (!cardFormData.expiry_date) {
+    if (!cardFormData.expiry_date && !isReplacement) {
       setCardFormError('يرجى إدخال تاريخ انتهاء البطاقة');
       return;
     }
@@ -217,7 +253,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
       const cardData = {
         subscription_id: issuingForSubscription.id,
         card_uid: cardFormData.card_uid.trim(),
-        expiry_date: cardFormData.expiry_date,
+        expiry_date: cardFormData.expiry_date, // Backend will use existing card's expiry date for replacement
         serial_id: cardFormData.serial_id || cardFormData.card_uid.trim(),
         show_expiry_date: cardFormData.show_expiry_date !== false,
       };
@@ -681,7 +717,14 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                   name="expiry_date"
                   value={cardFormData.expiry_date}
                   onChange={handleCardFormChange}
+                  disabled={isReplacement}
+                  title={isReplacement ? 'تاريخ انتهاء البطاقة البديلة يكون نفس تاريخ البطاقة الأصلية' : ''}
                 />
+                {isReplacement && (
+                  <small className="form-hint" style={{ display: 'block', marginTop: '0.25rem', color: '#666' }}>
+                    تاريخ انتهاء البطاقة البديلة يكون نفس تاريخ البطاقة الأصلية
+                  </small>
+                )}
               </div>
 
               <div className="card-issue-modal__actions">

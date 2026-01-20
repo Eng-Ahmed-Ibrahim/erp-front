@@ -570,10 +570,10 @@
   // Left Center: Photo
   &__photo-container {
     position: absolute;
-    top: 30%;
+    top: 20%;
     left: 6.5%;
     width: 23%;
-    aspect-ratio: 1;
+    aspect-ratio: 0.85;
     border-radius: 4px;
     border: 2px solid var(--card-photo-border, #0a1a2a);
     overflow: hidden;

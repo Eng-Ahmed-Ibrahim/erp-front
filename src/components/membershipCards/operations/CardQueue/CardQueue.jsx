@@ -15,7 +15,7 @@ const CARD_THEMES = {
   blue: {
     id: 'blue',
     label: 'مشاة',
-    primary: '#1e40af',
+    primary: '#1E3146',
     secondary: '#3b82f6',
     accent: '#60a5fa',
     gradient: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e3a8a 100%)',
@@ -436,10 +436,10 @@ const CardQueue = ({ selectedOfficer }) => {
           }
           .card-design__photo-container {
             position: absolute;
-            top: 28%;
+            top: 20%;
             left: 2%;
             width: 24%;
-            aspect-ratio: 1;
+            aspect-ratio: 0.85;
             border-radius: 4px;
             border: 2px solid var(--card-photo-border, #0a1a2a);
             overflow: hidden;
