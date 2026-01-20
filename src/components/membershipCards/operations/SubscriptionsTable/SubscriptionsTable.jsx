@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import { 
   getSubscriptions, 
   getOfficerSubscriptions,
@@ -15,14 +16,23 @@ import {
   SUBSCRIPTION_STATUSES 
 } from '../../../../apis/membershipCards';
 import SubscriptionForm from '../../shared/SubscriptionForm/SubscriptionForm';
+import { hasPermission } from '../../../../utils/permissions';
 import './SubscriptionsTable.scss';
 
 const SubscriptionsTable = ({ selectedOfficer }) => {
+  const { user } = useAuth();
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
   const [error, setError] = useState(null);
+  
+  // Permission checks
+  const canCreateSubscription = hasPermission(user, 'create membership card subscription');
+  const canDeleteSubscription = hasPermission(user, 'delete membership card subscription');
+  const canIssueCard = hasPermission(user, 'issue membership card');
+  const canIssueReplacementCard = hasPermission(user, 'issue replacement membership card');
+  const canRenewSubscription = hasPermission(user, 'renew membership card subscription');
   const [filters, setFilters] = useState({
     status: '',
     page: 1,
@@ -98,6 +108,11 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
   };
 
   const handleDelete = async (id) => {
+    if (!canDeleteSubscription) {
+      setError('ليس لديك صلاحية لحذف الاشتراكات');
+      return;
+    }
+    
     if (!window.confirm('هل أنت متأكد من حذف هذا الاشتراك؟')) return;
     
     try {
@@ -236,6 +251,16 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
   const handleIssueCard = async (e) => {
     e.preventDefault();
 
+    // Check permissions
+    if (isReplacement && !canIssueReplacementCard) {
+      setCardFormError('ليس لديك صلاحية لإصدار بطاقات بديلة');
+      return;
+    }
+    if (!isReplacement && !canIssueCard) {
+      setCardFormError('ليس لديك صلاحية لإصدار بطاقات');
+      return;
+    }
+
     if (!cardFormData.card_uid.trim()) {
       setCardFormError('يرجى إدخال رقم البطاقة (Card UID)');
       return;
@@ -302,6 +327,11 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
 
   // Renewal Modal handlers
   const handleOpenRenewalModal = async (subscription) => {
+    if (!canRenewSubscription) {
+      setError('ليس لديك صلاحية لتجديد الاشتراكات');
+      return;
+    }
+    
     setRenewingSubscription(subscription);
     setRenewalFormError(null);
 
@@ -357,6 +387,11 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
 
   const handleRenewSubscription = async (e) => {
     e.preventDefault();
+
+    if (!canRenewSubscription) {
+      setRenewalFormError('ليس لديك صلاحية لتجديد الاشتراكات');
+      return;
+    }
 
     if (!renewalFormData.new_end_date) {
       setRenewalFormError('يرجى إدخال تاريخ الانتهاء الجديد');
@@ -415,12 +450,14 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
           </div>
         )}
         
-        <button className="add-btn" onClick={() => setShowForm(true)}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          إضافة اشتراك
-        </button>
+        {canCreateSubscription && (
+          <button className="add-btn" onClick={() => setShowForm(true)}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            إضافة اشتراك
+          </button>
+        )}
       </div>
 
       {error && <div className="subscriptions-table__error">{error}</div>}
@@ -477,7 +514,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                   <td className="status-cell" style={{ textAlign: 'left' }}>{getStatusBadge(subscription.status)}</td>
                   <td className="actions">
                     {/* Issue Card Button - only for active subscriptions */}
-                    {subscription.status === 'active' && !subscription.has_card && (
+                    {subscription.status === 'active' && !subscription.has_card && canIssueCard && (
                       <button
                         className="action-btn action-btn--issue-card"
                         onClick={() => handleOpenCardIssueModal(subscription, false)}
@@ -492,7 +529,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                       </button>
                     )}
                     {/* Issue Replacement Card Button - only for active subscriptions with existing card */}
-                    {subscription.status === 'active' && subscription.has_card && (
+                    {subscription.status === 'active' && subscription.has_card && canIssueReplacementCard && (
                       <button
                         className="action-btn action-btn--suspend replacement-card-btn"
                         onClick={() => handleOpenCardIssueModal(subscription, true)}
@@ -506,7 +543,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                       </button>
                     )}
                     {/* Renewal Button - show when can_renew is true */}
-                    {subscription.can_renew && (
+                    {subscription.can_renew && canRenewSubscription && (
                       <button
                         className="action-btn action-btn--renew"
                         onClick={() => handleOpenRenewalModal(subscription)}
@@ -542,16 +579,18 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                         </svg>
                       </button>
                     )}
-                    <button
-                      className="action-btn action-btn--delete"
-                      onClick={() => handleDelete(subscription.id)}
-                      title="حذف"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                        <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2"/>
-                      </svg>
-                    </button>
+                    {canDeleteSubscription && (
+                      <button
+                        className="action-btn action-btn--delete"
+                        onClick={() => handleDelete(subscription.id)}
+                        title="حذف"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

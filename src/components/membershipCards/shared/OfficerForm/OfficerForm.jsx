@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import { 
   createOfficer, 
   updateOfficer, 
@@ -9,9 +10,11 @@ import {
   uploadOfficerAttachment,
   deleteAttachment
 } from '../../../../apis/membershipCards';
+import { hasPermission } from '../../../../utils/permissions';
 import './OfficerForm.scss';
 
 const OfficerForm = ({ officer, onClose, onSuccess }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     national_id: '',
     full_name: '',
@@ -197,6 +200,16 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check permissions
+    if (officer && !hasPermission(user, 'edit membership card officer')) {
+      setErrors({ general: 'ليس لديك صلاحية لتعديل الضباط' });
+      return;
+    }
+    if (!officer && !hasPermission(user, 'create membership card officer')) {
+      setErrors({ general: 'ليس لديك صلاحية لإضافة ضباط' });
+      return;
+    }
     
     if (!validate()) return;
     

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import {
   getOfficerCards,
   markCardPrinted,
@@ -8,6 +9,7 @@ import {
   CARD_STATUSES,
   RELATIONSHIP_TYPES
 } from '../../../../apis/membershipCards';
+import { hasPermission } from '../../../../utils/permissions';
 import './CardQueue.scss';
 
 // Card color themes based on member type
@@ -51,11 +53,17 @@ const CARD_THEMES = {
 };
 
 const CardQueue = ({ selectedOfficer }) => {
+  const { user } = useAuth();
   const [activeFilter, setActiveFilter] = useState('all');
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [processingId, setProcessingId] = useState(null);
+  
+  // Permission checks
+  const canPrintCard = hasPermission(user, 'print membership card');
+  const canEncodeCard = hasPermission(user, 'encode membership card');
+  const canRevokeCard = hasPermission(user, 'revoke membership card');
 
   const filters = [
     {
@@ -607,7 +615,7 @@ const CardQueue = ({ selectedOfficer }) => {
             line-height: 1.15;
           }
           .card-info-label {
-            font-size: 0.78rem;
+            font-size: 0.95rem;
             font-weight: 900;
             color:rgb(0, 0, 0);
             min-width: fit-content;
@@ -618,7 +626,7 @@ const CardQueue = ({ selectedOfficer }) => {
             text-shadow: 0 0 0.3pxrgb(0, 0, 0);
           }
           .card-info-value {
-            font-size: 0.78rem;
+            font-size: 0.95rem;
             font-weight: 900;
             color:rgb(8, 0, 0);
             flex: 1;
@@ -642,6 +650,9 @@ const CardQueue = ({ selectedOfficer }) => {
             overflow: visible;
             white-space: nowrap;
             word-break: normal;
+          }
+          .card-info-value--number{
+              font-size: 0.81rem;
           }
           .card-info-value--full-text {
             overflow: visible;
@@ -718,10 +729,10 @@ const CardQueue = ({ selectedOfficer }) => {
             <div class="card-info-field">
               <span class="card-info-label">عضوية:</span>
               
-              <span class="card-info-value">${card.subscription_id || '-'}</span>
+              <span class="card-info-value card-info-value--number">${card.subscription_id || '-'}</span>
               ${holder.type !== 'officer' ? `
                   <span class="card-info-label">ت ش:</span>
-                  <span class="card-info-value">${holder.membership_number || card.officer?.membership_number || '-'}</span>   
+                  <span class="card-info-value card-info-value--number">${holder.membership_number || card.officer?.membership_number || '-'}</span>   
             `: ''}
                </div>
             <div class="card-info-field">
@@ -729,13 +740,13 @@ const CardQueue = ({ selectedOfficer }) => {
               <span class="card-info-value card-info-value--nowrap " style="margin-left: 0.5rem;">${holder.type === 'officer' ? (holder.rank || card.officer?.rank || '-') : (card.officer?.rank || '-')}${card.officer?.is_staff_officer ? ' أح' : ''}</span>
              
               ${card.officer?.service_status ? `
-                <span class="card-info-value card-info-value--nowrap card-info-value--service-status" style="margin-right: 0.5rem; margin-left: 1rem;">
+                <span class="card-info-value card-info-value--nowrap" style="margin-right: 0.5rem; margin-left: 1rem;">
                   ${card.officer.service_status === 'retired' ? 'بالمعاش' :
-                    card.officer.service_status === 'transferred' ? 'منقول' :
-                    card.officer.service_status === 'active' ? 'بالخدمة' :
-                    card.officer.service_status === 'deceased' ? 'متوفي' :
-                    card.officer.service_status === 'martyr' ? 'شهيد' :
-                    card.officer.service_status === 'recalled' ? 'مستدعي' :
+          card.officer.service_status === 'transferred' ? 'منقول' :
+            card.officer.service_status === 'active' ? 'بالخدمة' :
+              card.officer.service_status === 'deceased' ? 'متوفي' :
+                card.officer.service_status === 'martyr' ? 'شهيد' :
+                  card.officer.service_status === 'recalled' ? 'مستدعي' :
                     card.officer.service_status}
                 </span>
               ` : ''}
@@ -762,13 +773,13 @@ const CardQueue = ({ selectedOfficer }) => {
             ${holder.type === 'officer' ? `
               <div class="card-info-field">
               <span class="card-info-label">ت ش:</span>
-              <span class="card-info-value">${holder.membership_number || card.officer?.membership_number || '-'}</span>
+              <span class="card-info-value card-info-value--number">${holder.membership_number || card.officer?.membership_number || '-'}</span>
             </div>
             ` : ''}
 
             <div class="card-info-field">
               <span class="card-info-label">رقم قومي:</span>
-              <span class="card-info-value card-info-value--national-id">${holder.national_id || card.officer?.national_id || card.beneficiary?.national_id || '-'}</span>
+              <span class="card-info-value card-info-value--national-id card-info-value--number">${holder.national_id || card.officer?.national_id || card.beneficiary?.national_id || '-'}</span>
             </div>
           </div>
           <div class="card-design__signature">
@@ -794,6 +805,11 @@ const CardQueue = ({ selectedOfficer }) => {
   };
 
   const handleMarkPrinted = async (cardId) => {
+    if (!canPrintCard) {
+      setError('ليس لديك صلاحية لطباعة البطاقات');
+      return;
+    }
+    
     try {
       setProcessingId(cardId);
 
@@ -825,6 +841,11 @@ const CardQueue = ({ selectedOfficer }) => {
   };
 
   const handleMarkEncoded = async (cardId) => {
+    if (!canEncodeCard) {
+      setError('ليس لديك صلاحية لتشفير البطاقات');
+      return;
+    }
+    
     try {
       setProcessingId(cardId);
 
@@ -864,6 +885,11 @@ const CardQueue = ({ selectedOfficer }) => {
   };
 
   const handleRevoke = async (cardId) => {
+    if (!canRevokeCard) {
+      setError('ليس لديك صلاحية لإلغاء البطاقات');
+      return;
+    }
+    
     if (!window.confirm('هل أنت متأكد من إلغاء هذه البطاقة؟')) return;
 
     try {
@@ -1124,11 +1150,11 @@ const CardQueue = ({ selectedOfficer }) => {
                             <span className="card-info-value card-info-value--full-text card-info-value--service-status" style={{ marginLeft: '0.9rem', marginRight: '2.3rem' }}>
                               {card.officer.service_status === 'retired' ? 'بالمعاش' :
                                 card.officer.service_status === 'active' ? 'بالخدمة' :
-                                card.officer.service_status === 'transferred' ? 'منقول' :
-                                  card.officer.service_status === 'deceased' ? 'متوفي' :
-                                    card.officer.service_status === 'martyr' ? 'شهيد' :
-                                      card.officer.service_status === 'recalled' ? 'مستدعي' :
-                                        card.officer.service_status}
+                                  card.officer.service_status === 'transferred' ? 'منقول' :
+                                    card.officer.service_status === 'deceased' ? 'متوفي' :
+                                      card.officer.service_status === 'martyr' ? 'شهيد' :
+                                        card.officer.service_status === 'recalled' ? 'مستدعي' :
+                                          card.officer.service_status}
                             </span>
                           </>
                         )}
@@ -1222,7 +1248,7 @@ const CardQueue = ({ selectedOfficer }) => {
                 </div>
 
                 <div className="card-item__actions">
-                  {!card.is_printed && !card.is_revoked && (
+                  {!card.is_printed && !card.is_revoked && canPrintCard && (
                     <button
                       className="action-btn action-btn--print"
                       onClick={() => handleMarkPrinted(card.id)}
@@ -1243,7 +1269,7 @@ const CardQueue = ({ selectedOfficer }) => {
                     </button>
                   )}
 
-                  {card.is_printed && !card.is_encoded && !card.is_revoked && (
+                  {card.is_printed && !card.is_encoded && !card.is_revoked && canEncodeCard && (
                     <button
                       className="action-btn action-btn--encode"
                       onClick={() => handleMarkEncoded(card.id)}
@@ -1263,7 +1289,7 @@ const CardQueue = ({ selectedOfficer }) => {
                     </button>
                   )}
 
-                  {!card.is_revoked && (
+                  {!card.is_revoked && canRevokeCard && (
                     <button
                       className="action-btn action-btn--revoke"
                       onClick={() => handleRevoke(card.id)}

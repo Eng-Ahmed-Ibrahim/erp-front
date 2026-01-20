@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import { 
   createBeneficiary, 
   updateBeneficiary, 
@@ -7,9 +8,11 @@ import {
   uploadBeneficiaryAttachment,
   deleteAttachment
 } from '../../../../apis/membershipCards';
+import { hasPermission } from '../../../../utils/permissions';
 import './BeneficiaryForm.scss';
 
 const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     full_name: '',
     relationship_type: '',
@@ -181,6 +184,16 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check permissions
+    if (beneficiary && !hasPermission(user, 'edit membership card beneficiary')) {
+      setErrors({ general: 'ليس لديك صلاحية لتعديل المستفيدين' });
+      return;
+    }
+    if (!beneficiary && !hasPermission(user, 'create membership card beneficiary')) {
+      setErrors({ general: 'ليس لديك صلاحية لإضافة مستفيدين' });
+      return;
+    }
     
     if (!validate()) return;
     

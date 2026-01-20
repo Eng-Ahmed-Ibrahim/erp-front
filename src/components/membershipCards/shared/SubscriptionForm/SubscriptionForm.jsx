@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import {
   createSubscription,
   getFeePlans,
@@ -8,9 +9,11 @@ import {
   findOfficerByIdentifier,
   BENEFICIARY_TYPES
 } from '../../../../apis/membershipCards';
+import { hasPermission } from '../../../../utils/permissions';
 import './SubscriptionForm.scss';
 
 const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) => {
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     officer_id: defaultOfficer?.id || '',
@@ -151,6 +154,11 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!hasPermission(user, 'create membership card subscription')) {
+      setErrors({ general: 'ليس لديك صلاحية لإنشاء اشتراكات' });
+      return;
+    }
 
     if (!validate()) return;
 

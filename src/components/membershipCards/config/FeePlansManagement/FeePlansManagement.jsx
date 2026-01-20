@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import { 
   getFeePlans, 
   createFeePlan, 
@@ -9,15 +10,23 @@ import {
   BENEFICIARY_TYPES,
   WEAPON_TYPES 
 } from '../../../../apis/membershipCards';
+import { hasPermission } from '../../../../utils/permissions';
 import './FeePlansManagement.scss';
 
 const FeePlansManagement = () => {
+  const { user } = useAuth();
   const [feePlans, setFeePlans] = useState([]);
   const [filteredPlans, setFilteredPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   const [error, setError] = useState(null);
+
+  // Permission checks
+  const canCreateFeePlan = hasPermission(user, 'create membership card fee plan');
+  const canEditFeePlan = hasPermission(user, 'edit membership card fee plan');
+  const canDeleteFeePlan = hasPermission(user, 'delete membership card fee plan');
+  const canManageReplacementFee = hasPermission(user, 'manage membership card replacement fee');
   const [weaponTypeFilter, setWeaponTypeFilter] = useState('');
   const [formData, setFormData] = useState({
     name: '',
@@ -51,6 +60,10 @@ const FeePlansManagement = () => {
   };
 
   const handleReplacementFeeEdit = () => {
+    if (!canManageReplacementFee) {
+      setError('ليس لديك صلاحية لإدارة رسوم البطاقات البديلة');
+      return;
+    }
     setReplacementFeeEditing(true);
     setReplacementFeeValue(replacementFee || '');
   };
@@ -61,6 +74,11 @@ const FeePlansManagement = () => {
   };
 
   const handleReplacementFeeSave = async () => {
+    if (!canManageReplacementFee) {
+      setError('ليس لديك صلاحية لإدارة رسوم البطاقات البديلة');
+      return;
+    }
+
     if (parseFloat(replacementFeeValue) < 0) {
       alert('الرسوم يجب أن تكون أكبر من أو تساوي صفر');
       return;
@@ -103,6 +121,11 @@ const FeePlansManagement = () => {
   };
 
   const handleEdit = (plan) => {
+    if (!canEditFeePlan) {
+      setError('ليس لديك صلاحية لتعديل خطط الرسوم');
+      return;
+    }
+
     setEditingPlan(plan);
     setFormData({
       name: plan.name || '',
@@ -117,6 +140,11 @@ const FeePlansManagement = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!canDeleteFeePlan) {
+      setError('ليس لديك صلاحية لحذف خطط الرسوم');
+      return;
+    }
+
     if (!window.confirm('هل أنت متأكد من حذف هذه الخطة؟')) return;
     
     try {
@@ -175,6 +203,16 @@ const FeePlansManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Check permissions
+    if (editingPlan && !canEditFeePlan) {
+      setFormErrors({ general: 'ليس لديك صلاحية لتعديل خطط الرسوم' });
+      return;
+    }
+    if (!editingPlan && !canCreateFeePlan) {
+      setFormErrors({ general: 'ليس لديك صلاحية لإنشاء خطط الرسوم' });
+      return;
+    }
+
     if (!validate()) return;
     
     try {
@@ -241,12 +279,14 @@ const FeePlansManagement = () => {
           <h2>إدارة خطط الرسوم</h2>
           <p>تحديد الرسوم المطبقة على كل نوع من أنواع المستفيدين</p>
         </div>
-        <button className="add-btn" onClick={() => setShowForm(true)}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          إضافة خطة جديدة
-        </button>
+        {canCreateFeePlan && (
+          <button className="add-btn" onClick={() => setShowForm(true)}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            إضافة خطة جديدة
+          </button>
+        )}
       </div>
 
       {error && <div className="config-error">{error}</div>}
@@ -305,16 +345,18 @@ const FeePlansManagement = () => {
                   <span className="replacement-fee-label">الرسوم الحالية:</span>
                   <span className="replacement-fee-amount">{formatCurrency(replacementFee || 0)} ج.م</span>
                 </div>
-                <button
-                  className="btn btn--edit"
-                  onClick={handleReplacementFeeEdit}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                  تعديل الرسوم
-                </button>
+                  {canManageReplacementFee && (
+                    <button
+                      className="btn btn--edit"
+                      onClick={handleReplacementFeeEdit}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" strokeWidth="2" />
+                      </svg>
+                      تعديل الرسوم
+                    </button>
+                  )}
               </div>
             )}
           </div>
@@ -396,26 +438,30 @@ const FeePlansManagement = () => {
               <div className="plan-card__footer">
                 <span className="plan-card__version">الإصدار {plan.version || 1}</span>
                 <div className="plan-card__actions">
-                  <button
-                    className="action-btn action-btn--edit"
-                    onClick={() => handleEdit(plan)}
-                    title="تعديل"
-                  >
+                  {canEditFeePlan && (
+                    <button
+                      className="action-btn action-btn--edit"
+                      onClick={() => handleEdit(plan)}
+                      title="تعديل"
+                    >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                       <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
-                  </button>
-                  <button
-                    className="action-btn action-btn--delete"
-                    onClick={() => handleDelete(plan.id)}
-                    title="حذف"
-                  >
+                      </svg>
+                    </button>
+                  )}
+                  {canDeleteFeePlan && (
+                    <button
+                      className="action-btn action-btn--delete"
+                      onClick={() => handleDelete(plan.id)}
+                      title="حذف"
+                    >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                       <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2"/>
                     </svg>
-                  </button>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -564,7 +610,7 @@ const FeePlansManagement = () => {
           </div>
         </div>
       )}
-    </div>
+   </div>
   );
 };
 
