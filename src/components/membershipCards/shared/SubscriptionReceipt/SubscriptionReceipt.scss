@@ -1,0 +1,340 @@
+/* Thermal Printer Receipt Styles for Subscription - Compact */
+
+@media print {
+  .print-hidden {
+    display: none;
+  }
+}
+
+.subscription-receipt.main {
+  padding: 10px;
+  width: 80mm;
+  max-width: 80mm;
+  margin: 0 auto;
+  font-family: 'Arial', 'Tahoma', sans-serif;
+  direction: rtl;
+  background: #fff;
+  color: #000;
+}
+
+/* Header Styles */
+.receipt-header {
+  text-align: center;
+  padding: 5px 0 8px;
+  
+  .header-img {
+    margin-bottom: 5px;
+    
+    img {
+      width: 45px;
+      height: auto;
+    }
+  }
+  
+  .header-title {
+    h1 {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 2px;
+      letter-spacing: 0.5px;
+    }
+    
+    .subtitle {
+      font-size: 10px;
+      color: #555;
+      margin: 0;
+    }
+  }
+}
+
+/* Dividers */
+.receipt-divider {
+  border: none;
+  border-top: 1px solid #000;
+  margin: 6px 0;
+  
+  &.dashed {
+    border-top: 1px dashed #999;
+    margin: 4px 0;
+  }
+}
+
+/* Receipt Meta Info */
+.receipt-meta {
+  padding: 4px 0;
+  
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    margin-bottom: 2px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .meta-label {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .meta-value {
+      font-weight: 700;
+      color: #000;
+    }
+  }
+}
+
+/* Sections */
+.receipt-section {
+  padding: 4px 0;
+  
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    margin: 0 0 5px;
+    text-align: center;
+    background: #f0f0f0;
+    padding: 3px 5px;
+    border-radius: 2px;
+  }
+}
+
+/* Info Grid */
+.info-grid {
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 10px;
+    margin-bottom: 3px;
+    padding: 1px 0;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    &.highlight {
+      background: #fff3cd;
+      padding: 3px 5px;
+      border-radius: 2px;
+      margin: 3px -3px;
+    }
+    
+    .info-label {
+      color: #555;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    
+    .info-value {
+      font-weight: 600;
+      color: #000;
+      text-align: left;
+      word-break: break-word;
+    }
+  }
+}
+
+/* Fees Section */
+.fees-section {
+  .fees-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 5px;
+    
+    th, td {
+      padding: 4px 3px;
+      font-size: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+      background: #eee;
+      font-weight: 700;
+      text-align: center;
+      
+      &:first-child {
+        text-align: right;
+      }
+      
+      &:last-child {
+        text-align: left;
+      }
+    }
+    
+    td {
+      &:first-child {
+        text-align: right;
+      }
+      
+      &.amount {
+        text-align: left;
+        font-weight: 600;
+        font-family: 'Courier New', monospace;
+      }
+    }
+    
+    tbody tr:last-child td {
+      border-bottom: 1px solid #999;
+    }
+  }
+}
+
+/* Subtotal Section */
+.subtotal-section {
+  padding: 4px 6px;
+  border-top: 1px dashed #ccc;
+  margin-top: 3px;
+  
+  .subtotal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+/* Total Section */
+.total-section {
+  background: #000;
+  color: #fff;
+  padding: 8px 6px;
+  border-radius: 3px;
+  margin-top: 6px;
+  
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .total-label {
+      font-size: 11px;
+      font-weight: 700;
+    }
+    
+    .total-amount {
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+/* Footer */
+.receipt-footer {
+  text-align: center;
+  padding: 8px 0 5px;
+  
+  .thank-you {
+    font-size: 11px;
+    font-weight: 700;
+    margin: 0 0 2px;
+  }
+  
+  .footer-note {
+    font-size: 9px;
+    color: #666;
+    margin: 0 0 5px;
+  }
+  
+  .receipt-barcode {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-top: 5px;
+    color: #000;
+  }
+}
+
+/* Print specific styles */
+@media print {
+  .subscription-receipt.main {
+    width: 80mm;
+    max-width: 80mm;
+    margin: 0;
+    padding: 5px;
+    box-shadow: none;
+  }
+
+  .receipt-header {
+    padding: 3px 0 5px;
+    
+    .header-img img {
+      width: 40px;
+    }
+    
+    .header-title h1 {
+      font-size: 13px;
+    }
+    
+    .header-title .subtitle {
+      font-size: 9px;
+    }
+  }
+
+  .receipt-divider {
+    margin: 4px 0;
+  }
+
+  .receipt-meta .meta-row,
+  .info-grid .info-row {
+    font-size: 9px;
+  }
+
+  .receipt-section .section-title {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+  .fees-section .fees-table th,
+  .fees-section .fees-table td {
+    font-size: 9px;
+    padding: 3px 2px;
+  }
+
+  .subtotal-section {
+    padding: 3px 4px;
+  }
+
+  .total-section {
+    padding: 6px 5px;
+    
+    .total-label {
+      font-size: 10px;
+    }
+    
+    .total-amount {
+      font-size: 12px;
+    }
+  }
+
+  .receipt-footer {
+    padding: 5px 0 3px;
+    
+    .thank-you {
+      font-size: 10px;
+    }
+    
+    .footer-note {
+      font-size: 8px;
+    }
+    
+    .receipt-barcode {
+      font-size: 12px;
+    }
+  }
+}
+
+/* Screen preview styles (when not printing) */
+@media screen {
+  .subscription-receipt.main {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    border-radius: 3px;
+  }
+}
