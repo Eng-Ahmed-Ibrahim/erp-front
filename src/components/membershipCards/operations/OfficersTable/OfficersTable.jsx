@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../../context/AuthContext';
 import { getOfficers, deleteOfficer, RANKS, WEAPON_TYPES } from '../../../../apis/membershipCards';
 import OfficerForm from '../../shared/OfficerForm/OfficerForm';
+import BeneficiaryForm from '../../shared/BeneficiaryForm/BeneficiaryForm';
 import { hasPermission } from '../../../../utils/permissions';
 import './OfficersTable.scss';
 
@@ -12,12 +13,14 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingOfficer, setEditingOfficer] = useState(null);
+  const [showBeneficiaryForm, setShowBeneficiaryForm] = useState(false);
   const [error, setError] = useState(null);
   
   // Permission checks
   const canCreateOfficer = hasPermission(user, 'create membership card officer');
   const canEditOfficer = hasPermission(user, 'edit membership card officer');
   const canDeleteOfficer = hasPermission(user, 'delete membership card officer');
+  const canCreateBeneficiary = hasPermission(user, 'create membership card beneficiary');
 
   useEffect(() => {
     fetchOfficers();
@@ -87,6 +90,15 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
     handleFormClose();
   };
 
+  const handleBeneficiaryFormClose = () => {
+    setShowBeneficiaryForm(false);
+  };
+
+  const handleBeneficiaryFormSuccess = () => {
+    setShowBeneficiaryForm(false);
+    // Optionally refresh officers or trigger a callback
+  };
+
   const getRankLabel = (value) => {
     const rank = RANKS.find(r => r.value === value);
     return rank ? rank.label : value;
@@ -126,14 +138,30 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
             </svg>
           </button>
         </div>
-        {canCreateOfficer && (
-          <button className="add-btn" onClick={() => setShowForm(true)}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-            إضافة ضابط
-          </button>
-        )}
+        <div className="officers-table__actions">
+          {selectedOfficer && canCreateBeneficiary && (
+            <button 
+              className="add-btn add-btn--beneficiary" 
+              onClick={() => setShowBeneficiaryForm(true)}
+              title="إضافة مستفيد للضابط المحدد"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              إضافة مستفيد
+            </button>
+          )}
+          {canCreateOfficer && (
+            <button className="add-btn" onClick={() => setShowForm(true)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              إضافة ضابط
+            </button>
+          )}
+        </div>
       </div>
 
       {error && <div className="officers-table__error">{error}</div>}
@@ -194,6 +222,23 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
                         <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
                       </svg>
                     </button>
+                    {canCreateBeneficiary && (
+                      <button
+                        className="action-btn action-btn--beneficiary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectOfficer(officer);
+                          setShowBeneficiaryForm(true);
+                        }}
+                        title="إضافة مستفيد"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </button>
+                    )}
                     {canEditOfficer && (
                       <button
                         className="action-btn action-btn--edit"
@@ -238,6 +283,16 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
           officer={editingOfficer}
           onClose={handleFormClose}
           onSuccess={handleFormSuccess}
+        />
+      )}
+
+      {/* Beneficiary Form Modal */}
+      {showBeneficiaryForm && selectedOfficer && (
+        <BeneficiaryForm
+          officerId={selectedOfficer.id}
+          beneficiary={null}
+          onClose={handleBeneficiaryFormClose}
+          onSuccess={handleBeneficiaryFormSuccess}
         />
       )}
     </div>

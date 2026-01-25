@@ -31,6 +31,58 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  // Extract birth date from Egyptian National ID
+  const extractBirthDateFromNationalId = (nationalId) => {
+    if (!nationalId || nationalId.length !== 14 || !/^\d{14}$/.test(nationalId)) {
+      return null;
+    }
+    
+    const centuryDigit = parseInt(nationalId[0]);
+    const year = parseInt(nationalId.substring(1, 3));
+    const month = parseInt(nationalId.substring(3, 5));
+    const day = parseInt(nationalId.substring(5, 7));
+    
+    // Determine century
+    let fullYear;
+    if (centuryDigit === 2) {
+      fullYear = 1900 + year;
+    } else if (centuryDigit === 3) {
+      fullYear = 2000 + year;
+    } else {
+      return null; // Invalid century digit
+    }
+    
+    // Validate month and day
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
+      return null;
+    }
+    
+    // Format as YYYY-MM-DD
+    const formattedMonth = month.toString().padStart(2, '0');
+    const formattedDay = day.toString().padStart(2, '0');
+    
+    return `${fullYear}-${formattedMonth}-${formattedDay}`;
+  };
+
+  // Calculate age from birth date
+  const calculateAge = (birthDate) => {
+    if (!birthDate) return null;
+    
+    const today = new Date();
+    const birth = new Date(birthDate);
+    
+    if (isNaN(birth.getTime())) return null;
+    
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    
+    return age >= 0 ? age : null;
+  };
   
   // Attachments state
   const [attachments, setAttachments] = useState([]); // Uploaded attachments (for edit mode)
@@ -160,6 +212,21 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
         setPhotoPreview(reader.result);
       };
       reader.readAsDataURL(file);
+    } else if (name === 'national_id') {
+      // Only allow digits
+      const cleanValue = value.replace(/\D/g, '').substring(0, 14);
+      setFormData(prev => ({ ...prev, [name]: cleanValue }));
+      
+      // Auto-calculate age when national ID is complete
+      if (cleanValue.length === 14) {
+        const birthDate = extractBirthDateFromNationalId(cleanValue);
+        if (birthDate) {
+          const age = calculateAge(birthDate);
+          if (age !== null) {
+            setFormData(prev => ({ ...prev, national_id: cleanValue, age: age.toString() }));
+          }
+        }
+      }
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -174,8 +241,14 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
     
     if (!formData.national_id) {
       newErrors.national_id = 'الرقم القومي مطلوب';
-    } else if (formData.national_id.length !== 14) {
+    } else if (!/^\d{14}$/.test(formData.national_id)) {
       newErrors.national_id = 'الرقم القومي يجب أن يكون 14 رقم';
+    } else {
+      // Validate that the national ID contains a valid date
+      const birthDate = extractBirthDateFromNationalId(formData.national_id);
+      if (!birthDate) {
+        newErrors.national_id = 'الرقم القومي غير صحيح';
+      }
     }
     
     if (!formData.full_name) {
@@ -291,9 +364,13 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
                 value={formData.national_id}
                 onChange={handleChange}
                 maxLength={14}
+                placeholder="أدخل 14 رقم"
                 className={errors.national_id ? 'error' : ''}
               />
               {errors.national_id && <span className="form-error">{errors.national_id}</span>}
+              {formData.national_id && formData.national_id.length === 14 && !errors.national_id && (
+                <span className="form-hint success">تم حساب العمر تلقائياً</span>
+              )}
             </div>
             
             <div className="form-group">

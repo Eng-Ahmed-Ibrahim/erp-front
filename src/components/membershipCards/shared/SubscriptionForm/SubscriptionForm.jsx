@@ -10,6 +10,7 @@ import {
   BENEFICIARY_TYPES
 } from '../../../../apis/membershipCards';
 import { hasPermission } from '../../../../utils/permissions';
+import SubscriptionReceipt from '../SubscriptionReceipt/SubscriptionReceipt';
 import './SubscriptionForm.scss';
 
 const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) => {
@@ -30,6 +31,8 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
   const [searchIdentifier, setSearchIdentifier] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [subscriptionReceiptData, setSubscriptionReceiptData] = useState(null);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   useEffect(() => {
     if (officer?.weapon_type) {
@@ -174,8 +177,23 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
         is_honorary_membership: formData.is_honorary_membership || false,
       };
 
-      await createSubscription(payload);
-      onSuccess();
+      const response = await createSubscription(payload);
+      
+      // Prepare receipt data with all necessary information
+      if (response.success && response.data) {
+        const receiptData = {
+          ...response.data,
+          officer: officer,
+          beneficiary: formData.beneficiary_id 
+            ? beneficiaries.find(b => b.id === parseInt(formData.beneficiary_id))
+            : null,
+          fee_plan: feePlans.find(p => p.id === parseInt(formData.fee_plan_id)),
+        };
+        setSubscriptionReceiptData(receiptData);
+        setShowReceipt(true);
+      } else {
+        onSuccess();
+      }
     } catch (err) {
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
@@ -416,6 +434,18 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
           )}
         </form>
       </div>
+
+      {/* Receipt Print Component */}
+      {showReceipt && subscriptionReceiptData && (
+        <SubscriptionReceipt
+          subscriptionData={subscriptionReceiptData}
+          onPrintComplete={() => {
+            setShowReceipt(false);
+            setSubscriptionReceiptData(null);
+            onSuccess();
+          }}
+        />
+      )}
     </div>
   );
 };

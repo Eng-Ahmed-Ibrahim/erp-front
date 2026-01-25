@@ -25,6 +25,59 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [calculatedAge, setCalculatedAge] = useState(null);
+
+  // Extract birth date from Egyptian National ID
+  const extractBirthDateFromNationalId = (nationalId) => {
+    if (!nationalId || nationalId.length !== 14 || !/^\d{14}$/.test(nationalId)) {
+      return null;
+    }
+    
+    const centuryDigit = parseInt(nationalId[0]);
+    const year = parseInt(nationalId.substring(1, 3));
+    const month = parseInt(nationalId.substring(3, 5));
+    const day = parseInt(nationalId.substring(5, 7));
+    
+    // Determine century
+    let fullYear;
+    if (centuryDigit === 2) {
+      fullYear = 1900 + year;
+    } else if (centuryDigit === 3) {
+      fullYear = 2000 + year;
+    } else {
+      return null; // Invalid century digit
+    }
+    
+    // Validate month and day
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
+      return null;
+    }
+    
+    // Format as YYYY-MM-DD
+    const formattedMonth = month.toString().padStart(2, '0');
+    const formattedDay = day.toString().padStart(2, '0');
+    
+    return `${fullYear}-${formattedMonth}-${formattedDay}`;
+  };
+
+  // Calculate age from birth date
+  const calculateAge = (birthDate) => {
+    if (!birthDate) return null;
+    
+    const today = new Date();
+    const birth = new Date(birthDate);
+    
+    if (isNaN(birth.getTime())) return null;
+    
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    
+    return age >= 0 ? age : null;
+  };
   
   // Attachments state
   const [attachments, setAttachments] = useState([]); // Uploaded attachments (for edit mode)
@@ -45,6 +98,11 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
         photo: null,
       });
       setPhotoPreview(beneficiary.photo || null);
+      // Calculate age from birth date
+      if (beneficiary.birth_date) {
+        const age = calculateAge(beneficiary.birth_date);
+        setCalculatedAge(age);
+      }
       // Load attachments for existing beneficiary
       loadAttachments(beneficiary.id);
       setPendingAttachments([]);
@@ -52,6 +110,7 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
       setPhotoPreview(null);
       setAttachments([]);
       setPendingAttachments([]);
+      setCalculatedAge(null);
     }
   }, [beneficiary]);
 
@@ -150,6 +209,27 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
         setPhotoPreview(reader.result);
       };
       reader.readAsDataURL(file);
+    } else if (name === 'national_id') {
+      // Only allow digits
+      const cleanValue = value.replace(/\D/g, '').substring(0, 14);
+      setFormData(prev => ({ ...prev, [name]: cleanValue }));
+      
+      // Auto-extract birth date when national ID is complete
+      if (cleanValue.length === 14) {
+        const birthDate = extractBirthDateFromNationalId(cleanValue);
+        if (birthDate) {
+          setFormData(prev => ({ ...prev, national_id: cleanValue, birth_date: birthDate }));
+          const age = calculateAge(birthDate);
+          setCalculatedAge(age);
+        }
+      } else {
+        setCalculatedAge(null);
+      }
+    } else if (name === 'birth_date') {
+      setFormData(prev => ({ ...prev, [name]: value }));
+      // Calculate age when birth date is manually changed
+      const age = calculateAge(value);
+      setCalculatedAge(age);
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -174,9 +254,20 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
       newErrors.birth_date = 'تاريخ الميلاد مطلوب';
     }
     
-    if (!formData.family_index) {
-      newErrors.family_index = 'ترتيب الأسرة مطلوب';
+    // Validate national ID if provided
+    if (formData.national_id) {
+      if (!/^\d{14}$/.test(formData.national_id)) {
+        newErrors.national_id = 'الرقم القومي يجب أن يكون 14 رقم';
+      } else {
+        // Validate that the national ID contains a valid date
+        const birthDate = extractBirthDateFromNationalId(formData.national_id);
+        if (!birthDate) {
+          newErrors.national_id = 'الرقم القومي غير صحيح';
+        }
+      }
     }
+    
+    // family_index is now optional - no validation needed
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -202,7 +293,7 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
       
       const payload = {
         ...formData,
-        family_index: parseInt(formData.family_index),
+        family_index: formData.family_index ? parseInt(formData.family_index) : null,
       };
       
       // Remove photo from payload if it's not a File (keep existing photo)
@@ -297,7 +388,7 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
             </div>
             
             <div className="form-group">
-              <label htmlFor="family_index">ترتيب الأسرة *</label>
+              <label htmlFor="family_index">ترتيب الأسرة</label>
               <input
                 type="number"
                 id="family_index"
@@ -306,9 +397,28 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
                 onChange={handleChange}
                 min="1"
                 className={errors.family_index ? 'error' : ''}
+                placeholder="اختياري"
               />
               {errors.family_index && <span className="form-error">{errors.family_index}</span>}
             </div>
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="national_id">الرقم القومي</label>
+            <input
+              type="text"
+              id="national_id"
+              name="national_id"
+              value={formData.national_id}
+              onChange={handleChange}
+              maxLength={14}
+              placeholder="أدخل 14 رقم"
+              className={errors.national_id ? 'error' : ''}
+            />
+            {errors.national_id && <span className="form-error">{errors.national_id}</span>}
+            {formData.national_id && formData.national_id.length === 14 && !errors.national_id && (
+              <span className="form-hint success">تم استخراج تاريخ الميلاد تلقائياً</span>
+            )}
           </div>
           
           <div className="form-row">
@@ -326,14 +436,15 @@ const BeneficiaryForm = ({ officerId, beneficiary, onClose, onSuccess }) => {
             </div>
             
             <div className="form-group">
-              <label htmlFor="national_id">الرقم القومي</label>
+              <label htmlFor="calculated_age">العمر</label>
               <input
                 type="text"
-                id="national_id"
-                name="national_id"
-                value={formData.national_id}
-                onChange={handleChange}
-                maxLength={14}
+                id="calculated_age"
+                value={calculatedAge !== null ? `${calculatedAge} سنة` : ''}
+                readOnly
+                disabled
+                className="age-display"
+                placeholder="يُحسب تلقائياً"
               />
             </div>
           </div>

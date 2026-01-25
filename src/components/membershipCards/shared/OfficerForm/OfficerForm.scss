@@ -253,6 +253,37 @@
   font-weight: 500;
 }
 
+.form-hint {
+  display: block;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  
+  &.success {
+    color: #059669;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    
+    &::before {
+      content: '✓';
+      font-weight: bold;
+    }
+  }
+}
+
+.age-display {
+  background-color: #f3f4f6 !important;
+  color: var(--brown-color) !important;
+  font-weight: 600 !important;
+  cursor: not-allowed;
+  
+  &::placeholder {
+    color: #9ca3af !important;
+    font-weight: 400 !important;
+  }
+}
+
 .btn {
   padding: 1rem 2.25rem;
   border: none;
@@ -366,6 +397,15 @@
 .dark-mode .form-error-general {
   background: linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
   border-color: rgba(220, 38, 38, 0.3);
+}
+
+.dark-mode .form-hint.success {
+  color: #34d399;
+}
+
+.dark-mode .age-display {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  color: var(--text-color-inverted) !important;
 }
 
 .dark-mode .btn--secondary {

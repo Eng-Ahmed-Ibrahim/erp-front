@@ -39,6 +39,11 @@
     flex-shrink: 0;
   }
 
+    &__actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
   // =====================
   // SEARCH
   // =====================
@@ -163,6 +168,13 @@
   &:active {
     transform: translateY(0);
   }
+&--beneficiary {
+  background: linear-gradient(135deg, #50504f 0%, #5e75c2 100%) !important;
+
+  &:hover {
+    background: linear-gradient(135deg, #78350f 0%, #b9c47c 100%) !important;
+  }
+}
 }
 
 // =====================
@@ -323,6 +335,15 @@
         box-shadow: 0 3px 8px rgba(220, 38, 38, 0.3);
     }
   }
+&.action-btn--beneficiary {
+  background: linear-gradient(135deg, #50504f 0%, #5e75c2 100%) !important;
+
+  &:hover {
+    background: linear-gradient(135deg, #50504f 0%, #7c3aed 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(124, 58, 237, 0.3);
+  }
+}
 }
 
 // =====================
@@ -428,6 +449,13 @@
       background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%) !important;
     }
   }
+&.action-btn--beneficiary {
+  background: linear-gradient(135deg, #50504f 0%, #5e75c2 100%) !important;
+
+  &:hover {
+    background: linear-gradient(135deg, #78350f 0%, #5e75c2 100%) !important;
+  }
+}
 }
 }
 
