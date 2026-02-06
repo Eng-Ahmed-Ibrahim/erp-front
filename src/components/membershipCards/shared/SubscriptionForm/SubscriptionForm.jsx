@@ -23,6 +23,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
     start_date: new Date().toISOString().split('T')[0],
     end_date: '',
     is_honorary_membership: false,
+    is_old_officer: false,
   });
   const [officer, setOfficer] = useState(defaultOfficer || null);
   const [beneficiaries, setBeneficiaries] = useState([]);
@@ -114,14 +115,14 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
     }
   };
 
-  const handleFeePlanChange = async (feePlanId) => {
+  const handleFeePlanChange = async (feePlanId, isOldOfficer = formData.is_old_officer) => {
     setFormData(prev => ({ ...prev, fee_plan_id: feePlanId }));
 
     if (feePlanId) {
       const selectedPlan = feePlans.find(p => p.id === parseInt(feePlanId));
       if (selectedPlan) {
         try {
-          const response = await calculateFees(selectedPlan.beneficiary_type, false);
+          const response = await calculateFees(selectedPlan.beneficiary_type, false, isOldOfficer);
           setCalculatedFees(response.data);
         } catch (err) {
           console.error('Error calculating fees:', err);
@@ -129,6 +130,14 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
       }
     } else {
       setCalculatedFees(null);
+    }
+  };
+
+  const handleOldOfficerChange = async (checked) => {
+    setFormData(prev => ({ ...prev, is_old_officer: checked }));
+    // Recalculate fees with the new is_old_officer value
+    if (formData.fee_plan_id) {
+      handleFeePlanChange(formData.fee_plan_id, checked);
     }
   };
 
@@ -175,6 +184,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
         start_date: formData.start_date,
         end_date: formData.end_date,
         is_honorary_membership: formData.is_honorary_membership || false,
+        is_old_officer: formData.is_old_officer || false,
       };
 
       const response = await createSubscription(payload);
@@ -336,6 +346,26 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
           {step === 2 && (
             <div className="step-content">
               <div className="form-group">
+                <label className="checkbox-label checkbox-label--highlighted">
+                  <input
+                    type="checkbox"
+                    name="is_old_officer"
+                    checked={formData.is_old_officer}
+                    onChange={(e) => handleOldOfficerChange(e.target.checked)}
+                  />
+                  <span>ضابط قديم (إعفاء من رسم التأسيس)</span>
+                </label>
+                {formData.is_old_officer && (
+                  <div className="info-note">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/>
+                    </svg>
+                    <span>سيتم إعفاء الضابط من رسم التأسيس لأنه ضابط قديم (منقول)</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="fee_plan_id">خطة الرسوم *</label>
                 <select
                   id="fee_plan_id"
@@ -356,10 +386,10 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
 
               {calculatedFees && (
                 <div className="fees-summary">
-                  <h4>ملخص الرسوم</h4>
-                  <div className="fees-row">
+                  <h4>ملخص الرسوم {formData.is_old_officer ? '(ضابط قديم - إعفاء من رسم التأسيس)' : ''}</h4>
+                  <div className={`fees-row ${formData.is_old_officer ? 'fees-row--waived' : ''}`}>
                     <span>رسم التأسيس:</span>
-                    <span>{calculatedFees.establishment_fee || 0} ج.م</span>
+                    <span>{formData.is_old_officer ? '0' : (calculatedFees.establishment_fee || 0)} ج.م</span>
                   </div>
                   <div className="fees-row">
                     <span>الاشتراك السنوي:</span>
@@ -373,7 +403,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
                     <span>الإجمالي:</span>
                     <span>
                       {(
-                        (parseFloat(calculatedFees.establishment_fee) || 0) +
+                        (formData.is_old_officer ? 0 : (parseFloat(calculatedFees.establishment_fee) || 0)) +
                         (parseFloat(calculatedFees.annual_subscription_fee) || 0) +
                         (parseFloat(calculatedFees.issuance_fee) || 0)
                       ).toFixed(2)} ج.م

@@ -428,11 +428,12 @@ export async function deleteSubscription(id) {
   }
 }
 
-export async function calculateFees(beneficiaryType, isRenewal = false) {
+export async function calculateFees(beneficiaryType, isRenewal = false, isOldOfficer = false) {
   try {
     const res = await axios.post(`${API_ENDPOINT}/api/v1/membership-cards/subscriptions/calculate-fees`, {
       beneficiary_type: beneficiaryType,
       is_renewal: isRenewal,
+      is_old_officer: isOldOfficer,
     }, {
       headers: getHeaders(),
     });
