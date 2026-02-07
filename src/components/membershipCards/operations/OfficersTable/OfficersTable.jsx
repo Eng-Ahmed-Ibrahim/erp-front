@@ -125,7 +125,7 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
         <div className="officers-table__search">
           <input
             type="text"
-            placeholder="البحث بالرقم العسكري أو الرقم القومي أو الاسم..."
+            placeholder="البحث بالرقم العسكري أو رقم العضوية أو الرقم القومي أو الاسم..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -172,6 +172,7 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
           <thead>
             <tr>
               <th>الرقم العسكري</th>
+              <th>رقم العضوية</th>
               <th>الاسم</th>
               <th>الرتبة</th>
               <th>السلاح</th>
@@ -184,7 +185,7 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
           <tbody>
             {officers.length === 0 ? (
               <tr>
-                <td colSpan="8" className="empty-message">
+                <td colSpan="9" className="empty-message">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
                     <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2"/>
                     <path d="M9 9H9.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
@@ -201,7 +202,8 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
                   className={selectedOfficer?.id === officer.id ? 'selected' : ''}
                   onClick={() => onSelectOfficer(officer)}
                 >
-                  <td className="membership-number">{officer.membership_number}</td>
+                  <td className="membership-number">{officer.military_number}</td>
+                  <td>{officer.membership_id || '-'}</td>
                   <td>{officer.full_name}</td>
                   <td>{getRankLabel(officer.rank)}</td>
                   <td>{getWeaponLabel(officer.weapon_type)}</td>

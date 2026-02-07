@@ -126,7 +126,7 @@ const BeneficiariesTable = ({ selectedOfficer, onSelectOfficer }) => {
       <div className="beneficiaries-table__officer-info">
         <div className="officer-badge">
           <span className="officer-name">{selectedOfficer.full_name}</span>
-          <span className="officer-number">({selectedOfficer.membership_number})</span>
+          <span className="officer-number">({selectedOfficer.military_number})</span>
         </div>
         <button className="clear-btn" onClick={() => onSelectOfficer(null)}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

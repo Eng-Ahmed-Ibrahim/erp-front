@@ -1871,12 +1871,12 @@ const AddCashierOrder = () => {
 
       const response = await readCardAndGetMembershipId();
 
-      if (response.success && response.data && response.data.membership_id) {
-        const membershipNumber = response.data.membership_id;
-        setMilitryIdInputValue(membershipNumber);
-        handleNewUserFormChange('military_number', membershipNumber);
+      if (response.success && response.data && (response.data.membership_id || response.data.military_number)) {
+        const membershipId = response.data.membership_id || response.data.military_number;
+        setMilitryIdInputValue(membershipId);
+        handleNewUserFormChange('military_number', membershipId);
 
-        message.success(`تم قراءة رقم العضوية: ${membershipNumber}`);
+        message.success(`تم قراءة رقم العضوية: ${membershipId}`);
         setMembershipCardError('');
       } else {
         const errorMsg = response.message || 'فشل في قراءة البطاقة';

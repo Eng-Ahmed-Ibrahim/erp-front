@@ -207,7 +207,8 @@ const CardQueue = ({ selectedOfficer }) => {
         type: 'officer',
         name: String(cardOfficer.full_name || ''),
         rank: String(cardOfficer.rank || ''),
-        membership_number: String(cardOfficer.membership_number || ''),
+        military_number: String(cardOfficer.military_number || ''),
+        membership_id: String(cardOfficer.membership_id || ''),
         seniority_number: String(cardOfficer.seniority_number || ''),
         national_id: String(cardOfficer.national_id || ''),
         photo: cardPhoto,
@@ -235,7 +236,8 @@ const CardQueue = ({ selectedOfficer }) => {
         type: 'officer',
         name: String(selectedOfficer.full_name || ''),
         rank: String(selectedOfficer.rank || ''),
-        membership_number: String(selectedOfficer.membership_number || ''),
+        military_number: String(selectedOfficer.military_number || ''),
+        membership_id: String(selectedOfficer.membership_id || ''),
         seniority_number: String(selectedOfficer.seniority_number || ''),
         national_id: String(selectedOfficer.national_id || ''),
         photo: selectedOfficer.photo || null,
@@ -248,7 +250,8 @@ const CardQueue = ({ selectedOfficer }) => {
       type: 'officer',
       name: '-',
       rank: '-',
-      membership_number: '-',
+      military_number: '-',
+      membership_id: '-',
       seniority_number: '-',
       national_id: '-',
       photo: null,
@@ -729,10 +732,10 @@ const CardQueue = ({ selectedOfficer }) => {
             <div class="card-info-field">
               <span class="card-info-label">عضوية:</span>
               
-              <span class="card-info-value card-info-value--number">${card.subscription_id || '-'}</span>
+              <span class="card-info-value card-info-value--number">${holder.membership_id || card.officer?.membership_id || '-'}</span>
               ${holder.type !== 'officer' ? `
                   <span class="card-info-label">ت ش:</span>
-                  <span class="card-info-value card-info-value--number">${holder.membership_number || card.officer?.membership_number || '-'}</span>   
+                  <span class="card-info-value card-info-value--number">${holder.military_number || card.officer?.military_number || '-'}</span>   
             `: ''}
                </div>
             <div class="card-info-field">
@@ -773,7 +776,7 @@ const CardQueue = ({ selectedOfficer }) => {
             ${holder.type === 'officer' ? `
               <div class="card-info-field">
               <span class="card-info-label">ت ش:</span>
-              <span class="card-info-value card-info-value--number">${holder.membership_number || card.officer?.membership_number || '-'}</span>
+              <span class="card-info-value card-info-value--number">${holder.military_number || card.officer?.military_number || '-'}</span>
             </div>
             ` : ''}
 
@@ -1121,13 +1124,13 @@ const CardQueue = ({ selectedOfficer }) => {
                     <div className="card-design__info-section">
                       <div className="card-info-field">
                         <span className="card-info-label">عضوية:</span>
-                        <span className="card-info-value">{String(card.subscription_id || '-')}</span>
+                        <span className="card-info-value">{String(holder.membership_id || card.officer?.membership_id || '-')}</span>
 
                         {holder.type !== 'officer' && (
                           <>
                             <span className="card-info-label">ت ش:</span>
                             <span className="card-info-value">
-                              {String(holder.membership_number || card.officer?.membership_number || '-')}
+                              {String(holder.military_number || card.officer?.military_number || '-')}
                             </span>
                           </>
                         )}
@@ -1184,7 +1187,7 @@ const CardQueue = ({ selectedOfficer }) => {
                         <div className="card-info-field">
                           <span className="card-info-label">ت ش:</span>
                           <span className="card-info-value">
-                            {String(holder.membership_number || card.officer?.membership_number || '-')}
+                            {String(holder.military_number || card.officer?.military_number || '-')}
                           </span>
                         </div>
                       )}

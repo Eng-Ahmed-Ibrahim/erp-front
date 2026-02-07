@@ -21,7 +21,8 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
     rank: '',
     weapon_type: '',
     seniority_number: '',
-    membership_number: '',
+    military_number: '',
+    membership_id: '',
     age: '',
     notes: '',
     photo: null,
@@ -99,7 +100,8 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
         rank: officer.rank || '',
         weapon_type: officer.weapon_type || '',
         seniority_number: officer.seniority_number || '',
-        membership_number: officer.membership_number || '',
+        military_number: officer.military_number || '',
+        membership_id: officer.membership_id || '',
         age: officer.age || '',
         notes: officer.notes || '',
         photo: null,
@@ -263,8 +265,8 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
       newErrors.weapon_type = 'السلاح مطلوب';
     }
     
-    if (!formData.membership_number) {
-      newErrors.membership_number = 'الرقم العسكري مطلوب';
+    if (!formData.military_number) {
+      newErrors.military_number = 'الرقم العسكري مطلوب';
     }
     
     setErrors(newErrors);
@@ -374,16 +376,32 @@ const OfficerForm = ({ officer, onClose, onSuccess }) => {
             </div>
             
             <div className="form-group">
-              <label htmlFor="membership_number">الرقم العسكري *</label>
+              <label htmlFor="military_number">الرقم العسكري *</label>
               <input
                 type="text"
-                id="membership_number"
-                name="membership_number"
-                value={formData.membership_number}
+                id="military_number"
+                name="military_number"
+                value={formData.military_number}
                 onChange={handleChange}
-                className={errors.membership_number ? 'error' : ''}
+                className={errors.military_number ? 'error' : ''}
               />
-              {errors.membership_number && <span className="form-error">{errors.membership_number}</span>}
+              {errors.military_number && <span className="form-error">{errors.military_number}</span>}
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="membership_id">رقم العضوية</label>
+              <input
+                type="text"
+                id="membership_id"
+                name="membership_id"
+                value={formData.membership_id}
+                onChange={handleChange}
+                placeholder="رقم العضوية على الكارت"
+                className={errors.membership_id ? 'error' : ''}
+              />
+              {errors.membership_id && <span className="form-error">{errors.membership_id}</span>}
             </div>
           </div>
           

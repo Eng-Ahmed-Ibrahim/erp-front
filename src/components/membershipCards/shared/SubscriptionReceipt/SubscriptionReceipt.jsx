@@ -131,8 +131,14 @@ function SubscriptionReceipt({
             </div>
             <div className="info-row">
               <span className="info-label">الرقم العسكري:</span>
-              <span className="info-value">{subscriptionData.officer?.membership_number || 'غير محدد'}</span>
+              <span className="info-value">{subscriptionData.officer?.military_number || 'غير محدد'}</span>
             </div>
+            {subscriptionData.officer?.membership_id && (
+              <div className="info-row">
+                <span className="info-label">رقم العضوية:</span>
+                <span className="info-value">{subscriptionData.officer.membership_id}</span>
+              </div>
+            )}
             <div className="info-row">
               <span className="info-label">الرتبة:</span>
               <span className="info-value">{subscriptionData.officer?.rank || 'غير محدد'}</span>
