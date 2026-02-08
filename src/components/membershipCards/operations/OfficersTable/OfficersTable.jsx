@@ -15,6 +15,12 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
   const [editingOfficer, setEditingOfficer] = useState(null);
   const [showBeneficiaryForm, setShowBeneficiaryForm] = useState(false);
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({
+    search: '',
+    page: 1,
+    perPage: 15,
+  });
+  const [pagination, setPagination] = useState(null);
   
   // Permission checks
   const canCreateOfficer = hasPermission(user, 'create membership card officer');
@@ -24,14 +30,15 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
 
   useEffect(() => {
     fetchOfficers();
-  }, []);
+  }, [filters]);
 
   const fetchOfficers = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getOfficers();
+      const response = await getOfficers(filters);
       setOfficers(response.data || []);
+      setPagination(response.meta || null);
     } catch (err) {
       setError('حدث خطأ في تحميل البيانات');
       console.error('Error fetching officers:', err);
@@ -40,16 +47,8 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
     }
   };
 
-  const handleSearch = async () => {
-    try {
-      setLoading(true);
-      const response = await getOfficers(searchTerm);
-      setOfficers(response.data || []);
-    } catch (err) {
-      setError('حدث خطأ في البحث');
-    } finally {
-      setLoading(false);
-    }
+  const handleSearch = () => {
+    setFilters({ ...filters, search: searchTerm, page: 1 });
   };
 
   const handleDelete = async (id) => {
@@ -278,6 +277,29 @@ const OfficersTable = ({ onSelectOfficer, selectedOfficer }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {pagination && pagination.last_page > 1 && (
+        <div className="officers-table__pagination">
+          <button
+            className="pagination-btn"
+            disabled={pagination.current_page <= 1}
+            onClick={() => setFilters({ ...filters, page: pagination.current_page - 1 })}
+          >
+            السابق
+          </button>
+          <span className="pagination-info">
+            صفحة {pagination.current_page} من {pagination.last_page} ({pagination.total} ضابط)
+          </span>
+          <button
+            className="pagination-btn"
+            disabled={pagination.current_page >= pagination.last_page}
+            onClick={() => setFilters({ ...filters, page: pagination.current_page + 1 })}
+          >
+            التالي
+          </button>
+        </div>
+      )}
 
       {/* Form Modal */}
       {showForm && (

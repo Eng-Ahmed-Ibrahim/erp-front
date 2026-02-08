@@ -11,9 +11,13 @@ const getHeaders = () => ({
 // Officers API
 // =====================
 
-export async function getOfficers(search = '') {
+export async function getOfficers(filters = {}) {
   try {
-    const params = search ? { search } : {};
+    const params = {};
+    if (filters.search) params.search = filters.search;
+    if (filters.page) params.page = filters.page;
+    if (filters.perPage) params.per_page = filters.perPage;
+
     const res = await axios.get(`${API_ENDPOINT}/api/v1/membership-cards/officers`, {
       params,
       headers: getHeaders(),
