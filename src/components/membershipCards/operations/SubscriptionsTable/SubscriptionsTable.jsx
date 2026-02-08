@@ -149,17 +149,19 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
           const cardResponse = await getCardBySubscription(subscription.id);
           if (cardResponse.success && cardResponse.data) {
             const existingCard = cardResponse.data;
-            // Use the existing card's expiry date
+            // Use the existing card's expiry date and show_expiry_date setting
             setCardFormData({
               card_uid: '',
               expiry_date: existingCard.expiry_date || subscription.end_date || '',
               serial_id: '',
+              show_expiry_date: existingCard.show_expiry_date !== false,
             });
           } else {
             setCardFormData({
               card_uid: '',
               expiry_date: subscription.end_date || '',
               serial_id: '',
+              show_expiry_date: true,
             });
           }
         } catch (cardErr) {
@@ -169,6 +171,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
             card_uid: '',
             expiry_date: subscription.end_date || '',
             serial_id: '',
+            show_expiry_date: true,
           });
         }
       } catch (err) {
@@ -178,6 +181,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
           card_uid: '',
           expiry_date: subscription.end_date || '',
           serial_id: '',
+          show_expiry_date: true,
         });
       }
     } else {
@@ -187,6 +191,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
         card_uid: '',
         expiry_date: subscription.end_date || '',
         serial_id: '',
+        show_expiry_date: true,
       });
     }
     setCardFormError(null);
@@ -198,17 +203,17 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
     setIssuingForSubscription(null);
     setIsReplacement(false);
     setReplacementFee(null);
-    setCardFormData({ card_uid: '', expiry_date: '', serial_id: '' });
+    setCardFormData({ card_uid: '', expiry_date: '', serial_id: '', show_expiry_date: true });
     setCardFormError(null);
   };
 
   const handleCardFormChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     // Prevent editing expiry_date if it's a replacement card
     if (isReplacement && name === 'expiry_date') {
       return;
     }
-    setCardFormData(prev => ({ ...prev, [name]: value }));
+    setCardFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleScanCard = async () => {
@@ -280,7 +285,7 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
         card_uid: cardFormData.card_uid.trim(),
         expiry_date: cardFormData.expiry_date, // Backend will use existing card's expiry date for replacement
         serial_id: cardFormData.serial_id || cardFormData.card_uid.trim(),
-        show_expiry_date: cardFormData.show_expiry_date !== false,
+        show_expiry_date: !!cardFormData.show_expiry_date,
       };
 
       if (isReplacement) {
@@ -764,6 +769,18 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
                     تاريخ انتهاء البطاقة البديلة يكون نفس تاريخ البطاقة الأصلية
                   </small>
                 )}
+              </div>
+
+              <div className="form-group form-group--checkbox">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="show_expiry_date"
+                    checked={cardFormData.show_expiry_date}
+                    onChange={handleCardFormChange}
+                  />
+                  <span className="checkbox-text">طباعة تاريخ الانتهاء على البطاقة</span>
+                </label>
               </div>
 
               <div className="card-issue-modal__actions">
