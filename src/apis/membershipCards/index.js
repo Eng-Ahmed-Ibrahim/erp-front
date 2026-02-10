@@ -432,13 +432,19 @@ export async function deleteSubscription(id) {
   }
 }
 
-export async function calculateFees(beneficiaryType, isRenewal = false, isOldOfficer = false) {
+export async function calculateFees(beneficiaryType, isRenewal = false, isOldOfficer = false, years = 1, feePlanId = null) {
   try {
-    const res = await axios.post(`${API_ENDPOINT}/api/v1/membership-cards/subscriptions/calculate-fees`, {
-      beneficiary_type: beneficiaryType,
+    const payload = {
       is_renewal: isRenewal,
       is_old_officer: isOldOfficer,
-    }, {
+      years: years,
+    };
+    if (feePlanId) {
+      payload.fee_plan_id = feePlanId;
+    } else {
+      payload.beneficiary_type = beneficiaryType;
+    }
+    const res = await axios.post(`${API_ENDPOINT}/api/v1/membership-cards/subscriptions/calculate-fees`, payload, {
       headers: getHeaders(),
     });
     return res.data;

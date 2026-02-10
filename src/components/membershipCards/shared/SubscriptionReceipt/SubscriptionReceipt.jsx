@@ -58,6 +58,18 @@ function SubscriptionReceipt({
     return `${parseFloat(amount || 0).toFixed(2)} ج.م`;
   };
 
+  // Calculate years from subscription dates
+  const getSubscriptionYears = () => {
+    const startDate = subscriptionData.start_date ? new Date(subscriptionData.start_date) : null;
+    const endDate = subscriptionData.end_date ? new Date(subscriptionData.end_date) : null;
+    if (!startDate || !endDate) return 1;
+    const diffMs = endDate - startDate;
+    const diffYears = diffMs / (1000 * 60 * 60 * 24 * 365.25);
+    return Math.max(1, Math.ceil(diffYears));
+  };
+
+  const subscriptionYears = getSubscriptionYears();
+
   // Get fees from paid amounts or fee plan if paid amounts are 0
   const getEstablishmentFee = () => {
     const paid = parseFloat(subscriptionData.paid_establishment_fee || 0);
@@ -65,10 +77,14 @@ function SubscriptionReceipt({
     return parseFloat(subscriptionData.fee_plan?.establishment_fee || 0);
   };
 
+  const getAnnualFeePerYear = () => {
+    return parseFloat(subscriptionData.fee_plan?.annual_subscription_fee || 0);
+  };
+
   const getAnnualFee = () => {
     const paid = parseFloat(subscriptionData.paid_annual_fee || 0);
     if (paid > 0) return paid;
-    return parseFloat(subscriptionData.fee_plan?.annual_subscription_fee || 0);
+    return getAnnualFeePerYear() * subscriptionYears;
   };
 
   const getIssuanceFee = () => {
@@ -78,6 +94,7 @@ function SubscriptionReceipt({
   };
 
   const establishmentFee = getEstablishmentFee();
+  const annualFeePerYear = getAnnualFeePerYear();
   const annualFee = getAnnualFee();
   const issuanceFee = getIssuanceFee();
   const totalPaid = (establishmentFee + annualFee + issuanceFee).toFixed(2);
@@ -213,7 +230,7 @@ function SubscriptionReceipt({
                 <td className="amount">{formatCurrency(establishmentFee)}</td>
               </tr>
               <tr>
-                <td>الاشتراك السنوي</td>
+                <td>الاشتراك السنوي ({subscriptionYears} {subscriptionYears > 1 ? 'سنوات' : 'سنة'} × {formatCurrency(annualFeePerYear)})</td>
                 <td className="amount">{formatCurrency(annualFee)}</td>
               </tr>
               <tr>

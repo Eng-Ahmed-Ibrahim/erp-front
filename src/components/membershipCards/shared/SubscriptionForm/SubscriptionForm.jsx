@@ -109,24 +109,43 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [name]: value };
+      // Recalculate fees when dates change
+      if ((name === 'start_date' || name === 'end_date') && updated.fee_plan_id) {
+        const startDate = name === 'start_date' ? value : prev.start_date;
+        const endDate = name === 'end_date' ? value : prev.end_date;
+        if (startDate && endDate) {
+          handleFeePlanChange(updated.fee_plan_id, updated.is_old_officer, startDate, endDate);
+        }
+      }
+      return updated;
+    });
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null }));
     }
   };
 
-  const handleFeePlanChange = async (feePlanId, isOldOfficer = formData.is_old_officer) => {
+  const getYearsFromDates = (startDate, endDate) => {
+    if (!startDate || !endDate) return 1;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffMs = end - start;
+    const diffYears = diffMs / (1000 * 60 * 60 * 24 * 365.25);
+    return Math.max(1, Math.ceil(diffYears));
+  };
+
+  const handleFeePlanChange = async (feePlanId, isOldOfficer = formData.is_old_officer, startDate = formData.start_date, endDate = formData.end_date) => {
     setFormData(prev => ({ ...prev, fee_plan_id: feePlanId }));
 
     if (feePlanId) {
-      const selectedPlan = feePlans.find(p => p.id === parseInt(feePlanId));
-      if (selectedPlan) {
-        try {
-          const response = await calculateFees(selectedPlan.beneficiary_type, false, isOldOfficer);
-          setCalculatedFees(response.data);
-        } catch (err) {
-          console.error('Error calculating fees:', err);
-        }
+      const planId = parseInt(feePlanId);
+      try {
+        const years = getYearsFromDates(startDate, endDate);
+        const response = await calculateFees(null, false, isOldOfficer, years, planId);
+        setCalculatedFees(response.data);
+      } catch (err) {
+        console.error('Error calculating fees:', err);
       }
     } else {
       setCalculatedFees(null);
@@ -137,7 +156,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
     setFormData(prev => ({ ...prev, is_old_officer: checked }));
     // Recalculate fees with the new is_old_officer value
     if (formData.fee_plan_id) {
-      handleFeePlanChange(formData.fee_plan_id, checked);
+      handleFeePlanChange(formData.fee_plan_id, checked, formData.start_date, formData.end_date);
     }
   };
 
@@ -392,7 +411,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
                     <span>{formData.is_old_officer ? '0' : (calculatedFees.establishment_fee || 0)} ج.م</span>
                   </div>
                   <div className="fees-row">
-                    <span>الاشتراك السنوي:</span>
+                    <span>الاشتراك السنوي ({calculatedFees.years || 1} {(calculatedFees.years || 1) > 1 ? 'سنوات' : 'سنة'} × {calculatedFees.annual_subscription_fee_per_year || calculatedFees.annual_subscription_fee || 0} ج.م):</span>
                     <span>{calculatedFees.annual_subscription_fee || 0} ج.م</span>
                   </div>
                   <div className="fees-row">
