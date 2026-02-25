@@ -52,7 +52,7 @@ const CARD_THEMES = {
   },
 };
 
-const CardQueue = ({ selectedOfficer }) => {
+const CardQueue = ({ selectedOfficer, refreshTrigger = 0 }) => {
   const { user } = useAuth();
   const [activeFilter, setActiveFilter] = useState('all');
   const [cards, setCards] = useState([]);
@@ -120,7 +120,7 @@ const CardQueue = ({ selectedOfficer }) => {
     } else {
       setCards([]);
     }
-  }, [selectedOfficer?.id, activeFilter]);
+  }, [selectedOfficer?.id, activeFilter, refreshTrigger]);
 
   const fetchCards = async () => {
     if (!selectedOfficer?.id) return;

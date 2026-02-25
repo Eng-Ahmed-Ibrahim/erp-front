@@ -643,6 +643,10 @@ export const RELATIONSHIP_TYPES = [
   { value: 'parent', label: 'الآباء' },
   { value: 'grandchild', label: 'الأحفاد' },
   { value: 'child_spouse', label: 'أزواج الأبناء' },
+  { value: 'brother', label: 'الأخ' },
+  { value: 'sister', label: 'الأخت' },
+  { value: 'sister_spouse', label: 'زوج الأخت' },
+  { value: 'over_age', label: 'فوق السن' },
 ];
 
 export const SERVICE_STATUSES = [
@@ -763,6 +767,10 @@ export const BENEFICIARY_TYPES = [
   { value: 'grandchild_11_19', label: 'حفيد (11-19 سنة)' },
   { value: 'grandchild_20_plus', label: 'حفيد (20+ سنة)' },
   { value: 'child_spouse', label: 'زوج / زوجة الابن' },
+  { value: 'brother', label: 'الأخ' },
+  { value: 'sister', label: 'الأخت' },
+  { value: 'sister_spouse', label: 'زوج الأخت' },
+  { value: 'over_age', label: 'فوق السن' },
 ];
 
 // =====================

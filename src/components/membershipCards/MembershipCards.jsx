@@ -12,11 +12,47 @@ import FeePlansManagement from './config/FeePlansManagement/FeePlansManagement';
 import LookupsManagement from './config/LookupsManagement/LookupsManagement';
 import './MembershipCards.scss';
 
+const STORAGE_KEY_SECTION = 'mc_activeSection';
+const STORAGE_KEY_TAB = 'mc_activeTab';
+const STORAGE_KEY_OFFICER = 'mc_selectedOfficer';
+
 const MembershipCards = () => {
-  const [activeSection, setActiveSection] = useState('operations');
-  const [activeTab, setActiveTab] = useState('officers');
-  const [selectedOfficer, setSelectedOfficer] = useState(null);
+  const [activeSection, setActiveSection] = useState(() => {
+    return localStorage.getItem(STORAGE_KEY_SECTION) || 'operations';
+  });
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem(STORAGE_KEY_TAB) || 'officers';
+  });
+  const [selectedOfficer, setSelectedOfficer] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY_OFFICER);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [cardQueueRefreshToken, setCardQueueRefreshToken] = useState(0);
   const { user } = useAuth();
+
+  const handleCardIssued = () => {
+    setCardQueueRefreshToken((prev) => prev + 1);
+  };
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_SECTION, activeSection);
+  }, [activeSection]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_TAB, activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (selectedOfficer) {
+      localStorage.setItem(STORAGE_KEY_OFFICER, JSON.stringify(selectedOfficer));
+    } else {
+      localStorage.removeItem(STORAGE_KEY_OFFICER);
+    }
+  }, [selectedOfficer]);
 
   const sections = [
     {
@@ -232,6 +268,7 @@ const MembershipCards = () => {
         return (
           <SubscriptionsTable 
             selectedOfficer={selectedOfficer}
+            onCardIssued={handleCardIssued}
           />
         );
       default:
@@ -276,7 +313,10 @@ const MembershipCards = () => {
             {selectedOfficer && (
             <div className="membership-cards__side-panel">
                 <div className="membership-cards__card-queue-container">
-              <CardQueue selectedOfficer={selectedOfficer} />
+              <CardQueue
+                selectedOfficer={selectedOfficer}
+                refreshTrigger={cardQueueRefreshToken}
+              />
             </div>
               </div>
             )}

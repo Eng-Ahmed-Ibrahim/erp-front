@@ -23,7 +23,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
     start_date: new Date().toISOString().split('T')[0],
     end_date: '',
     is_honorary_membership: false,
-    is_old_officer: false,
+    is_old_officer: true,
   });
   const [officer, setOfficer] = useState(defaultOfficer || null);
   const [beneficiaries, setBeneficiaries] = useState([]);
@@ -394,7 +394,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
                   className={errors.fee_plan_id ? 'error' : ''}
                 >
                   <option value="">اختر خطة الرسوم</option>
-                  {feePlans.map(plan => (
+                  {[...feePlans].sort((a, b) => a.name.localeCompare(b.name, 'ar')).map(plan => (
                     <option key={plan.id} value={plan.id}>
                       {plan.name} - {plan.beneficiary_type}
                     </option>

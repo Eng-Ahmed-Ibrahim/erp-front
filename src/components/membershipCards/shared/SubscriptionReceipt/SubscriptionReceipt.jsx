@@ -70,11 +70,9 @@ function SubscriptionReceipt({
 
   const subscriptionYears = getSubscriptionYears();
 
-  // Get fees from paid amounts or fee plan if paid amounts are 0
+  // Use the actual paid amounts stored on the subscription
   const getEstablishmentFee = () => {
-    const paid = parseFloat(subscriptionData.paid_establishment_fee || 0);
-    if (paid > 0) return paid;
-    return parseFloat(subscriptionData.fee_plan?.establishment_fee || 0);
+    return parseFloat(subscriptionData.paid_establishment_fee ?? 0);
   };
 
   const getAnnualFeePerYear = () => {
@@ -82,15 +80,11 @@ function SubscriptionReceipt({
   };
 
   const getAnnualFee = () => {
-    const paid = parseFloat(subscriptionData.paid_annual_fee || 0);
-    if (paid > 0) return paid;
-    return getAnnualFeePerYear() * subscriptionYears;
+    return parseFloat(subscriptionData.paid_annual_fee ?? 0);
   };
 
   const getIssuanceFee = () => {
-    const paid = parseFloat(subscriptionData.paid_issuance_fee || 0);
-    if (paid > 0) return paid;
-    return parseFloat(subscriptionData.fee_plan?.issuance_fee || 0);
+    return parseFloat(subscriptionData.paid_issuance_fee ?? 0);
   };
 
   const establishmentFee = getEstablishmentFee();

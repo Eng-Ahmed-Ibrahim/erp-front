@@ -19,7 +19,7 @@ import SubscriptionForm from '../../shared/SubscriptionForm/SubscriptionForm';
 import { hasPermission } from '../../../../utils/permissions';
 import './SubscriptionsTable.scss';
 
-const SubscriptionsTable = ({ selectedOfficer }) => {
+const SubscriptionsTable = ({ selectedOfficer, onCardIssued }) => {
   const { user } = useAuth();
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -295,9 +295,10 @@ const SubscriptionsTable = ({ selectedOfficer }) => {
       }
 
       handleCloseCardIssueModal();
-      fetchSubscriptions(); // Refresh subscriptions to update has_card status
-      // Refresh the page to see the card in the queue
-      window.location.reload();
+      fetchSubscriptions();
+      if (typeof onCardIssued === 'function') {
+        onCardIssued();
+      }
     } catch (err) {
       setCardFormError(err.response?.data?.message || 'حدث خطأ في إصدار البطاقة');
     } finally {
