@@ -502,6 +502,43 @@ const Sidebar = () => {
             </li>
             <li
               className="menu-item"
+              title="مدفوعات الأوردرات"
+              style={{
+                display: `${
+                  checkMenuItemPermission({
+                    id: 140,
+                    name: 'view payable',
+                  })
+                    ? ''
+                    : 'none'
+                }`,
+              }}
+            >
+              <Link
+                to="/warehouse/payable/order-payables"
+                className={`menu-link ${
+                  activeLink === '/warehouse/payable/order-payables'
+                    ? 'active'
+                    : ''
+                } ${justifyContent}`}
+                onClick={() =>
+                  handleMenuLinkClick('/warehouse/payable/order-payables')
+                }
+              >
+                <span className="menu-link-icon">
+                  <BsCashCoin size={30} />
+                </span>
+                <span
+                  className={`menu-link-text ${display}`}
+                  style={{ fontSize: '20px' }}
+                >
+                  مدفوعات الأوردرات
+                </span>
+              </Link>
+            </li>
+            
+            <li
+              className="menu-item"
               title="المدفوعات"
               style={{
                 display: `${

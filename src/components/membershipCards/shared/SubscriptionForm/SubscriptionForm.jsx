@@ -13,6 +13,11 @@ import { hasPermission } from '../../../../utils/permissions';
 import SubscriptionReceipt from '../SubscriptionReceipt/SubscriptionReceipt';
 import './SubscriptionForm.scss';
 
+const getDefaultEndDate = () => {
+  const nextYear = new Date().getFullYear() + 1;
+  return `${nextYear}-12-31`;
+};
+
 const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) => {
   const { user } = useAuth();
   const [step, setStep] = useState(1);
@@ -21,7 +26,7 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
     beneficiary_id: '',
     fee_plan_id: '',
     start_date: new Date().toISOString().split('T')[0],
-    end_date: '',
+    end_date: getDefaultEndDate(),
     is_honorary_membership: false,
     is_old_officer: true,
   });
@@ -49,15 +54,6 @@ const SubscriptionForm = ({ subscription, defaultOfficer, onClose, onSuccess }) 
       setFormData(prev => ({ ...prev, officer_id: officer.id }));
     }
   }, [officer?.id]);
-
-  useEffect(() => {
-    // Set default end date to 1 year from start date
-    if (formData.start_date) {
-      const startDate = new Date(formData.start_date);
-      startDate.setFullYear(startDate.getFullYear() + 1);
-      setFormData(prev => ({ ...prev, end_date: startDate.toISOString().split('T')[0] }));
-    }
-  }, [formData.start_date]);
 
   const fetchFeePlans = async () => {
     try {

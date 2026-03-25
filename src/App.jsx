@@ -115,6 +115,9 @@ import Payables from "./applications/warehouse/sections/payble/Payables";
 import {
   AddPayable,
   ShowPayables,
+  ShowOrderPayables,
+  AddOrderPayable,
+  EditOrderPayable,
 } from "./applications/warehouse/sections/payble/pages";
 import Clients from "./applications/warehouse/sections/clients/Clients";
 import {
@@ -1386,6 +1389,45 @@ function App() {
                   }}
                 >
                   <AddPayable />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/payable/order-payables"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: 'view payable',
+                  }}
+                >
+                  <ShowOrderPayables />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/payable/add-order-payable"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: 'add payable',
+                  }}
+                >
+                  <AddOrderPayable />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/warehouse/payable/order-payable/:id/edit"
+              element={
+                <ProtectedRoute
+                  requiredPermission={{
+                    id: 103,
+                    name: 'edit payable',
+                  }}
+                >
+                  <EditOrderPayable />
                 </ProtectedRoute>
               }
             ></Route>

@@ -471,7 +471,9 @@ const ShowInventives = () => {
       <div className="my-1 ">
         <h1 className="heading text-center p-3">
           {" "}
-          الحوافز ({incentivesCount}) : {totalIncentives} جنيه
+          {hasExcellenceBonus === true || hasExcellenceBonus === "true"
+            ? `إجمالي مكافأة التميز (${incentivesCount}) : ${totalIncentives} جنيه`
+            : `الحوافز (${incentivesCount}) : ${totalIncentives} جنيه`}
         </h1>
       </div>
 

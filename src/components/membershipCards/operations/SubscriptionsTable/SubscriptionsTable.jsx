@@ -19,6 +19,11 @@ import SubscriptionForm from '../../shared/SubscriptionForm/SubscriptionForm';
 import { hasPermission } from '../../../../utils/permissions';
 import './SubscriptionsTable.scss';
 
+const getDefaultCardExpiryDate = () => {
+  const nextYear = new Date().getFullYear() + 1;
+  return `${nextYear}-12-31`;
+};
+
 const SubscriptionsTable = ({ selectedOfficer, onCardIssued }) => {
   const { user } = useAuth();
   const [subscriptions, setSubscriptions] = useState([]);
@@ -152,24 +157,24 @@ const SubscriptionsTable = ({ selectedOfficer, onCardIssued }) => {
             // Use the existing card's expiry date and show_expiry_date setting
             setCardFormData({
               card_uid: '',
-              expiry_date: existingCard.expiry_date || subscription.end_date || '',
+              expiry_date: existingCard.expiry_date || getDefaultCardExpiryDate(),
               serial_id: '',
               show_expiry_date: existingCard.show_expiry_date !== false,
             });
           } else {
             setCardFormData({
               card_uid: '',
-              expiry_date: subscription.end_date || '',
+              expiry_date: getDefaultCardExpiryDate(),
               serial_id: '',
               show_expiry_date: true,
             });
           }
         } catch (cardErr) {
           console.error('Error fetching existing card:', cardErr);
-          // Fallback to subscription end date
+          // Fallback to default expiry date
           setCardFormData({
             card_uid: '',
-            expiry_date: subscription.end_date || '',
+            expiry_date: getDefaultCardExpiryDate(),
             serial_id: '',
             show_expiry_date: true,
           });
@@ -179,17 +184,17 @@ const SubscriptionsTable = ({ selectedOfficer, onCardIssued }) => {
         setReplacementFee(50); // Default fee
         setCardFormData({
           card_uid: '',
-          expiry_date: subscription.end_date || '',
+          expiry_date: getDefaultCardExpiryDate(),
           serial_id: '',
           show_expiry_date: true,
         });
       }
     } else {
       setReplacementFee(null);
-      // Set default expiry date to the subscription end date
+      // Set default expiry date to 31/12 of next year
       setCardFormData({
         card_uid: '',
-        expiry_date: subscription.end_date || '',
+        expiry_date: getDefaultCardExpiryDate(),
         serial_id: '',
         show_expiry_date: true,
       });
