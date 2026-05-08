@@ -624,7 +624,7 @@ const OrdersReports = () => {
                     required
                     className="form-cashier-select"
                     placeholder="اختر نوع العميل"
-                    value={clientTypes}
+                    value={selectedClientType}
                     onChange={(e) => handleClientTypeChange(e.target.value)}
                     showSearch
                     filterOption={(input, option) =>

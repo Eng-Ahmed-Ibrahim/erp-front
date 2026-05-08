@@ -110,8 +110,8 @@ const EditClientType = () => {
       name: values.name,
       methods: selectedPaymentMethods,
       discount: values.discount,
-      tax: values.tax
-
+      tax: values.tax,
+      monthly_discount_limit: values.monthly_discount_limit,
     };
     await updateClientType(id, formData);
   //  navigate(`/warehouse/clients/client-type`);
@@ -177,6 +177,23 @@ const EditClientType = () => {
         >
           <Input placeholder="أضف الضريبه المضافه" type="number" onWheel={(event) => event.currentTarget.blur()} />
         </Form.Item>
+
+        <Form.Item
+          label="حد الخصم الشهري (مجموع الخصم لكل عميل)"
+          name="monthly_discount_limit"
+          tooltip="الحد الأقصى لمجموع مبالغ الخصم في الطلبات خلال الشهر لكل عميل من هذا النوع. اتركه فارغًا لعدم تطبيق حد."
+          rules={[{ required: false }]}
+          style={{ marginBottom: "20px" }}
+        >
+          <Input
+            placeholder="اتركه فارغًا بدون حد"
+            type="number"
+            min={0}
+            step="0.01"
+            onWheel={(event) => event.currentTarget.blur()}
+          />
+        </Form.Item>
+
         <Form.Item label="طرق الدفع" style={{ marginBottom: "20px" }}>
           <Select
             mode="multiple"

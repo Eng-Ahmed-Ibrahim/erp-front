@@ -4,7 +4,7 @@ import LogoDAR from '../../../../../../../public/assets/images/Dar_logo.svg';
 import './AddCashierOrder.scss';
 import axios from 'axios';
 import { API_ENDPOINT } from '../../../../../../../config';
-import { message, Select, Modal } from 'antd';
+import { message, Select, Modal, Alert } from 'antd';
 import { useAuth } from '../../../../../../context/AuthContext';
 // import { checkTableNumber } from "../../../../../../apis/orders";
 import CashierOrderDetailes from '../../../../../../components/shared/CashierOrderDetails/CashierOrderDetailes';
@@ -18,6 +18,8 @@ import {
   getOrderById,
   checkTableNumber,
   reviewOrderPrice,
+  fetchMonthlyDiscountStatus,
+  getApiErrorMessage,
 } from '../../../../../../apis/orders';
 import { readCardAndGetMembershipId } from '../../../../../../apis/membershipCards';
 // import { getOrderById, deleteOrder } from "../../../../../../apis/orders";
@@ -1052,6 +1054,9 @@ const AddCashierOrder = () => {
   const [selectedClientType, setSelectedClientType] = useState('');
   const [waiterName, setWaiterName] = useState([]);
   const [clientData, setClientData] = useState();
+  /** @type {null | { applies: boolean, limit?: number|null, used?: number, remaining?: number|null, proposed_discount?: number, would_exceed?: boolean }} */
+  const [monthlyDiscountPreview, setMonthlyDiscountPreview] =
+    useState(null);
   const [discount, setDiscount] = useState();
   const [reseditType, setResedent] = useState();
   const [selectWaiter, setSelectedWatier] = useState(
@@ -1381,6 +1386,47 @@ const AddCashierOrder = () => {
     selectWaiter
   );
 
+  useEffect(() => {
+    const loadMonthlyPreview = async () => {
+      if (
+        !newUserValues['client_type_id'] ||
+        !user?.department?.id ||
+        !items?.length
+      ) {
+        setMonthlyDiscountPreview(null);
+        return;
+      }
+      const rawClientId =
+        newUserValues['client_id'] === 'add-new'
+          ? ''
+          : newUserValues['client_id'];
+      const products = items.map((item) => ({
+        product_id: item.productId,
+        quantity: item.quantity,
+      }));
+      try {
+        const status = await fetchMonthlyDiscountStatus({
+          products,
+          client_type_id: newUserValues['client_type_id'],
+          department_id: user.department.id,
+          client_id: rawClientId || undefined,
+          name: newUserValues['name'] || '',
+        });
+        setMonthlyDiscountPreview(status);
+      } catch {
+        setMonthlyDiscountPreview(null);
+      }
+    };
+    const t = setTimeout(loadMonthlyPreview, 400);
+    return () => clearTimeout(t);
+  }, [
+    items,
+    newUserValues['client_type_id'],
+    newUserValues['client_id'],
+    newUserValues['name'],
+    user?.department?.id,
+  ]);
+
   const handleAddItem = (item) => {
     setItems([...items, item]);
   };
@@ -1526,20 +1572,28 @@ const AddCashierOrder = () => {
       }
     } catch (error) {
       console.error('Error creating invoice:', error);
+      setIsDisabled(false);
       const modal = Modal.error({
-        title: 'Error',
+        title: 'لم يتم إنشاء الطلب',
         content: (
-          <div style={{ fontSize: '24px', textAlign: 'center' }}>
-            {error.response.data.error.message}
+          <div
+            style={{
+              fontSize: '18px',
+              textAlign: 'center',
+              lineHeight: 1.6,
+              padding: '8px 0',
+            }}
+          >
+            {getApiErrorMessage(error)}
           </div>
         ),
         centered: true,
-        width: 400,
+        width: 560,
       });
 
       setTimeout(() => {
         modal.destroy();
-      }, 4000);
+      }, 6000);
     }
   };
 
@@ -1752,19 +1806,26 @@ const AddCashierOrder = () => {
 
       console.error('Error creating order:', error);
       const modal = Modal.error({
-        title: 'Error',
+        title: 'لم يتم إنشاء الطلب',
         content: (
-          <div style={{ fontSize: '24px', textAlign: 'center' }}>
-            {error.response.data.error.message}
+          <div
+            style={{
+              fontSize: '18px',
+              textAlign: 'center',
+              lineHeight: 1.6,
+              padding: '8px 0',
+            }}
+          >
+            {getApiErrorMessage(error)}
           </div>
         ),
         centered: true,
-        width: 400,
+        width: 560,
       });
 
       setTimeout(() => {
         modal.destroy();
-      }, 5000);
+      }, 6000);
     }
   };
 
@@ -2172,6 +2233,42 @@ const AddCashierOrder = () => {
       />
 
       <CashierItemList items={items} onDeleteItem={handleDeleteItem} />
+      {monthlyDiscountPreview?.applies ? (
+        <Alert
+          type={monthlyDiscountPreview.would_exceed ? 'error' : 'info'}
+          showIcon
+          style={{ marginBottom: 16, textAlign: 'right' }}
+          message={
+            monthlyDiscountPreview.would_exceed
+              ? 'تنبيه: خصم هذا الطلب يتجاوز الحد الشهري المتبقي للعميل'
+              : 'حد الخصم الشهري (تقديري)'
+          }
+          description={
+            <div dir="rtl" style={{ lineHeight: 1.7 }}>
+              <div>
+                الحد الشهري:{' '}
+                <strong>{Number(monthlyDiscountPreview.limit).toFixed(2)}</strong>
+              </div>
+              <div>
+                المستخدم هذا الشهر:{' '}
+                <strong>{Number(monthlyDiscountPreview.used).toFixed(2)}</strong>
+              </div>
+              <div>
+                المتبقي:{' '}
+                <strong>
+                  {Number(monthlyDiscountPreview.remaining).toFixed(2)}
+                </strong>
+              </div>
+              <div>
+                خصم الطلب الحالي (محسوب):{' '}
+                <strong>
+                  {Number(monthlyDiscountPreview.proposed_discount).toFixed(2)}
+                </strong>
+              </div>
+            </div>
+          }
+        />
+      ) : null}
       <TotalAmount total={calculateTotalAmount()} />
 
       <div className="btns">

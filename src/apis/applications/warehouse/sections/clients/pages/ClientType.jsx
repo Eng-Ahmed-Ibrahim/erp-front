@@ -9,6 +9,7 @@ const ClientType = () => {
   const tableHeaders = [
 
     { key: "name", value: "النوع" },
+    { key: "monthly_discount_limit", value: "حد الخصم الشهري" },
     // { key: "discount", value: "نسبة الخصم" },
     // { key: "new_client", value: "عميل قديم /جديد" },
 

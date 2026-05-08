@@ -63,6 +63,13 @@ export async function updateClientType(id, editValues) {
   formData.append("name", editValues.name);
   formData.append("discount", editValues.discount ? editValues.discount : 0);
   formData.append("tax", editValues.tax ? editValues.tax : 0);
+  const monthlyLimit = editValues.monthly_discount_limit;
+  formData.append(
+    "monthly_discount_limit",
+    monthlyLimit === undefined || monthlyLimit === null || monthlyLimit === ""
+      ? ""
+      : monthlyLimit
+  );
   editValues.methods.map((method, index) =>
     formData.append(`payment_methods[${index}]`, method.id)
   );
@@ -92,6 +99,16 @@ export async function addClientType(values) {
   formData.append("name", values.name);
   formData.append("discount", values.discount);
   formData.append("tax", values.tax);
+  if (
+    values.monthly_discount_limit !== undefined &&
+    values.monthly_discount_limit !== null &&
+    values.monthly_discount_limit !== ""
+  ) {
+    formData.append(
+      "monthly_discount_limit",
+      values.monthly_discount_limit
+    );
+  }
   values.methods.map((method, index) =>
     formData.append(`payment_methods[${index}]`, method.id)
   );

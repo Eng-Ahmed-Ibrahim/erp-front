@@ -28,6 +28,7 @@ import {
 } from 'antd';
 import axios from 'axios';
 import { API_ENDPOINT } from '../../../config';
+import { getApiErrorMessage } from '../../apis/orders';
 import {
   ShoppingCartOutlined,
   SearchOutlined,
@@ -773,8 +774,10 @@ const POSPage = () => {
       } catch (error) {
         console.error('Error creating order:', error);
         message.error(
-          error.response?.data?.error?.message ||
+          getApiErrorMessage(
+            error,
             `خطأ في إنشاء طلب ${product.name}`
+          )
         );
       }
     },

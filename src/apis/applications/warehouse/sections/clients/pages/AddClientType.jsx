@@ -32,7 +32,8 @@ const AddClientType = () => {
       // newClient: values.newClient || 1,
       discount: values.discount,
       // discount: 0,
-      tax: values.tax
+      tax: values.tax,
+      monthly_discount_limit: values.monthly_discount_limit,
       // tax: 0
     };
     // console.log(formData);
@@ -93,6 +94,23 @@ const AddClientType = () => {
         >
           <Input placeholder="أضف الضريبه المضافه" type="number" onWheel={(event) => event.currentTarget.blur()} />
         </Form.Item>
+
+        <Form.Item
+          label="حد الخصم الشهري (مجموع الخصم لكل عميل)"
+          name="monthly_discount_limit"
+          tooltip="الحد الأقصى لمجموع مبالغ الخصم في الطلبات خلال الشهر لكل عميل من هذا النوع. اتركه فارغًا لعدم تطبيق حد."
+          rules={[{ required: false }]}
+          style={{ marginBottom: "20px" }}
+        >
+          <Input
+            placeholder="مثال: 500 — اتركه فارغًا بدون حد"
+            type="number"
+            min={0}
+            step="0.01"
+            onWheel={(event) => event.currentTarget.blur()}
+          />
+        </Form.Item>
+
         <Form.Item
           label="طرق الدفع"
           name="methods"

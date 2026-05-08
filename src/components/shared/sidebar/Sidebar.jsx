@@ -536,7 +536,7 @@ const Sidebar = () => {
                 </span>
               </Link>
             </li>
-            
+
             <li
               className="menu-item"
               title="المدفوعات"

@@ -262,3 +262,43 @@ export async function reviewOrderPrice(
     message.error(`حدث خطأ في الانهاء`);
   }
 }
+
+/** Laravel responder / axios error shapes (validation_error vs message). */
+export function getApiErrorMessage(error, fallback = "حدث خطأ") {
+  const errObj = error?.response?.data?.error;
+  if (errObj && typeof errObj === "object") {
+    if (typeof errObj.message === "string") return errObj.message;
+    if (typeof errObj.validation_error === "string")
+      return errObj.validation_error;
+    const firstString = Object.values(errObj).find(
+      (v) => typeof v === "string"
+    );
+    if (firstString) return firstString;
+  }
+  if (typeof error?.response?.data?.message === "string") {
+    return error.response.data.message;
+  }
+  return fallback;
+}
+
+/**
+ * Preview monthly discount cap vs cart (same rules as order create).
+ * Payload: { products: [{ product_id, quantity }], client_type_id, department_id, client_id?, name? }
+ */
+export async function fetchMonthlyDiscountStatus(payload) {
+  try {
+    const res = await axios.post(
+      `${API_ENDPOINT}/api/v1/orders/monthly-discount-status`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return res.data?.data ?? res.data;
+  } catch {
+    return null;
+  }
+}

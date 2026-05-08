@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_ENDPOINT } from "../../../../../../../config";
 import { message, Select } from "antd";
 import { useAuth } from "../../../../../../context/AuthContext";
-import { checkTableNumber } from "../../../../../../apis/orders";
+import { checkTableNumber, getApiErrorMessage } from "../../../../../../apis/orders";
 import CashierOrderDetailes from "../../../../../../components/shared/CashierOrderDetails/CashierOrderDetailes";
 import CashierItemList from "../../../../../../components/shared/CashierItemList/CashierItemList";
 import { getClientTypeById } from "../../../../../../apis/clients/ClientType";
@@ -421,7 +421,7 @@ const AddCashierOrder = () => {
       setOrderID(response.data.data.id)
     } catch (error) {
       console.error("Error creating invoice:", error);
-      message.error(error.response.data.error.message);
+      message.error(getApiErrorMessage(error));
     }
     // setShowTable(true); // Show the Table component when button is clicked
 
@@ -510,7 +510,7 @@ const AddCashierOrder = () => {
       setItems([]);
     } catch (error) {
       console.error("Error creating invoice:", error);
-      message.error(error.response.data.error.message);
+      message.error(getApiErrorMessage(error));
     }
   };
   const [militryIdInputValue, setMilitryIdInputValue] = useState('');
