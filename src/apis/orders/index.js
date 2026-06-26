@@ -74,6 +74,7 @@ export async function getOrdersReportes(filteredValues, id, setIsLoading) {
     message.error("حدث خطأ الرجاء إعادة المحاولة ");
   }
 }
+
 export async function getOrderById(id) {
   try {
     const res = await axios.get(`${API_ENDPOINT}/api/v1/orders/${id}`, {
@@ -153,11 +154,11 @@ export async function deleteProductQuantityInOrder(id) {
     // //
   }
 }
-export async function changeOrderStatus(id, status, message = "") {
+export async function changeOrderStatus(id, status, msg = "") {
   try {
     const res = await axios.post(
       `${API_ENDPOINT}/api/v1/orders/update/status/${id}`,
-      { status, message },
+      { status, message: msg },
       {
         headers: {
           Authorization: `Bearer ${Token}`,
@@ -167,7 +168,8 @@ export async function changeOrderStatus(id, status, message = "") {
 
     return res.data;
   } catch (error) {
-    message.error(`حدث خطأ في الانهاء`);
+    message.error("حدث خطأ في إنهاء الطلب");
+    throw error; // 👈 مهم جدًا
   }
 }
 

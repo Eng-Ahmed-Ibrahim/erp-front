@@ -34,7 +34,7 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
     try {
       const oneProduct = await getProductById(id);
       setSelectedOneProduct(oneProduct);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
       const data = await response.json();
       setProductCategoryParents(data.data);
       if (data?.data?.length == 1) {
-        
+
         handleParentChange(data?.data[0]?.id)
       }
     } catch (error) {
@@ -205,9 +205,8 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
                 }}
                 // value={active}
                 // onChange={() => setActive(!active)}
-                className={`form-check  pe-3 py-3 m-3 shadow rounded shift-hover ${
-                  selectedProduct === item.id ? "shifts" : ""
-                } 
+                className={`form-check  pe-3 py-3 m-3 shadow rounded shift-hover ${selectedProduct === item.id ? "shifts" : ""
+                  } 
           `}
                 key={index}
                 style={{ border: "2px solid #803d3b" }}
@@ -228,9 +227,40 @@ const CashierOrderDetailes = ({ onAddItem, onDeleteItem, clientTypePrice }) => {
         <input
           className="form-input"
           type="number"
-          min={1}
+          step="any" // يسمح بكتابة أي كسر عشري بدون قيود المتصفح
           value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === "" || value === "0" || value === "0." || value === ".") {
+              setQuantity(value);
+              return;
+            }
+            const num = parseFloat(value);
+            if (!isNaN(num)) {
+              setQuantity(value);
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+              e.preventDefault(); // منع السلوك الافتراضي للمتصفح
+              const currentVal = parseFloat(quantity) || 0;
+              const step = e.key === "ArrowUp" ? 1 : -1;
+              const newVal = currentVal + step;
+              if (newVal <= 0) {
+                setQuantity(1);
+              } else {
+                setQuantity(Number(newVal.toFixed(4)).toString());
+              }
+            }
+          }}
+          onBlur={() => {
+            const num = parseFloat(quantity);
+            if (isNaN(num) || num <= 0) {
+              setQuantity(1);
+            } else {
+              setQuantity(num.toString());
+            }
+          }}
           onWheel={(event) => event.currentTarget.blur()}
           required
         />

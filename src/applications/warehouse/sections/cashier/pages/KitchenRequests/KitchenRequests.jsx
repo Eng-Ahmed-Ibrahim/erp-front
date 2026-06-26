@@ -29,6 +29,7 @@ const KitchenRequests = () => {
     { key: "client_type", value: "نوع العميل" },
     { key: "table_number", value: "رقم الترابيزة" },
     { key: "status", value: "الحالة" },
+    { key: "casher", value: "الكاشير" },
     { key: "code", value: "كود الأوردر" },
     { key: "order_date", value: "التاريخ" },
     { key: "client", value: "إسم العميل" },
@@ -64,6 +65,10 @@ const KitchenRequests = () => {
         {
           value: "printed",
           label: "تم الطباعة",
+        },
+        {
+          value: "failed_print",
+          label: "خطأ في الطباعه",
         },
       ],
     },

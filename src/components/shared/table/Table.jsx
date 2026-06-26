@@ -514,6 +514,8 @@ const Table = ({
         return <p className="status approved">تم المراجعة</p>;
       case "rejected":
         return <p className="status rejected">مرفوض</p>;
+      case "failed_print":
+        return <p className="status rejected">خطأ في الطباعه</p>;
       case "done":
         return <p className="status done">تم الصرف</p>;
       case "processing":
@@ -777,7 +779,10 @@ const Table = ({
                           item[header.key][header.nestedKey] || "لا يوجد"
                         ) : header.key === "status" ? (
                           renderStatus(item[header.key])
-                        ) : header.key === "type" ? (
+                        ) : header.key === 'casher'? (
+                          `${item.casher}`
+                        )
+                        : header.key === "type" ? (
                           renderType(item[header.key])
                         ) : header.key === "new_client" ? (
                           renderClient(item[header.key])
@@ -785,7 +790,9 @@ const Table = ({
                           renderWorker(item[header.key])
                         ) : (
                           item[header.key] || "لا يوجد"
-                        )}
+                        )
+                        
+                        }
                       </td>
                     ))}
                     {ordersRecieve && (
