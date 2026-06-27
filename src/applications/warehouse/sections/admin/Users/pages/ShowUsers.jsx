@@ -19,48 +19,69 @@ const ShowUsers = () => {
       placeholder: "إبحث برقم الموبايل",
       id: "رقم الموبايل",
     },
+    {
+      key: "user_type",
+      type: "selection",
+      placeholder: "إبحث بنوع المستخدم",
+      id: "نوع المستخدم",
+      options: [
+        {
+          value: "casher",
+          label: "كاشير",
+        },
+        {
+          value: "accounting",
+          label: "حسابات",
+        },
+        {
+          value: "it",
+          label: "IT",
+        },
+        {
+          value: "other",
+          label: "أخرى",
+        },
+      ]
+    },
   ];
   const actions = [
     {
-      type: `${
-        user?.permissions.some((permission) => permission.name === "edit user")
-          ? "edit"
-          : ""
-      }`,
+      type: `${user?.permissions.some((permission) => permission.name === "edit user")
+        ? "edit"
+        : ""
+        }`,
       label: "تعديل",
       route: "/warehouse/users/:id/edit-user",
     },
     {
-      type: `${
-        user?.permissions.some(
-          (permission) => permission.name === "delete user"
-        )
-          ? "delete"
-          : ""
-      }`,
+      type: `${user?.permissions.some(
+        (permission) => permission.name === "delete user"
+      )
+        ? "delete"
+        : ""
+        }`,
       label: "حذف",
     },
     {
-      type: "admin-login",   
+      type: "admin-login",
       label: "تسجيل دخول",
     },
 
     {
-      type: `${
-        user?.permissions.some((permission) => permission.name === "add user")
-          ? "add"
-          : ""
-      }`,
+      type: `${user?.permissions.some((permission) => permission.name === "add user")
+        ? "add"
+        : ""
+        }`,
       label: "إضافة مستخدمين",
       route: "/warehouse/users/add-user",
     },
   ];
 
   const adminLogin = async (user) => {
-    const res =await adminUserLogin(user.id);
+    const res = await adminUserLogin(user.id);
     if (!(res instanceof Error)) {
-       localStorage.setItem("token", res.data.token)
-       sessionStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.token)
+      sessionStorage.setItem("token", res.data.token);
     } else {
       message.error(res.response.error.message);
       return;

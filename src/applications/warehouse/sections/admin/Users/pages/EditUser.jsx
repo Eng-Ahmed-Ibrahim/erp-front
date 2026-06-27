@@ -15,6 +15,7 @@ import useDepartments from "../../../../../../lib/services/hooks/useDepartment";
 import useCashiers from "../../../../../../lib/services/hooks/useCashier";
 import useShifts from "../../../../../../lib/services/hooks/useShifts";
 import { transformToDateTime } from "../../../../../../lib/helpers/transformToDatetime";
+
 const EditUser = () => {
   const Token =
     localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -22,6 +23,7 @@ const EditUser = () => {
   const { id } = useParams();
   const [roles, setRoles] = useState([]);
   const [accsNames, setAccsNames] = useState([]);
+  const [userType, setUserType] = useState(null);
   const [selectedAccountantName, setSelectedAccountantName] = useState(null);
 
   const [data, setData] = useState({});
@@ -29,7 +31,7 @@ const EditUser = () => {
   const [userDepartment, setUserDepartment] = useState("");
   const [isSource, setIsSource] = useState(false);
   const [isMaster, setIsMaster] = useState(false);
-  
+
   const [selectedDepatrment, setSelectedDepartment] = useState(null);
   const [selectedRolePermissions, setSelectedRolePermissions] = useState([]);
   const [form] = Form.useForm();
@@ -42,7 +44,14 @@ const EditUser = () => {
   //getUserById
   const [isWaiter, setIsWaiter] = useState(false);
 
+  const userTypeOptions = {
+    casher: "كاشير",
+    accounting: "الحسابات",
+    it: "it",
+    other: "اخرى",
+  };
   useEffect(() => {
+
     const fetchRoles = async () => {
       const res = await getRoles();
       setRoles(res.data);
@@ -162,6 +171,7 @@ const EditUser = () => {
             username: userName,
             department_id: userDepartment,
             reviewer: selectedAccountantName,
+            user_type: userType
           },
           {
             headers: {
@@ -399,7 +409,7 @@ const EditUser = () => {
       </Form>
 
       <h3 className="form-title" style={{ marginBottom: "20px" }}>
-      تعديل إسم المستخدم
+        تعديل إسم المستخدم
       </h3>
       <form onSubmit={handelSubmit}>
         <div class="mb-3">
@@ -442,7 +452,41 @@ const EditUser = () => {
         </button>
       </form>
       <h3 className="form-title mt-5" style={{ marginBottom: "20px" }}>
-      تغيير كلمة المرور
+        تعديل نوع المستخدم
+      </h3>
+      <form onSubmit={handelSubmit}>
+        <div class="mb-3">
+          <label for="exampleInputPassword" className="form-label">
+            {" "}
+            النوع{" "}
+          </label>
+
+
+          <Select
+            placeholder="--- اختر النوع ---"
+            onChange={(value) => setUserType(value)}
+            style={{ width: "100%" }}
+          >
+            {Object.entries(userTypeOptions).map(([key, value]) => (
+              <Option key={key} value={key}>
+                {value}
+              </Option>
+            ))}
+          </Select>
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary rounded p-2 fw-bold"
+          style={{
+            background: "#AF8260",
+            border: "0px solid red",
+          }}
+        >
+          تعديل النوع{" "}
+        </button>
+      </form>
+      <h3 className="form-title mt-5" style={{ marginBottom: "20px" }}>
+        تغيير كلمة المرور
       </h3>
       <form onSubmit={handelPassword}>
         <div class="mb-3">
@@ -525,7 +569,7 @@ const EditUser = () => {
           </form>
         </>
       ) : null}
-      {(isSource  || isMaster )&& (
+      {(isSource || isMaster) && (
         <>
           <h3 className="form-title" style={{ margin: "20px 0px" }}>
             تعديل اسم المراجع
@@ -638,9 +682,8 @@ const EditUser = () => {
                     setActiveItemId(item.id);
                     setNewShiftData((p) => ({ ...p, departmentId: item.id }));
                   }}
-                  className={`form-check pe-3 py-3 m-3 shadow rounded shift-hover ${
-                    activeItemId === item.id ? "shifts" : ""
-                  }`}
+                  className={`form-check pe-3 py-3 m-3 shadow rounded shift-hover ${activeItemId === item.id ? "shifts" : ""
+                    }`}
                   key={index}
                   style={{ border: "2px solid #803d3b" }}
                 >

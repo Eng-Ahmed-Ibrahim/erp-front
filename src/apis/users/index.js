@@ -22,12 +22,13 @@ export async function getAllUsers(filteredValues = { name: "" }) {
 export async function getUsers(filteredValues, id, setIsLoading) {
   try {
     setIsLoading(true);
-    const { name, phone, page } = filteredValues;
+    const { name, phone, page ,user_type} = filteredValues;
     const res = await axios.get(`${domain}/api/v1/store/user`, {
       params: {
         name,
         phone,
         page,
+        user_type
       },
       headers: {
         Authorization: `Bearer ${Token}`,
