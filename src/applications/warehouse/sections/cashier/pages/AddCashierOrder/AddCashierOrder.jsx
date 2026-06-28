@@ -38,196 +38,6 @@ import {
 import { is } from 'date-fns/locale';
 import { use } from 'i18next';
 
-// function PrintAfterFinish({ id, table_no, user }) {
-//   const componentRef = useRef();
-//   const navigate = useNavigate();
-//   const [loading, setLoading] = useState(true); // New loading state
-//   const [data, setData] = useState({
-//     code: '',
-//     status: '',
-//     client: '',
-//     invoice_date: '',
-//     client_type: '',
-//     recipeData: [],
-//     total_price: 0,
-//     total_price_after_discount_and_tax: 0,
-//     departmentName: '',
-//     cashier: '',
-//     payment: '',
-//     secondary_currency: null,
-//   });
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         await changeOrderStatus(id, 'closed');
-
-//         await new Promise((resolve) => setTimeout(resolve, 500));
-
-//         const OrderData = await getOrderById(id);
-
-//         if (OrderData.data && OrderData.data.status === 'closed') {
-//           setData({
-//             code: OrderData.data.code,
-//             cashier: OrderData.data.casher,
-//             products: OrderData.data.products,
-//             payment_method: OrderData.data.payment_method,
-//             order_date: OrderData.data.order_date,
-//             client: OrderData.data.client,
-//             payment: OrderData.data.payment_method,
-//             status: OrderData.data.status,
-//             invoice_date: OrderData.data.order_date,
-//             table_number: OrderData.data.table_number,
-//             client_type: OrderData.data.client_type,
-//             recipeData: OrderData.data.products,
-//             price: OrderData.data.price,
-//             total_price: OrderData.data.total_price,
-//             waiter_name: OrderData.data.waiter.name,
-//             total_price_after_discount_and_tax:
-//               OrderData.data.total_price_after_discount_and_tax,
-//             departmentName: OrderData.data.department,
-//             secondary_currency: OrderData.data.secondary_currency,
-//           });
-//         }
-//       } catch (error) {
-//       } finally {
-//         setLoading(false); // Set loading to false after data is fetched
-//       }
-//     };
-
-//     fetchData();
-//   }, [id]);
-
-//   const generatePDF = useReactToPrint({
-//     content: () => componentRef.current,
-//     documentTitle: `${data.code + '-' + 'أوردر كود'}`,
-//     onAfterPrint: () => {
-//       window.location.reload();
-//     },
-//   });
-
-//   useEffect(() => {
-//     if (!loading && data.code) {
-//       generatePDF();
-//     }
-//   }, [loading, data]);
-
-//   return (
-//     <div
-//       id="invoice-container"
-//       ref={componentRef}
-//       dir="rtl"
-//       style={{ display: 'flex', justifyContent: 'center' }}
-//     >
-//       <Printer ref={componentRef} className="main">
-//         <div className="headers-wrapper">
-//           <div className="main-title">
-//             <p> أوردر من {data.departmentName}</p>
-//           </div>
-//           <div className="header-img">
-//             <img
-//               src={LogoDAR}
-//               alt=""
-//               style={{ width: '64px', marginBottom: '5px', marginLeft: '5px' }}
-//             />
-//           </div>
-//         </div>
-//         <div className="invoice-info">
-//           <div className="invoice-info-item">
-//             <p>كـــــود الأوردر : {data.code}</p>
-//             <p>تـاريـــخ الأوردر : {data.order_date}</p>
-//             <p>رقم الترابيزة : {table_no}</p>
-//           </div>
-//           <div className="invoice-info-item">
-//             <p>اسم الكاشير : {data.cashier}</p>
-//             <p>اسم الويتر : {data.waiter_name}</p>
-//             <p>اسم العميل : {data.client === '' ? 'Guest' : data.client}</p>
-//             <p>الفئة : {data.client_type}</p>
-//             <p>طريقة الدفع : {data.payment_method}</p>
-//           </div>
-//         </div>
-//         <div className="invoice-items">
-//           <h2>محــــــتويات الأوردر</h2>
-//           <table>
-//             <thead>
-//               <tr>
-//                 <th className="text-center">رقم العنصر</th>
-//                 <th className="text-center">اسم العنصر</th>
-//                 <th className="text-center">سعر العنصر الواحد</th>
-//                 <th className="text-right">الكمية</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {data.products?.map((recipe, index) => (
-//                 <tr key={index}>
-//                   <td className="text-center">{index + 1}</td>
-//                   <td className="text-center">{recipe.name}</td>
-//                   <td className="text-center">{recipe.price}</td>
-//                   <td className="text-right">{recipe.quantity}</td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//             <tfoot>
-//               <tr>
-//                 <td className="text-price" colSpan={2}>
-//                   السعر الكلي
-//                 </td>
-//                 <td className="text-price" colSpan={2}>
-//                   {data.secondary_currency
-//                     ? `${data?.products?.map((product) => product.quantity).reduce((acc, curr) => acc + curr, 0)} ${data.secondary_currency.name_ar || data.secondary_currency.code}`
-//                     : `${data.price?.toFixed(2)} ج.م`
-//                   }
-//                 </td>
-//               </tr>
-//               <tr>
-//                 <td className="text-price" colSpan={2}>
-//                   السعر الكلي بعد الخصم
-//                 </td>
-//                 <td className="text-price" colSpan={2}>
-//                   {data.secondary_currency
-//                     ? `${data?.products?.map((product) => product.quantity).reduce((acc, curr) => acc + curr, 0)}  ${data.secondary_currency.name_ar || data.secondary_currency.code}`
-//                     : `${data.total_price?.toFixed(2)} ج.م`
-//                   }
-//                 </td>
-//               </tr>
-//             </tfoot>
-//           </table>
-
-//           <p></p>
-//           <hr />
-//           {user.department?.has_instructions &&
-//             user.department?.instructions.split(',').length > 0 && (
-//               <>
-//                 <table className="table">
-//                   <thead>
-//                     <tr>
-//                       <th scope="col">#</th>
-//                       <th scope="col"> تعليمات {user?.department?.name} </th>
-//                     </tr>
-//                   </thead>
-
-//                   <tbody>
-//                     {user.department?.instructions
-//                       ?.split(',')
-//                       .map((instruction, index) => (
-//                         <tr>
-//                           <th scope="row">{index + 1}</th>
-
-//                           <td>{instruction}</td>
-//                         </tr>
-//                       ))}
-//                   </tbody>
-//                 </table>
-//               </>
-//             )}
-//         </div>
-//         <Cut />
-//       </Printer>
-//     </div>
-//   );
-// }
-
-// Scanner Modal Component for Subscription Attendance
 
 function PrintAfterFinish({ id, table_no, user }) {
   const componentRef = useRef();
@@ -259,7 +69,6 @@ function PrintAfterFinish({ id, table_no, user }) {
     const fetchData = async () => {
       try {
         const OrderData = await getOrderById(id);
-
         if (OrderData && OrderData.data) {
           const resData = OrderData.data;
           setData({
@@ -300,31 +109,50 @@ function PrintAfterFinish({ id, table_no, user }) {
   const generatePDF = useReactToPrint({
     content: () => componentRef.current,
     documentTitle: `${data.code ? data.code + '-' : ''}أوردر كود`,
-    
-    // سيناريو نجاح الطباعة الفعلي
-    onAfterPrint: async () => {
-      try {
-        // نغير الحالة إلى مغلق فقط بعد التأكد من ضغط زر الطباعة
-        await changeOrderStatus(id, 'closed');
-        message.success('تمت طباعة الوصل وإغلاق الأوردر بنجاح.');
-        
-        // إعادة تحميل الصفحة للانتقال لأوردر جديد
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      } catch (error) {
-        console.error('Error updating order status:', error);
-        message.error('تمت الطباعة ولكن فشل تحديث حالة الأوردر في السيرفر.');
-      }
-    },
+    print: async (printIframe) => {
+      return new Promise((resolve) => {
+        const iframeWindow = printIframe.contentWindow;
+        const mediaQueryList = iframeWindow.matchMedia('print');
+        let printStarted = false;
 
-    // سيناريو إلغاء الطباعة أو حدوث مشكلة (لم يطبع)
-    onCancel: () => {
-      // هنا يظل الأوردر failed_print كما هو في قاعدة البيانات وتظهر الرسالة التحذيرية
-      message.error('لم يتم طباعة الفاتورة! يرجى عمل أوردر جديد أو إعادة المحاولة.');
+        // retry function - بتحاول تغير الحالة لحد ما تنجح
+        const changeStatusWithRetry = async (retries = 10, delayMs = 3000) => {
+          for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+
+              await changeOrderStatus(id, 'closed');
+              message.success('تمت طباعة الوصل وإغلاق الأوردر بنجاح.');
+              setTimeout(() => window.location.reload(), 1000);
+              return; // ✅ نجح - اخرج
+            } catch (error) {
+              if (attempt < retries) {
+                message.warning(`فشل تحديث الحالة، إعادة المحاولة ${attempt}/${retries}...`);
+                await new Promise((res) => setTimeout(res, delayMs));
+              } else {
+                // ❌ فشلت كل المحاولات
+                message.error('فشل تحديث حالة الأوردر بعد عدة محاولات، تواصل مع الدعم.');
+              }
+            }
+          }
+        };
+
+        mediaQueryList.addEventListener('change', async (mql) => {
+          if (mql.matches) {
+            printStarted = true;
+          } else {
+            if (printStarted) {
+              await changeStatusWithRetry();
+            } else {
+              message.error('لم يتم طباعة الفاتورة! الأوردر لا يزال في حالة failed_print.');
+            }
+            resolve();
+          }
+        });
+
+        iframeWindow.print();
+      });
     },
   });
-
   // 3. تشغيل نافذة الطباعة تلقائياً بمجرد اكتمال البيانات وجاهزيتها
   useEffect(() => {
     if (!loading && data.code) {
@@ -597,8 +425,8 @@ function SubscriptionScannerModal({ show, onHide }) {
             {loading
               ? 'جاري المعالجة...'
               : verificationLoading
-              ? 'جاري التحقق...'
-              : 'مسح الباركود'}
+                ? 'جاري التحقق...'
+                : 'مسح الباركود'}
           </button>
         ),
         // Show confirm button when in verification mode
@@ -1050,7 +878,7 @@ function SubscriptionScannerModal({ show, onHide }) {
                         style={{
                           fontSize: '24px',
                           fontWeight: '700',
-                            color: '#803D3B',
+                          color: '#803D3B',
                           marginBottom: '4px',
                         }}
                       >
@@ -1590,7 +1418,7 @@ const AddCashierOrder = () => {
       setClientData(recipeData?.data);
       setDiscount(recipeData.data.discount);
       setResedent(recipeData.data.name);
-    } catch (error) {}
+    } catch (error) { }
   };
   useEffect(
     () => {
@@ -1747,7 +1575,7 @@ const AddCashierOrder = () => {
     formData.append('phone', newUserValues['phone']);
     formData.append('tax', 0);
     formData.append('tax', 0);
-    formData.append("status",'failed_print')
+    formData.append("status", 'failed_print')
 
 
     try {
@@ -1782,7 +1610,7 @@ const AddCashierOrder = () => {
         setItems([]);
         setOrderID(response.data.data.id);
         getOrderById(response.data.data.id)
-          .then((datsss) => {})
+          .then((datsss) => { })
           .catch((error) => {
             setIsDisabled(false);
             console.error('Error fetching order by ID:', error);
@@ -2523,10 +2351,10 @@ const AddCashierOrder = () => {
         ) : null}
 
         {!isguest &&
-        !isHidden &&
-        !user.permissions.some(
-          (permission) => permission.name === 'cannot_close_order'
-        ) ? (
+          !isHidden &&
+          !user.permissions.some(
+            (permission) => permission.name === 'cannot_close_order'
+          ) ? (
           <>
             <button
               className="finish-cashier"
